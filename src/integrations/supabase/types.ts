@@ -188,41 +188,19 @@ export type Database = {
       }
     }
     Views: {
-      opinion_pair_ratings: {
-        Row: {
-          avg_disagreement: number | null
-          avg_empathy: number | null
-          opinion_a_id: string | null
-          opinion_b_id: string | null
-          rating_count: number | null
-          topic_id: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "chats_opinion_a_id_fkey"
-            columns: ["opinion_a_id"]
-            isOneToOne: false
-            referencedRelation: "opinions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "chats_opinion_b_id_fkey"
-            columns: ["opinion_b_id"]
-            isOneToOne: false
-            referencedRelation: "opinions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "chats_topic_id_fkey"
-            columns: ["topic_id"]
-            isOneToOne: false
-            referencedRelation: "topics"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+      [_ in never]: never
     }
     Functions: {
+      get_opinion_pair_ratings: {
+        Args: { topic_uuid: string }
+        Returns: {
+          avg_disagreement: number
+          avg_empathy: number
+          opinion_a_id: string
+          opinion_b_id: string
+          rating_count: number
+        }[]
+      }
       is_chat_participant: {
         Args: { chat_id: string; checking_user_id: string }
         Returns: boolean
