@@ -15,7 +15,7 @@ export function InfoPanel({ question, opinionCount }: InfoPanelProps) {
   
   const steps = [
     { icon: MessageSquare, text: 'STATE your opinion' },
-    { icon: Heart, text: 'Rate Empathy and Disagreement' },
+    { icon: Heart, text: 'DEBATE other opinions' },
     { icon: RefreshCw, text: 'Graph is updated. Reach the middle!' },
   ];
 
