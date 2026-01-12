@@ -4,18 +4,24 @@ import { ConcentricCircles } from './ConcentricCircles';
 import { GraphEdges } from './GraphEdges';
 import { GraphNodes } from './GraphNodes';
 import { calculateLayout, generateMockData } from '@/lib/freemind-layout';
-import { GraphNode, LayoutConfig } from '@/types/graph';
+import { GraphNode, LayoutConfig, Opinion, ChatRating } from '@/types/graph';
 
 interface OpinionGraphProps {
+  opinions?: Opinion[];
+  ratings?: ChatRating[];
   onNodeSelect?: (node: GraphNode | null) => void;
   width?: number;
   height?: number;
+  useMockData?: boolean;
 }
 
 export function OpinionGraph({ 
+  opinions: externalOpinions,
+  ratings: externalRatings,
   onNodeSelect,
   width = 600,
   height = 600,
+  useMockData = false,
 }: OpinionGraphProps) {
   const [highlightedNode, setHighlightedNode] = useState<string | null>(null);
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
@@ -38,11 +44,21 @@ export function OpinionGraph({
     };
   }, [width, height]);
 
-  // Generate mock data and calculate layout
+  // Use provided data or generate mock data
+  const { opinions, ratings } = useMemo(() => {
+    if (useMockData || !externalOpinions || externalOpinions.length === 0) {
+      return generateMockData(40);
+    }
+    return { 
+      opinions: externalOpinions, 
+      ratings: externalRatings || [] 
+    };
+  }, [externalOpinions, externalRatings, useMockData]);
+
+  // Calculate layout
   const graphData = useMemo(() => {
-    const { opinions, ratings } = generateMockData(40);
     return calculateLayout(opinions, ratings, config);
-  }, [config]);
+  }, [opinions, ratings, config]);
 
   const handleNodeClick = useCallback((node: GraphNode) => {
     setSelectedNode(prev => prev?.id === node.id ? null : node);
@@ -89,12 +105,12 @@ export function OpinionGraph({
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-card/95 backdrop-blur-sm border border-border rounded-lg p-4 max-w-sm shadow-xl"
+          className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur-sm border border-white/20 rounded-lg p-4 max-w-sm shadow-xl"
         >
-          <p className="text-sm text-foreground">{selectedNode.opinion.text}</p>
+          <p className="text-sm text-black">{selectedNode.opinion.text}</p>
           <button
             onClick={() => setSelectedNode(null)}
-            className="mt-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            className="mt-2 text-xs text-black/60 hover:text-black transition-colors"
           >
             Close
           </button>

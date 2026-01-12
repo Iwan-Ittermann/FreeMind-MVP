@@ -3,10 +3,15 @@ import { motion } from 'framer-motion';
 import { OpinionGraph } from '@/components/graph/OpinionGraph';
 import { InfoPanel } from '@/components/InfoPanel';
 import { GraphNode } from '@/types/graph';
+import { useTopicData } from '@/hooks/useTopicData';
+
+const DEFAULT_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
 
 const Index = () => {
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [graphSize, setGraphSize] = useState({ width: 600, height: 600 });
+  
+  const { data: topicData, isLoading, error } = useTopicData(DEFAULT_TOPIC_ID);
 
   // Responsive sizing
   useEffect(() => {
@@ -23,7 +28,9 @@ const Index = () => {
     return () => window.removeEventListener('resize', updateSize);
   }, []);
 
-  // Using dark theme for the main visualization page
+  // Use mock data if no real data exists yet
+  const hasRealData = topicData && topicData.opinions.length > 0;
+
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="container mx-auto px-4 py-8">
@@ -35,9 +42,16 @@ const Index = () => {
             className="flex-1 max-w-md lg:pt-12"
           >
             <InfoPanel 
-              question="What should be done about climate change?"
-              opinionCount={40}
+              question={topicData?.title || "What should be done about climate change?"}
+              opinionCount={hasRealData ? topicData.opinions.length : 40}
             />
+            
+            {/* Debug info - remove in production */}
+            {!hasRealData && (
+              <p className="mt-8 text-xs text-white/40">
+                Showing mock data. Sign up and add opinions to see real data.
+              </p>
+            )}
           </motion.div>
 
           {/* Right panel - Graph */}
@@ -48,9 +62,12 @@ const Index = () => {
             className="flex-shrink-0"
           >
             <OpinionGraph
+              opinions={hasRealData ? topicData.opinions : undefined}
+              ratings={hasRealData ? topicData.ratings : undefined}
               width={graphSize.width}
               height={graphSize.height}
               onNodeSelect={setSelectedNode}
+              useMockData={!hasRealData}
             />
           </motion.div>
         </div>
