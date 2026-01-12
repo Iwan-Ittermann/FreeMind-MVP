@@ -2,14 +2,17 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { OpinionGraph } from '@/components/graph/OpinionGraph';
 import { InfoPanel } from '@/components/InfoPanel';
+import { SubmitOpinion } from '@/components/SubmitOpinion';
 import { GraphNode } from '@/types/graph';
 import { useTopicData } from '@/hooks/useTopicData';
+import { useQueryClient } from '@tanstack/react-query';
 
 const DEFAULT_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
 
 const Index = () => {
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [graphSize, setGraphSize] = useState({ width: 600, height: 600 });
+  const queryClient = useQueryClient();
   
   const { data: topicData, isLoading, error } = useTopicData(DEFAULT_TOPIC_ID);
 
@@ -27,6 +30,11 @@ const Index = () => {
     window.addEventListener('resize', updateSize);
     return () => window.removeEventListener('resize', updateSize);
   }, []);
+
+  const handleOpinionSubmitted = () => {
+    // Refresh the topic data to show the new opinion
+    queryClient.invalidateQueries({ queryKey: ['topic', DEFAULT_TOPIC_ID] });
+  };
 
   // Use mock data if no real data exists yet
   const hasRealData = topicData && topicData.opinions.length > 0;
@@ -46,10 +54,23 @@ const Index = () => {
               opinionCount={hasRealData ? topicData.opinions.length : 40}
             />
             
-            {/* Debug info - remove in production */}
+            {/* Submit Opinion Form */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.7 }}
+              className="mt-6"
+            >
+              <SubmitOpinion 
+                topicId={DEFAULT_TOPIC_ID} 
+                onSuccess={handleOpinionSubmitted}
+              />
+            </motion.div>
+            
+            {/* Info about mock data */}
             {!hasRealData && (
-              <p className="mt-8 text-xs text-white/40">
-                Showing mock data. Sign up and add opinions to see real data.
+              <p className="mt-6 text-xs text-white/40">
+                Showing mock data. Sign in and add your opinion to see real data.
               </p>
             )}
           </motion.div>
