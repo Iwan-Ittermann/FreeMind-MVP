@@ -1,28 +1,58 @@
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { OpinionGraph } from '@/components/graph/OpinionGraph';
+import { InfoPanel } from '@/components/InfoPanel';
+import { GraphNode } from '@/types/graph';
+
 const Index = () => {
+  const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
+  const [graphSize, setGraphSize] = useState({ width: 600, height: 600 });
+
+  // Responsive sizing
+  useEffect(() => {
+    const updateSize = () => {
+      const isMobile = window.innerWidth < 768;
+      const size = isMobile 
+        ? Math.min(window.innerWidth - 32, 400)
+        : Math.min(window.innerHeight - 100, 600);
+      setGraphSize({ width: size, height: size });
+    };
+
+    updateSize();
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
+  }, []);
+
+  // Using dark theme for the main visualization page
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
-      <div className="text-center max-w-2xl">
-        <h1 className="mb-2 text-5xl font-medium tracking-tight text-foreground">
-          FreeMind
-        </h1>
-        <p className="mb-8 text-xl text-muted-foreground">
-          Free and Safe Online Conversations
-        </p>
-        <div className="flex flex-wrap justify-center gap-4">
-          <button className="rounded-lg bg-primary px-6 py-3 font-medium text-primary-foreground transition-colors hover:bg-primary/90">
-            Get Started
-          </button>
-          <button className="rounded-lg border border-border bg-background px-6 py-3 font-medium text-foreground transition-colors hover:bg-muted">
-            Learn More
-          </button>
-        </div>
-        
-        {/* Brand color showcase */}
-        <div className="mt-16 flex justify-center gap-3">
-          <div className="h-4 w-4 rounded-full bg-primary" title="Dogwood Rose" />
-          <div className="h-4 w-4 rounded-full bg-secondary" title="Medium Blue" />
-          <div className="h-4 w-4 rounded-full bg-accent" title="Honey Yellow" />
-          <div className="h-4 w-4 rounded-full bg-success" title="Emerald Green" />
+    <div className="min-h-screen bg-black text-white">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8 lg:gap-16">
+          {/* Left panel - Info */}
+          <motion.div 
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex-1 max-w-md lg:pt-12"
+          >
+            <InfoPanel 
+              question="What should be done about climate change?"
+              opinionCount={40}
+            />
+          </motion.div>
+
+          {/* Right panel - Graph */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2 }}
+            className="flex-shrink-0"
+          >
+            <OpinionGraph
+              width={graphSize.width}
+              height={graphSize.height}
+              onNodeSelect={setSelectedNode}
+            />
+          </motion.div>
         </div>
       </div>
     </div>
