@@ -1,15 +1,21 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MessageSquare, X } from 'lucide-react';
 import { OpinionGraph } from '@/components/graph/OpinionGraph';
 import { InfoPanel } from '@/components/InfoPanel';
 import { SubmitOpinion } from '@/components/SubmitOpinion';
+import { Button } from '@/components/ui/button';
 import { GraphNode } from '@/types/graph';
 import { useTopicData } from '@/hooks/useTopicData';
+import { useAuth } from '@/hooks/useAuth';
 import { useQueryClient } from '@tanstack/react-query';
 
 const DEFAULT_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
 
 const Index = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [graphSize, setGraphSize] = useState({ width: 600, height: 600 });
   const queryClient = useQueryClient();
@@ -32,8 +38,13 @@ const Index = () => {
   }, []);
 
   const handleOpinionSubmitted = () => {
-    // Refresh the topic data to show the new opinion
     queryClient.invalidateQueries({ queryKey: ['topic', DEFAULT_TOPIC_ID] });
+  };
+
+  const handleStartChat = () => {
+    if (selectedNode) {
+      navigate(`/chat?their=${selectedNode.id}`);
+    }
   };
 
   // Use mock data if no real data exists yet
@@ -80,7 +91,7 @@ const Index = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
-            className="flex-shrink-0"
+            className="flex-shrink-0 relative"
           >
             <OpinionGraph
               opinions={hasRealData ? topicData.opinions : undefined}
@@ -90,6 +101,47 @@ const Index = () => {
               onNodeSelect={setSelectedNode}
               useMockData={!hasRealData}
             />
+
+            {/* Selected node action panel */}
+            <AnimatePresence>
+              {selectedNode && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 20, scale: 0.9 }}
+                  className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/90 backdrop-blur-sm border border-white/20 rounded-xl p-4 max-w-sm w-[calc(100%-2rem)] shadow-2xl"
+                >
+                  <button
+                    onClick={() => setSelectedNode(null)}
+                    className="absolute top-2 right-2 text-white/40 hover:text-white transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                  
+                  <p className="text-sm text-white/80 mb-3 pr-6">
+                    "{selectedNode.opinion.text}"
+                  </p>
+                  
+                  {user ? (
+                    <Button
+                      onClick={handleStartChat}
+                      className="w-full bg-primary hover:bg-primary/90"
+                    >
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      Start Chat with This Opinion
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() => navigate('/auth')}
+                      variant="outline"
+                      className="w-full border-white/20 text-white hover:bg-white/10"
+                    >
+                      Sign In to Chat
+                    </Button>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         </div>
       </div>
