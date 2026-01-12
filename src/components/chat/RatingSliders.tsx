@@ -127,33 +127,6 @@ export function RatingSliders({
           </>
         )}
       </Button>
-
-      {/* Visual indicator */}
-      <div className="relative h-24 rounded-lg bg-gradient-to-br from-green-500/20 via-yellow-500/20 to-primary/20 border border-white/10 overflow-hidden">
-        {/* Grid lines */}
-        <div className="absolute inset-0 grid grid-cols-4 grid-rows-4">
-          {Array.from({ length: 16 }).map((_, i) => (
-            <div key={i} className="border border-white/5" />
-          ))}
-        </div>
-        
-        {/* Position indicator */}
-        <motion.div
-          className="absolute w-4 h-4 -ml-2 -mt-2"
-          animate={{
-            left: `${disagreement * 100}%`,
-            top: `${(1 - empathy) * 100}%`,
-          }}
-          transition={{ type: 'spring', damping: 20 }}
-        >
-          <div className={`w-full h-full rounded-full ${getZoneColor()} shadow-lg`} />
-          <div className={`absolute inset-0 rounded-full ${getZoneColor()} animate-ping opacity-50`} />
-        </motion.div>
-        
-        {/* Labels */}
-        <div className="absolute top-1 left-1 text-[8px] text-green-400/60">High Empathy</div>
-        <div className="absolute bottom-1 right-1 text-[8px] text-primary/60">High Disagreement</div>
-      </div>
     </motion.div>
   );
 }
