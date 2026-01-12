@@ -96,9 +96,9 @@ export function FloatingChat({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/95 z-50 flex">
-      {/* Background decoration */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="fixed inset-0 bg-black/95 z-50 flex flex-col">
+      {/* Background decoration - hidden on mobile for performance */}
+      <div className="hidden md:block absolute inset-0 overflow-hidden pointer-events-none">
         {/* Floating particles */}
         {Array.from({ length: 20 }).map((_, i) => (
           <motion.div
@@ -146,46 +146,49 @@ export function FloatingChat({
         </svg>
       </div>
 
-      {/* Main content */}
-      <div className="relative z-10 flex flex-col lg:flex-row w-full max-w-6xl mx-auto p-4 gap-4">
-        {/* Header */}
-        <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-20">
-          <Button
-            variant="ghost"
-            onClick={onClose}
-            className="text-white/60 hover:text-white"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Graph
-          </Button>
-          
-          <Button
-            variant="ghost"
-            onClick={() => setTranslateEnabled(!translateEnabled)}
-            className={`${translateEnabled ? 'text-purple-400' : 'text-white/60'} hover:text-purple-300`}
-          >
-            <Languages className="w-4 h-4 mr-2" />
-            Auto-translate
-            {translateEnabled && <span className="ml-2 text-xs">(Mock)</span>}
-          </Button>
-        </div>
+      {/* Header - Fixed at top */}
+      <div className="relative z-20 flex items-center justify-between px-4 py-3 border-b border-white/10 bg-black/80 backdrop-blur-sm">
+        <Button
+          variant="ghost"
+          onClick={onClose}
+          className="text-white/60 hover:text-white h-10 px-3"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          <span className="hidden sm:inline">Back to Graph</span>
+          <span className="sm:hidden">Back</span>
+        </Button>
+        
+        <Button
+          variant="ghost"
+          onClick={() => setTranslateEnabled(!translateEnabled)}
+          className={`${translateEnabled ? 'text-purple-400' : 'text-white/60'} hover:text-purple-300 h-10 px-3`}
+        >
+          <Languages className="w-4 h-4 sm:mr-2" />
+          <span className="hidden sm:inline">Auto-translate</span>
+          {translateEnabled && <span className="ml-2 text-xs hidden sm:inline">(Mock)</span>}
+        </Button>
+      </div>
 
-        {/* Opinions display */}
-        <div className="flex-shrink-0 lg:w-64 pt-16 space-y-4">
-          <div className="bg-primary/10 border border-primary/20 rounded-lg p-3">
-            <p className="text-xs text-primary mb-1">Your Opinion</p>
-            <p className="text-sm text-white/80 line-clamp-3">{myOpinion}</p>
-          </div>
-          <div className="bg-secondary/10 border border-secondary/20 rounded-lg p-3">
-            <p className="text-xs text-secondary mb-1">Their Opinion</p>
-            <p className="text-sm text-white/80 line-clamp-3">{theirOpinion}</p>
+      {/* Main content */}
+      <div className="relative z-10 flex flex-col lg:flex-row flex-1 w-full max-w-6xl mx-auto overflow-hidden">
+        {/* Opinions display - Collapsible on mobile */}
+        <div className="flex-shrink-0 lg:w-64 px-4 py-3 lg:py-4 space-y-2 lg:space-y-4 bg-black/50 lg:bg-transparent border-b lg:border-b-0 border-white/10">
+          <div className="flex lg:flex-col gap-2 lg:gap-4 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 -mx-4 px-4 lg:mx-0 lg:px-0">
+            <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 min-w-[200px] lg:min-w-0 flex-shrink-0 lg:flex-shrink">
+              <p className="text-xs text-primary mb-1">Your Opinion</p>
+              <p className="text-sm text-white/80 line-clamp-2 lg:line-clamp-3">{myOpinion}</p>
+            </div>
+            <div className="bg-secondary/10 border border-secondary/20 rounded-lg p-3 min-w-[200px] lg:min-w-0 flex-shrink-0 lg:flex-shrink">
+              <p className="text-xs text-secondary mb-1">Their Opinion</p>
+              <p className="text-sm text-white/80 line-clamp-2 lg:line-clamp-3">{theirOpinion}</p>
+            </div>
           </div>
         </div>
 
         {/* Chat area */}
-        <div className="flex-1 flex flex-col pt-16 min-h-0">
+        <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto px-4 py-8 flex flex-col gap-4">
+          <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3 md:gap-4">
             <AnimatePresence>
               {messages.map((msg, index) => (
                 <ChatBubble
@@ -197,8 +200,9 @@ export function FloatingChat({
                   reactions={msg.reactions}
                   onReact={(reaction) => handleReaction(msg.id, reaction)}
                   style={{
-                    marginLeft: msg.isOwn ? 'auto' : index % 2 === 0 ? '0' : '20px',
-                    marginRight: msg.isOwn ? (index % 2 === 0 ? '0' : '20px') : 'auto',
+                    marginLeft: msg.isOwn ? 'auto' : '0',
+                    marginRight: msg.isOwn ? '0' : 'auto',
+                    maxWidth: '85%',
                   }}
                 />
               ))}
@@ -218,28 +222,28 @@ export function FloatingChat({
           </div>
 
           {/* Input */}
-          <div className="p-4 border-t border-white/10">
+          <div className="p-4 border-t border-white/10 bg-black/80 backdrop-blur-sm">
             <div className="flex gap-2">
               <Input
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                 placeholder="Share your thoughts..."
-                className="bg-white/5 border-white/10 text-white placeholder:text-white/30"
+                className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-12 md:h-10 text-base md:text-sm"
               />
               <Button 
                 onClick={handleSend}
                 disabled={!inputValue.trim()}
-                className="bg-primary hover:bg-primary/90"
+                className="bg-primary hover:bg-primary/90 h-12 md:h-10 w-12 md:w-10 p-0"
               >
-                <Send className="w-4 h-4" />
+                <Send className="w-5 h-5 md:w-4 md:h-4" />
               </Button>
             </div>
           </div>
         </div>
 
-        {/* Rating panel */}
-        <div className="flex-shrink-0 lg:w-72 pt-16 space-y-4">
+        {/* Rating panel - Bottom sheet on mobile */}
+        <div className="flex-shrink-0 lg:w-72 p-4 space-y-4 border-t lg:border-t-0 border-white/10 bg-black/80 lg:bg-transparent">
           <RatingSliders onRatingChange={onSubmitRating} />
           <AIConciliateButton />
         </div>
