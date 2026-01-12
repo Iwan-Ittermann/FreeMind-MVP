@@ -1,8 +1,7 @@
-import { useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FloatingChat } from '@/components/chat/FloatingChat';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
+import { useChatSession } from '@/hooks/useChatSession';
 import { toast } from 'sonner';
 
 export default function Chat() {
@@ -10,22 +9,29 @@ export default function Chat() {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
   
-  const myOpinionId = searchParams.get('my');
   const theirOpinionId = searchParams.get('their');
-
-  // Mock data for now - in production would fetch from DB
-  const myOpinion = "We need immediate, aggressive action on climate change including carbon taxes and renewable energy mandates.";
-  const theirOpinion = "Market-based solutions and innovation will solve climate change better than government intervention.";
+  
+  const { 
+    myOpinion, 
+    theirOpinion, 
+    isLoading, 
+    error,
+    saveRating,
+    isSavingRating,
+  } = useChatSession(theirOpinionId);
 
   const handleClose = () => {
     navigate('/');
   };
 
   const handleSubmitRating = async (empathy: number, disagreement: number) => {
-    if (!user || !myOpinionId || !theirOpinionId) return;
-
-    // In production, this would save to the database
-    console.log('Rating submitted:', { empathy, disagreement, myOpinionId, theirOpinionId });
+    try {
+      await saveRating(empathy, disagreement);
+      toast.success('Rating saved!');
+    } catch (err) {
+      console.error('Error saving rating:', err);
+      toast.error('Failed to save rating');
+    }
   };
 
   if (!user) {
@@ -44,12 +50,58 @@ export default function Chat() {
     );
   }
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-white/60 text-sm">Loading chat...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !myOpinion) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+        <div className="text-center max-w-sm">
+          <p className="text-white/60 mb-4 text-sm md:text-base">
+            {error || "You need to submit your own opinion first before chatting with others."}
+          </p>
+          <button 
+            onClick={() => navigate('/')}
+            className="text-primary hover:underline py-2 px-4 text-base"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!theirOpinion) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+        <div className="text-center">
+          <p className="text-white/60 mb-4 text-sm md:text-base">Opinion not found.</p>
+          <button 
+            onClick={() => navigate('/')}
+            className="text-primary hover:underline py-2 px-4 text-base"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <FloatingChat
-      myOpinion={myOpinion}
-      theirOpinion={theirOpinion}
+      myOpinion={myOpinion.text}
+      theirOpinion={theirOpinion.text}
       onClose={handleClose}
       onSubmitRating={handleSubmitRating}
+      isSavingRating={isSavingRating}
     />
   );
 }
