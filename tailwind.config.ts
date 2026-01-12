@@ -13,6 +13,9 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ["'Plus Jakarta Sans'", "sans-serif"],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -39,6 +42,10 @@ export default {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
         },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
@@ -56,6 +63,27 @@ export default {
           "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
+        },
+        // Extended brand palette - FreeMind colors
+        rose: {
+          DEFAULT: "hsl(var(--rose))",
+          light: "hsl(var(--rose-light))",
+          lighter: "hsl(var(--rose-lighter))",
+        },
+        blue: {
+          DEFAULT: "hsl(var(--blue))",
+          light: "hsl(var(--blue-light))",
+          lighter: "hsl(var(--blue-lighter))",
+        },
+        yellow: {
+          DEFAULT: "hsl(var(--yellow))",
+          light: "hsl(var(--yellow-light))",
+          lighter: "hsl(var(--yellow-lighter))",
+        },
+        green: {
+          DEFAULT: "hsl(var(--green))",
+          light: "hsl(var(--green-light))",
+          lighter: "hsl(var(--green-lighter))",
         },
       },
       borderRadius: {
