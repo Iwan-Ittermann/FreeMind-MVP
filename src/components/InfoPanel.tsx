@@ -15,8 +15,8 @@ export function InfoPanel({ question, opinionCount }: InfoPanelProps) {
   
   const steps = [
     { icon: MessageSquare, text: 'STATE  your opinion' },
-    { icon: Heart, text: 'DEBATE other opinions' },
-    { icon: RefreshCw, text: 'RATE your chat' },
+    { icon: Heart, text: 'DEBATE  other opinions' },
+    { icon: RefreshCw, text: 'RATE  your chat' },
   ];
 
   const handleSignOut = async () => {
