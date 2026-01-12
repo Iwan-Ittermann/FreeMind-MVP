@@ -30,12 +30,12 @@ export default function Chat() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center p-4">
         <div className="text-center">
-          <p className="text-white/60 mb-4">You need to be signed in to chat.</p>
+          <p className="text-white/60 mb-4 text-sm md:text-base">You need to be signed in to chat.</p>
           <button 
             onClick={() => navigate('/auth')}
-            className="text-primary hover:underline"
+            className="text-primary hover:underline py-2 px-4 text-base"
           >
             Sign In
           </button>

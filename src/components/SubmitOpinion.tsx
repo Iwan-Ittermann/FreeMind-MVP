@@ -87,7 +87,7 @@ export function SubmitOpinion({ topicId, onSuccess }: SubmitOpinionProps) {
           >
             <Button
               onClick={() => setIsOpen(true)}
-              className="bg-primary hover:bg-primary/90"
+              className="bg-primary hover:bg-primary/90 h-11 md:h-10 px-5"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Your Opinion
@@ -98,7 +98,7 @@ export function SubmitOpinion({ topicId, onSuccess }: SubmitOpinionProps) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            className="bg-white/5 border border-white/10 rounded-lg p-4 w-full max-w-md"
+            className="bg-white/5 border border-white/10 rounded-lg p-4 w-full"
           >
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-medium text-white">Share Your Opinion</h3>
@@ -107,9 +107,9 @@ export function SubmitOpinion({ topicId, onSuccess }: SubmitOpinionProps) {
                   setIsOpen(false);
                   setError(null);
                 }}
-                className="text-white/40 hover:text-white transition-colors"
+                className="text-white/40 hover:text-white transition-colors p-1"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
 
@@ -118,7 +118,7 @@ export function SubmitOpinion({ topicId, onSuccess }: SubmitOpinionProps) {
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 placeholder="What's your view on this topic? Be clear and concise..."
-                className="bg-white/5 border-white/10 text-white placeholder:text-white/30 min-h-[100px] resize-none"
+                className="bg-white/5 border-white/10 text-white placeholder:text-white/30 min-h-[120px] md:min-h-[100px] resize-none text-base"
                 maxLength={500}
               />
               
@@ -142,7 +142,7 @@ export function SubmitOpinion({ topicId, onSuccess }: SubmitOpinionProps) {
               <Button
                 type="submit"
                 disabled={isSubmitting || text.trim().length < 10}
-                className="w-full bg-primary hover:bg-primary/90"
+                className="w-full bg-primary hover:bg-primary/90 h-12 md:h-10 text-base md:text-sm"
               >
                 {isSubmitting ? (
                   <span className="flex items-center gap-2">

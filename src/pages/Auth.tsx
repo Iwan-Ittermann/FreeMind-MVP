@@ -122,21 +122,21 @@ export default function Auth() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4 safe-area-inset">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md"
       >
         {/* Logo */}
-        <h1 className="text-3xl font-medium text-center mb-2">freemind</h1>
-        <p className="text-white/60 text-center mb-8">Free and Safe Online Conversations</p>
+        <h1 className="text-2xl md:text-3xl font-medium text-center mb-2">freemind</h1>
+        <p className="text-white/60 text-center mb-6 md:mb-8 text-sm md:text-base">Free and Safe Online Conversations</p>
 
         {/* Mode Toggle */}
-        <div className="flex bg-white/10 rounded-lg p-1 mb-8">
+        <div className="flex bg-white/10 rounded-lg p-1 mb-6 md:mb-8">
           <button
             onClick={() => setMode('signup')}
-            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+            className={`flex-1 py-3 md:py-2 px-4 rounded-md text-sm font-medium transition-colors ${
               mode === 'signup' 
                 ? 'bg-primary text-white' 
                 : 'text-white/60 hover:text-white'
@@ -147,7 +147,7 @@ export default function Auth() {
           </button>
           <button
             onClick={() => setMode('login')}
-            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+            className={`flex-1 py-3 md:py-2 px-4 rounded-md text-sm font-medium transition-colors ${
               mode === 'login' 
                 ? 'bg-primary text-white' 
                 : 'text-white/60 hover:text-white'
@@ -158,7 +158,7 @@ export default function Auth() {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6">
           {mode === 'signup' ? (
             <>
               <div className="space-y-2">
@@ -167,7 +167,7 @@ export default function Auth() {
                   This is your only way to log in. Save it somewhere safe!
                 </p>
                 <div className="flex gap-2">
-                  <div className="flex-1 bg-white/10 border border-white/20 rounded-lg px-4 py-3 font-mono text-lg">
+                  <div className="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 md:px-4 py-3 font-mono text-base md:text-lg break-all">
                     {generatedPassphrase}
                   </div>
                   <Button
@@ -175,18 +175,18 @@ export default function Auth() {
                     variant="outline"
                     size="icon"
                     onClick={handleCopy}
-                    className="border-white/20 bg-transparent hover:bg-white/10"
+                    className="border-white/20 bg-transparent hover:bg-white/10 h-12 w-12 md:h-10 md:w-10 flex-shrink-0"
                   >
-                    {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
+                    {copied ? <Check className="w-5 h-5 md:w-4 md:h-4 text-green-400" /> : <Copy className="w-5 h-5 md:w-4 md:h-4" />}
                   </Button>
                   <Button
                     type="button"
                     variant="outline"
                     size="icon"
                     onClick={handleGenerateNew}
-                    className="border-white/20 bg-transparent hover:bg-white/10"
+                    className="border-white/20 bg-transparent hover:bg-white/10 h-12 w-12 md:h-10 md:w-10 flex-shrink-0"
                   >
-                    <RefreshCw className="w-4 h-4" />
+                    <RefreshCw className="w-5 h-5 md:w-4 md:h-4" />
                   </Button>
                 </div>
               </div>
@@ -206,7 +206,7 @@ export default function Auth() {
                 value={passphrase}
                 onChange={(e) => setPassphrase(e.target.value)}
                 placeholder="brave-ocean-dance-42"
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/40 font-mono"
+                className="bg-white/10 border-white/20 text-white placeholder:text-white/40 font-mono h-12 md:h-10 text-base md:text-sm"
               />
               <p className="text-xs text-white/50">
                 Format: word-word-word-number
@@ -228,7 +228,7 @@ export default function Auth() {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-primary hover:bg-primary/90"
+            className="w-full bg-primary hover:bg-primary/90 h-12 md:h-10 text-base md:text-sm"
           >
             {isSubmitting ? (
               <span className="flex items-center gap-2">
@@ -242,8 +242,8 @@ export default function Auth() {
         </form>
 
         {/* Back link */}
-        <p className="text-center mt-8 text-white/40 text-sm">
-          <a href="/" className="hover:text-white transition-colors">
+        <p className="text-center mt-6 md:mt-8 text-white/40 text-sm">
+          <a href="/" className="hover:text-white transition-colors py-2 inline-block">
             ← Back to home
           </a>
         </p>

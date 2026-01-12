@@ -29,12 +29,12 @@ export function InfoPanel({ question, opinionCount }: InfoPanelProps) {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4 md:gap-6">
       {/* Logo */}
       <motion.h1 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-2xl font-medium text-white"
+        className="text-xl md:text-2xl font-medium text-white"
       >
         freemind
       </motion.h1>
@@ -45,10 +45,10 @@ export function InfoPanel({ question, opinionCount }: InfoPanelProps) {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.1 }}
       >
-        <h2 className="text-3xl md:text-4xl font-medium leading-tight text-white">
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-medium leading-tight text-white">
           {question}
         </h2>
-        <p className="mt-2 text-white/60">
+        <p className="mt-2 text-white/60 text-sm md:text-base">
           {opinionCount} opinions
         </p>
       </motion.div>
@@ -58,7 +58,7 @@ export function InfoPanel({ question, opinionCount }: InfoPanelProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="flex flex-col gap-4 mt-4"
+        className="flex flex-col gap-3 md:gap-4 mt-2 md:mt-4"
       >
         {steps.map((step, index) => (
           <motion.div
@@ -68,8 +68,8 @@ export function InfoPanel({ question, opinionCount }: InfoPanelProps) {
             transition={{ delay: 0.3 + index * 0.1 }}
             className="flex items-center gap-3 text-white/60"
           >
-            <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center">
-              <step.icon size={18} />
+            <div className="w-9 h-9 md:w-10 md:h-10 rounded-full border border-white/20 flex items-center justify-center flex-shrink-0">
+              <step.icon size={16} className="md:w-[18px] md:h-[18px]" />
             </div>
             <span className="text-sm">{step.text}</span>
           </motion.div>
@@ -81,20 +81,20 @@ export function InfoPanel({ question, opinionCount }: InfoPanelProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6 }}
-        className="mt-4"
+        className="mt-2 md:mt-4"
       >
         {user ? (
           <Button
             onClick={handleSignOut}
             variant="outline"
-            className="border-white/20 bg-transparent text-white hover:bg-white/10"
+            className="border-white/20 bg-transparent text-white hover:bg-white/10 h-11 md:h-10 px-5"
           >
             <LogOut className="w-4 h-4 mr-2" />
             Sign Out
           </Button>
         ) : (
           <Link to="/auth">
-            <Button className="bg-primary hover:bg-primary/90">
+            <Button className="bg-primary hover:bg-primary/90 h-11 md:h-10 px-5">
               <LogIn className="w-4 h-4 mr-2" />
               Sign In to Participate
             </Button>
