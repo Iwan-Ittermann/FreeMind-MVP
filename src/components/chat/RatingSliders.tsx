@@ -1,27 +1,31 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, Swords } from 'lucide-react';
+import { Heart, Swords, Save, Check } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
+import { Button } from '@/components/ui/button';
 
 interface RatingSlidersProps {
   initialEmpathy?: number;
   initialDisagreement?: number;
-  onRatingChange?: (empathy: number, disagreement: number) => void;
-  disabled?: boolean;
+  onSubmitRating?: (empathy: number, disagreement: number) => void;
+  isSaving?: boolean;
 }
 
 export function RatingSliders({
   initialEmpathy = 0.5,
   initialDisagreement = 0.5,
-  onRatingChange,
-  disabled = false,
+  onSubmitRating,
+  isSaving = false,
 }: RatingSlidersProps) {
   const [empathy, setEmpathy] = useState(initialEmpathy);
   const [disagreement, setDisagreement] = useState(initialDisagreement);
+  const [hasSaved, setHasSaved] = useState(false);
 
-  useEffect(() => {
-    onRatingChange?.(empathy, disagreement);
-  }, [empathy, disagreement, onRatingChange]);
+  const handleSaveRating = () => {
+    onSubmitRating?.(empathy, disagreement);
+    setHasSaved(true);
+    setTimeout(() => setHasSaved(false), 2000);
+  };
 
   // Calculate zone based on ratings
   const getZoneColor = () => {
@@ -66,7 +70,7 @@ export function RatingSliders({
           onValueChange={(v) => setEmpathy(v[0] / 100)}
           max={100}
           step={1}
-          disabled={disabled}
+          disabled={isSaving}
           className="[&_[role=slider]]:bg-rose-400 [&_[role=slider]]:border-rose-400 [&_.bg-primary]:bg-rose-400/30"
         />
         <div className="flex justify-between text-[10px] text-white/40">
@@ -91,7 +95,7 @@ export function RatingSliders({
           onValueChange={(v) => setDisagreement(v[0] / 100)}
           max={100}
           step={1}
-          disabled={disabled}
+          disabled={isSaving}
           className="[&_[role=slider]]:bg-orange-400 [&_[role=slider]]:border-orange-400 [&_.bg-primary]:bg-orange-400/30"
         />
         <div className="flex justify-between text-[10px] text-white/40">
@@ -99,6 +103,30 @@ export function RatingSliders({
           <span>Opposed</span>
         </div>
       </div>
+
+      {/* Save Button */}
+      <Button
+        onClick={handleSaveRating}
+        disabled={isSaving}
+        className="w-full bg-primary hover:bg-primary/90 h-10"
+      >
+        {isSaving ? (
+          <>
+            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+            Saving...
+          </>
+        ) : hasSaved ? (
+          <>
+            <Check className="w-4 h-4 mr-2" />
+            Saved!
+          </>
+        ) : (
+          <>
+            <Save className="w-4 h-4 mr-2" />
+            Save Rating
+          </>
+        )}
+      </Button>
 
       {/* Visual indicator */}
       <div className="relative h-24 rounded-lg bg-gradient-to-br from-green-500/20 via-yellow-500/20 to-primary/20 border border-white/10 overflow-hidden">

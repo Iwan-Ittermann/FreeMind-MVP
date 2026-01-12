@@ -21,6 +21,7 @@ interface FloatingChatProps {
   theirOpinion: string;
   onClose: () => void;
   onSubmitRating?: (empathy: number, disagreement: number) => void;
+  isSavingRating?: boolean;
 }
 
 export function FloatingChat({ 
@@ -28,6 +29,7 @@ export function FloatingChat({
   theirOpinion, 
   onClose,
   onSubmitRating,
+  isSavingRating = false,
 }: FloatingChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -244,7 +246,7 @@ export function FloatingChat({
 
         {/* Rating panel - Bottom sheet on mobile */}
         <div className="flex-shrink-0 lg:w-72 p-4 space-y-4 border-t lg:border-t-0 border-white/10 bg-black/80 lg:bg-transparent">
-          <RatingSliders onRatingChange={onSubmitRating} />
+          <RatingSliders onSubmitRating={onSubmitRating} isSaving={isSavingRating} />
           <AIConciliateButton />
         </div>
       </div>
