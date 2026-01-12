@@ -14,13 +14,219 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      chat_messages: {
+        Row: {
+          chat_id: string
+          content: string
+          created_at: string
+          id: string
+          sender_id: string
+        }
+        Insert: {
+          chat_id: string
+          content: string
+          created_at?: string
+          id?: string
+          sender_id: string
+        }
+        Update: {
+          chat_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_chat_id_fkey"
+            columns: ["chat_id"]
+            isOneToOne: false
+            referencedRelation: "chats"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_ratings: {
+        Row: {
+          chat_id: string
+          created_at: string
+          disagreement: number
+          empathy: number
+          id: string
+          rater_id: string
+          updated_at: string
+        }
+        Insert: {
+          chat_id: string
+          created_at?: string
+          disagreement: number
+          empathy: number
+          id?: string
+          rater_id: string
+          updated_at?: string
+        }
+        Update: {
+          chat_id?: string
+          created_at?: string
+          disagreement?: number
+          empathy?: number
+          id?: string
+          rater_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_ratings_chat_id_fkey"
+            columns: ["chat_id"]
+            isOneToOne: false
+            referencedRelation: "chats"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chats: {
+        Row: {
+          created_at: string
+          id: string
+          opinion_a_id: string
+          opinion_b_id: string
+          topic_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          opinion_a_id: string
+          opinion_b_id: string
+          topic_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          opinion_a_id?: string
+          opinion_b_id?: string
+          topic_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chats_opinion_a_id_fkey"
+            columns: ["opinion_a_id"]
+            isOneToOne: false
+            referencedRelation: "opinions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chats_opinion_b_id_fkey"
+            columns: ["opinion_b_id"]
+            isOneToOne: false
+            referencedRelation: "opinions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chats_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      opinions: {
+        Row: {
+          created_at: string
+          id: string
+          text: string
+          topic_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          text: string
+          topic_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          text?: string
+          topic_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "opinions_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      topics: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          title?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      opinion_pair_ratings: {
+        Row: {
+          avg_disagreement: number | null
+          avg_empathy: number | null
+          opinion_a_id: string | null
+          opinion_b_id: string | null
+          rating_count: number | null
+          topic_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chats_opinion_a_id_fkey"
+            columns: ["opinion_a_id"]
+            isOneToOne: false
+            referencedRelation: "opinions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chats_opinion_b_id_fkey"
+            columns: ["opinion_b_id"]
+            isOneToOne: false
+            referencedRelation: "opinions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chats_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
-      [_ in never]: never
+      is_chat_participant: {
+        Args: { chat_id: string; checking_user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
