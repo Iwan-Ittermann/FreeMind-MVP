@@ -33,9 +33,14 @@ export function ChatBubble({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
+      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ 
+        duration: 0.3,
+        type: "spring",
+        stiffness: 500,
+        damping: 30
+      }}
       className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
       onMouseEnter={() => setShowReactions(true)}
       onMouseLeave={() => setShowReactions(false)}
@@ -52,12 +57,15 @@ export function ChatBubble({
         )}
 
         {/* Bubble */}
-        <div
+        <motion.div
+          initial={{ scale: 1 }}
+          animate={{ scale: [1, 1.02, 1] }}
+          transition={{ duration: 0.3, delay: 0.1 }}
           className={`px-4 py-3 rounded-2xl ${
             isOwn 
               ? isOpinion 
                 ? 'bg-primary/20 border border-primary/30 rounded-br-md' 
-                : 'bg-primary rounded-br-md'
+                : 'bg-primary rounded-br-md shadow-lg shadow-primary/20'
               : isOpinion
                 ? 'bg-secondary/20 border border-secondary/30 rounded-bl-md'
                 : 'bg-white/10 rounded-bl-md'
@@ -66,7 +74,7 @@ export function ChatBubble({
           <p className={`text-sm leading-relaxed ${isOwn && !isOpinion ? 'text-white' : 'text-white/90'}`}>
             {content}
           </p>
-        </div>
+        </motion.div>
 
         {/* Timestamp */}
         <p className={`text-[10px] text-white/30 mt-1 ${isOwn ? 'text-right' : 'text-left'}`}>

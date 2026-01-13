@@ -27,8 +27,10 @@ const Index = () => {
     chatRequests, 
     sendRequest, 
     acceptRequest, 
+    declineRequest,
     isSending,
     isAccepting,
+    isDeclining,
     getRequestBetween,
     hasAcceptedChat,
     hasPendingRequest,
@@ -84,8 +86,23 @@ const Index = () => {
     try {
       await acceptRequest(request.id);
       toast.success('Chat request accepted!');
+      // Navigate to chat after accepting
+      navigate(`/chat?their=${selectedNode.id}`);
     } catch (err: any) {
       toast.error(err.message || 'Failed to accept request');
+    }
+  };
+
+  const handleDeclineRequest = async () => {
+    if (!selectedNode || !myOpinion) return;
+    const request = getRequestBetween(myOpinion.id, selectedNode.id);
+    if (!request) return;
+    try {
+      await declineRequest(request.id);
+      toast.success('Chat request declined');
+      setSelectedNode(null);
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to decline request');
     }
   };
 
@@ -229,14 +246,25 @@ const Index = () => {
                       ⏳ Waiting for them to accept your request...
                     </p>
                   ) : actionState === 'pending_received' ? (
-                    <Button
-                      onClick={handleAcceptRequest}
-                      disabled={isAccepting}
-                      className="w-full bg-accent hover:bg-accent/90 text-accent-foreground h-12 text-base"
-                    >
-                      <Check className="w-5 h-5 mr-2" />
-                      {isAccepting ? 'Accepting...' : 'Accept Chat Request'}
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={handleAcceptRequest}
+                        disabled={isAccepting || isDeclining}
+                        className="flex-1 bg-accent hover:bg-accent/90 text-accent-foreground h-12 text-base"
+                      >
+                        <Check className="w-5 h-5 mr-2" />
+                        {isAccepting ? 'Accepting...' : 'Accept'}
+                      </Button>
+                      <Button
+                        onClick={handleDeclineRequest}
+                        disabled={isAccepting || isDeclining}
+                        variant="outline"
+                        className="flex-1 border-destructive text-destructive hover:bg-destructive/10 h-12 text-base"
+                      >
+                        <X className="w-5 h-5 mr-2" />
+                        {isDeclining ? 'Declining...' : 'Decline'}
+                      </Button>
+                    </div>
                   ) : (
                     <Button
                       onClick={handleRequestChat}
