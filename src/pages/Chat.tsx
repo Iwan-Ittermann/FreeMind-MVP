@@ -9,17 +9,20 @@ export default function Chat() {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
   
-  const theirOpinionId = searchParams.get('their');
+  const theirOpinionIdParam = searchParams.get('their');
   const isReadOnly = searchParams.get('readonly') === 'true';
   
   const { 
+    chatId,
     myOpinion, 
-    theirOpinion, 
+    theirOpinion,
+    myOpinionId,
+    theirOpinionId,
     isLoading, 
     error,
     saveRating,
     isSavingRating,
-  } = useChatSession(theirOpinionId);
+  } = useChatSession(theirOpinionIdParam);
 
   const handleClose = () => {
     navigate('/');
@@ -66,8 +69,11 @@ export default function Chat() {
 
     return (
       <FloatingChat
+        chatId={chatId}
         myOpinion={myOpinion?.text || 'Unknown opinion'}
         theirOpinion={theirOpinion.text}
+        myOpinionId={myOpinionId || undefined}
+        theirOpinionId={theirOpinionId || undefined}
         onClose={handleClose}
         isReadOnly={true}
       />
@@ -137,8 +143,11 @@ export default function Chat() {
 
   return (
     <FloatingChat
+      chatId={chatId}
       myOpinion={myOpinion.text}
       theirOpinion={theirOpinion.text}
+      myOpinionId={myOpinionId || undefined}
+      theirOpinionId={theirOpinionId || undefined}
       onClose={handleClose}
       onSubmitRating={handleSubmitRating}
       isSavingRating={isSavingRating}
