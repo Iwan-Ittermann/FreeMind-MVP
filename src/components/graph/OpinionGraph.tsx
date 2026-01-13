@@ -9,6 +9,7 @@ import { GraphNode, LayoutConfig, Opinion, ChatRating } from '@/types/graph';
 interface OpinionGraphProps {
   opinions?: Opinion[];
   ratings?: ChatRating[];
+  currentUserId?: string | null;
   onNodeSelect?: (node: GraphNode | null) => void;
   width?: number;
   height?: number;
@@ -18,6 +19,7 @@ interface OpinionGraphProps {
 export function OpinionGraph({ 
   opinions: externalOpinions,
   ratings: externalRatings,
+  currentUserId,
   onNodeSelect,
   width = 600,
   height = 600,
@@ -95,6 +97,7 @@ export function OpinionGraph({
           nodes={graphData.nodes}
           config={config}
           highlightedNode={highlightedNode || selectedNode?.id}
+          currentUserId={currentUserId}
           onNodeClick={handleNodeClick}
           onNodeHover={handleNodeHover}
         />
