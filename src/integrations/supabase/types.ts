@@ -201,6 +201,14 @@ export type Database = {
           rating_count: number
         }[]
       }
+      get_or_create_chat: {
+        Args: {
+          opinion_a_uuid: string
+          opinion_b_uuid: string
+          topic_uuid: string
+        }
+        Returns: string
+      }
       is_chat_participant: {
         Args: { chat_id: string; checking_user_id: string }
         Returns: boolean

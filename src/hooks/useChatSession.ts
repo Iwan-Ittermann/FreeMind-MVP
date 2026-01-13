@@ -5,6 +5,7 @@ import { useAuth } from './useAuth';
 
 interface Opinion {
   id: string;
+  topic_id: string;
   text: string;
   user_id: string;
 }
@@ -62,41 +63,18 @@ export function useChatSession(theirOpinionId: string | null): ChatSession {
     async function getOrCreateChat() {
       if (!myOpinion || !theirOpinion || chatId) return;
 
-      // First check if a chat already exists between these two opinions
-      const { data: existingChat, error: fetchError } = await supabase
-        .from('chats')
-        .select('id')
-        .eq('topic_id', myOpinion.topic_id)
-        .or(`and(opinion_a_id.eq.${myOpinion.id},opinion_b_id.eq.${theirOpinion.id}),and(opinion_a_id.eq.${theirOpinion.id},opinion_b_id.eq.${myOpinion.id})`)
-        .maybeSingle();
+      const { data, error } = await supabase.rpc('get_or_create_chat', {
+        topic_uuid: myOpinion.topic_id,
+        opinion_a_uuid: myOpinion.id,
+        opinion_b_uuid: theirOpinion.id,
+      });
 
-      if (fetchError) {
-        console.error('Error checking for existing chat:', fetchError);
+      if (error) {
+        console.error('Error getting/creating chat:', error);
         return;
       }
 
-      if (existingChat) {
-        setChatId(existingChat.id);
-        return;
-      }
-
-      // Create a new chat
-      const { data: newChat, error: createError } = await supabase
-        .from('chats')
-        .insert({
-          topic_id: myOpinion.topic_id,
-          opinion_a_id: myOpinion.id,
-          opinion_b_id: theirOpinion.id,
-        })
-        .select('id')
-        .single();
-
-      if (createError) {
-        console.error('Error creating chat:', createError);
-        return;
-      }
-
-      setChatId(newChat.id);
+      setChatId(data);
     }
 
     getOrCreateChat();
@@ -152,8 +130,12 @@ export function useChatSession(theirOpinionId: string | null): ChatSession {
 
   return {
     chatId,
-    myOpinion: myOpinion ? { id: myOpinion.id, text: myOpinion.text, user_id: myOpinion.user_id } : null,
-    theirOpinion: theirOpinion ? { id: theirOpinion.id, text: theirOpinion.text, user_id: theirOpinion.user_id } : null,
+    myOpinion: myOpinion
+      ? { id: myOpinion.id, topic_id: myOpinion.topic_id, text: myOpinion.text, user_id: myOpinion.user_id }
+      : null,
+    theirOpinion: theirOpinion
+      ? { id: theirOpinion.id, topic_id: theirOpinion.topic_id, text: theirOpinion.text, user_id: theirOpinion.user_id }
+      : null,
     isLoading,
     error,
     saveRating,
