@@ -27,30 +27,26 @@ export function RatingSliders({
     setTimeout(() => setHasSaved(false), 2000);
   };
 
-  // Calculate zone based on ratings
-  const getZoneColor = () => {
-    if (empathy > 0.6 && disagreement < 0.4) return 'bg-green-500'; // Green zone
-    if (empathy > 0.4 && disagreement < 0.6) return 'bg-yellow-500'; // Yellow zone
-    return 'bg-primary'; // Pink zone
+  const getZoneLabel = () => {
+    if (empathy > 0.6 && disagreement < 0.4) return { label: 'Consensus Zone', color: 'bg-green-500' };
+    if (empathy > 0.4 && disagreement < 0.6) return { label: 'Discussion Zone', color: 'bg-yellow-500' };
+    return { label: 'Polarized Zone', color: 'bg-primary' };
   };
 
-  const getZoneLabel = () => {
-    if (empathy > 0.6 && disagreement < 0.4) return 'Consensus Zone';
-    if (empathy > 0.4 && disagreement < 0.6) return 'Discussion Zone';
-    return 'Polarized Zone';
-  };
+  const zone = getZoneLabel();
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 space-y-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="space-y-5"
     >
-      <div className="text-center">
-        <h3 className="text-sm font-medium text-white mb-1">Rate This Conversation</h3>
-        <div className="flex items-center justify-center gap-2">
-          <div className={`w-3 h-3 rounded-full ${getZoneColor()} animate-pulse`} />
-          <span className="text-xs text-white/60">{getZoneLabel()}</span>
+      {/* Header with zone indicator */}
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-medium text-white">Rate This Conversation</h3>
+        <div className="flex items-center gap-2">
+          <div className={`w-2 h-2 rounded-full ${zone.color}`} />
+          <span className="text-xs text-white/50">{zone.label}</span>
         </div>
       </div>
 
@@ -59,9 +55,9 @@ export function RatingSliders({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Heart className="w-4 h-4 text-rose-400" />
-            <span className="text-sm text-white/80">Empathy</span>
+            <span className="text-sm text-white/70">Empathy</span>
           </div>
-          <span className="text-sm font-mono text-rose-400">
+          <span className="text-xs font-mono text-rose-400/80">
             {Math.round(empathy * 100)}%
           </span>
         </div>
@@ -73,7 +69,7 @@ export function RatingSliders({
           disabled={isSaving}
           className="[&_[role=slider]]:bg-rose-400 [&_[role=slider]]:border-rose-400 [&_.bg-primary]:bg-rose-400/30"
         />
-        <div className="flex justify-between text-[10px] text-white/40">
+        <div className="flex justify-between text-[10px] text-white/30">
           <span>Cold</span>
           <span>Warm</span>
         </div>
@@ -84,9 +80,9 @@ export function RatingSliders({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Swords className="w-4 h-4 text-orange-400" />
-            <span className="text-sm text-white/80">Disagreement</span>
+            <span className="text-sm text-white/70">Disagreement</span>
           </div>
-          <span className="text-sm font-mono text-orange-400">
+          <span className="text-xs font-mono text-orange-400/80">
             {Math.round(disagreement * 100)}%
           </span>
         </div>
@@ -98,7 +94,7 @@ export function RatingSliders({
           disabled={isSaving}
           className="[&_[role=slider]]:bg-orange-400 [&_[role=slider]]:border-orange-400 [&_.bg-primary]:bg-orange-400/30"
         />
-        <div className="flex justify-between text-[10px] text-white/40">
+        <div className="flex justify-between text-[10px] text-white/30">
           <span>Aligned</span>
           <span>Opposed</span>
         </div>
@@ -108,7 +104,8 @@ export function RatingSliders({
       <Button
         onClick={handleSaveRating}
         disabled={isSaving}
-        className="w-full bg-primary hover:bg-primary/90 h-10"
+        variant="outline"
+        className="w-full border-white/20 bg-white/5 hover:bg-white/10 text-white h-10"
       >
         {isSaving ? (
           <>
@@ -117,7 +114,7 @@ export function RatingSliders({
           </>
         ) : hasSaved ? (
           <>
-            <Check className="w-4 h-4 mr-2" />
+            <Check className="w-4 h-4 mr-2 text-green-400" />
             Saved!
           </>
         ) : (

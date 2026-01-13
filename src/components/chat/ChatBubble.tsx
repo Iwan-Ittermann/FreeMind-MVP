@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, ThumbsUp, ThumbsDown, Sparkles, Flame } from 'lucide-react';
+import { Heart, ThumbsUp, ThumbsDown, Sparkles, Flame, Quote } from 'lucide-react';
 
 interface ChatBubbleProps {
   id: string;
@@ -8,8 +8,8 @@ interface ChatBubbleProps {
   isOwn: boolean;
   timestamp: Date;
   reactions?: string[];
+  isOpinion?: boolean;
   onReact?: (reaction: string) => void;
-  style?: React.CSSProperties;
 }
 
 const reactionEmojis = [
@@ -26,68 +26,56 @@ export function ChatBubble({
   isOwn, 
   timestamp, 
   reactions = [],
+  isOpinion = false,
   onReact,
-  style 
 }: ChatBubbleProps) {
   const [showReactions, setShowReactions] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-
-  // Random subtle animation offset for floating effect
-  const floatDuration = 3 + Math.random() * 2;
-  const floatDelay = Math.random() * 2;
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.8, y: 20 }}
-      animate={{ 
-        opacity: 1, 
-        scale: 1, 
-        y: [0, -5, 0],
-      }}
-      transition={{
-        opacity: { duration: 0.3 },
-        scale: { duration: 0.3 },
-        y: {
-          duration: floatDuration,
-          repeat: Infinity,
-          repeatType: "reverse",
-          delay: floatDelay,
-          ease: "easeInOut",
-        },
-      }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => {
-        setIsHovered(false);
-        setShowReactions(false);
-      }}
-      className={`relative max-w-[280px] ${isOwn ? 'self-end' : 'self-start'}`}
-      style={style}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
+      className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
+      onMouseEnter={() => setShowReactions(true)}
+      onMouseLeave={() => setShowReactions(false)}
     >
-      {/* Glow effect */}
-      <div 
-        className={`absolute inset-0 rounded-2xl blur-xl opacity-30 transition-opacity ${
-          isHovered ? 'opacity-50' : 'opacity-20'
-        } ${isOwn ? 'bg-primary' : 'bg-secondary'}`}
-      />
-      
-      {/* Bubble */}
-      <div
-        className={`relative px-4 py-3 rounded-2xl backdrop-blur-sm border transition-all ${
-          isOwn 
-            ? 'bg-primary/20 border-primary/30 text-white' 
-            : 'bg-secondary/20 border-secondary/30 text-white'
-        } ${isHovered ? 'border-opacity-60' : ''}`}
-      >
-        <p className="text-sm leading-relaxed">{content}</p>
-        
+      <div className={`relative max-w-[85%] group`}>
+        {/* Opinion label */}
+        {isOpinion && (
+          <div className={`flex items-center gap-1.5 mb-1 ${isOwn ? 'justify-end' : 'justify-start'}`}>
+            <Quote className={`w-3 h-3 ${isOwn ? 'text-primary/60' : 'text-secondary/60'}`} />
+            <span className={`text-[10px] font-medium uppercase tracking-wider ${isOwn ? 'text-primary/60' : 'text-secondary/60'}`}>
+              {isOwn ? 'Your opinion' : 'Their opinion'}
+            </span>
+          </div>
+        )}
+
+        {/* Bubble */}
+        <div
+          className={`px-4 py-3 rounded-2xl ${
+            isOwn 
+              ? isOpinion 
+                ? 'bg-primary/20 border border-primary/30 rounded-br-md' 
+                : 'bg-primary rounded-br-md'
+              : isOpinion
+                ? 'bg-secondary/20 border border-secondary/30 rounded-bl-md'
+                : 'bg-white/10 rounded-bl-md'
+          }`}
+        >
+          <p className={`text-sm leading-relaxed ${isOwn && !isOpinion ? 'text-white' : 'text-white/90'}`}>
+            {content}
+          </p>
+        </div>
+
         {/* Timestamp */}
-        <p className="text-[10px] text-white/40 mt-1">
+        <p className={`text-[10px] text-white/30 mt-1 ${isOwn ? 'text-right' : 'text-left'}`}>
           {timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </p>
 
         {/* Reactions display */}
         {reactions.length > 0 && (
-          <div className="flex gap-1 mt-2">
+          <div className={`flex gap-1 mt-1 ${isOwn ? 'justify-end' : 'justify-start'}`}>
             {reactions.map((r, i) => {
               const emoji = reactionEmojis.find(e => e.label === r);
               if (!emoji) return null;
@@ -99,49 +87,28 @@ export function ChatBubble({
             })}
           </div>
         )}
+
+        {/* Reaction picker */}
+        {showReactions && !isOpinion && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className={`absolute -top-10 flex gap-1 p-1.5 bg-black/90 backdrop-blur-sm rounded-full border border-white/10 shadow-lg ${
+              isOwn ? 'right-0' : 'left-0'
+            }`}
+          >
+            {reactionEmojis.map((emoji) => (
+              <button
+                key={emoji.label}
+                onClick={() => onReact?.(emoji.label)}
+                className={`p-1.5 rounded-full hover:bg-white/10 transition-colors ${emoji.color}`}
+              >
+                <emoji.icon size={16} />
+              </button>
+            ))}
+          </motion.div>
+        )}
       </div>
-
-      {/* Reaction picker */}
-      {isHovered && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className={`absolute top-full mt-2 flex gap-1 p-1 bg-black/80 backdrop-blur-sm rounded-full border border-white/10 ${
-            isOwn ? 'right-0' : 'left-0'
-          }`}
-        >
-          {reactionEmojis.map((emoji) => (
-            <button
-              key={emoji.label}
-              onClick={() => onReact?.(emoji.label)}
-              className={`p-1.5 rounded-full hover:bg-white/10 transition-colors ${emoji.color}`}
-            >
-              <emoji.icon size={16} />
-            </button>
-          ))}
-        </motion.div>
-      )}
-
-      {/* Connection line (decorative) */}
-      <svg
-        className="absolute -z-10 opacity-20"
-        style={{
-          top: '50%',
-          [isOwn ? 'right' : 'left']: '100%',
-          width: '40px',
-          height: '2px',
-        }}
-      >
-        <line
-          x1="0"
-          y1="1"
-          x2="40"
-          y2="1"
-          stroke="currentColor"
-          strokeWidth="1"
-          strokeDasharray="4 2"
-        />
-      </svg>
     </motion.div>
   );
 }
