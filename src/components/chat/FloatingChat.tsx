@@ -147,11 +147,11 @@ export function FloatingChat({
     setSavedDisagreement(disagreement);
   };
 
-  // Calculate Bridging Score: empathy points * disagreement points
-  // Both are 0-10, so max score is 100
-  const empathyPoints = Math.round(empathy * 10);
-  const disagreementPoints = Math.round(disagreement * 10);
-  const bridgingScore = empathyPoints * disagreementPoints;
+  // Calculate Bridging Score: empathy points * disagreement points / 100
+  // Both are 0-100, so we divide by 100 to get 0-100 range
+  const empathyPoints = Math.round(empathy * 100);
+  const disagreementPoints = Math.round(disagreement * 100);
+  const bridgingScore = Math.round((empathyPoints * disagreementPoints) / 100);
 
   // Get bridging score color based on value
   const getBridgingScoreColor = () => {
@@ -296,24 +296,24 @@ export function FloatingChat({
       <div className="md:hidden flex items-center gap-3 px-4 py-3 border-t border-white/10 bg-black/95">
         <div className="flex-1 flex items-center gap-3">
           <div className="flex-1">
-            <p className="text-[10px] text-rose-400 mb-1">Empathy: {Math.round(empathy * 10)}</p>
+            <p className="text-[10px] text-rose-400 mb-1">Empathy: {Math.round(empathy * 100)}</p>
             <input
               type="range"
               min="0"
-              max="10"
-              value={Math.round(empathy * 10)}
-              onChange={(e) => setEmpathy(Number(e.target.value) / 10)}
+              max="100"
+              value={Math.round(empathy * 100)}
+              onChange={(e) => setEmpathy(Number(e.target.value) / 100)}
               className="w-full h-1 bg-white/10 rounded-full appearance-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-rose-400 [&::-webkit-slider-thumb]:rounded-full"
             />
           </div>
           <div className="flex-1">
-            <p className="text-[10px] text-orange-400 mb-1">Disagree: {Math.round(disagreement * 10)}</p>
+            <p className="text-[10px] text-orange-400 mb-1">Disagree: {Math.round(disagreement * 100)}</p>
             <input
               type="range"
               min="0"
-              max="10"
-              value={Math.round(disagreement * 10)}
-              onChange={(e) => setDisagreement(Number(e.target.value) / 10)}
+              max="100"
+              value={Math.round(disagreement * 100)}
+              onChange={(e) => setDisagreement(Number(e.target.value) / 100)}
               className="w-full h-1 bg-white/10 rounded-full appearance-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-orange-400 [&::-webkit-slider-thumb]:rounded-full"
             />
           </div>
