@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, ArrowLeft, Languages, Wand2 } from 'lucide-react';
+import { Send, ArrowLeft, Languages, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ChatBubble } from './ChatBubble';
@@ -55,8 +55,14 @@ export function FloatingChat({
   const [translateEnabled, setTranslateEnabled] = useState(false);
   const [empathy, setEmpathy] = useState(0.5);
   const [disagreement, setDisagreement] = useState(0.5);
-  const [hasSavedRating, setHasSavedRating] = useState(false);
+  const [savedEmpathy, setSavedEmpathy] = useState(0.5);
+  const [savedDisagreement, setSavedDisagreement] = useState(0.5);
+  const [isSavingEmpathy, setIsSavingEmpathy] = useState(false);
+  const [isSavingDisagreement, setIsSavingDisagreement] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const empathyHasChanges = empathy !== savedEmpathy;
+  const disagreementHasChanges = disagreement !== savedDisagreement;
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -117,20 +123,42 @@ export function FloatingChat({
     ));
   };
 
-  const handleSaveRating = () => {
+  const handleSaveEmpathy = () => {
+    setIsSavingEmpathy(true);
+    onSubmitRating?.(empathy, savedDisagreement);
+    setTimeout(() => {
+      setSavedEmpathy(empathy);
+      setIsSavingEmpathy(false);
+    }, 500);
+  };
+
+  const handleSaveDisagreement = () => {
+    setIsSavingDisagreement(true);
+    onSubmitRating?.(savedEmpathy, disagreement);
+    setTimeout(() => {
+      setSavedDisagreement(disagreement);
+      setIsSavingDisagreement(false);
+    }, 500);
+  };
+
+  const handleSaveBothRatings = () => {
     onSubmitRating?.(empathy, disagreement);
-    setHasSavedRating(true);
-    setTimeout(() => setHasSavedRating(false), 2000);
+    setSavedEmpathy(empathy);
+    setSavedDisagreement(disagreement);
   };
 
-  // Get zone info based on ratings
-  const getZone = () => {
-    if (empathy > 0.6 && disagreement < 0.4) return { label: 'Consensus', color: 'text-green-400' };
-    if (empathy > 0.4 && disagreement < 0.6) return { label: 'Discussion', color: 'text-yellow-400' };
-    return { label: 'Polarized', color: 'text-primary' };
-  };
+  // Calculate Bridging Score: empathy points * disagreement points
+  // Both are 0-10, so max score is 100
+  const empathyPoints = Math.round(empathy * 10);
+  const disagreementPoints = Math.round(disagreement * 10);
+  const bridgingScore = empathyPoints * disagreementPoints;
 
-  const zone = getZone();
+  // Get bridging score color based on value
+  const getBridgingScoreColor = () => {
+    if (bridgingScore >= 50) return 'text-green-400';
+    if (bridgingScore >= 25) return 'text-yellow-400';
+    return 'text-primary';
+  };
 
   return (
     <div className="fixed inset-0 bg-black z-50 flex flex-col">
@@ -147,7 +175,9 @@ export function FloatingChat({
         
         <div className="text-center">
           <p className="text-sm font-medium text-white">Discussion</p>
-          <p className={`text-xs ${zone.color}`}>{zone.label} Zone</p>
+          <p className={`text-xs ${getBridgingScoreColor()}`}>
+            Bridging Score: <span className="font-mono font-bold">{bridgingScore}</span>
+          </p>
         </div>
 
         <div className="flex items-center gap-1">
@@ -165,7 +195,7 @@ export function FloatingChat({
       {/* Main content with side rails */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left rail - Empathy slider */}
-        <div className="hidden md:flex flex-col items-center justify-center w-20 border-r border-white/10 bg-black/50 py-8">
+        <div className="hidden md:flex flex-col items-center justify-center w-20 border-r border-white/10 bg-black/50 py-6">
           <VerticalRatingSlider
             value={empathy}
             onChange={setEmpathy}
@@ -173,6 +203,9 @@ export function FloatingChat({
             color="rose"
             lowLabel="Cold"
             highLabel="Warm"
+            hasUnsavedChanges={empathyHasChanges}
+            onSave={handleSaveEmpathy}
+            isSaving={isSavingEmpathy}
           />
         </div>
 
@@ -217,10 +250,10 @@ export function FloatingChat({
             </div>
           </div>
 
-          {/* Input Area */}
+          {/* Input Area with AI button */}
           <div className="border-t border-white/10 bg-black p-4">
             <div className="max-w-lg mx-auto">
-              <div className="flex gap-2">
+              <div className="flex gap-2 items-center">
                 <Input
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
@@ -235,13 +268,16 @@ export function FloatingChat({
                 >
                   <Send className="w-5 h-5" />
                 </Button>
+                <div className="hidden md:block">
+                  <AIConciliateButton compact />
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Right rail - Disagreement slider */}
-        <div className="hidden md:flex flex-col items-center justify-center w-20 border-l border-white/10 bg-black/50 py-8">
+        <div className="hidden md:flex flex-col items-center justify-center w-20 border-l border-white/10 bg-black/50 py-6">
           <VerticalRatingSlider
             value={disagreement}
             onChange={setDisagreement}
@@ -249,63 +285,52 @@ export function FloatingChat({
             color="orange"
             lowLabel="Aligned"
             highLabel="Opposed"
+            hasUnsavedChanges={disagreementHasChanges}
+            onSave={handleSaveDisagreement}
+            isSaving={isSavingDisagreement}
           />
         </div>
       </div>
 
       {/* Mobile rating bar + AI button */}
-      <div className="md:hidden flex items-center gap-4 px-4 py-3 border-t border-white/10 bg-black/95">
+      <div className="md:hidden flex items-center gap-3 px-4 py-3 border-t border-white/10 bg-black/95">
         <div className="flex-1 flex items-center gap-3">
           <div className="flex-1">
-            <p className="text-[10px] text-rose-400 mb-1">Empathy {Math.round(empathy * 100)}%</p>
+            <p className="text-[10px] text-rose-400 mb-1">Empathy: {Math.round(empathy * 10)}</p>
             <input
               type="range"
               min="0"
-              max="100"
-              value={empathy * 100}
-              onChange={(e) => setEmpathy(Number(e.target.value) / 100)}
+              max="10"
+              value={Math.round(empathy * 10)}
+              onChange={(e) => setEmpathy(Number(e.target.value) / 10)}
               className="w-full h-1 bg-white/10 rounded-full appearance-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-rose-400 [&::-webkit-slider-thumb]:rounded-full"
             />
           </div>
           <div className="flex-1">
-            <p className="text-[10px] text-orange-400 mb-1">Disagree {Math.round(disagreement * 100)}%</p>
+            <p className="text-[10px] text-orange-400 mb-1">Disagree: {Math.round(disagreement * 10)}</p>
             <input
               type="range"
               min="0"
-              max="100"
-              value={disagreement * 100}
-              onChange={(e) => setDisagreement(Number(e.target.value) / 100)}
+              max="10"
+              value={Math.round(disagreement * 10)}
+              onChange={(e) => setDisagreement(Number(e.target.value) / 10)}
               className="w-full h-1 bg-white/10 rounded-full appearance-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-orange-400 [&::-webkit-slider-thumb]:rounded-full"
             />
           </div>
         </div>
-        <Button
-          onClick={handleSaveRating}
+        <motion.button
+          onClick={handleSaveBothRatings}
           disabled={isSavingRating}
-          size="sm"
-          className="bg-white/10 hover:bg-white/20 text-white h-8 px-3"
+          className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+            (empathyHasChanges || disagreementHasChanges)
+              ? 'bg-primary ring-2 ring-primary ring-offset-2 ring-offset-black' 
+              : 'bg-white/10'
+          }`}
+          whileTap={{ scale: 0.9 }}
         >
-          {hasSavedRating ? '✓' : 'Save'}
-        </Button>
-      </div>
-
-      {/* Bottom bar - Save rating + AI */}
-      <div className="hidden md:flex items-center justify-between px-4 py-3 border-t border-white/10 bg-black">
-        <AIConciliateButton />
-        
-        <Button
-          onClick={handleSaveRating}
-          disabled={isSavingRating}
-          className="bg-white/10 hover:bg-white/20 text-white h-10 px-6"
-        >
-          {isSavingRating ? (
-            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-          ) : hasSavedRating ? (
-            '✓ Rating Saved'
-          ) : (
-            'Save Rating'
-          )}
-        </Button>
+          <Check className={`w-4 h-4 ${(empathyHasChanges || disagreementHasChanges) ? 'text-white' : 'text-white/40'}`} />
+        </motion.button>
+        <AIConciliateButton compact />
       </div>
     </div>
   );
