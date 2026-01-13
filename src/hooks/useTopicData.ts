@@ -1,4 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Opinion, ChatRating } from '@/types/graph';
 
@@ -11,6 +12,59 @@ export interface TopicData {
 }
 
 export function useTopicData(topicId: string) {
+  const queryClient = useQueryClient();
+
+  // Subscribe to real-time updates for opinions, ratings, and chats
+  useEffect(() => {
+    if (!topicId) return;
+
+    const channel = supabase
+      .channel(`topic-${topicId}-realtime`)
+      // Listen for opinion changes
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'opinions',
+          filter: `topic_id=eq.${topicId}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['topic', topicId] });
+        }
+      )
+      // Listen for chat rating changes (affects node positions)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'chat_ratings',
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['topic', topicId] });
+        }
+      )
+      // Listen for new chats being created (new edges)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'chats',
+          filter: `topic_id=eq.${topicId}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['topic', topicId] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [topicId, queryClient]);
+
   return useQuery({
     queryKey: ['topic', topicId],
     queryFn: async (): Promise<TopicData> => {
