@@ -123,7 +123,11 @@ const Index = () => {
                     "{selectedNode.opinion.text}"
                   </p>
                   
-                  {user ? (
+                  {user && selectedNode.opinion.authorId === user.id ? (
+                    <p className="text-sm text-white/60 italic text-center py-2">
+                      This is Your Opinion
+                    </p>
+                  ) : user ? (
                     <Button
                       onClick={handleStartChat}
                       className="w-full bg-primary hover:bg-primary/90 h-12 text-base"
