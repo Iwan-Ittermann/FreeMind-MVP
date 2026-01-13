@@ -12,6 +12,7 @@ interface Opinion {
 
 interface ChatSession {
   chatId: string | null;
+  topicId: string | null;
   myOpinion: Opinion | null;
   theirOpinion: Opinion | null;
   myOpinionId: string | null;
@@ -132,6 +133,7 @@ export function useChatSession(theirOpinionId: string | null): ChatSession {
 
   return {
     chatId,
+    topicId: theirOpinion?.topic_id || null,
     myOpinion: myOpinion
       ? { id: myOpinion.id, topic_id: myOpinion.topic_id, text: myOpinion.text, user_id: myOpinion.user_id }
       : null,

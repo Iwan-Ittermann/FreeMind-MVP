@@ -7,11 +7,13 @@ import { ChatBubble } from './ChatBubble';
 import { TypingIndicator } from './TypingIndicator';
 import { VerticalRatingSlider } from './VerticalRatingSlider';
 import { AIConciliateButton } from './AIConciliateButton';
+import { MiniGraph } from './MiniGraph';
 import { useChatMessages } from '@/hooks/useChatMessages';
 import { useTypingIndicator } from '@/hooks/useTypingIndicator';
 
 interface FloatingChatProps {
   chatId: string | null;
+  topicId?: string;
   myOpinion: string;
   theirOpinion: string;
   myOpinionId?: string;
@@ -24,6 +26,7 @@ interface FloatingChatProps {
 
 export function FloatingChat({ 
   chatId,
+  topicId,
   myOpinion, 
   theirOpinion,
   myOpinionId,
@@ -155,17 +158,31 @@ export function FloatingChat({
           <span className="hidden sm:inline">Back</span>
         </Button>
         
-        <div className="text-center">
-          <p className="text-sm font-medium text-white">
-            {isReadOnly ? 'Viewing Discussion' : 'Discussion'}
-          </p>
-          {isReadOnly ? (
-            <p className="text-xs text-white/40">Read-only mode</p>
-          ) : (
-            <p className={`text-xs ${getBridgingScoreColor()}`}>
-              Bridging Score: <span className="font-mono font-bold">{bridgingScore.toLocaleString()}</span>
-            </p>
+        <div className="flex items-center gap-4">
+          {/* Mini Graph */}
+          {topicId && (
+            <div className="hidden sm:block">
+              <MiniGraph
+                topicId={topicId}
+                myOpinionId={myOpinionId}
+                theirOpinionId={theirOpinionId}
+                size={80}
+              />
+            </div>
           )}
+          
+          <div className="text-center">
+            <p className="text-sm font-medium text-white">
+              {isReadOnly ? 'Viewing Discussion' : 'Discussion'}
+            </p>
+            {isReadOnly ? (
+              <p className="text-xs text-white/40">Read-only mode</p>
+            ) : (
+              <p className={`text-xs ${getBridgingScoreColor()}`}>
+                Bridging Score: <span className="font-mono font-bold">{bridgingScore.toLocaleString()}</span>
+              </p>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center gap-1">
