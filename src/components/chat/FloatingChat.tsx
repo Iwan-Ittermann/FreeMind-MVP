@@ -310,46 +310,51 @@ export function FloatingChat({
         )}
       </div>
 
-      {/* Mobile rating bar (hidden in read-only) */}
+      {/* Mobile rating bar with vertical sliders (hidden in read-only) */}
       {!isReadOnly && (
-        <div className="md:hidden flex items-center gap-3 px-4 py-3 border-t border-white/10 bg-black/95">
-          <div className="flex-1 flex items-center gap-3">
-            <div className="flex-1">
-              <p className="text-[10px] text-rose-400 mb-1">Empathy: {Math.round(empathy * 100)}</p>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={Math.round(empathy * 100)}
-                onChange={(e) => setEmpathy(Number(e.target.value) / 100)}
-                className="w-full h-1 bg-white/10 rounded-full appearance-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-rose-400 [&::-webkit-slider-thumb]:rounded-full"
-              />
-            </div>
-            <div className="flex-1">
-              <p className="text-[10px] text-orange-400 mb-1">Disagree: {Math.round(disagreement * 100)}</p>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={Math.round(disagreement * 100)}
-                onChange={(e) => setDisagreement(Number(e.target.value) / 100)}
-                className="w-full h-1 bg-white/10 rounded-full appearance-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-orange-400 [&::-webkit-slider-thumb]:rounded-full"
-              />
-            </div>
+        <div className="md:hidden flex items-stretch justify-center gap-4 px-4 py-2 border-t border-white/10 bg-black/95">
+          {/* Left - Empathy slider */}
+          <div className="flex flex-col items-center h-32">
+            <VerticalRatingSlider
+              value={empathy}
+              onChange={setEmpathy}
+              label="Empathy"
+              color="rose"
+              lowLabel="Cold"
+              highLabel="Warm"
+              compact
+            />
           </div>
-          <motion.button
-            onClick={handleSaveRating}
-            disabled={isSavingRating}
-            className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
-              hasUnsavedChanges
-                ? 'bg-primary ring-2 ring-primary ring-offset-2 ring-offset-black' 
-                : 'bg-white/10'
-            }`}
-            whileTap={{ scale: 0.9 }}
-          >
-            <Check className={`w-4 h-4 ${hasUnsavedChanges ? 'text-white' : 'text-white/40'}`} />
-          </motion.button>
-          <AIConciliateButton compact />
+
+          {/* Center - Save button and AI */}
+          <div className="flex flex-col items-center justify-center gap-2">
+            <motion.button
+              onClick={handleSaveRating}
+              disabled={isSavingRating}
+              className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+                hasUnsavedChanges
+                  ? 'bg-primary ring-2 ring-primary ring-offset-2 ring-offset-black' 
+                  : 'bg-white/10'
+              }`}
+              whileTap={{ scale: 0.9 }}
+            >
+              <Check className={`w-5 h-5 ${hasUnsavedChanges ? 'text-white' : 'text-white/40'}`} />
+            </motion.button>
+            <AIConciliateButton compact />
+          </div>
+
+          {/* Right - Disagreement slider */}
+          <div className="flex flex-col items-center h-32">
+            <VerticalRatingSlider
+              value={disagreement}
+              onChange={setDisagreement}
+              label="Disagree"
+              color="orange"
+              lowLabel="Aligned"
+              highLabel="Opposed"
+              compact
+            />
+          </div>
         </div>
       )}
     </div>
