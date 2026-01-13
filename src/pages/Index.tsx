@@ -61,7 +61,7 @@ const Index = () => {
             className="w-full lg:flex-1 lg:max-w-md lg:pt-12 order-1 lg:order-none"
           >
             <InfoPanel 
-              question={topicData?.title || "What should be done about climate change?"}
+              question={topicData?.title || "How to fix Climate Change?"}
               opinionCount={hasRealData ? topicData.opinions.length : 40}
             />
             
