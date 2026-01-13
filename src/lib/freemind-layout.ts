@@ -237,14 +237,25 @@ export function calculateLayout(
     status: 'accepted' as const,
   }));
 
-  // Step 4: Initial placement for active nodes based on FreeMind score (radial)
+  // Step 4: Initial placement for ALL nodes based on FreeMind score (radial)
   // Higher FreeMind score = closer to center
+  // CRITICAL: Use deterministic positioning based on opinion ID hash, not array index
+  // This ensures all users see the exact same layout
   const maxFreeMindScore = Math.max(
     ...Array.from(nodeScores.values()).map(s => s.freeMindScore),
     0.01 // Avoid division by zero
   );
 
-  const activeNodes: GraphNode[] = activeOpinions.map((op, index) => {
+  // Sort all opinions by ID to ensure consistent ordering across all users
+  const sortedOpinions = [...opinions].sort((a, b) => a.id.localeCompare(b.id));
+
+  // Create a deterministic angle for each node based on its position in sorted order
+  const getNodeAngle = (opinionId: string): number => {
+    const sortedIndex = sortedOpinions.findIndex(op => op.id === opinionId);
+    return (sortedIndex / sortedOpinions.length) * 2 * Math.PI;
+  };
+
+  const activeNodes: GraphNode[] = activeOpinions.map((op) => {
     const scores = nodeScores.get(op.id)!;
     
     // Normalize FreeMind score to [0, 1] and invert (high score = closer to center)
@@ -255,8 +266,8 @@ export function calculateLayout(
     const maxRadius = config.pinkRadius;
     const targetRadius = maxRadius - normalizedScore * (maxRadius - minRadius);
 
-    // Initial angle: distribute based on index, will be optimized later
-    const baseAngle = (index / activeOpinions.length) * 2 * Math.PI;
+    // Use deterministic angle based on sorted position
+    const baseAngle = getNodeAngle(op.id);
 
     const x = config.centerX + Math.cos(baseAngle) * targetRadius;
     const y = config.centerY + Math.sin(baseAngle) * targetRadius;
@@ -272,18 +283,16 @@ export function calculateLayout(
     } as GraphNode;
   });
 
-  // Step 5: Place inactive nodes on outer ring, evenly spaced
+  // Step 5: Place inactive nodes on outer ring, using deterministic angles
   const inactiveRadius = config.outerRadius - config.nodeRadius * 2;
-  const inactiveNodes: GraphNode[] = inactiveOpinions.map((op, index) => {
-    const angle = (index / Math.max(inactiveOpinions.length, 1)) * 2 * Math.PI;
-    
-    // Offset inactive nodes' angles to not overlap with active node positions
-    const offsetAngle = angle + Math.PI / inactiveOpinions.length;
+  const inactiveNodes: GraphNode[] = inactiveOpinions.map((op) => {
+    // Use the same deterministic angle based on sorted position
+    const angle = getNodeAngle(op.id);
 
     return {
       id: op.id,
-      x: config.centerX + Math.cos(offsetAngle) * inactiveRadius,
-      y: config.centerY + Math.sin(offsetAngle) * inactiveRadius,
+      x: config.centerX + Math.cos(angle) * inactiveRadius,
+      y: config.centerY + Math.sin(angle) * inactiveRadius,
       opinion: op,
       isBridge: false,
       distanceToCenter: inactiveRadius,
