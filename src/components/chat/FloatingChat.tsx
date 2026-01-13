@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, ArrowLeft, ChevronUp, ChevronDown } from 'lucide-react';
+import { Send, ArrowLeft, ChevronUp, ChevronDown, Languages } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ChatBubble } from './ChatBubble';
@@ -54,6 +54,7 @@ export function FloatingChat({
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [showRatingPanel, setShowRatingPanel] = useState(false);
+  const [translateEnabled, setTranslateEnabled] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom
@@ -133,7 +134,14 @@ export function FloatingChat({
           <p className="text-xs text-white/40">Understanding perspectives</p>
         </div>
 
-        <div className="w-20" /> {/* Spacer for centering */}
+        <Button
+          variant="ghost"
+          onClick={() => setTranslateEnabled(!translateEnabled)}
+          className={`h-10 px-3 ${translateEnabled ? 'text-purple-400 bg-purple-500/10' : 'text-white/60 hover:text-white hover:bg-white/5'}`}
+        >
+          <Languages className="w-5 h-5" />
+          {translateEnabled && <span className="ml-2 text-xs hidden sm:inline">On</span>}
+        </Button>
       </div>
 
       {/* Messages */}
