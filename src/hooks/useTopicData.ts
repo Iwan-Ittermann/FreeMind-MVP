@@ -32,13 +32,13 @@ export function useTopicData(topicId: string) {
     return () => clearInterval(interval);
   }, []);
 
-  // Subscribe to real-time updates for opinions, ratings, chats, and messages
+  // Subscribe to real-time updates for opinions, ratings, chats, chat_requests, and messages
   useEffect(() => {
     if (!topicId) return;
 
     const channel = supabase
       .channel(`topic-${topicId}-realtime`)
-      // Listen for opinion changes
+      // Listen for opinion changes (new nodes, updates, deletes)
       .on(
         'postgres_changes',
         {
@@ -63,7 +63,7 @@ export function useTopicData(topicId: string) {
           queryClient.invalidateQueries({ queryKey: ['topic', topicId] });
         }
       )
-      // Listen for new chats being created (new edges)
+      // Listen for new/updated chats (new edges)
       .on(
         'postgres_changes',
         {
@@ -74,6 +74,19 @@ export function useTopicData(topicId: string) {
         },
         () => {
           queryClient.invalidateQueries({ queryKey: ['topic', topicId] });
+        }
+      )
+      // Listen for chat_request changes (pending request edges)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'chat_requests',
+          filter: `topic_id=eq.${topicId}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['chatRequests', topicId] });
         }
       )
       // Listen for new messages (activity indicator)
