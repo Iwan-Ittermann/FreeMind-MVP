@@ -7,19 +7,14 @@ import { ChatBubble } from './ChatBubble';
 import { TypingIndicator } from './TypingIndicator';
 import { VerticalRatingSlider } from './VerticalRatingSlider';
 import { AIConciliateButton } from './AIConciliateButton';
-
-interface Message {
-  id: string;
-  content: string;
-  isOwn: boolean;
-  timestamp: Date;
-  reactions: string[];
-  isOpinion?: boolean;
-}
+import { useChatMessages, ChatMessage } from '@/hooks/useChatMessages';
 
 interface FloatingChatProps {
+  chatId: string | null;
   myOpinion: string;
   theirOpinion: string;
+  myOpinionId?: string;
+  theirOpinionId?: string;
   onClose: () => void;
   onSubmitRating?: (empathy: number, disagreement: number) => void;
   isSavingRating?: boolean;
@@ -27,100 +22,77 @@ interface FloatingChatProps {
 }
 
 export function FloatingChat({ 
+  chatId,
   myOpinion, 
-  theirOpinion, 
+  theirOpinion,
+  myOpinionId,
+  theirOpinionId,
   onClose,
   onSubmitRating,
   isSavingRating = false,
   isReadOnly = false,
 }: FloatingChatProps) {
-  const [messages, setMessages] = useState<Message[]>([
+  const { messages: dbMessages, sendMessage, isSending } = useChatMessages(chatId);
+  const [inputValue, setInputValue] = useState('');
+  const [translateEnabled, setTranslateEnabled] = useState(false);
+  const [empathy, setEmpathy] = useState(0.5);
+  const [disagreement, setDisagreement] = useState(0.5);
+  const [savedEmpathy, setSavedEmpathy] = useState(0.5);
+  const [savedDisagreement, setSavedDisagreement] = useState(0.5);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const hasUnsavedChanges = empathy !== savedEmpathy || disagreement !== savedDisagreement;
+
+  // Build display messages: opinions first, then DB messages
+  const displayMessages = [
     {
       id: 'opinion-theirs',
       content: theirOpinion,
       isOwn: false,
-      timestamp: new Date(Date.now() - 60000),
-      reactions: [],
+      timestamp: new Date(0), // Earliest
+      reactions: [] as string[],
       isOpinion: true,
     },
     {
       id: 'opinion-mine',
       content: myOpinion,
       isOwn: true,
-      timestamp: new Date(Date.now() - 30000),
-      reactions: [],
+      timestamp: new Date(1), // Second earliest
+      reactions: [] as string[],
       isOpinion: true,
     },
-  ]);
-  const [inputValue, setInputValue] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const [translateEnabled, setTranslateEnabled] = useState(false);
-  const [empathy, setEmpathy] = useState(0.5);
-  const [disagreement, setDisagreement] = useState(0.5);
-  const [savedEmpathy, setSavedEmpathy] = useState(0.5);
-  const [savedDisagreement, setSavedDisagreement] = useState(0.5);
-  const [isSaving, setIsSaving] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+    ...dbMessages.map(msg => ({
+      id: msg.id,
+      content: msg.content,
+      isOwn: msg.isOwn,
+      timestamp: msg.createdAt,
+      reactions: [] as string[],
+      isOpinion: false,
+    })),
+  ];
 
-  const hasUnsavedChanges = empathy !== savedEmpathy || disagreement !== savedDisagreement;
-
-  // Auto-scroll to bottom
+  // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [dbMessages]);
 
-  // Simulate typing indicator
-  useEffect(() => {
-    if (messages.length > 2 && messages[messages.length - 1].isOwn && !messages[messages.length - 1].isOpinion) {
-      const timer = setTimeout(() => {
-        setIsTyping(true);
-        
-        setTimeout(() => {
-          setIsTyping(false);
-          setMessages(prev => [...prev, {
-            id: `msg-${Date.now()}`,
-            content: getMockResponse(),
-            isOwn: false,
-            timestamp: new Date(),
-            reactions: [],
-          }]);
-        }, 2000 + Math.random() * 1000);
-      }, 500);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [messages]);
-
-  const getMockResponse = () => {
-    const responses = [
-      "That's an interesting perspective. I hadn't thought about it that way.",
-      "I see where you're coming from, but have you considered...?",
-      "We might disagree, but I appreciate you sharing your view.",
-      "Help me understand - what led you to that conclusion?",
-      "I think we actually agree on the core issue, just not the approach.",
-    ];
-    return responses[Math.floor(Math.random() * responses.length)];
-  };
-
-  const handleSend = () => {
-    if (!inputValue.trim()) return;
-
-    setMessages(prev => [...prev, {
-      id: `msg-${Date.now()}`,
-      content: inputValue,
-      isOwn: true,
-      timestamp: new Date(),
-      reactions: [],
-    }]);
+  const handleSend = async () => {
+    if (!inputValue.trim() || isSending) return;
+    
+    const content = inputValue;
     setInputValue('');
+    
+    try {
+      await sendMessage(content);
+    } catch (err) {
+      console.error('Failed to send message:', err);
+      setInputValue(content); // Restore input on error
+    }
   };
 
   const handleReaction = (messageId: string, reaction: string) => {
-    setMessages(prev => prev.map(msg => 
-      msg.id === messageId 
-        ? { ...msg, reactions: [...msg.reactions, reaction] }
-        : msg
-    ));
+    // TODO: Implement reactions in DB
+    console.log('Reaction:', messageId, reaction);
   };
 
   const handleSaveRating = () => {
@@ -130,12 +102,10 @@ export function FloatingChat({
   };
 
   // Calculate Bridging Score: empathy points * disagreement points
-  // Both are 0-100, so max score is 10,000
   const empathyPoints = Math.round(empathy * 100);
   const disagreementPoints = Math.round(disagreement * 100);
   const bridgingScore = empathyPoints * disagreementPoints;
 
-  // Get bridging score color based on value
   const getBridgingScoreColor = () => {
     if (bridgingScore >= 7500) return 'text-green-400';
     if (bridgingScore >= 2500) return 'text-yellow-400';
@@ -194,7 +164,7 @@ export function FloatingChat({
               highLabel="Warm"
               hasUnsavedChanges={hasUnsavedChanges}
               onSave={handleSaveRating}
-              isSaving={isSaving}
+              isSaving={isSavingRating}
             />
           </div>
         )}
@@ -212,7 +182,7 @@ export function FloatingChat({
               </div>
 
               <AnimatePresence>
-                {messages.map((msg) => (
+                {displayMessages.map((msg) => (
                   <ChatBubble
                     key={msg.id}
                     id={msg.id}
@@ -226,16 +196,6 @@ export function FloatingChat({
                 ))}
               </AnimatePresence>
               
-              {isTyping && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="flex justify-start"
-                >
-                  <TypingIndicator />
-                </motion.div>
-              )}
-              
               <div ref={messagesEndRef} />
             </div>
           </div>
@@ -248,13 +208,14 @@ export function FloatingChat({
                   <Input
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                    onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
                     placeholder="Type a message..."
                     className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-12 rounded-full px-5 text-base"
+                    disabled={isSending}
                   />
                   <Button 
                     onClick={handleSend}
-                    disabled={!inputValue.trim()}
+                    disabled={!inputValue.trim() || isSending}
                     className="bg-primary hover:bg-primary/90 h-12 w-12 rounded-full p-0 flex-shrink-0"
                   >
                     <Send className="w-5 h-5" />
@@ -289,7 +250,7 @@ export function FloatingChat({
               highLabel="Opposed"
               hasUnsavedChanges={hasUnsavedChanges}
               onSave={handleSaveRating}
-              isSaving={isSaving}
+              isSaving={isSavingRating}
             />
           </div>
         )}

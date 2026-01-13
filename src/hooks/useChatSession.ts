@@ -14,6 +14,8 @@ interface ChatSession {
   chatId: string | null;
   myOpinion: Opinion | null;
   theirOpinion: Opinion | null;
+  myOpinionId: string | null;
+  theirOpinionId: string | null;
   isLoading: boolean;
   error: string | null;
   saveRating: (empathy: number, disagreement: number) => Promise<void>;
@@ -136,6 +138,8 @@ export function useChatSession(theirOpinionId: string | null): ChatSession {
     theirOpinion: theirOpinion
       ? { id: theirOpinion.id, topic_id: theirOpinion.topic_id, text: theirOpinion.text, user_id: theirOpinion.user_id }
       : null,
+    myOpinionId: myOpinion?.id || null,
+    theirOpinionId: theirOpinion?.id || null,
     isLoading,
     error,
     saveRating,
