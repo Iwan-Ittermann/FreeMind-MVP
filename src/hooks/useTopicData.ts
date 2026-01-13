@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Opinion, ChatRating } from '@/types/graph';
 
@@ -11,10 +11,28 @@ export interface TopicData {
   ratings: ChatRating[];
 }
 
+export interface ActiveChat {
+  chatId: string;
+  opinionAId: string;
+  opinionBId: string;
+  lastActivity: number;
+}
+
 export function useTopicData(topicId: string) {
   const queryClient = useQueryClient();
+  const [activeChats, setActiveChats] = useState<ActiveChat[]>([]);
 
-  // Subscribe to real-time updates for opinions, ratings, and chats
+  // Clean up stale active chats (older than 3 seconds)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveChats(prev => 
+        prev.filter(chat => Date.now() - chat.lastActivity < 3000)
+      );
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Subscribe to real-time updates for opinions, ratings, chats, and messages
   useEffect(() => {
     if (!topicId) return;
 
@@ -58,6 +76,43 @@ export function useTopicData(topicId: string) {
           queryClient.invalidateQueries({ queryKey: ['topic', topicId] });
         }
       )
+      // Listen for new messages (activity indicator)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'chat_messages',
+        },
+        async (payload) => {
+          // Get the chat details to find which opinions are involved
+          const chatId = payload.new.chat_id;
+          const { data: chat } = await supabase
+            .from('chats')
+            .select('opinion_a_id, opinion_b_id, topic_id')
+            .eq('id', chatId)
+            .single();
+          
+          if (chat && chat.topic_id === topicId) {
+            setActiveChats(prev => {
+              const existing = prev.find(c => c.chatId === chatId);
+              if (existing) {
+                return prev.map(c => 
+                  c.chatId === chatId 
+                    ? { ...c, lastActivity: Date.now() }
+                    : c
+                );
+              }
+              return [...prev, {
+                chatId,
+                opinionAId: chat.opinion_a_id,
+                opinionBId: chat.opinion_b_id,
+                lastActivity: Date.now(),
+              }];
+            });
+          }
+        }
+      )
       .subscribe();
 
     return () => {
@@ -65,7 +120,7 @@ export function useTopicData(topicId: string) {
     };
   }, [topicId, queryClient]);
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ['topic', topicId],
     queryFn: async (): Promise<TopicData> => {
       // Fetch topic
@@ -117,6 +172,11 @@ export function useTopicData(topicId: string) {
       };
     },
   });
+
+  return {
+    ...query,
+    activeChats,
+  };
 }
 
 export function useOpinionCount(topicId: string) {
