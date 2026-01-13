@@ -58,7 +58,7 @@ export function GraphNodes({
         return (
           <motion.g
             key={node.id}
-            initial={{ opacity: 0, scale: 0 }}
+            initial={{ opacity: 0, scale: 0, x: node.x, y: node.y }}
             animate={{ 
               opacity: shouldDim ? 0.3 : 1, 
               scale: 1,
@@ -66,10 +66,10 @@ export function GraphNodes({
               y: node.y,
             }}
             transition={{ 
-              delay: index * 0.02,
-              type: "spring",
-              stiffness: 100,
-              damping: 15,
+              opacity: { duration: 0.3 },
+              scale: { delay: index * 0.02, type: "spring", stiffness: 100, damping: 15 },
+              x: { type: "spring", stiffness: 50, damping: 20, mass: 1 },
+              y: { type: "spring", stiffness: 50, damping: 20, mass: 1 },
             }}
             style={{ cursor: 'pointer' }}
             onClick={() => onNodeClick?.(node)}
