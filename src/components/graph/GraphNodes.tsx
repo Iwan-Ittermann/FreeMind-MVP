@@ -31,7 +31,7 @@ export function GraphNodes({
         const hasIncomingRequest = node.isRequester; // This node sent a request TO current user
         const isInactive = node.hasChats === false; // Node has no chats yet
 
-        // Node color based on state
+        // Node color based on state - enhanced contrast
         let fillColor: string;
         let strokeColor: string;
 
@@ -42,8 +42,8 @@ export function GraphNodes({
           fillColor = "hsl(var(--primary))"; // Primary color for current user
           strokeColor = "hsl(var(--primary))";
         } else if (isInactive) {
-          fillColor = "hsl(var(--muted-foreground) / 0.3)"; // Muted/gray for inactive
-          strokeColor = "hsl(var(--muted-foreground) / 0.5)";
+          fillColor = "hsl(var(--muted-foreground) / 0.15)"; // Very dim for inactive
+          strokeColor = "hsl(var(--muted-foreground) / 0.25)";
         } else if (hasIncomingRequest) {
           fillColor = "hsl(0 0% 100%)";
           strokeColor = "hsl(var(--accent))"; // Yellow for nodes requesting to chat
@@ -51,8 +51,8 @@ export function GraphNodes({
           fillColor = "hsl(0 0% 100%)";
           strokeColor = "hsl(var(--accent))"; // Yellow stroke for bridge nodes
         } else {
-          fillColor = "hsl(0 0% 100%)"; // White normally
-          strokeColor = "hsl(0 0% 100% / 0.3)";
+          fillColor = "hsl(0 0% 100%)"; // Bright white for active nodes
+          strokeColor = "hsl(0 0% 100% / 0.6)";
         }
 
         return (

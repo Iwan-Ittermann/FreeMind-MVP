@@ -29,15 +29,11 @@ export function GraphEdges({ nodes, edges, highlightedNode, onEdgeClick }: Graph
         const opacity = shouldDim ? 0.15 : (isHighlighted ? 1 : isPending ? 0.7 : 0.35 + edge.empathy * 0.3);
         const strokeWidth = isHighlighted ? 3.5 : isPending ? 2.5 : 2;
         
-        // Dashed line for pending requests OR high disagreement
-        const strokeDasharray = isPending ? "6 4" : edge.disagreement > 0.6 ? "4 2" : "none";
+        // Dashed line ONLY for pending requests, solid for accepted
+        const strokeDasharray = isPending ? "6 4" : "none";
         
-        // Color: yellow/gold for pending, brighter white for accepted
-        const stroke = isPending 
-          ? "hsl(var(--accent))"
-          : edge.empathy > 0.7 
-            ? "hsl(0 0% 100%)" 
-            : "hsl(0 0% 90%)";
+        // All edges are white - pending and accepted alike
+        const stroke = "hsl(0 0% 100%)";
 
         return (
           <line
