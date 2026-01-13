@@ -6,6 +6,7 @@ interface GraphNodesProps {
   config: LayoutConfig;
   highlightedNode?: string | null;
   currentUserId?: string | null;
+  currentUserOpinionId?: string | null;
   onNodeClick?: (node: GraphNode) => void;
   onNodeHover?: (node: GraphNode | null) => void;
 }
@@ -15,6 +16,7 @@ export function GraphNodes({
   config, 
   highlightedNode,
   currentUserId,
+  currentUserOpinionId,
   onNodeClick, 
   onNodeHover 
 }: GraphNodesProps) {
@@ -26,6 +28,7 @@ export function GraphNodes({
         const isHighlighted = highlightedNode === node.id;
         const isCurrentUser = currentUserId && node.opinion.authorId === currentUserId;
         const shouldDim = highlightedNode && !isHighlighted;
+        const hasIncomingRequest = node.isRequester; // This node sent a request TO current user
 
         // Node color based on state
         const fillColor = isHighlighted 
@@ -36,9 +39,11 @@ export function GraphNodes({
         
         const strokeColor = isCurrentUser
           ? "hsl(var(--primary))"
-          : node.isBridge 
-            ? "hsl(var(--accent))" // Yellow stroke for bridge nodes
-            : "hsl(0 0% 100% / 0.3)";
+          : hasIncomingRequest
+            ? "hsl(var(--accent))" // Yellow for nodes requesting to chat with current user
+            : node.isBridge 
+              ? "hsl(var(--accent))" // Yellow stroke for bridge nodes
+              : "hsl(0 0% 100% / 0.3)";
 
         return (
           <motion.g
@@ -78,13 +83,25 @@ export function GraphNodes({
                 className="animate-pulse"
               />
             )}
+
+            {/* Glowing ring for nodes with pending requests to current user */}
+            {hasIncomingRequest && !isHighlighted && !isCurrentUser && (
+              <circle
+                r={nodeRadius * 2.2}
+                fill="none"
+                stroke="hsl(var(--accent))"
+                strokeWidth={2}
+                strokeOpacity={0.6}
+                className="animate-pulse"
+              />
+            )}
             
             {/* Main node circle */}
             <circle
               r={isHighlighted ? nodeRadius * 1.5 : isCurrentUser ? nodeRadius * 1.3 : nodeRadius}
               fill={fillColor}
               stroke={strokeColor}
-              strokeWidth={isCurrentUser ? 2 : node.isBridge ? 2 : 1}
+              strokeWidth={isCurrentUser || hasIncomingRequest ? 2 : node.isBridge ? 2 : 1}
               className="transition-all duration-200"
             />
             

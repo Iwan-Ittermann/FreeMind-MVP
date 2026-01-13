@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, X } from 'lucide-react';
+import { MessageSquare, X, Send, Check } from 'lucide-react';
 import { OpinionGraph } from '@/components/graph/OpinionGraph';
 import { InfoPanel } from '@/components/InfoPanel';
 import { SubmitOpinion } from '@/components/SubmitOpinion';
 import { Button } from '@/components/ui/button';
-import { GraphNode } from '@/types/graph';
+import { GraphNode, GraphEdge, ChatRequest } from '@/types/graph';
 import { useTopicData } from '@/hooks/useTopicData';
+import { useChatRequests } from '@/hooks/useChatRequests';
 import { useAuth } from '@/hooks/useAuth';
 import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 const DEFAULT_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
 
@@ -21,6 +23,27 @@ const Index = () => {
   const queryClient = useQueryClient();
   
   const { data: topicData, isLoading, error } = useTopicData(DEFAULT_TOPIC_ID);
+  const { 
+    chatRequests, 
+    sendRequest, 
+    acceptRequest, 
+    isSending,
+    isAccepting,
+    getRequestBetween,
+    hasAcceptedChat,
+    hasPendingRequest,
+  } = useChatRequests(DEFAULT_TOPIC_ID);
+
+  // Find current user's opinion
+  const myOpinion = topicData?.opinions.find(op => op.authorId === user?.id);
+
+  // Transform chat requests to graph format
+  const graphChatRequests: ChatRequest[] = chatRequests.map(r => ({
+    id: r.id,
+    requesterOpinionId: r.requester_opinion_id,
+    targetOpinionId: r.target_opinion_id,
+    status: r.status as 'pending' | 'accepted' | 'declined',
+  }));
 
   // Responsive sizing
   useEffect(() => {
@@ -41,11 +64,62 @@ const Index = () => {
     queryClient.invalidateQueries({ queryKey: ['topic', DEFAULT_TOPIC_ID] });
   };
 
-  const handleStartChat = () => {
+  const handleRequestChat = async () => {
+    if (!selectedNode || !myOpinion) return;
+    try {
+      await sendRequest({
+        requesterOpinionId: myOpinion.id,
+        targetOpinionId: selectedNode.id,
+      });
+      toast.success('Chat request sent!');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to send request');
+    }
+  };
+
+  const handleAcceptRequest = async () => {
+    if (!selectedNode || !myOpinion) return;
+    const request = getRequestBetween(myOpinion.id, selectedNode.id);
+    if (!request) return;
+    try {
+      await acceptRequest(request.id);
+      toast.success('Chat request accepted!');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to accept request');
+    }
+  };
+
+  const handleOpenChat = () => {
     if (selectedNode) {
       navigate(`/chat?their=${selectedNode.id}`);
     }
   };
+
+  const handleEdgeClick = (edge: GraphEdge) => {
+    // Open read-only chat view for any edge
+    navigate(`/chat?their=${edge.target}&readonly=true`);
+  };
+
+  // Determine the action state for selected node
+  const getNodeActionState = () => {
+    if (!selectedNode || !myOpinion) return 'none';
+    if (selectedNode.opinion.authorId === user?.id) return 'own';
+    
+    const isAccepted = hasAcceptedChat(myOpinion.id, selectedNode.id);
+    if (isAccepted) return 'accepted';
+    
+    // Check if current user sent a request to this node
+    const sentRequest = hasPendingRequest(myOpinion.id, selectedNode.id);
+    if (sentRequest) return 'pending_sent';
+    
+    // Check if this node sent a request to current user
+    const receivedRequest = hasPendingRequest(selectedNode.id, myOpinion.id);
+    if (receivedRequest) return 'pending_received';
+    
+    return 'can_request';
+  };
+
+  const actionState = getNodeActionState();
 
   // Use mock data if no real data exists yet
   const hasRealData = topicData && topicData.opinions.length > 0;
@@ -96,10 +170,13 @@ const Index = () => {
             <OpinionGraph
               opinions={hasRealData ? topicData.opinions : undefined}
               ratings={hasRealData ? topicData.ratings : undefined}
+              chatRequests={graphChatRequests}
               currentUserId={user?.id}
+              currentUserOpinionId={myOpinion?.id}
               width={graphSize.width}
               height={graphSize.height}
               onNodeSelect={setSelectedNode}
+              onEdgeClick={handleEdgeClick}
               useMockData={!hasRealData}
             />
 
@@ -123,25 +200,52 @@ const Index = () => {
                     "{selectedNode.opinion.text}"
                   </p>
                   
-                  {user && selectedNode.opinion.authorId === user.id ? (
-                    <p className="text-sm text-white/60 italic text-center py-2">
-                      This is Your Opinion
-                    </p>
-                  ) : user ? (
-                    <Button
-                      onClick={handleStartChat}
-                      className="w-full bg-primary hover:bg-primary/90 h-12 text-base"
-                    >
-                      <MessageSquare className="w-5 h-5 mr-2" />
-                      Start Chat with This Opinion
-                    </Button>
-                  ) : (
+                  {!user ? (
                     <Button
                       onClick={() => navigate('/auth')}
                       variant="outline"
                       className="w-full border-white/20 text-white hover:bg-white/10 h-12 text-base"
                     >
                       Sign In to Chat
+                    </Button>
+                  ) : actionState === 'own' ? (
+                    <p className="text-sm text-white/60 italic text-center py-2">
+                      This is Your Opinion
+                    </p>
+                  ) : !myOpinion ? (
+                    <p className="text-sm text-white/60 italic text-center py-2">
+                      Submit your opinion first to chat
+                    </p>
+                  ) : actionState === 'accepted' ? (
+                    <Button
+                      onClick={handleOpenChat}
+                      className="w-full bg-primary hover:bg-primary/90 h-12 text-base"
+                    >
+                      <MessageSquare className="w-5 h-5 mr-2" />
+                      Open Chat with This Opinion
+                    </Button>
+                  ) : actionState === 'pending_sent' ? (
+                    <p className="text-sm text-accent italic text-center py-2">
+                      ⏳ Waiting for them to accept your request...
+                    </p>
+                  ) : actionState === 'pending_received' ? (
+                    <Button
+                      onClick={handleAcceptRequest}
+                      disabled={isAccepting}
+                      className="w-full bg-accent hover:bg-accent/90 text-accent-foreground h-12 text-base"
+                    >
+                      <Check className="w-5 h-5 mr-2" />
+                      {isAccepting ? 'Accepting...' : 'Accept Chat Request'}
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={handleRequestChat}
+                      disabled={isSending}
+                      variant="outline"
+                      className="w-full border-accent text-accent hover:bg-accent/10 h-12 text-base"
+                    >
+                      <Send className="w-5 h-5 mr-2" />
+                      {isSending ? 'Sending...' : 'Request to Chat'}
                     </Button>
                   )}
                 </motion.div>

@@ -32,7 +32,7 @@ export function useTopicData(topicId: string) {
 
       if (opinionsError) throw opinionsError;
 
-      // Fetch ratings using the function
+      // Fetch ratings using the function (only for accepted chats that have ratings)
       const { data: ratingsData, error: ratingsError } = await supabase
         .rpc('get_opinion_pair_ratings', { topic_uuid: topicId });
 
