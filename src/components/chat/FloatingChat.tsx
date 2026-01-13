@@ -147,16 +147,16 @@ export function FloatingChat({
     setSavedDisagreement(disagreement);
   };
 
-  // Calculate Bridging Score: empathy points * disagreement points / 100
-  // Both are 0-100, so we divide by 100 to get 0-100 range
+  // Calculate Bridging Score: empathy points * disagreement points
+  // Both are 0-100, so max score is 10,000
   const empathyPoints = Math.round(empathy * 100);
   const disagreementPoints = Math.round(disagreement * 100);
-  const bridgingScore = Math.round((empathyPoints * disagreementPoints) / 100);
+  const bridgingScore = empathyPoints * disagreementPoints;
 
   // Get bridging score color based on value
   const getBridgingScoreColor = () => {
-    if (bridgingScore >= 50) return 'text-green-400';
-    if (bridgingScore >= 25) return 'text-yellow-400';
+    if (bridgingScore >= 7500) return 'text-green-400';
+    if (bridgingScore >= 2500) return 'text-yellow-400';
     return 'text-primary';
   };
 
