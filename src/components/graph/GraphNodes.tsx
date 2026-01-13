@@ -11,6 +11,26 @@ interface GraphNodesProps {
   onNodeHover?: (node: GraphNode | null) => void;
 }
 
+// Determine which zone a node is in based on distance from center
+function getNodeZone(node: GraphNode, config: LayoutConfig): 'green' | 'yellow' | 'pink' | 'outer' {
+  const dist = node.distanceToCenter || config.outerRadius;
+  
+  if (dist <= config.greenRadius) return 'green';
+  if (dist <= config.yellowRadius) return 'yellow';
+  if (dist <= config.pinkRadius) return 'pink';
+  return 'outer';
+}
+
+// Get size multiplier based on zone
+function getZoneSizeMultiplier(zone: 'green' | 'yellow' | 'pink' | 'outer'): number {
+  switch (zone) {
+    case 'green': return 3;   // Triple size in green zone
+    case 'yellow': return 2;  // Double size in yellow zone
+    case 'pink': return 1;    // Normal size in pink zone
+    case 'outer': return 1;   // Normal size in outer zone
+  }
+}
+
 export function GraphNodes({ 
   nodes, 
   config, 
@@ -30,6 +50,11 @@ export function GraphNodes({
         const shouldDim = highlightedNode && !isHighlighted;
         const hasIncomingRequest = node.isRequester; // This node sent a request TO current user
         const isInactive = node.hasChats === false; // Node has no chats yet
+
+        // Get zone-based sizing
+        const zone = getNodeZone(node, config);
+        const zoneMultiplier = getZoneSizeMultiplier(zone);
+        const baseRadius = nodeRadius * zoneMultiplier;
 
         // Node color based on state - enhanced contrast
         let fillColor: string;
@@ -79,7 +104,7 @@ export function GraphNodes({
             {/* Outer glow for highlighted nodes */}
             {isHighlighted && (
               <circle
-                r={nodeRadius * 2.5}
+                r={baseRadius * 2.5}
                 fill="hsl(var(--secondary) / 0.3)"
                 className="animate-pulse"
               />
@@ -88,7 +113,7 @@ export function GraphNodes({
             {/* Outer glow for current user's node */}
             {isCurrentUser && !isHighlighted && (
               <circle
-                r={nodeRadius * 2}
+                r={baseRadius * 2}
                 fill="hsl(var(--primary) / 0.3)"
                 className="animate-pulse"
               />
@@ -97,7 +122,7 @@ export function GraphNodes({
             {/* Glowing ring for nodes with pending requests to current user */}
             {hasIncomingRequest && !isHighlighted && !isCurrentUser && (
               <circle
-                r={nodeRadius * 2.2}
+                r={baseRadius * 2.2}
                 fill="none"
                 stroke="hsl(var(--accent))"
                 strokeWidth={2}
@@ -108,7 +133,7 @@ export function GraphNodes({
             
             {/* Main node circle */}
             <circle
-              r={isHighlighted ? nodeRadius * 1.5 : isCurrentUser ? nodeRadius * 1.3 : nodeRadius}
+              r={isHighlighted ? baseRadius * 1.5 : isCurrentUser ? baseRadius * 1.3 : baseRadius}
               fill={fillColor}
               stroke={strokeColor}
               strokeWidth={isCurrentUser || hasIncomingRequest ? 2 : node.isBridge ? 2 : 1}
@@ -118,7 +143,7 @@ export function GraphNodes({
             {/* Bridge node indicator */}
             {node.isBridge && !isHighlighted && (
               <circle
-                r={nodeRadius * 0.4}
+                r={baseRadius * 0.4}
                 fill="hsl(var(--accent))"
               />
             )}

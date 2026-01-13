@@ -18,17 +18,30 @@ export interface ActiveChat {
   lastActivity: number;
 }
 
+export interface MessageAnimationData {
+  id: string;
+  chatId: string;
+  sourceOpinionId: string;
+  targetOpinionId: string;
+  timestamp: number;
+}
+
 export function useTopicData(topicId: string) {
   const queryClient = useQueryClient();
   const [activeChats, setActiveChats] = useState<ActiveChat[]>([]);
+  const [messageAnimations, setMessageAnimations] = useState<MessageAnimationData[]>([]);
 
-  // Clean up stale active chats (older than 3 seconds)
+  // Clean up stale active chats (older than 3 seconds) and message animations (older than 1 second)
   useEffect(() => {
     const interval = setInterval(() => {
+      const now = Date.now();
       setActiveChats(prev => 
-        prev.filter(chat => Date.now() - chat.lastActivity < 3000)
+        prev.filter(chat => now - chat.lastActivity < 3000)
       );
-    }, 1000);
+      setMessageAnimations(prev =>
+        prev.filter(anim => now - anim.timestamp < 1000)
+      );
+    }, 500);
     return () => clearInterval(interval);
   }, []);
 
@@ -89,7 +102,7 @@ export function useTopicData(topicId: string) {
           queryClient.invalidateQueries({ queryKey: ['chatRequests', topicId] });
         }
       )
-      // Listen for new messages (activity indicator)
+      // Listen for new messages (activity indicator + animation)
       .on(
         'postgres_changes',
         {
@@ -100,6 +113,9 @@ export function useTopicData(topicId: string) {
         async (payload) => {
           // Get the chat details to find which opinions are involved
           const chatId = payload.new.chat_id;
+          const senderId = payload.new.sender_id;
+          const messageId = payload.new.id;
+          
           const { data: chat } = await supabase
             .from('chats')
             .select('opinion_a_id, opinion_b_id, topic_id')
@@ -107,6 +123,29 @@ export function useTopicData(topicId: string) {
             .single();
           
           if (chat && chat.topic_id === topicId) {
+            // Determine which opinion sent the message by looking up sender's opinion
+            const { data: senderOpinion } = await supabase
+              .from('opinions')
+              .select('id')
+              .eq('user_id', senderId)
+              .eq('topic_id', topicId)
+              .single();
+
+            const sourceOpinionId = senderOpinion?.id || chat.opinion_a_id;
+            const targetOpinionId = sourceOpinionId === chat.opinion_a_id 
+              ? chat.opinion_b_id 
+              : chat.opinion_a_id;
+
+            // Add message animation
+            setMessageAnimations(prev => [...prev, {
+              id: messageId,
+              chatId,
+              sourceOpinionId,
+              targetOpinionId,
+              timestamp: Date.now(),
+            }]);
+
+            // Update active chats
             setActiveChats(prev => {
               const existing = prev.find(c => c.chatId === chatId);
               if (existing) {
@@ -212,6 +251,7 @@ export function useTopicData(topicId: string) {
   return {
     ...query,
     activeChats,
+    messageAnimations,
   };
 }
 

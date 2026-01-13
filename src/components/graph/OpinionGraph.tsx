@@ -3,15 +3,17 @@ import { motion } from 'framer-motion';
 import { ConcentricCircles } from './ConcentricCircles';
 import { GraphEdges } from './GraphEdges';
 import { GraphNodes } from './GraphNodes';
+import { MessageDots } from './MessageDots';
 import { calculateLayout, generateMockData } from '@/lib/freemind-layout';
 import { GraphNode, GraphEdge, LayoutConfig, Opinion, ChatRating, ChatRequest } from '@/types/graph';
-import { ActiveChat } from '@/hooks/useTopicData';
+import { ActiveChat, MessageAnimationData } from '@/hooks/useTopicData';
 
 interface OpinionGraphProps {
   opinions?: Opinion[];
   ratings?: ChatRating[];
   chatRequests?: ChatRequest[];
   activeChats?: ActiveChat[];
+  messageAnimations?: MessageAnimationData[];
   currentUserId?: string | null;
   currentUserOpinionId?: string | null;
   onNodeSelect?: (node: GraphNode | null) => void;
@@ -26,6 +28,7 @@ export function OpinionGraph({
   ratings: externalRatings,
   chatRequests = [],
   activeChats = [],
+  messageAnimations = [],
   currentUserId,
   currentUserOpinionId,
   onNodeSelect,
@@ -38,6 +41,7 @@ export function OpinionGraph({
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
 
   // Layout configuration based on size
+  // Adjusted zone sizes: narrower green/pink, wider yellow
   const config: LayoutConfig = useMemo(() => {
     const size = Math.min(width, height);
     const centerX = width / 2;
@@ -48,9 +52,9 @@ export function OpinionGraph({
       centerX,
       centerY,
       outerRadius,
-      pinkRadius: outerRadius * 0.95,
-      yellowRadius: outerRadius * 0.75,
-      greenRadius: outerRadius * 0.45,
+      pinkRadius: outerRadius * 0.92,  // Narrower pink (was 0.95)
+      yellowRadius: outerRadius * 0.80, // Wider yellow (was 0.75)
+      greenRadius: outerRadius * 0.35,  // Narrower green (was 0.45)
       nodeRadius: 6,
     };
   }, [width, height]);
@@ -136,6 +140,12 @@ export function OpinionGraph({
           highlightedNode={highlightedNode || selectedNode?.id}
           activeChats={activeChats}
           onEdgeClick={onEdgeClick}
+        />
+        
+        {/* Message animation dots */}
+        <MessageDots 
+          nodes={graphData.nodes}
+          messageAnimations={messageAnimations}
         />
         
         {/* Opinion nodes */}
