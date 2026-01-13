@@ -141,7 +141,15 @@ export function useTopicData(topicId: string) {
 
       if (opinionsError) throw opinionsError;
 
-      // Fetch ratings using the function (only for accepted chats that have ratings)
+      // Fetch ALL chats for this topic (to show edges even without ratings)
+      const { data: chatsData, error: chatsError } = await supabase
+        .from('chats')
+        .select('opinion_a_id, opinion_b_id')
+        .eq('topic_id', topicId);
+
+      if (chatsError) throw chatsError;
+
+      // Fetch ratings using the function (for chats that have ratings)
       const { data: ratingsData, error: ratingsError } = await supabase
         .rpc('get_opinion_pair_ratings', { topic_uuid: topicId });
 
@@ -155,13 +163,28 @@ export function useTopicData(topicId: string) {
         createdAt: new Date(op.created_at),
       }));
 
-      // Transform ratings to our graph format
-      const formattedRatings: ChatRating[] = (ratingsData || []).map(r => ({
-        opinionA: r.opinion_a_id,
-        opinionB: r.opinion_b_id,
-        empathy: Number(r.avg_empathy) || 0.5,
-        disagreement: Number(r.avg_disagreement) || 0.5,
-      }));
+      // Create a map of ratings by opinion pair for quick lookup
+      const ratingsMap = new Map<string, { empathy: number; disagreement: number }>();
+      (ratingsData || []).forEach(r => {
+        const key = [r.opinion_a_id, r.opinion_b_id].sort().join('-');
+        ratingsMap.set(key, {
+          empathy: Number(r.avg_empathy) || 0.5,
+          disagreement: Number(r.avg_disagreement) || 0.5,
+        });
+      });
+
+      // Create ratings for ALL chats (using defaults if no ratings exist)
+      const formattedRatings: ChatRating[] = (chatsData || []).map(chat => {
+        const key = [chat.opinion_a_id, chat.opinion_b_id].sort().join('-');
+        const existingRating = ratingsMap.get(key);
+        
+        return {
+          opinionA: chat.opinion_a_id,
+          opinionB: chat.opinion_b_id,
+          empathy: existingRating?.empathy ?? 0.5,
+          disagreement: existingRating?.disagreement ?? 0.5,
+        };
+      });
 
       return {
         id: topic.id,
