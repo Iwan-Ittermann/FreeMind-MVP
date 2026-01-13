@@ -23,6 +23,7 @@ interface FloatingChatProps {
   onClose: () => void;
   onSubmitRating?: (empathy: number, disagreement: number) => void;
   isSavingRating?: boolean;
+  isReadOnly?: boolean;
 }
 
 export function FloatingChat({ 
@@ -31,6 +32,7 @@ export function FloatingChat({
   onClose,
   onSubmitRating,
   isSavingRating = false,
+  isReadOnly = false,
 }: FloatingChatProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -154,10 +156,16 @@ export function FloatingChat({
         </Button>
         
         <div className="text-center">
-          <p className="text-sm font-medium text-white">Discussion</p>
-          <p className={`text-xs ${getBridgingScoreColor()}`}>
-            Bridging Score: <span className="font-mono font-bold">{bridgingScore.toLocaleString()}</span>
+          <p className="text-sm font-medium text-white">
+            {isReadOnly ? 'Viewing Discussion' : 'Discussion'}
           </p>
+          {isReadOnly ? (
+            <p className="text-xs text-white/40">Read-only mode</p>
+          ) : (
+            <p className={`text-xs ${getBridgingScoreColor()}`}>
+              Bridging Score: <span className="font-mono font-bold">{bridgingScore.toLocaleString()}</span>
+            </p>
+          )}
         </div>
 
         <div className="flex items-center gap-1">
@@ -174,20 +182,22 @@ export function FloatingChat({
 
       {/* Main content with side rails */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left rail - Empathy slider */}
-        <div className="hidden md:flex flex-col items-center justify-center w-20 border-r border-white/10 bg-black/50 py-6">
-          <VerticalRatingSlider
-            value={empathy}
-            onChange={setEmpathy}
-            label="Empathy"
-            color="rose"
-            lowLabel="Cold"
-            highLabel="Warm"
-            hasUnsavedChanges={hasUnsavedChanges}
-            onSave={handleSaveRating}
-            isSaving={isSaving}
-          />
-        </div>
+        {/* Left rail - Empathy slider (hidden in read-only) */}
+        {!isReadOnly && (
+          <div className="hidden md:flex flex-col items-center justify-center w-20 border-r border-white/10 bg-black/50 py-6">
+            <VerticalRatingSlider
+              value={empathy}
+              onChange={setEmpathy}
+              label="Empathy"
+              color="rose"
+              lowLabel="Cold"
+              highLabel="Warm"
+              hasUnsavedChanges={hasUnsavedChanges}
+              onSave={handleSaveRating}
+              isSaving={isSaving}
+            />
+          </div>
+        )}
 
         {/* Center - Chat */}
         <div className="flex-1 flex flex-col min-w-0">
@@ -230,88 +240,103 @@ export function FloatingChat({
             </div>
           </div>
 
-          {/* Input Area with AI button */}
-          <div className="border-t border-white/10 bg-black p-4">
-            <div className="max-w-lg mx-auto">
-              <div className="flex gap-2 items-center">
-                <Input
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                  placeholder="Type a message..."
-                  className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-12 rounded-full px-5 text-base"
-                />
-                <Button 
-                  onClick={handleSend}
-                  disabled={!inputValue.trim()}
-                  className="bg-primary hover:bg-primary/90 h-12 w-12 rounded-full p-0 flex-shrink-0"
-                >
-                  <Send className="w-5 h-5" />
-                </Button>
-                <div className="hidden md:block">
-                  <AIConciliateButton compact />
+          {/* Input Area (hidden in read-only) */}
+          {!isReadOnly && (
+            <div className="border-t border-white/10 bg-black p-4">
+              <div className="max-w-lg mx-auto">
+                <div className="flex gap-2 items-center">
+                  <Input
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                    placeholder="Type a message..."
+                    className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-12 rounded-full px-5 text-base"
+                  />
+                  <Button 
+                    onClick={handleSend}
+                    disabled={!inputValue.trim()}
+                    className="bg-primary hover:bg-primary/90 h-12 w-12 rounded-full p-0 flex-shrink-0"
+                  >
+                    <Send className="w-5 h-5" />
+                  </Button>
+                  <div className="hidden md:block">
+                    <AIConciliateButton compact />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
+
+          {/* Read-only indicator */}
+          {isReadOnly && (
+            <div className="border-t border-white/10 bg-black/50 p-4">
+              <p className="text-center text-sm text-white/40">
+                You are viewing this conversation in read-only mode
+              </p>
+            </div>
+          )}
         </div>
 
-        {/* Right rail - Disagreement slider */}
-        <div className="hidden md:flex flex-col items-center justify-center w-20 border-l border-white/10 bg-black/50 py-6">
-          <VerticalRatingSlider
-            value={disagreement}
-            onChange={setDisagreement}
-            label="Disagree"
-            color="orange"
-            lowLabel="Aligned"
-            highLabel="Opposed"
-            hasUnsavedChanges={hasUnsavedChanges}
-            onSave={handleSaveRating}
-            isSaving={isSaving}
-          />
-        </div>
+        {/* Right rail - Disagreement slider (hidden in read-only) */}
+        {!isReadOnly && (
+          <div className="hidden md:flex flex-col items-center justify-center w-20 border-l border-white/10 bg-black/50 py-6">
+            <VerticalRatingSlider
+              value={disagreement}
+              onChange={setDisagreement}
+              label="Disagree"
+              color="orange"
+              lowLabel="Aligned"
+              highLabel="Opposed"
+              hasUnsavedChanges={hasUnsavedChanges}
+              onSave={handleSaveRating}
+              isSaving={isSaving}
+            />
+          </div>
+        )}
       </div>
 
-      {/* Mobile rating bar + AI button */}
-      <div className="md:hidden flex items-center gap-3 px-4 py-3 border-t border-white/10 bg-black/95">
-        <div className="flex-1 flex items-center gap-3">
-          <div className="flex-1">
-            <p className="text-[10px] text-rose-400 mb-1">Empathy: {Math.round(empathy * 100)}</p>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={Math.round(empathy * 100)}
-              onChange={(e) => setEmpathy(Number(e.target.value) / 100)}
-              className="w-full h-1 bg-white/10 rounded-full appearance-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-rose-400 [&::-webkit-slider-thumb]:rounded-full"
-            />
+      {/* Mobile rating bar (hidden in read-only) */}
+      {!isReadOnly && (
+        <div className="md:hidden flex items-center gap-3 px-4 py-3 border-t border-white/10 bg-black/95">
+          <div className="flex-1 flex items-center gap-3">
+            <div className="flex-1">
+              <p className="text-[10px] text-rose-400 mb-1">Empathy: {Math.round(empathy * 100)}</p>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={Math.round(empathy * 100)}
+                onChange={(e) => setEmpathy(Number(e.target.value) / 100)}
+                className="w-full h-1 bg-white/10 rounded-full appearance-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-rose-400 [&::-webkit-slider-thumb]:rounded-full"
+              />
+            </div>
+            <div className="flex-1">
+              <p className="text-[10px] text-orange-400 mb-1">Disagree: {Math.round(disagreement * 100)}</p>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={Math.round(disagreement * 100)}
+                onChange={(e) => setDisagreement(Number(e.target.value) / 100)}
+                className="w-full h-1 bg-white/10 rounded-full appearance-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-orange-400 [&::-webkit-slider-thumb]:rounded-full"
+              />
+            </div>
           </div>
-          <div className="flex-1">
-            <p className="text-[10px] text-orange-400 mb-1">Disagree: {Math.round(disagreement * 100)}</p>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={Math.round(disagreement * 100)}
-              onChange={(e) => setDisagreement(Number(e.target.value) / 100)}
-              className="w-full h-1 bg-white/10 rounded-full appearance-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-orange-400 [&::-webkit-slider-thumb]:rounded-full"
-            />
-          </div>
+          <motion.button
+            onClick={handleSaveRating}
+            disabled={isSavingRating}
+            className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+              hasUnsavedChanges
+                ? 'bg-primary ring-2 ring-primary ring-offset-2 ring-offset-black' 
+                : 'bg-white/10'
+            }`}
+            whileTap={{ scale: 0.9 }}
+          >
+            <Check className={`w-4 h-4 ${hasUnsavedChanges ? 'text-white' : 'text-white/40'}`} />
+          </motion.button>
+          <AIConciliateButton compact />
         </div>
-        <motion.button
-          onClick={handleSaveRating}
-          disabled={isSavingRating}
-          className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
-            hasUnsavedChanges
-              ? 'bg-primary ring-2 ring-primary ring-offset-2 ring-offset-black' 
-              : 'bg-white/10'
-          }`}
-          whileTap={{ scale: 0.9 }}
-        >
-          <Check className={`w-4 h-4 ${hasUnsavedChanges ? 'text-white' : 'text-white/40'}`} />
-        </motion.button>
-        <AIConciliateButton compact />
-      </div>
+      )}
     </div>
   );
 }

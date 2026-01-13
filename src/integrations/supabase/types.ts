@@ -84,6 +84,58 @@ export type Database = {
           },
         ]
       }
+      chat_requests: {
+        Row: {
+          created_at: string
+          id: string
+          requester_opinion_id: string
+          status: string
+          target_opinion_id: string
+          topic_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          requester_opinion_id: string
+          status?: string
+          target_opinion_id: string
+          topic_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          requester_opinion_id?: string
+          status?: string
+          target_opinion_id?: string
+          topic_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_requests_requester_opinion_id_fkey"
+            columns: ["requester_opinion_id"]
+            isOneToOne: false
+            referencedRelation: "opinions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_requests_target_opinion_id_fkey"
+            columns: ["target_opinion_id"]
+            isOneToOne: false
+            referencedRelation: "opinions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_requests_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chats: {
         Row: {
           created_at: string

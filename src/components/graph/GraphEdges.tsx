@@ -4,9 +4,10 @@ interface GraphEdgesProps {
   nodes: GraphNode[];
   edges: GraphEdge[];
   highlightedNode?: string | null;
+  onEdgeClick?: (edge: GraphEdge) => void;
 }
 
-export function GraphEdges({ nodes, edges, highlightedNode }: GraphEdgesProps) {
+export function GraphEdges({ nodes, edges, highlightedNode, onEdgeClick }: GraphEdgesProps) {
   const nodeMap = new Map(nodes.map(n => [n.id, n]));
 
   return (
@@ -23,17 +24,20 @@ export function GraphEdges({ nodes, edges, highlightedNode }: GraphEdgesProps) {
         const isConnectedToHighlight = highlightedNode && isHighlighted;
         const shouldDim = highlightedNode && !isConnectedToHighlight;
 
-        // Style based on empathy/disagreement
-        const opacity = shouldDim ? 0.05 : (isHighlighted ? 0.8 : 0.15 + edge.empathy * 0.2);
-        const strokeWidth = isHighlighted ? 2 : 1;
+        // Style based on status and empathy/disagreement
+        const isPending = edge.status === 'pending';
+        const opacity = shouldDim ? 0.05 : (isHighlighted ? 0.8 : isPending ? 0.4 : 0.15 + edge.empathy * 0.2);
+        const strokeWidth = isHighlighted ? 2.5 : isPending ? 1.5 : 1;
         
-        // Dashed line for high disagreement
-        const strokeDasharray = edge.disagreement > 0.6 ? "4 2" : "none";
+        // Dashed line for pending requests OR high disagreement
+        const strokeDasharray = isPending ? "6 4" : edge.disagreement > 0.6 ? "4 2" : "none";
         
-        // Color: white for normal, slightly colored for high empathy
-        const stroke = edge.empathy > 0.7 
-          ? "hsl(0 0% 100%)" 
-          : "hsl(0 0% 80%)";
+        // Color: yellow/gold for pending, white for accepted
+        const stroke = isPending 
+          ? "hsl(var(--accent))"
+          : edge.empathy > 0.7 
+            ? "hsl(0 0% 100%)" 
+            : "hsl(0 0% 80%)";
 
         return (
           <line
@@ -46,7 +50,8 @@ export function GraphEdges({ nodes, edges, highlightedNode }: GraphEdgesProps) {
             strokeWidth={strokeWidth}
             strokeOpacity={opacity}
             strokeDasharray={strokeDasharray}
-            className="transition-all duration-300"
+            className={`transition-all duration-300 ${onEdgeClick ? 'cursor-pointer hover:stroke-[3px]' : ''}`}
+            onClick={() => onEdgeClick?.(edge)}
           />
         );
       })}

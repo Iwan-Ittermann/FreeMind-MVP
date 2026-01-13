@@ -14,6 +14,13 @@ export interface ChatRating {
   disagreement: number; // 0-1 scale
 }
 
+export interface ChatRequest {
+  id: string;
+  requesterOpinionId: string;
+  targetOpinionId: string;
+  status: 'pending' | 'accepted' | 'declined';
+}
+
 export interface GraphNode {
   id: string;
   x: number;
@@ -22,6 +29,8 @@ export interface GraphNode {
   cluster?: number;
   isBridge?: boolean;
   distanceToCenter?: number;
+  hasPendingRequest?: boolean; // This node has a pending incoming request
+  isRequester?: boolean; // This node sent a pending request to current user
 }
 
 export interface GraphEdge {
@@ -30,6 +39,7 @@ export interface GraphEdge {
   weight: number; // Combined score from ratings
   empathy: number;
   disagreement: number;
+  status: 'pending' | 'accepted'; // Edge type for visual styling
 }
 
 export interface GraphData {

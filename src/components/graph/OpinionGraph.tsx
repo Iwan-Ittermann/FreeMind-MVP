@@ -4,13 +4,16 @@ import { ConcentricCircles } from './ConcentricCircles';
 import { GraphEdges } from './GraphEdges';
 import { GraphNodes } from './GraphNodes';
 import { calculateLayout, generateMockData } from '@/lib/freemind-layout';
-import { GraphNode, LayoutConfig, Opinion, ChatRating } from '@/types/graph';
+import { GraphNode, GraphEdge, LayoutConfig, Opinion, ChatRating, ChatRequest } from '@/types/graph';
 
 interface OpinionGraphProps {
   opinions?: Opinion[];
   ratings?: ChatRating[];
+  chatRequests?: ChatRequest[];
   currentUserId?: string | null;
+  currentUserOpinionId?: string | null;
   onNodeSelect?: (node: GraphNode | null) => void;
+  onEdgeClick?: (edge: GraphEdge) => void;
   width?: number;
   height?: number;
   useMockData?: boolean;
@@ -19,8 +22,11 @@ interface OpinionGraphProps {
 export function OpinionGraph({ 
   opinions: externalOpinions,
   ratings: externalRatings,
+  chatRequests = [],
   currentUserId,
+  currentUserOpinionId,
   onNodeSelect,
+  onEdgeClick,
   width = 600,
   height = 600,
   useMockData = false,
@@ -57,10 +63,45 @@ export function OpinionGraph({
     };
   }, [externalOpinions, externalRatings, useMockData]);
 
-  // Calculate layout
+  // Calculate layout and add chat request edges
   const graphData = useMemo(() => {
-    return calculateLayout(opinions, ratings, config);
-  }, [opinions, ratings, config]);
+    const baseData = calculateLayout(opinions, ratings, config);
+    
+    // Add pending request edges
+    const pendingEdges: GraphEdge[] = chatRequests
+      .filter(req => req.status === 'pending')
+      .map(req => ({
+        source: req.requesterOpinionId,
+        target: req.targetOpinionId,
+        weight: 0.5,
+        empathy: 0.5,
+        disagreement: 0.5,
+        status: 'pending' as const,
+      }));
+
+    // Mark nodes that are requesting to chat with current user
+    const nodesWithRequestInfo = baseData.nodes.map(node => ({
+      ...node,
+      isRequester: currentUserOpinionId ? chatRequests.some(
+        req => req.status === 'pending' && 
+               req.requesterOpinionId === node.id && 
+               req.targetOpinionId === currentUserOpinionId
+      ) : false,
+    }));
+
+    // Combine edges, avoiding duplicates (accepted takes priority)
+    const acceptedPairs = new Set(
+      baseData.edges.map(e => [e.source, e.target].sort().join('-'))
+    );
+    const uniquePendingEdges = pendingEdges.filter(e => 
+      !acceptedPairs.has([e.source, e.target].sort().join('-'))
+    );
+
+    return {
+      nodes: nodesWithRequestInfo,
+      edges: [...baseData.edges, ...uniquePendingEdges],
+    };
+  }, [opinions, ratings, config, chatRequests, currentUserOpinionId]);
 
   const handleNodeClick = useCallback((node: GraphNode) => {
     setSelectedNode(prev => prev?.id === node.id ? null : node);
@@ -90,6 +131,7 @@ export function OpinionGraph({
           nodes={graphData.nodes} 
           edges={graphData.edges}
           highlightedNode={highlightedNode || selectedNode?.id}
+          onEdgeClick={onEdgeClick}
         />
         
         {/* Opinion nodes */}
@@ -98,6 +140,7 @@ export function OpinionGraph({
           config={config}
           highlightedNode={highlightedNode || selectedNode?.id}
           currentUserId={currentUserId}
+          currentUserOpinionId={currentUserOpinionId}
           onNodeClick={handleNodeClick}
           onNodeHover={handleNodeHover}
         />

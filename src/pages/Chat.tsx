@@ -10,6 +10,7 @@ export default function Chat() {
   const [searchParams] = useSearchParams();
   
   const theirOpinionId = searchParams.get('their');
+  const isReadOnly = searchParams.get('readonly') === 'true';
   
   const { 
     myOpinion, 
@@ -33,6 +34,45 @@ export default function Chat() {
       toast.error('Failed to save rating');
     }
   };
+
+  // Read-only mode: don't require user login
+  if (isReadOnly) {
+    if (isLoading) {
+      return (
+        <div className="min-h-screen bg-black flex items-center justify-center p-4">
+          <div className="text-center">
+            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-white/60 text-sm">Loading chat...</p>
+          </div>
+        </div>
+      );
+    }
+
+    if (!theirOpinion) {
+      return (
+        <div className="min-h-screen bg-black flex items-center justify-center p-4">
+          <div className="text-center">
+            <p className="text-white/60 mb-4 text-sm md:text-base">Chat not found.</p>
+            <button 
+              onClick={() => navigate('/')}
+              className="text-primary hover:underline py-2 px-4 text-base"
+            >
+              Go Back
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <FloatingChat
+        myOpinion={myOpinion?.text || 'Unknown opinion'}
+        theirOpinion={theirOpinion.text}
+        onClose={handleClose}
+        isReadOnly={true}
+      />
+    );
+  }
 
   if (!user) {
     return (
@@ -102,6 +142,7 @@ export default function Chat() {
       onClose={handleClose}
       onSubmitRating={handleSubmitRating}
       isSavingRating={isSavingRating}
+      isReadOnly={false}
     />
   );
 }

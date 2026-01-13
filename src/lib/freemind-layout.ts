@@ -214,13 +214,14 @@ export function calculateLayout(
     };
   });
 
-  // Step 4: Create edges from ratings
+  // Step 4: Create edges from ratings (only for accepted chats - handled externally now)
   const edges: GraphEdge[] = ratings.map(r => ({
     source: r.opinionA,
     target: r.opinionB,
     weight: r.empathy * (1 - r.disagreement * 0.5),
     empathy: r.empathy,
     disagreement: r.disagreement,
+    status: 'accepted' as const,
   }));
 
   // Step 5: Apply force-directed refinement (multiple iterations)
