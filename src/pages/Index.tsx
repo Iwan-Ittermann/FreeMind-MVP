@@ -23,7 +23,7 @@ const Index = () => {
   const [graphSize, setGraphSize] = useState({ width: 600, height: 600 });
   const queryClient = useQueryClient();
   
-  const { data: topicData, isLoading, error, activeChats } = useTopicData(DEFAULT_TOPIC_ID);
+  const { data: topicData, isLoading, error, activeChats, messageAnimations } = useTopicData(DEFAULT_TOPIC_ID);
   const { 
     chatRequests, 
     sendRequest, 
@@ -191,6 +191,7 @@ const Index = () => {
               ratings={hasRealData ? topicData.ratings : undefined}
               chatRequests={graphChatRequests}
               activeChats={activeChats}
+              messageAnimations={messageAnimations}
               currentUserId={user?.id}
               currentUserOpinionId={myOpinion?.id}
               width={graphSize.width}
