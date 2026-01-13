@@ -26,18 +26,18 @@ export function GraphEdges({ nodes, edges, highlightedNode, onEdgeClick }: Graph
 
         // Style based on status and empathy/disagreement
         const isPending = edge.status === 'pending';
-        const opacity = shouldDim ? 0.05 : (isHighlighted ? 0.8 : isPending ? 0.4 : 0.15 + edge.empathy * 0.2);
-        const strokeWidth = isHighlighted ? 2.5 : isPending ? 1.5 : 1;
+        const opacity = shouldDim ? 0.15 : (isHighlighted ? 1 : isPending ? 0.7 : 0.35 + edge.empathy * 0.3);
+        const strokeWidth = isHighlighted ? 3.5 : isPending ? 2.5 : 2;
         
         // Dashed line for pending requests OR high disagreement
         const strokeDasharray = isPending ? "6 4" : edge.disagreement > 0.6 ? "4 2" : "none";
         
-        // Color: yellow/gold for pending, white for accepted
+        // Color: yellow/gold for pending, brighter white for accepted
         const stroke = isPending 
           ? "hsl(var(--accent))"
           : edge.empathy > 0.7 
             ? "hsl(0 0% 100%)" 
-            : "hsl(0 0% 80%)";
+            : "hsl(0 0% 90%)";
 
         return (
           <line
