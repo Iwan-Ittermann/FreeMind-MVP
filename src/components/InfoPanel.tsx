@@ -14,9 +14,9 @@ export function InfoPanel({ question, opinionCount }: InfoPanelProps) {
   const { user, signOut } = useAuth();
   
   const steps = [
-    { icon: MessageSquare, text: 'STATE your opinion' },
-    { icon: MessagesSquare, text: 'CHAT with others' },
-    { icon: Star, text: 'RATE your chat' },
+    { icon: MessageSquare, action: 'STATE', description: 'your opinion' },
+    { icon: MessagesSquare, action: 'CHAT', description: 'with others' },
+    { icon: Star, action: 'RATE', description: 'your chat' },
   ];
 
   const handleSignOut = async () => {
@@ -71,7 +71,10 @@ export function InfoPanel({ question, opinionCount }: InfoPanelProps) {
             <div className="w-9 h-9 md:w-10 md:h-10 rounded-full border border-white/20 flex items-center justify-center flex-shrink-0">
               <step.icon size={16} className="md:w-[18px] md:h-[18px]" />
             </div>
-            <span className="text-sm">{step.text}</span>
+            <span className="text-sm">
+              <span className="font-medium text-white">{step.action}</span>
+              <span className="ml-3">{step.description}</span>
+            </span>
           </motion.div>
         ))}
       </motion.div>
