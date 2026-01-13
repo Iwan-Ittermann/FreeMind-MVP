@@ -96,6 +96,7 @@ const Index = () => {
             <OpinionGraph
               opinions={hasRealData ? topicData.opinions : undefined}
               ratings={hasRealData ? topicData.ratings : undefined}
+              currentUserId={user?.id}
               width={graphSize.width}
               height={graphSize.height}
               onNodeSelect={setSelectedNode}
