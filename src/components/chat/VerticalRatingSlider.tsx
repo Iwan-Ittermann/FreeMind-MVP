@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Check } from 'lucide-react';
 
 interface VerticalRatingSliderProps {
   value: number;
@@ -7,6 +8,9 @@ interface VerticalRatingSliderProps {
   color: 'rose' | 'orange';
   lowLabel: string;
   highLabel: string;
+  hasUnsavedChanges?: boolean;
+  onSave?: () => void;
+  isSaving?: boolean;
 }
 
 export function VerticalRatingSlider({
@@ -16,21 +20,31 @@ export function VerticalRatingSlider({
   color,
   lowLabel,
   highLabel,
+  hasUnsavedChanges = false,
+  onSave,
+  isSaving = false,
 }: VerticalRatingSliderProps) {
   const colorClasses = {
     rose: {
       text: 'text-rose-400',
       bg: 'bg-rose-400',
       track: 'bg-rose-400/20',
+      saveButton: 'bg-rose-500 hover:bg-rose-600',
+      unsavedRing: 'ring-rose-400',
     },
     orange: {
       text: 'text-orange-400',
       bg: 'bg-orange-400',
       track: 'bg-orange-400/20',
+      saveButton: 'bg-orange-500 hover:bg-orange-600',
+      unsavedRing: 'ring-orange-400',
     },
   };
 
   const colors = colorClasses[color];
+
+  // Convert 0-1 to 0-10 points
+  const points = Math.round(value * 10);
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -45,7 +59,7 @@ export function VerticalRatingSlider({
   };
 
   return (
-    <div className="flex flex-col items-center h-full gap-3">
+    <div className="flex flex-col items-center h-full gap-2">
       {/* Label */}
       <span className={`text-[10px] font-medium uppercase tracking-wider ${colors.text}`}>
         {label}
@@ -80,10 +94,31 @@ export function VerticalRatingSlider({
       {/* Low label */}
       <span className="text-[9px] text-white/30">{lowLabel}</span>
 
-      {/* Value */}
-      <span className={`text-xs font-mono ${colors.text}`}>
-        {Math.round(value * 100)}%
+      {/* Points value */}
+      <span className={`text-sm font-mono font-bold ${colors.text}`}>
+        {points}
       </span>
+
+      {/* Save button - small circle */}
+      {onSave && (
+        <motion.button
+          onClick={onSave}
+          disabled={isSaving}
+          className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${
+            hasUnsavedChanges 
+              ? `${colors.saveButton} ring-2 ${colors.unsavedRing} ring-offset-2 ring-offset-black` 
+              : 'bg-white/10 hover:bg-white/20'
+          }`}
+          whileTap={{ scale: 0.9 }}
+          title={hasUnsavedChanges ? 'Save rating' : 'Rating saved'}
+        >
+          {isSaving ? (
+            <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <Check className={`w-3.5 h-3.5 ${hasUnsavedChanges ? 'text-white' : 'text-white/40'}`} />
+          )}
+        </motion.button>
+      )}
     </div>
   );
 }
