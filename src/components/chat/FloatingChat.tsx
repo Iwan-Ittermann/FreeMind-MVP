@@ -57,12 +57,10 @@ export function FloatingChat({
   const [disagreement, setDisagreement] = useState(0.5);
   const [savedEmpathy, setSavedEmpathy] = useState(0.5);
   const [savedDisagreement, setSavedDisagreement] = useState(0.5);
-  const [isSavingEmpathy, setIsSavingEmpathy] = useState(false);
-  const [isSavingDisagreement, setIsSavingDisagreement] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const empathyHasChanges = empathy !== savedEmpathy;
-  const disagreementHasChanges = disagreement !== savedDisagreement;
+  const hasUnsavedChanges = empathy !== savedEmpathy || disagreement !== savedDisagreement;
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -123,25 +121,7 @@ export function FloatingChat({
     ));
   };
 
-  const handleSaveEmpathy = () => {
-    setIsSavingEmpathy(true);
-    onSubmitRating?.(empathy, savedDisagreement);
-    setTimeout(() => {
-      setSavedEmpathy(empathy);
-      setIsSavingEmpathy(false);
-    }, 500);
-  };
-
-  const handleSaveDisagreement = () => {
-    setIsSavingDisagreement(true);
-    onSubmitRating?.(savedEmpathy, disagreement);
-    setTimeout(() => {
-      setSavedDisagreement(disagreement);
-      setIsSavingDisagreement(false);
-    }, 500);
-  };
-
-  const handleSaveBothRatings = () => {
+  const handleSaveRating = () => {
     onSubmitRating?.(empathy, disagreement);
     setSavedEmpathy(empathy);
     setSavedDisagreement(disagreement);
@@ -176,7 +156,7 @@ export function FloatingChat({
         <div className="text-center">
           <p className="text-sm font-medium text-white">Discussion</p>
           <p className={`text-xs ${getBridgingScoreColor()}`}>
-            Bridging Score: <span className="font-mono font-bold">{bridgingScore}</span>
+            Bridging Score: <span className="font-mono font-bold">{bridgingScore.toLocaleString()}</span>
           </p>
         </div>
 
@@ -203,9 +183,9 @@ export function FloatingChat({
             color="rose"
             lowLabel="Cold"
             highLabel="Warm"
-            hasUnsavedChanges={empathyHasChanges}
-            onSave={handleSaveEmpathy}
-            isSaving={isSavingEmpathy}
+            hasUnsavedChanges={hasUnsavedChanges}
+            onSave={handleSaveRating}
+            isSaving={isSaving}
           />
         </div>
 
@@ -285,9 +265,9 @@ export function FloatingChat({
             color="orange"
             lowLabel="Aligned"
             highLabel="Opposed"
-            hasUnsavedChanges={disagreementHasChanges}
-            onSave={handleSaveDisagreement}
-            isSaving={isSavingDisagreement}
+            hasUnsavedChanges={hasUnsavedChanges}
+            onSave={handleSaveRating}
+            isSaving={isSaving}
           />
         </div>
       </div>
@@ -319,16 +299,16 @@ export function FloatingChat({
           </div>
         </div>
         <motion.button
-          onClick={handleSaveBothRatings}
+          onClick={handleSaveRating}
           disabled={isSavingRating}
           className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
-            (empathyHasChanges || disagreementHasChanges)
+            hasUnsavedChanges
               ? 'bg-primary ring-2 ring-primary ring-offset-2 ring-offset-black' 
               : 'bg-white/10'
           }`}
           whileTap={{ scale: 0.9 }}
         >
-          <Check className={`w-4 h-4 ${(empathyHasChanges || disagreementHasChanges) ? 'text-white' : 'text-white/40'}`} />
+          <Check className={`w-4 h-4 ${hasUnsavedChanges ? 'text-white' : 'text-white/40'}`} />
         </motion.button>
         <AIConciliateButton compact />
       </div>
