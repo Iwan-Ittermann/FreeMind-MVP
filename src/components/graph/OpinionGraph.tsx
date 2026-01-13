@@ -5,11 +5,13 @@ import { GraphEdges } from './GraphEdges';
 import { GraphNodes } from './GraphNodes';
 import { calculateLayout, generateMockData } from '@/lib/freemind-layout';
 import { GraphNode, GraphEdge, LayoutConfig, Opinion, ChatRating, ChatRequest } from '@/types/graph';
+import { ActiveChat } from '@/hooks/useTopicData';
 
 interface OpinionGraphProps {
   opinions?: Opinion[];
   ratings?: ChatRating[];
   chatRequests?: ChatRequest[];
+  activeChats?: ActiveChat[];
   currentUserId?: string | null;
   currentUserOpinionId?: string | null;
   onNodeSelect?: (node: GraphNode | null) => void;
@@ -23,6 +25,7 @@ export function OpinionGraph({
   opinions: externalOpinions,
   ratings: externalRatings,
   chatRequests = [],
+  activeChats = [],
   currentUserId,
   currentUserOpinionId,
   onNodeSelect,
@@ -131,6 +134,7 @@ export function OpinionGraph({
           nodes={graphData.nodes} 
           edges={graphData.edges}
           highlightedNode={highlightedNode || selectedNode?.id}
+          activeChats={activeChats}
           onEdgeClick={onEdgeClick}
         />
         
