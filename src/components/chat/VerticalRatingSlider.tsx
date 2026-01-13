@@ -11,6 +11,7 @@ interface VerticalRatingSliderProps {
   hasUnsavedChanges?: boolean;
   onSave?: () => void;
   isSaving?: boolean;
+  compact?: boolean;
 }
 
 export function VerticalRatingSlider({
@@ -23,6 +24,7 @@ export function VerticalRatingSlider({
   hasUnsavedChanges = false,
   onSave,
   isSaving = false,
+  compact = false,
 }: VerticalRatingSliderProps) {
   const colorClasses = {
     rose: {
@@ -57,6 +59,52 @@ export function VerticalRatingSlider({
     if (e.buttons !== 1) return;
     handleClick(e);
   };
+
+  if (compact) {
+    return (
+      <div className="flex flex-col items-center h-full gap-1">
+        {/* Label */}
+        <span className={`text-[8px] font-medium uppercase tracking-wider ${colors.text}`}>
+          {label}
+        </span>
+
+        {/* Slider track */}
+        <div
+          className={`relative w-1.5 flex-1 rounded-full ${colors.track} cursor-pointer`}
+          onClick={handleClick}
+          onMouseMove={handleDrag}
+          onTouchMove={(e) => {
+            const touch = e.touches[0];
+            const rect = e.currentTarget.getBoundingClientRect();
+            const y = touch.clientY - rect.top;
+            const percentage = 1 - (y / rect.height);
+            onChange(Math.max(0, Math.min(1, percentage)));
+          }}
+        >
+          {/* Fill */}
+          <motion.div
+            className={`absolute bottom-0 left-0 right-0 rounded-full ${colors.bg}`}
+            initial={false}
+            animate={{ height: `${value * 100}%` }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          />
+          
+          {/* Thumb */}
+          <motion.div
+            className={`absolute left-1/2 -translate-x-1/2 w-3 h-3 rounded-full ${colors.bg} shadow-lg border border-black`}
+            initial={false}
+            animate={{ bottom: `calc(${value * 100}% - 6px)` }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          />
+        </div>
+
+        {/* Points value */}
+        <span className={`text-xs font-mono font-bold ${colors.text}`}>
+          {points}
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center h-full gap-2">
