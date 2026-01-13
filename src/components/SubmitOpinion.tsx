@@ -19,14 +19,16 @@ const opinionSchema = z.object({
 interface SubmitOpinionProps {
   topicId: string;
   onSuccess?: () => void;
+  hasExistingOpinion?: boolean;
 }
 
-export function SubmitOpinion({ topicId, onSuccess }: SubmitOpinionProps) {
+export function SubmitOpinion({ topicId, onSuccess, hasExistingOpinion = false }: SubmitOpinionProps) {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [text, setText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,6 +65,7 @@ export function SubmitOpinion({ topicId, onSuccess }: SubmitOpinionProps) {
         toast.success('Opinion submitted! It will appear on the graph.');
         setText('');
         setIsOpen(false);
+        setSubmitted(true);
         onSuccess?.();
       }
     } catch (err) {
@@ -76,6 +79,8 @@ export function SubmitOpinion({ topicId, onSuccess }: SubmitOpinionProps) {
     return null;
   }
 
+  const isDisabled = hasExistingOpinion || submitted;
+
   return (
     <div className="relative">
       <AnimatePresence>
@@ -87,10 +92,15 @@ export function SubmitOpinion({ topicId, onSuccess }: SubmitOpinionProps) {
           >
             <Button
               onClick={() => setIsOpen(true)}
-              className="bg-primary hover:bg-primary/90 h-11 md:h-10 px-5"
+              disabled={isDisabled}
+              className={`h-11 md:h-10 px-5 ${
+                isDisabled 
+                  ? 'bg-muted text-muted-foreground cursor-not-allowed' 
+                  : 'bg-primary hover:bg-primary/90'
+              }`}
             >
               <Plus className="w-4 h-4 mr-2" />
-              Add Your Opinion
+              {isDisabled ? 'Opinion Added' : 'Add Your Opinion'}
             </Button>
           </motion.div>
         ) : (

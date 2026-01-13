@@ -166,6 +166,7 @@ const Index = () => {
               <SubmitOpinion 
                 topicId={DEFAULT_TOPIC_ID} 
                 onSuccess={handleOpinionSubmitted}
+                hasExistingOpinion={!!myOpinion}
               />
             </motion.div>
             
