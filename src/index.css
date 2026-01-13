@@ -86,8 +86,8 @@
   }
 
   .dark {
-    /* Dark mode: Black background, White text */
-    --background: 0 0% 0%;
+    /* Dark mode: Sky blue background for testing */
+    --background: 197 71% 73%;
     --foreground: 0 0% 100%;
 
     --card: 0 0% 8%;
