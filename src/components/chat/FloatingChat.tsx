@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, ArrowLeft, Languages, Check } from 'lucide-react';
+import { Send, ArrowLeft, Languages, Check, ChevronRight, ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ChatBubble } from './ChatBubble';
@@ -44,6 +44,8 @@ export function FloatingChat({
   const [disagreement, setDisagreement] = useState(0.5);
   const [savedEmpathy, setSavedEmpathy] = useState(0.5);
   const [savedDisagreement, setSavedDisagreement] = useState(0.5);
+  const [mobileLeftSliderOpen, setMobileLeftSliderOpen] = useState(false);
+  const [mobileRightSliderOpen, setMobileRightSliderOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -197,9 +199,87 @@ export function FloatingChat({
         </div>
       </div>
 
-      {/* Main content with side rails */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Left rail - Empathy slider (hidden in read-only) */}
+      {/* Main content area - relative for mobile slider positioning */}
+      <div className="flex-1 flex overflow-hidden relative">
+        {/* Mobile collapsible left slider - Empathy (hidden in read-only) */}
+        {!isReadOnly && (
+          <div className="md:hidden absolute left-0 top-0 z-20 flex">
+            <AnimatePresence>
+              {mobileLeftSliderOpen && (
+                <motion.div
+                  initial={{ x: -60 }}
+                  animate={{ x: 0 }}
+                  exit={{ x: -60 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                  className="w-14 h-36 bg-black/95 border-r border-b border-white/10 rounded-br-lg flex flex-col items-center justify-center py-2"
+                >
+                  <VerticalRatingSlider
+                    value={empathy}
+                    onChange={setEmpathy}
+                    label="Empathy"
+                    color="rose"
+                    lowLabel="Cold"
+                    highLabel="Warm"
+                    compact
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+            <button
+              onClick={() => setMobileLeftSliderOpen(!mobileLeftSliderOpen)}
+              className={`h-10 px-1 bg-black/90 border border-white/10 rounded-r-lg flex items-center gap-0.5 ${mobileLeftSliderOpen ? 'border-l-0' : ''}`}
+            >
+              <span className="w-1.5 h-6 rounded-full bg-rose-400" />
+              <span className="text-[8px] text-rose-400 font-bold">{empathyPoints}</span>
+              {mobileLeftSliderOpen ? (
+                <ChevronLeft className="w-3 h-3 text-white/40" />
+              ) : (
+                <ChevronRight className="w-3 h-3 text-white/40" />
+              )}
+            </button>
+          </div>
+        )}
+
+        {/* Mobile collapsible right slider - Disagreement (hidden in read-only) */}
+        {!isReadOnly && (
+          <div className="md:hidden absolute right-0 top-0 z-20 flex flex-row-reverse">
+            <AnimatePresence>
+              {mobileRightSliderOpen && (
+                <motion.div
+                  initial={{ x: 60 }}
+                  animate={{ x: 0 }}
+                  exit={{ x: 60 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                  className="w-14 h-36 bg-black/95 border-l border-b border-white/10 rounded-bl-lg flex flex-col items-center justify-center py-2"
+                >
+                  <VerticalRatingSlider
+                    value={disagreement}
+                    onChange={setDisagreement}
+                    label="Disagree"
+                    color="orange"
+                    lowLabel="Aligned"
+                    highLabel="Opposed"
+                    compact
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+            <button
+              onClick={() => setMobileRightSliderOpen(!mobileRightSliderOpen)}
+              className={`h-10 px-1 bg-black/90 border border-white/10 rounded-l-lg flex items-center gap-0.5 flex-row-reverse ${mobileRightSliderOpen ? 'border-r-0' : ''}`}
+            >
+              <span className="w-1.5 h-6 rounded-full bg-orange-400" />
+              <span className="text-[8px] text-orange-400 font-bold">{disagreementPoints}</span>
+              {mobileRightSliderOpen ? (
+                <ChevronRight className="w-3 h-3 text-white/40" />
+              ) : (
+                <ChevronLeft className="w-3 h-3 text-white/40" />
+              )}
+            </button>
+          </div>
+        )}
+
+        {/* Desktop Left rail - Empathy slider (hidden in read-only) */}
         {!isReadOnly && (
           <div className="hidden md:flex flex-col items-center justify-center w-20 border-r border-white/10 bg-black/50 py-6">
             <VerticalRatingSlider
@@ -259,6 +339,19 @@ export function FloatingChat({
             <div className="border-t border-white/10 bg-black p-4">
               <div className="max-w-lg mx-auto">
                 <div className="flex gap-2 items-center">
+                  {/* Mobile save button */}
+                  <motion.button
+                    onClick={handleSaveRating}
+                    disabled={isSavingRating}
+                    className={`md:hidden w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
+                      hasUnsavedChanges
+                        ? 'bg-primary ring-2 ring-primary ring-offset-2 ring-offset-black' 
+                        : 'bg-white/10'
+                    }`}
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    <Check className={`w-4 h-4 ${hasUnsavedChanges ? 'text-white' : 'text-white/40'}`} />
+                  </motion.button>
                   <Input
                     value={inputValue}
                     onChange={(e) => handleInputChange(e.target.value)}
@@ -292,7 +385,7 @@ export function FloatingChat({
           )}
         </div>
 
-        {/* Right rail - Disagreement slider (hidden in read-only) */}
+        {/* Desktop Right rail - Disagreement slider (hidden in read-only) */}
         {!isReadOnly && (
           <div className="hidden md:flex flex-col items-center justify-center w-20 border-l border-white/10 bg-black/50 py-6">
             <VerticalRatingSlider
@@ -309,54 +402,6 @@ export function FloatingChat({
           </div>
         )}
       </div>
-
-      {/* Mobile rating bar with vertical sliders (hidden in read-only) */}
-      {!isReadOnly && (
-        <div className="md:hidden flex items-stretch justify-center gap-4 px-4 py-2 border-t border-white/10 bg-black/95">
-          {/* Left - Empathy slider */}
-          <div className="flex flex-col items-center h-32">
-            <VerticalRatingSlider
-              value={empathy}
-              onChange={setEmpathy}
-              label="Empathy"
-              color="rose"
-              lowLabel="Cold"
-              highLabel="Warm"
-              compact
-            />
-          </div>
-
-          {/* Center - Save button and AI */}
-          <div className="flex flex-col items-center justify-center gap-2">
-            <motion.button
-              onClick={handleSaveRating}
-              disabled={isSavingRating}
-              className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
-                hasUnsavedChanges
-                  ? 'bg-primary ring-2 ring-primary ring-offset-2 ring-offset-black' 
-                  : 'bg-white/10'
-              }`}
-              whileTap={{ scale: 0.9 }}
-            >
-              <Check className={`w-5 h-5 ${hasUnsavedChanges ? 'text-white' : 'text-white/40'}`} />
-            </motion.button>
-            <AIConciliateButton compact />
-          </div>
-
-          {/* Right - Disagreement slider */}
-          <div className="flex flex-col items-center h-32">
-            <VerticalRatingSlider
-              value={disagreement}
-              onChange={setDisagreement}
-              label="Disagree"
-              color="orange"
-              lowLabel="Aligned"
-              highLabel="Opposed"
-              compact
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 }
