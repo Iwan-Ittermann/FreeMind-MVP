@@ -1,4 +1,4 @@
-import { MessageSquare, Heart, RefreshCw, LogIn, LogOut } from 'lucide-react';
+import { MessageSquare, MessagesSquare, Star, LogIn, LogOut } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -14,9 +14,9 @@ export function InfoPanel({ question, opinionCount }: InfoPanelProps) {
   const { user, signOut } = useAuth();
   
   const steps = [
-    { icon: MessageSquare, text: 'STATE  your opinion' },
-    { icon: Heart, text: 'DEBATE  other opinions' },
-    { icon: RefreshCw, text: 'RATE  your chat' },
+    { icon: MessageSquare, text: 'STATE your opinion' },
+    { icon: MessagesSquare, text: 'DEBATE other opinions' },
+    { icon: Star, text: 'RATE your chat' },
   ];
 
   const handleSignOut = async () => {
