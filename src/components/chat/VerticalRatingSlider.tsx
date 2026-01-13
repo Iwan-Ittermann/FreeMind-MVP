@@ -43,8 +43,8 @@ export function VerticalRatingSlider({
 
   const colors = colorClasses[color];
 
-  // Convert 0-1 to 0-10 points
-  const points = Math.round(value * 10);
+  // Convert 0-1 to 0-100 points
+  const points = Math.round(value * 100);
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
