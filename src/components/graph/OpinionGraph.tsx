@@ -102,23 +102,6 @@ export function OpinionGraph({
           onNodeHover={handleNodeHover}
         />
       </svg>
-
-      {/* Selected node tooltip */}
-      {selectedNode && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur-sm border border-white/20 rounded-lg p-4 max-w-sm shadow-xl"
-        >
-          <p className="text-sm text-black">{selectedNode.opinion.text}</p>
-          <button
-            onClick={() => setSelectedNode(null)}
-            className="mt-2 text-xs text-black/60 hover:text-black transition-colors"
-          >
-            Close
-          </button>
-        </motion.div>
-      )}
     </div>
   );
 }
