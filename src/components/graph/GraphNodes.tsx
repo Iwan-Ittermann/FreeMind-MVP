@@ -29,21 +29,31 @@ export function GraphNodes({
         const isCurrentUser = currentUserId && node.opinion.authorId === currentUserId;
         const shouldDim = highlightedNode && !isHighlighted;
         const hasIncomingRequest = node.isRequester; // This node sent a request TO current user
+        const isInactive = node.hasChats === false; // Node has no chats yet
 
         // Node color based on state
-        const fillColor = isHighlighted 
-          ? "hsl(var(--secondary))" // Blue when highlighted
-          : isCurrentUser
-            ? "hsl(var(--primary))" // Primary color for current user
-            : "hsl(0 0% 100%)"; // White normally
-        
-        const strokeColor = isCurrentUser
-          ? "hsl(var(--primary))"
-          : hasIncomingRequest
-            ? "hsl(var(--accent))" // Yellow for nodes requesting to chat with current user
-            : node.isBridge 
-              ? "hsl(var(--accent))" // Yellow stroke for bridge nodes
-              : "hsl(0 0% 100% / 0.3)";
+        let fillColor: string;
+        let strokeColor: string;
+
+        if (isHighlighted) {
+          fillColor = "hsl(var(--secondary))"; // Blue when highlighted
+          strokeColor = "hsl(var(--secondary))";
+        } else if (isCurrentUser) {
+          fillColor = "hsl(var(--primary))"; // Primary color for current user
+          strokeColor = "hsl(var(--primary))";
+        } else if (isInactive) {
+          fillColor = "hsl(var(--muted-foreground) / 0.3)"; // Muted/gray for inactive
+          strokeColor = "hsl(var(--muted-foreground) / 0.5)";
+        } else if (hasIncomingRequest) {
+          fillColor = "hsl(0 0% 100%)";
+          strokeColor = "hsl(var(--accent))"; // Yellow for nodes requesting to chat
+        } else if (node.isBridge) {
+          fillColor = "hsl(0 0% 100%)";
+          strokeColor = "hsl(var(--accent))"; // Yellow stroke for bridge nodes
+        } else {
+          fillColor = "hsl(0 0% 100%)"; // White normally
+          strokeColor = "hsl(0 0% 100% / 0.3)";
+        }
 
         return (
           <motion.g

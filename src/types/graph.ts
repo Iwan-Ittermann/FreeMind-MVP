@@ -31,6 +31,7 @@ export interface GraphNode {
   distanceToCenter?: number;
   hasPendingRequest?: boolean; // This node has a pending incoming request
   isRequester?: boolean; // This node sent a pending request to current user
+  hasChats?: boolean; // Whether this node has participated in any chats
 }
 
 export interface GraphEdge {
