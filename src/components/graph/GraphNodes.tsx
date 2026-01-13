@@ -42,8 +42,8 @@ export function GraphNodes({
           fillColor = "hsl(var(--primary))"; // Primary color for current user
           strokeColor = "hsl(var(--primary))";
         } else if (isInactive) {
-          fillColor = "hsl(0 0% 40%)"; // Grey for inactive nodes
-          strokeColor = "hsl(0 0% 50%)";
+          fillColor = "hsl(0 0% 70%)"; // Lighter grey for inactive nodes (was too dim)
+          strokeColor = "hsl(0 0% 80%)";
         } else if (hasIncomingRequest) {
           fillColor = "hsl(0 0% 100%)";
           strokeColor = "hsl(var(--accent))"; // Yellow for nodes requesting to chat
@@ -60,7 +60,7 @@ export function GraphNodes({
             key={node.id}
             initial={{ opacity: 0, scale: 0, x: node.x, y: node.y }}
             animate={{ 
-              opacity: shouldDim ? 0.3 : 1, 
+              opacity: shouldDim ? 0.5 : 1, // Increased from 0.3 to 0.5 for better visibility
               scale: 1,
               x: node.x,
               y: node.y,

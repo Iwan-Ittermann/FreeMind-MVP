@@ -300,15 +300,14 @@ export function calculateLayout(
     } as GraphNode;
   });
 
-  // Step 6: Optimize angular positions for active nodes based on disagreement
-  let refinedActiveNodes = activeNodes;
-  if (edges.length > 0) {
-    refinedActiveNodes = optimizeAngularPositions(activeNodes, edges, config, 50);
-  }
+  // Step 6: Skip angular optimization - it causes non-deterministic layouts across users
+  // The deterministic angle based on sorted ID position is sufficient
+  // and ensures all users see the same graph
 
-  // Step 7: Apply repulsion to prevent overlap
-  refinedActiveNodes = applyRepulsionForces(refinedActiveNodes, config);
-  const refinedInactiveNodes = applyRepulsionForces(inactiveNodes, config);
+  // Step 7: Skip repulsion forces as they also introduce non-determinism
+  // The spread of nodes based on sorted positions should be sufficient
+  const refinedActiveNodes = activeNodes;
+  const refinedInactiveNodes = inactiveNodes;
 
   // Combine active and inactive nodes
   const allNodes = [...refinedActiveNodes, ...refinedInactiveNodes];
