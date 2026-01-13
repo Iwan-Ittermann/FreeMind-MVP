@@ -5,6 +5,7 @@ import { MessageSquare, X, Send, Check } from 'lucide-react';
 import { OpinionGraph } from '@/components/graph/OpinionGraph';
 import { InfoPanel } from '@/components/InfoPanel';
 import { SubmitOpinion } from '@/components/SubmitOpinion';
+import { ConfigPanel } from '@/components/ConfigPanel';
 import { Button } from '@/components/ui/button';
 import { GraphNode, GraphEdge, ChatRequest } from '@/types/graph';
 import { useTopicData } from '@/hooks/useTopicData';
@@ -283,6 +284,9 @@ const Index = () => {
           </motion.div>
         </div>
       </div>
+      
+      {/* Hidden config panel */}
+      <ConfigPanel />
     </div>
   );
 };
