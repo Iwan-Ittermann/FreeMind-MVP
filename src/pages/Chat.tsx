@@ -14,6 +14,7 @@ export default function Chat() {
   
   const { 
     chatId,
+    topicId,
     myOpinion, 
     theirOpinion,
     myOpinionId,
@@ -70,6 +71,7 @@ export default function Chat() {
     return (
       <FloatingChat
         chatId={chatId}
+        topicId={topicId || undefined}
         myOpinion={myOpinion?.text || 'Unknown opinion'}
         theirOpinion={theirOpinion.text}
         myOpinionId={myOpinionId || undefined}
@@ -144,6 +146,7 @@ export default function Chat() {
   return (
     <FloatingChat
       chatId={chatId}
+      topicId={topicId || undefined}
       myOpinion={myOpinion.text}
       theirOpinion={theirOpinion.text}
       myOpinionId={myOpinionId || undefined}
