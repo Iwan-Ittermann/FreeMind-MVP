@@ -142,6 +142,7 @@ export function useChatRequests(topicId: string) {
     declineRequest: declineRequestMutation.mutateAsync,
     isSending: sendRequestMutation.isPending,
     isAccepting: acceptRequestMutation.isPending,
+    isDeclining: declineRequestMutation.isPending,
     getRequestBetween,
     getPendingRequestsForOpinion,
     getAcceptedRequests,

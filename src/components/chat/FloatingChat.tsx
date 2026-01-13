@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, ArrowLeft, Languages, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -7,7 +7,8 @@ import { ChatBubble } from './ChatBubble';
 import { TypingIndicator } from './TypingIndicator';
 import { VerticalRatingSlider } from './VerticalRatingSlider';
 import { AIConciliateButton } from './AIConciliateButton';
-import { useChatMessages, ChatMessage } from '@/hooks/useChatMessages';
+import { useChatMessages } from '@/hooks/useChatMessages';
+import { useTypingIndicator } from '@/hooks/useTypingIndicator';
 
 interface FloatingChatProps {
   chatId: string | null;
@@ -33,6 +34,7 @@ export function FloatingChat({
   isReadOnly = false,
 }: FloatingChatProps) {
   const { messages: dbMessages, sendMessage, isSending } = useChatMessages(chatId);
+  const { partnerTyping, setTyping } = useTypingIndicator(chatId);
   const [inputValue, setInputValue] = useState('');
   const [translateEnabled, setTranslateEnabled] = useState(false);
   const [empathy, setEmpathy] = useState(0.5);
@@ -40,6 +42,28 @@ export function FloatingChat({
   const [savedEmpathy, setSavedEmpathy] = useState(0.5);
   const [savedDisagreement, setSavedDisagreement] = useState(0.5);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Handle input change with typing indicator
+  const handleInputChange = useCallback((value: string) => {
+    setInputValue(value);
+    
+    if (!isReadOnly && value.trim()) {
+      setTyping(true);
+      
+      // Clear existing timeout
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+      
+      // Set new timeout to stop typing indicator
+      typingTimeoutRef.current = setTimeout(() => {
+        setTyping(false);
+      }, 2000);
+    } else {
+      setTyping(false);
+    }
+  }, [isReadOnly, setTyping]);
 
   const hasUnsavedChanges = empathy !== savedEmpathy || disagreement !== savedDisagreement;
 
@@ -81,6 +105,12 @@ export function FloatingChat({
     
     const content = inputValue;
     setInputValue('');
+    setTyping(false);
+    
+    // Clear typing timeout
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
     
     try {
       await sendMessage(content);
@@ -196,6 +226,13 @@ export function FloatingChat({
                 ))}
               </AnimatePresence>
               
+              {/* Typing indicator */}
+              <AnimatePresence>
+                {partnerTyping.isTyping && (
+                  <TypingIndicator userName={partnerTyping.userName} />
+                )}
+              </AnimatePresence>
+              
               <div ref={messagesEndRef} />
             </div>
           </div>
@@ -207,7 +244,7 @@ export function FloatingChat({
                 <div className="flex gap-2 items-center">
                   <Input
                     value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
+                    onChange={(e) => handleInputChange(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
                     placeholder="Type a message..."
                     className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-12 rounded-full px-5 text-base"
