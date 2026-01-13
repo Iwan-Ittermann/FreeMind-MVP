@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, ArrowLeft, Languages } from 'lucide-react';
+import { Send, ArrowLeft, ChevronUp, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ChatBubble } from './ChatBubble';
@@ -14,6 +14,7 @@ interface Message {
   isOwn: boolean;
   timestamp: Date;
   reactions: string[];
+  isOpinion?: boolean;
 }
 
 interface FloatingChatProps {
@@ -31,10 +32,28 @@ export function FloatingChat({
   onSubmitRating,
   isSavingRating = false,
 }: FloatingChatProps) {
-  const [messages, setMessages] = useState<Message[]>([]);
+  // Initialize messages with opinions as the first two messages
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: 'opinion-theirs',
+      content: theirOpinion,
+      isOwn: false,
+      timestamp: new Date(Date.now() - 60000),
+      reactions: [],
+      isOpinion: true,
+    },
+    {
+      id: 'opinion-mine',
+      content: myOpinion,
+      isOwn: true,
+      timestamp: new Date(Date.now() - 30000),
+      reactions: [],
+      isOpinion: true,
+    },
+  ]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [translateEnabled, setTranslateEnabled] = useState(false);
+  const [showRatingPanel, setShowRatingPanel] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom
@@ -44,11 +63,10 @@ export function FloatingChat({
 
   // Simulate typing indicator
   useEffect(() => {
-    if (messages.length > 0 && messages[messages.length - 1].isOwn) {
+    if (messages.length > 2 && messages[messages.length - 1].isOwn && !messages[messages.length - 1].isOpinion) {
       const timer = setTimeout(() => {
         setIsTyping(true);
         
-        // Simulate response after typing
         setTimeout(() => {
           setIsTyping(false);
           setMessages(prev => [...prev, {
@@ -98,156 +116,120 @@ export function FloatingChat({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/95 z-50 flex flex-col">
-      {/* Background decoration - hidden on mobile for performance */}
-      <div className="hidden md:block absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Floating particles */}
-        {Array.from({ length: 20 }).map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1 h-1 rounded-full bg-white/10"
-            initial={{
-              x: Math.random() * window.innerWidth,
-              y: Math.random() * window.innerHeight,
-            }}
-            animate={{
-              x: [null, Math.random() * window.innerWidth],
-              y: [null, Math.random() * window.innerHeight],
-            }}
-            transition={{
-              duration: 20 + Math.random() * 10,
-              repeat: Infinity,
-              repeatType: 'reverse',
-            }}
-          />
-        ))}
-        
-        {/* Connection lines */}
-        <svg className="absolute inset-0 w-full h-full opacity-10">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <motion.line
-              key={i}
-              x1="10%"
-              y1={`${20 + i * 15}%`}
-              x2="90%"
-              y2={`${30 + i * 12}%`}
-              stroke="url(#lineGradient)"
-              strokeWidth="1"
-              strokeDasharray="4 4"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 2, delay: i * 0.2 }}
-            />
-          ))}
-          <defs>
-            <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="hsl(var(--primary))" />
-              <stop offset="100%" stopColor="hsl(var(--secondary))" />
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
-
-      {/* Header - Fixed at top */}
-      <div className="relative z-20 flex items-center justify-between px-4 py-3 border-b border-white/10 bg-black/80 backdrop-blur-sm">
+    <div className="fixed inset-0 bg-black z-50 flex flex-col">
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-black">
         <Button
           variant="ghost"
           onClick={onClose}
-          className="text-white/60 hover:text-white h-10 px-3"
+          className="text-white/60 hover:text-white hover:bg-white/5 h-10 px-3"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          <span className="hidden sm:inline">Back to Graph</span>
-          <span className="sm:hidden">Back</span>
+          <ArrowLeft className="w-5 h-5 mr-2" />
+          Back
         </Button>
         
-        <Button
-          variant="ghost"
-          onClick={() => setTranslateEnabled(!translateEnabled)}
-          className={`${translateEnabled ? 'text-purple-400' : 'text-white/60'} hover:text-purple-300 h-10 px-3`}
-        >
-          <Languages className="w-4 h-4 sm:mr-2" />
-          <span className="hidden sm:inline">Auto-translate</span>
-          {translateEnabled && <span className="ml-2 text-xs hidden sm:inline">(Mock)</span>}
-        </Button>
+        <div className="text-center">
+          <p className="text-sm font-medium text-white">Discussion</p>
+          <p className="text-xs text-white/40">Understanding perspectives</p>
+        </div>
+
+        <div className="w-20" /> {/* Spacer for centering */}
       </div>
 
-      {/* Main content */}
-      <div className="relative z-10 flex flex-col lg:flex-row flex-1 w-full max-w-6xl mx-auto overflow-hidden">
-        {/* Opinions display - Collapsible on mobile */}
-        <div className="flex-shrink-0 lg:w-64 px-4 py-3 lg:py-4 space-y-2 lg:space-y-4 bg-black/50 lg:bg-transparent border-b lg:border-b-0 border-white/10">
-          <div className="flex lg:flex-col gap-2 lg:gap-4 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 -mx-4 px-4 lg:mx-0 lg:px-0">
-            <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 min-w-[200px] lg:min-w-0 flex-shrink-0 lg:flex-shrink">
-              <p className="text-xs text-primary mb-1">Your Opinion</p>
-              <p className="text-sm text-white/80 line-clamp-2 lg:line-clamp-3">{myOpinion}</p>
-            </div>
-            <div className="bg-secondary/10 border border-secondary/20 rounded-lg p-3 min-w-[200px] lg:min-w-0 flex-shrink-0 lg:flex-shrink">
-              <p className="text-xs text-secondary mb-1">Their Opinion</p>
-              <p className="text-sm text-white/80 line-clamp-2 lg:line-clamp-3">{theirOpinion}</p>
-            </div>
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto px-4 py-4">
+        <div className="max-w-lg mx-auto space-y-3">
+          {/* Intro text */}
+          <div className="text-center py-4">
+            <p className="text-xs text-white/40">
+              Your opinions are shown below. Start a conversation to understand each other's perspective.
+            </p>
           </div>
-        </div>
 
-        {/* Chat area */}
-        <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3 md:gap-4">
-            <AnimatePresence>
-              {messages.map((msg, index) => (
-                <ChatBubble
-                  key={msg.id}
-                  id={msg.id}
-                  content={msg.content}
-                  isOwn={msg.isOwn}
-                  timestamp={msg.timestamp}
-                  reactions={msg.reactions}
-                  onReact={(reaction) => handleReaction(msg.id, reaction)}
-                  style={{
-                    marginLeft: msg.isOwn ? 'auto' : '0',
-                    marginRight: msg.isOwn ? '0' : 'auto',
-                    maxWidth: '85%',
-                  }}
-                />
-              ))}
-            </AnimatePresence>
-            
-            {isTyping && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="self-start"
-              >
-                <TypingIndicator />
-              </motion.div>
+          <AnimatePresence>
+            {messages.map((msg) => (
+              <ChatBubble
+                key={msg.id}
+                id={msg.id}
+                content={msg.content}
+                isOwn={msg.isOwn}
+                timestamp={msg.timestamp}
+                reactions={msg.reactions}
+                isOpinion={msg.isOpinion}
+                onReact={(reaction) => handleReaction(msg.id, reaction)}
+              />
+            ))}
+          </AnimatePresence>
+          
+          {isTyping && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex justify-start"
+            >
+              <TypingIndicator />
+            </motion.div>
+          )}
+          
+          <div ref={messagesEndRef} />
+        </div>
+      </div>
+
+      {/* Rating Panel - Collapsible */}
+      <AnimatePresence>
+        {showRatingPanel && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="border-t border-white/10 bg-black/95 overflow-hidden"
+          >
+            <div className="max-w-lg mx-auto p-4 space-y-4">
+              <RatingSliders onSubmitRating={onSubmitRating} isSaving={isSavingRating} />
+              <AIConciliateButton />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Input Area */}
+      <div className="border-t border-white/10 bg-black p-4">
+        <div className="max-w-lg mx-auto space-y-3">
+          {/* Toggle Rating Panel */}
+          <button
+            onClick={() => setShowRatingPanel(!showRatingPanel)}
+            className="w-full flex items-center justify-center gap-2 py-2 text-xs text-white/40 hover:text-white/60 transition-colors"
+          >
+            {showRatingPanel ? (
+              <>
+                <ChevronDown className="w-4 h-4" />
+                Hide rating & AI tools
+              </>
+            ) : (
+              <>
+                <ChevronUp className="w-4 h-4" />
+                Rate conversation & AI tools
+              </>
             )}
-            
-            <div ref={messagesEndRef} />
-          </div>
+          </button>
 
           {/* Input */}
-          <div className="p-4 border-t border-white/10 bg-black/80 backdrop-blur-sm">
-            <div className="flex gap-2">
-              <Input
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                placeholder="Share your thoughts..."
-                className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-12 md:h-10 text-base md:text-sm"
-              />
-              <Button 
-                onClick={handleSend}
-                disabled={!inputValue.trim()}
-                className="bg-primary hover:bg-primary/90 h-12 md:h-10 w-12 md:w-10 p-0"
-              >
-                <Send className="w-5 h-5 md:w-4 md:h-4" />
-              </Button>
-            </div>
+          <div className="flex gap-2">
+            <Input
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+              placeholder="Type a message..."
+              className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-12 rounded-full px-5 text-base"
+            />
+            <Button 
+              onClick={handleSend}
+              disabled={!inputValue.trim()}
+              className="bg-primary hover:bg-primary/90 h-12 w-12 rounded-full p-0 flex-shrink-0"
+            >
+              <Send className="w-5 h-5" />
+            </Button>
           </div>
-        </div>
-
-        {/* Rating panel - Bottom sheet on mobile */}
-        <div className="flex-shrink-0 lg:w-72 p-4 space-y-4 border-t lg:border-t-0 border-white/10 bg-black/80 lg:bg-transparent">
-          <RatingSliders onSubmitRating={onSubmitRating} isSaving={isSavingRating} />
-          <AIConciliateButton />
         </div>
       </div>
     </div>
