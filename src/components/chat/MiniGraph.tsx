@@ -65,13 +65,21 @@ export function MiniGraph({
         height={size}
         className="overflow-visible"
       >
-        {/* Concentric circles - simplified */}
+        {/* Background */}
+        <circle
+          cx={config.centerX}
+          cy={config.centerY}
+          r={config.pinkRadius + 2}
+          fill="hsl(var(--background) / 0.8)"
+        />
+
+        {/* Concentric circles - higher contrast */}
         <circle
           cx={config.centerX}
           cy={config.centerY}
           r={config.pinkRadius}
           fill="none"
-          stroke="hsl(var(--primary) / 0.15)"
+          stroke="hsl(var(--primary) / 0.3)"
           strokeWidth={1}
         />
         <circle
@@ -79,7 +87,7 @@ export function MiniGraph({
           cy={config.centerY}
           r={config.yellowRadius}
           fill="none"
-          stroke="hsl(45, 100%, 50%, 0.15)"
+          stroke="hsl(var(--accent) / 0.4)"
           strokeWidth={1}
         />
         <circle
@@ -87,7 +95,7 @@ export function MiniGraph({
           cy={config.centerY}
           r={config.greenRadius}
           fill="none"
-          stroke="hsl(142, 76%, 36%, 0.2)"
+          stroke="hsl(var(--secondary) / 0.5)"
           strokeWidth={1}
         />
 
@@ -121,25 +129,25 @@ export function MiniGraph({
           const isHighlighted = isMe || isThem;
           const isInactive = node.hasChats === false;
 
-          let fillColor = 'hsl(var(--primary) / 0.6)';
-          if (isMe) fillColor = 'hsl(142, 76%, 45%)'; // Green for me
+          let fillColor = 'hsl(var(--foreground) / 0.7)';
+          if (isMe) fillColor = 'hsl(var(--secondary))'; // Blue/teal for me
           if (isThem) fillColor = 'hsl(var(--primary))'; // Primary for them
-          if (isInactive && !isHighlighted) fillColor = 'hsl(var(--primary) / 0.2)';
+          if (isInactive && !isHighlighted) fillColor = 'hsl(var(--muted-foreground) / 0.4)';
 
           return (
             <motion.circle
               key={node.id}
               cx={node.x}
               cy={node.y}
-              r={isHighlighted ? 4 : 2.5}
+              r={isHighlighted ? 5 : 3}
               fill={fillColor}
-              stroke={isHighlighted ? 'white' : 'transparent'}
-              strokeWidth={isHighlighted ? 1 : 0}
+              stroke={isHighlighted ? 'hsl(var(--background))' : 'transparent'}
+              strokeWidth={isHighlighted ? 1.5 : 0}
               initial={false}
               animate={{
                 cx: node.x,
                 cy: node.y,
-                r: isHighlighted ? 4 : 2.5,
+                r: isHighlighted ? 5 : 3,
               }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             />
@@ -148,13 +156,13 @@ export function MiniGraph({
       </svg>
 
       {/* Legend */}
-      <div className="absolute -bottom-5 left-0 right-0 flex justify-center gap-3 text-[8px] text-white/40">
-        <span className="flex items-center gap-1">
-          <span className="w-2 h-2 rounded-full bg-green-500" />
+      <div className="absolute -bottom-6 left-0 right-0 flex justify-center gap-4 text-[9px] text-muted-foreground font-medium">
+        <span className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-secondary" />
           You
         </span>
-        <span className="flex items-center gap-1">
-          <span className="w-2 h-2 rounded-full bg-primary" />
+        <span className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-primary" />
           Them
         </span>
       </div>
