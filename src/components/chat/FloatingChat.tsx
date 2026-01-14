@@ -40,10 +40,12 @@ export function FloatingChat({
   const { partnerTyping, setTyping } = useTypingIndicator(chatId);
   const [inputValue, setInputValue] = useState('');
   const [translateEnabled, setTranslateEnabled] = useState(false);
-  const [empathy, setEmpathy] = useState(0.5);
-  const [disagreement, setDisagreement] = useState(0.5);
-  const [savedEmpathy, setSavedEmpathy] = useState(0.5);
-  const [savedDisagreement, setSavedDisagreement] = useState(0.5);
+  // Empathy: -50 to +50, default 0
+  const [empathy, setEmpathy] = useState(0);
+  // Disagreement: 0 to 100, default 50
+  const [disagreement, setDisagreement] = useState(50);
+  const [savedEmpathy, setSavedEmpathy] = useState(0);
+  const [savedDisagreement, setSavedDisagreement] = useState(50);
   const [mobileLeftSliderOpen, setMobileLeftSliderOpen] = useState(false);
   const [mobileRightSliderOpen, setMobileRightSliderOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -136,15 +138,15 @@ export function FloatingChat({
     setSavedDisagreement(disagreement);
   };
 
-  // Calculate Bridging Score: empathy points * disagreement points
-  const empathyPoints = Math.round(empathy * 100);
-  const disagreementPoints = Math.round(disagreement * 100);
-  const bridgingScore = empathyPoints * disagreementPoints;
+  // Calculate Bridging Score: empathy × disagreement
+  // empathy is -50 to +50, disagreement is 0 to 100
+  // Bridging score range: -5000 to +5000
+  const bridgingScore = empathy * disagreement;
 
   const getBridgingScoreColor = () => {
-    if (bridgingScore >= 7500) return 'text-green-400';
-    if (bridgingScore >= 2500) return 'text-yellow-400';
-    return 'text-primary';
+    if (bridgingScore > 2500) return 'text-green-400';
+    if (bridgingScore >= 0) return 'text-orange-400';
+    return 'text-primary'; // red for negative
   };
 
   return (
@@ -218,8 +220,10 @@ export function FloatingChat({
                     onChange={setEmpathy}
                     label="Empathy"
                     color="rose"
-                    lowLabel="Cold"
-                    highLabel="Warm"
+                    lowLabel="Hostile"
+                    highLabel="Empathetic"
+                    min={-50}
+                    max={50}
                     compact
                   />
                 </motion.div>
@@ -230,7 +234,7 @@ export function FloatingChat({
               className={`h-10 px-1 bg-black/90 border border-white/10 rounded-r-lg flex items-center gap-0.5 ${mobileLeftSliderOpen ? 'border-l-0' : ''}`}
             >
               <span className="w-1.5 h-6 rounded-full bg-rose-400" />
-              <span className="text-[8px] text-rose-400 font-bold">{empathyPoints}</span>
+              <span className="text-[8px] text-rose-400 font-bold">{empathy}</span>
               {mobileLeftSliderOpen ? (
                 <ChevronLeft className="w-3 h-3 text-white/40" />
               ) : (
@@ -259,6 +263,8 @@ export function FloatingChat({
                     color="orange"
                     lowLabel="Aligned"
                     highLabel="Opposed"
+                    min={0}
+                    max={100}
                     compact
                   />
                 </motion.div>
@@ -269,7 +275,7 @@ export function FloatingChat({
               className={`h-10 px-1 bg-black/90 border border-white/10 rounded-l-lg flex items-center gap-0.5 flex-row-reverse ${mobileRightSliderOpen ? 'border-r-0' : ''}`}
             >
               <span className="w-1.5 h-6 rounded-full bg-orange-400" />
-              <span className="text-[8px] text-orange-400 font-bold">{disagreementPoints}</span>
+              <span className="text-[8px] text-orange-400 font-bold">{disagreement}</span>
               {mobileRightSliderOpen ? (
                 <ChevronRight className="w-3 h-3 text-white/40" />
               ) : (
@@ -287,8 +293,10 @@ export function FloatingChat({
               onChange={setEmpathy}
               label="Empathy"
               color="rose"
-              lowLabel="Cold"
-              highLabel="Warm"
+              lowLabel="Hostile"
+              highLabel="Empathetic"
+              min={-50}
+              max={50}
               hasUnsavedChanges={hasUnsavedChanges}
               onSave={handleSaveRating}
               isSaving={isSavingRating}
@@ -395,6 +403,8 @@ export function FloatingChat({
               color="orange"
               lowLabel="Aligned"
               highLabel="Opposed"
+              min={0}
+              max={100}
               hasUnsavedChanges={hasUnsavedChanges}
               onSave={handleSaveRating}
               isSaving={isSavingRating}

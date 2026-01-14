@@ -216,16 +216,18 @@ export function useTopicData(topicId: string) {
       }));
 
       // Create a map of ratings by opinion pair for quick lookup
+      // empathy: -50 to +50, disagreement: 0 to 100
       const ratingsMap = new Map<string, { empathy: number; disagreement: number }>();
       (ratingsData || []).forEach(r => {
         const key = [r.opinion_a_id, r.opinion_b_id].sort().join('-');
         ratingsMap.set(key, {
-          empathy: Number(r.avg_empathy) || 0.5,
-          disagreement: Number(r.avg_disagreement) || 0.5,
+          empathy: Number(r.avg_empathy) ?? 0,
+          disagreement: Number(r.avg_disagreement) ?? 50,
         });
       });
 
       // Create ratings for ALL chats (using defaults if no ratings exist)
+      // Default empathy: 0 (neutral), default disagreement: 50 (middle)
       const formattedRatings: ChatRating[] = (chatsData || []).map(chat => {
         const key = [chat.opinion_a_id, chat.opinion_b_id].sort().join('-');
         const existingRating = ratingsMap.get(key);
@@ -233,8 +235,8 @@ export function useTopicData(topicId: string) {
         return {
           opinionA: chat.opinion_a_id,
           opinionB: chat.opinion_b_id,
-          empathy: existingRating?.empathy ?? 0.5,
-          disagreement: existingRating?.disagreement ?? 0.5,
+          empathy: existingRating?.empathy ?? 0,
+          disagreement: existingRating?.disagreement ?? 50,
         };
       });
 

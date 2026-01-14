@@ -6,9 +6,13 @@
  * 
  * Key concepts:
  * - Bridging Score (per user per chat) = empathy × disagreement
+ *   - empathy: -50 to +50, disagreement: 0 to 100
+ *   - Range: -5000 to +5000
  * - FreeMind Score (per node) = average of all chat Bridging Scores
- * - High FreeMind Score → center (green zone)
- * - Low/zero FreeMind Score → outer edge (inactive/polarized)
+ * - Zones based on FreeMind Score:
+ *   - Green zone (center): > 2500
+ *   - Orange zone (middle): 0 to 2500
+ *   - Red zone (outer): < 0
  * - Angular separation based on disagreement: high disagreement = far apart
  * - Nodes with no chats: outer ring, evenly spaced, marked as inactive
  */
@@ -19,7 +23,12 @@ import { GraphNode, GraphEdge, GraphData, ChatRating, Opinion, LayoutConfig } fr
  * Calculate the Bridging Score for a specific opinion in a specific chat
  * Bridging Score = empathy × disagreement
  * 
- * High bridging score = someone who can empathize while disagreeing (a "bridge builder")
+ * empathy: -50 to +50
+ * disagreement: 0 to 100
+ * Result range: -5000 to +5000
+ * 
+ * High positive bridging score = someone who can empathize while disagreeing (a "bridge builder")
+ * Negative bridging score = hostile while disagreeing (polarizing)
  */
 function calculateBridgingScore(empathy: number, disagreement: number): number {
   return empathy * disagreement;
@@ -33,6 +42,8 @@ function calculateBridgingScore(empathy: number, disagreement: number): number {
  * Chat Bridging Score = (user_a_bridging + user_b_bridging) / 2
  * 
  * Then FreeMind Score = average of all Chat Bridging Scores for this node
+ * 
+ * Result range: -5000 to +5000
  */
 function calculateFreeMindScore(
   nodeId: string,
@@ -48,10 +59,7 @@ function calculateFreeMindScore(
   }
 
   // Calculate the average bridging score across all chats
-  // Note: Each rating represents a chat's averaged ratings from both participants
-  // So we calculate: bridging = empathy × disagreement for the chat's average values
   const totalBridgingScore = nodeRatings.reduce((sum, r) => {
-    // Chat bridging score using the chat's averaged empathy and disagreement
     const chatBridging = calculateBridgingScore(r.empathy, r.disagreement);
     return sum + chatBridging;
   }, 0);
@@ -62,26 +70,27 @@ function calculateFreeMindScore(
 }
 
 /**
- * Check if node is a "bridge" - high empathy AND high disagreement
+ * Check if node is a "bridge" - high positive bridging score
  * These are the most valuable participants who can disagree respectfully
+ * 
+ * Threshold: > 2500 (e.g., empathy=25+, disagreement=100, or empathy=50, disagreement=50+)
  */
 function isBridgeNode(freeMindScore: number): boolean {
-  // High bridging score (> 0.36 means average of empathy*disagreement > 0.6*0.6)
-  return freeMindScore > 0.36;
+  return freeMindScore > 2500;
 }
 
 /**
  * Calculate the ideal angular distance between two connected nodes
  * based on their disagreement rating.
  * 
- * High disagreement (1.0) → maximum angular separation (π radians = opposite sides)
- * Low disagreement (0.0) → minimum angular separation (close together)
+ * High disagreement (100) → maximum angular separation (π radians = opposite sides)
+ * Low disagreement (0) → minimum angular separation (close together)
  */
 function calculateIdealAngle(disagreement: number): number {
-  // Scale disagreement to angle: 0 → ~0.2 rad, 1 → π rad
+  // Scale disagreement (0-100) to angle: 0 → ~0.2 rad, 100 → π rad
   const minAngle = 0.2; // Minimum separation to avoid overlap
   const maxAngle = Math.PI; // Maximum is opposite sides
-  return minAngle + disagreement * (maxAngle - minAngle);
+  return minAngle + (disagreement / 100) * (maxAngle - minAngle);
 }
 
 /**
@@ -211,6 +220,33 @@ function applyRepulsionForces(
   return updated;
 }
 
+/**
+ * Map FreeMind score to radius
+ * 
+ * FreeMind score ranges from -5000 to +5000:
+ * - Score of 0 = halfway between center and outer ring
+ * - Score > 2500 = green zone (inner)
+ * - Score 0-2500 = orange zone (middle)
+ * - Score < 0 = red zone (outer)
+ */
+function scoreToRadius(
+  freeMindScore: number,
+  config: LayoutConfig
+): number {
+  // Normalize score: -5000 to +5000 → 0 to 1
+  // Score of 0 should map to 0.5 (halfway)
+  const normalizedScore = (freeMindScore + 5000) / 10000;
+  
+  // Invert: high score = closer to center
+  const invertedScore = 1 - normalizedScore;
+  
+  // Map to radius: 0 → center, 1 → outer edge
+  const minRadius = config.nodeRadius * 2;
+  const maxRadius = config.outerRadius - config.nodeRadius;
+  
+  return minRadius + invertedScore * (maxRadius - minRadius);
+}
+
 // Main layout function
 export function calculateLayout(
   opinions: Opinion[],
@@ -237,16 +273,7 @@ export function calculateLayout(
     status: 'accepted' as const,
   }));
 
-  // Step 4: Initial placement for ALL nodes based on FreeMind score (radial)
-  // Higher FreeMind score = closer to center
-  // CRITICAL: Use deterministic positioning based on opinion ID hash, not array index
-  // This ensures all users see the exact same layout
-  const maxFreeMindScore = Math.max(
-    ...Array.from(nodeScores.values()).map(s => s.freeMindScore),
-    0.01 // Avoid division by zero
-  );
-
-  // Sort all opinions by ID to ensure consistent ordering across all users
+  // Step 4: Sort all opinions by ID to ensure consistent ordering across all users
   const sortedOpinions = [...opinions].sort((a, b) => a.id.localeCompare(b.id));
 
   // Create a deterministic angle for each node based on its position in sorted order
@@ -255,16 +282,12 @@ export function calculateLayout(
     return (sortedIndex / sortedOpinions.length) * 2 * Math.PI;
   };
 
+  // Step 5: Position active nodes based on FreeMind score
   const activeNodes: GraphNode[] = activeOpinions.map((op) => {
     const scores = nodeScores.get(op.id)!;
     
-    // Normalize FreeMind score to [0, 1] and invert (high score = closer to center)
-    const normalizedScore = scores.freeMindScore / maxFreeMindScore;
-    
-    // Map score to radius: high score = inner (green), low score = outer (pink)
-    const minRadius = config.greenRadius * 0.3;
-    const maxRadius = config.pinkRadius;
-    const targetRadius = maxRadius - normalizedScore * (maxRadius - minRadius);
+    // Calculate radius based on FreeMind score
+    const targetRadius = scoreToRadius(scores.freeMindScore, config);
 
     // Use deterministic angle based on sorted position
     const baseAngle = getNodeAngle(op.id);
@@ -283,10 +306,9 @@ export function calculateLayout(
     } as GraphNode;
   });
 
-  // Step 5: Place inactive nodes on outer ring, using deterministic angles
+  // Step 6: Place inactive nodes on outer ring (they have score of 0 = no chats)
   const inactiveRadius = config.outerRadius - config.nodeRadius * 2;
   const inactiveNodes: GraphNode[] = inactiveOpinions.map((op) => {
-    // Use the same deterministic angle based on sorted position
     const angle = getNodeAngle(op.id);
 
     return {
@@ -300,11 +322,11 @@ export function calculateLayout(
     } as GraphNode;
   });
 
-  // Step 6: Skip angular optimization - it causes non-deterministic layouts across users
+  // Step 7: Skip angular optimization - it causes non-deterministic layouts across users
   // The deterministic angle based on sorted ID position is sufficient
   // and ensures all users see the same graph
 
-  // Step 7: Skip repulsion forces as they also introduce non-determinism
+  // Step 8: Skip repulsion forces as they also introduce non-determinism
   // The spread of nodes based on sorted positions should be sufficient
   const refinedActiveNodes = activeNodes;
   const refinedInactiveNodes = inactiveNodes;
@@ -334,8 +356,10 @@ export function generateMockData(count: number = 30): { opinions: Opinion[]; rat
         ratings.push({
           opinionA: opinions[i].id,
           opinionB: opinions[j].id,
-          empathy: Math.random(),
-          disagreement: Math.random(),
+          // Empathy: -50 to +50
+          empathy: Math.round(Math.random() * 100 - 50),
+          // Disagreement: 0 to 100
+          disagreement: Math.round(Math.random() * 100),
         });
       }
     }

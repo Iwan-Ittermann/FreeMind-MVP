@@ -10,8 +10,8 @@ export interface Opinion {
 export interface ChatRating {
   opinionA: string;
   opinionB: string;
-  empathy: number; // 0-1 scale
-  disagreement: number; // 0-1 scale
+  empathy: number; // -50 to +50 scale (internally stored as integer)
+  disagreement: number; // 0-100 scale (internally stored as integer)
 }
 
 export interface ChatRequest {
