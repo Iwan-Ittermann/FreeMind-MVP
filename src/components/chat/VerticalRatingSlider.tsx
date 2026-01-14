@@ -12,6 +12,9 @@ interface VerticalRatingSliderProps {
   onSave?: () => void;
   isSaving?: boolean;
   compact?: boolean;
+  // For empathy: min=-50, max=50. For disagreement: min=0, max=100
+  min?: number;
+  max?: number;
 }
 
 export function VerticalRatingSlider({
@@ -25,6 +28,8 @@ export function VerticalRatingSlider({
   onSave,
   isSaving = false,
   compact = false,
+  min = 0,
+  max = 100,
 }: VerticalRatingSliderProps) {
   const colorClasses = {
     rose: {
@@ -44,21 +49,39 @@ export function VerticalRatingSlider({
   };
 
   const colors = colorClasses[color];
+  const range = max - min;
 
-  // Convert 0-1 to 0-100 points
-  const points = Math.round(value * 100);
+  // Convert value to percentage for visual positioning (0-100%)
+  const percentage = ((value - min) / range) * 100;
+
+  // Display value as integer
+  const displayValue = Math.round(value);
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const y = e.clientY - rect.top;
-    const percentage = 1 - (y / rect.height);
-    onChange(Math.max(0, Math.min(1, percentage)));
+    const pct = 1 - (y / rect.height);
+    const newValue = min + pct * range;
+    onChange(Math.max(min, Math.min(max, Math.round(newValue))));
   };
 
   const handleDrag = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.buttons !== 1) return;
     handleClick(e);
   };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    const touch = e.touches[0];
+    const rect = e.currentTarget.getBoundingClientRect();
+    const y = touch.clientY - rect.top;
+    const pct = 1 - (y / rect.height);
+    const newValue = min + pct * range;
+    onChange(Math.max(min, Math.min(max, Math.round(newValue))));
+  };
+
+  // Calculate zero marker position (only show if 0 is within range)
+  const showZeroMarker = min < 0 && max > 0;
+  const zeroPosition = showZeroMarker ? ((0 - min) / range) * 100 : null;
 
   if (compact) {
     return (
@@ -70,37 +93,55 @@ export function VerticalRatingSlider({
 
         {/* Slider track */}
         <div
-          className={`relative w-1.5 flex-1 rounded-full ${colors.track} cursor-pointer`}
+          className="relative w-1.5 flex-1 rounded-full bg-white/10 cursor-pointer"
           onClick={handleClick}
           onMouseMove={handleDrag}
-          onTouchMove={(e) => {
-            const touch = e.touches[0];
-            const rect = e.currentTarget.getBoundingClientRect();
-            const y = touch.clientY - rect.top;
-            const percentage = 1 - (y / rect.height);
-            onChange(Math.max(0, Math.min(1, percentage)));
-          }}
+          onTouchMove={handleTouchMove}
         >
-          {/* Fill */}
-          <motion.div
-            className={`absolute bottom-0 left-0 right-0 rounded-full ${colors.bg}`}
-            initial={false}
-            animate={{ height: `${value * 100}%` }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          />
+          {/* Zero marker */}
+          {showZeroMarker && zeroPosition !== null && (
+            <div
+              className="absolute left-1/2 -translate-x-1/2 w-3 h-0.5 bg-white/40 z-10"
+              style={{ bottom: `${zeroPosition}%` }}
+            />
+          )}
+          
+          {/* Fill - from zero for empathy, from bottom for disagreement */}
+          {min < 0 ? (
+            // Empathy: fill from zero point
+            <motion.div
+              className={`absolute left-0 right-0 rounded-full ${colors.bg}`}
+              initial={false}
+              animate={{
+                bottom: value >= 0 ? `${zeroPosition}%` : `${percentage}%`,
+                height: value >= 0 
+                  ? `${percentage - zeroPosition!}%` 
+                  : `${zeroPosition! - percentage}%`,
+              }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            />
+          ) : (
+            // Disagreement: fill from bottom
+            <motion.div
+              className={`absolute bottom-0 left-0 right-0 rounded-full ${colors.bg}`}
+              initial={false}
+              animate={{ height: `${percentage}%` }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            />
+          )}
           
           {/* Thumb */}
           <motion.div
             className={`absolute left-1/2 -translate-x-1/2 w-3 h-3 rounded-full ${colors.bg} shadow-lg border border-black`}
             initial={false}
-            animate={{ bottom: `calc(${value * 100}% - 6px)` }}
+            animate={{ bottom: `calc(${percentage}% - 6px)` }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
           />
         </div>
 
         {/* Points value */}
         <span className={`text-xs font-mono font-bold ${colors.text}`}>
-          {points}
+          {displayValue}
         </span>
       </div>
     );
@@ -118,23 +159,47 @@ export function VerticalRatingSlider({
 
       {/* Slider track */}
       <div
-        className={`relative w-2 flex-1 rounded-full ${colors.track} cursor-pointer`}
+        className="relative w-2 flex-1 rounded-full bg-white/10 cursor-pointer"
         onClick={handleClick}
         onMouseMove={handleDrag}
       >
-        {/* Fill */}
-        <motion.div
-          className={`absolute bottom-0 left-0 right-0 rounded-full ${colors.bg}`}
-          initial={false}
-          animate={{ height: `${value * 100}%` }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        />
+        {/* Zero marker */}
+        {showZeroMarker && zeroPosition !== null && (
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center" style={{ bottom: `${zeroPosition}%` }}>
+            <div className="w-4 h-0.5 bg-white/50" />
+            <span className="text-[8px] text-white/50 ml-1">0</span>
+          </div>
+        )}
+        
+        {/* Fill - from zero for empathy, from bottom for disagreement */}
+        {min < 0 ? (
+          // Empathy: fill from zero point
+          <motion.div
+            className={`absolute left-0 right-0 rounded-full ${colors.bg}`}
+            initial={false}
+            animate={{
+              bottom: value >= 0 ? `${zeroPosition}%` : `${percentage}%`,
+              height: value >= 0 
+                ? `${percentage - zeroPosition!}%` 
+                : `${zeroPosition! - percentage}%`,
+            }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          />
+        ) : (
+          // Disagreement: fill from bottom
+          <motion.div
+            className={`absolute bottom-0 left-0 right-0 rounded-full ${colors.bg}`}
+            initial={false}
+            animate={{ height: `${percentage}%` }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          />
+        )}
         
         {/* Thumb */}
         <motion.div
           className={`absolute left-1/2 -translate-x-1/2 w-4 h-4 rounded-full ${colors.bg} shadow-lg border-2 border-black`}
           initial={false}
-          animate={{ bottom: `calc(${value * 100}% - 8px)` }}
+          animate={{ bottom: `calc(${percentage}% - 8px)` }}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         />
       </div>
@@ -144,7 +209,7 @@ export function VerticalRatingSlider({
 
       {/* Points value */}
       <span className={`text-sm font-mono font-bold ${colors.text}`}>
-        {points}
+        {displayValue}
       </span>
 
       {/* Save button - small circle */}

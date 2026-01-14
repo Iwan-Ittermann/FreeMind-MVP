@@ -12,12 +12,14 @@ interface RatingSlidersProps {
 }
 
 export function RatingSliders({
-  initialEmpathy = 0.5,
-  initialDisagreement = 0.5,
+  initialEmpathy = 0,
+  initialDisagreement = 50,
   onSubmitRating,
   isSaving = false,
 }: RatingSlidersProps) {
+  // Empathy: -50 to +50, default 0
   const [empathy, setEmpathy] = useState(initialEmpathy);
+  // Disagreement: 0 to 100, default 50
   const [disagreement, setDisagreement] = useState(initialDisagreement);
   const [hasSaved, setHasSaved] = useState(false);
 
@@ -27,9 +29,13 @@ export function RatingSliders({
     setTimeout(() => setHasSaved(false), 2000);
   };
 
+  // Bridging score = empathy × disagreement
+  // Range: -5000 to +5000
+  const bridgingScore = empathy * disagreement;
+
   const getZoneLabel = () => {
-    if (empathy > 0.6 && disagreement < 0.4) return { label: 'Consensus Zone', color: 'bg-green-500' };
-    if (empathy > 0.4 && disagreement < 0.6) return { label: 'Discussion Zone', color: 'bg-yellow-500' };
+    if (bridgingScore > 2500) return { label: 'Bridge Builder', color: 'bg-green-500' };
+    if (bridgingScore >= 0) return { label: 'Discussion Zone', color: 'bg-orange-500' };
     return { label: 'Polarized Zone', color: 'bg-primary' };
   };
 
@@ -50,7 +56,7 @@ export function RatingSliders({
         </div>
       </div>
 
-      {/* Empathy Slider */}
+      {/* Empathy Slider: -50 to +50 */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -58,24 +64,30 @@ export function RatingSliders({
             <span className="text-sm text-white/70">Empathy</span>
           </div>
           <span className="text-xs font-mono text-rose-400/80">
-            {Math.round(empathy * 100)}%
+            {empathy}
           </span>
         </div>
-        <Slider
-          value={[empathy * 100]}
-          onValueChange={(v) => setEmpathy(v[0] / 100)}
-          max={100}
-          step={1}
-          disabled={isSaving}
-          className="[&_[role=slider]]:bg-rose-400 [&_[role=slider]]:border-rose-400 [&_.bg-primary]:bg-rose-400/30"
-        />
+        {/* Position indicator for 0 */}
+        <div className="relative">
+          <Slider
+            value={[empathy + 50]} // Convert -50/+50 to 0-100 for slider
+            onValueChange={(v) => setEmpathy(v[0] - 50)} // Convert back
+            max={100}
+            step={1}
+            disabled={isSaving}
+            className="[&_[role=slider]]:bg-rose-400 [&_[role=slider]]:border-rose-400 [&_.bg-primary]:bg-rose-400/30"
+          />
+          {/* Zero marker */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-0.5 h-3 bg-white/40 pointer-events-none" />
+        </div>
         <div className="flex justify-between text-[10px] text-white/30">
-          <span>Cold</span>
-          <span>Warm</span>
+          <span>Hostile</span>
+          <span className="text-white/50">0</span>
+          <span>Empathetic</span>
         </div>
       </div>
 
-      {/* Disagreement Slider */}
+      {/* Disagreement Slider: 0 to 100 */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -83,12 +95,12 @@ export function RatingSliders({
             <span className="text-sm text-white/70">Disagreement</span>
           </div>
           <span className="text-xs font-mono text-orange-400/80">
-            {Math.round(disagreement * 100)}%
+            {disagreement}
           </span>
         </div>
         <Slider
-          value={[disagreement * 100]}
-          onValueChange={(v) => setDisagreement(v[0] / 100)}
+          value={[disagreement]}
+          onValueChange={(v) => setDisagreement(v[0])}
           max={100}
           step={1}
           disabled={isSaving}
