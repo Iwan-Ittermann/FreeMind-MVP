@@ -23,6 +23,7 @@ export default function Chat() {
     error,
     saveRating,
     isSavingRating,
+    existingRating,
   } = useChatSession(theirOpinionIdParam);
 
   const handleClose = () => {
@@ -155,6 +156,8 @@ export default function Chat() {
       onSubmitRating={handleSubmitRating}
       isSavingRating={isSavingRating}
       isReadOnly={false}
+      initialEmpathy={existingRating?.empathy}
+      initialDisagreement={existingRating?.disagreement}
     />
   );
 }

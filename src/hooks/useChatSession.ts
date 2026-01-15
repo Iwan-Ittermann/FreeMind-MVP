@@ -21,12 +21,30 @@ interface ChatSession {
   error: string | null;
   saveRating: (empathy: number, disagreement: number) => Promise<void>;
   isSavingRating: boolean;
+  existingRating: { empathy: number; disagreement: number } | null;
 }
 
 export function useChatSession(theirOpinionId: string | null): ChatSession {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [chatId, setChatId] = useState<string | null>(null);
+
+  // Fetch existing rating for the current user
+  const { data: existingRating, isLoading: loadingRating } = useQuery({
+    queryKey: ['chatRating', chatId, user?.id],
+    queryFn: async () => {
+      if (!chatId || !user?.id) return null;
+      const { data, error } = await supabase
+        .from('chat_ratings')
+        .select('empathy, disagreement')
+        .eq('chat_id', chatId)
+        .eq('rater_id', user.id)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!chatId && !!user?.id,
+  });
 
   // Fetch the other person's opinion
   const { data: theirOpinion, isLoading: loadingTheir, error: theirError } = useQuery({
@@ -128,7 +146,7 @@ export function useChatSession(theirOpinionId: string | null): ChatSession {
     await ratingMutation.mutateAsync({ empathy, disagreement });
   };
 
-  const isLoading = loadingTheir || loadingMy;
+  const isLoading = loadingTheir || loadingMy || loadingRating;
   const error = theirError?.message || myError?.message || null;
 
   return {
@@ -146,5 +164,6 @@ export function useChatSession(theirOpinionId: string | null): ChatSession {
     error,
     saveRating,
     isSavingRating: ratingMutation.isPending,
+    existingRating: existingRating ? { empathy: existingRating.empathy, disagreement: existingRating.disagreement } : null,
   };
 }

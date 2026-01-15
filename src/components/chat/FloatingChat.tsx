@@ -22,6 +22,8 @@ interface FloatingChatProps {
   onSubmitRating?: (empathy: number, disagreement: number) => void;
   isSavingRating?: boolean;
   isReadOnly?: boolean;
+  initialEmpathy?: number;
+  initialDisagreement?: number;
 }
 
 export function FloatingChat({ 
@@ -35,17 +37,19 @@ export function FloatingChat({
   onSubmitRating,
   isSavingRating = false,
   isReadOnly = false,
+  initialEmpathy,
+  initialDisagreement,
 }: FloatingChatProps) {
   const { messages: dbMessages, sendMessage, isSending } = useChatMessages(chatId);
   const { partnerTyping, setTyping } = useTypingIndicator(chatId);
   const [inputValue, setInputValue] = useState('');
   const [translateEnabled, setTranslateEnabled] = useState(false);
   // Empathy: -50 to +50, default 0
-  const [empathy, setEmpathy] = useState(0);
+  const [empathy, setEmpathy] = useState(initialEmpathy ?? 0);
   // Disagreement: 0 to 100, default 50
-  const [disagreement, setDisagreement] = useState(50);
-  const [savedEmpathy, setSavedEmpathy] = useState(0);
-  const [savedDisagreement, setSavedDisagreement] = useState(50);
+  const [disagreement, setDisagreement] = useState(initialDisagreement ?? 50);
+  const [savedEmpathy, setSavedEmpathy] = useState(initialEmpathy ?? 0);
+  const [savedDisagreement, setSavedDisagreement] = useState(initialDisagreement ?? 50);
   const [mobileLeftSliderOpen, setMobileLeftSliderOpen] = useState(false);
   const [mobileRightSliderOpen, setMobileRightSliderOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
