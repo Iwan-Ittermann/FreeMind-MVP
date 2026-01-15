@@ -24,10 +24,10 @@ function getNodeZone(node: GraphNode, config: LayoutConfig): 'green' | 'yellow' 
 // Get size multiplier based on zone
 function getZoneSizeMultiplier(zone: 'green' | 'yellow' | 'pink' | 'outer'): number {
   switch (zone) {
-    case 'green': return 3;   // Triple size in green zone
-    case 'yellow': return 2;  // Double size in yellow zone
-    case 'pink': return 1;    // Normal size in pink zone
-    case 'outer': return 1;   // Normal size in outer zone
+    case 'green': return 3;     // Triple size in green zone (center)
+    case 'yellow': return 2;    // Double size in yellow zone
+    case 'pink': return 1;      // Normal size in pink zone
+    case 'outer': return 0.7;   // Smaller size on outer ring
   }
 }
 
