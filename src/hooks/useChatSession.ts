@@ -8,6 +8,9 @@ interface Opinion {
   topic_id: string;
   text: string;
   user_id: string;
+  visible: boolean;
+  status: string | null;
+  notice_text: string | null;
 }
 
 interface ChatSession {
@@ -153,10 +156,26 @@ export function useChatSession(theirOpinionId: string | null): ChatSession {
     chatId,
     topicId: theirOpinion?.topic_id || null,
     myOpinion: myOpinion
-      ? { id: myOpinion.id, topic_id: myOpinion.topic_id, text: myOpinion.text, user_id: myOpinion.user_id }
+      ? { 
+          id: myOpinion.id, 
+          topic_id: myOpinion.topic_id, 
+          text: myOpinion.text, 
+          user_id: myOpinion.user_id,
+          visible: myOpinion.visible ?? true,
+          status: myOpinion.status ?? null,
+          notice_text: myOpinion.notice_text ?? null,
+        }
       : null,
     theirOpinion: theirOpinion
-      ? { id: theirOpinion.id, topic_id: theirOpinion.topic_id, text: theirOpinion.text, user_id: theirOpinion.user_id }
+      ? { 
+          id: theirOpinion.id, 
+          topic_id: theirOpinion.topic_id, 
+          text: theirOpinion.text, 
+          user_id: theirOpinion.user_id,
+          visible: theirOpinion.visible ?? true,
+          status: theirOpinion.status ?? null,
+          notice_text: theirOpinion.notice_text ?? null,
+        }
       : null,
     myOpinionId: myOpinion?.id || null,
     theirOpinionId: theirOpinion?.id || null,

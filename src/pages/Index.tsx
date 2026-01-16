@@ -217,11 +217,25 @@ const Index = () => {
                     <X className="w-5 h-5" />
                   </button>
                   
-                  <p className="text-sm text-white/80 mb-4 pr-8">
-                    "{selectedNode.opinion.text}"
-                  </p>
+                  {/* Show legal notice for hidden content, otherwise show opinion */}
+                  {selectedNode.opinion.visible === false ? (
+                    <div className="mb-4 pr-8 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                      <p className="text-sm text-destructive">
+                        {selectedNode.opinion.noticeText || 'This content has been hidden due to a suspected legal violation.'}
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-white/80 mb-4 pr-8">
+                      "{selectedNode.opinion.text}"
+                    </p>
+                  )}
                   
-                  {!user ? (
+                  {/* Hidden content - only show close button, no chat actions */}
+                  {selectedNode.opinion.visible === false ? (
+                    <p className="text-sm text-white/40 italic text-center py-2">
+                      Interaction with this content is disabled
+                    </p>
+                  ) : !user ? (
                     <Button
                       onClick={() => navigate('/auth')}
                       variant="outline"

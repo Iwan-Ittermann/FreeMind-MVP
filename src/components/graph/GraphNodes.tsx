@@ -95,15 +95,14 @@ export function GraphNodes({
     }
   }, []);
 
-  const handleClick = useCallback((node: GraphNode, isHidden: boolean) => {
+  const handleClick = useCallback((node: GraphNode) => {
     // Don't trigger click if long press was triggered
     if (longPressTriggered.current) {
       longPressTriggered.current = false;
       return;
     }
-    if (!isHidden) {
-      onNodeClick?.(node);
-    }
+    // Always allow click - hidden state is handled by Index.tsx
+    onNodeClick?.(node);
   }, [onNodeClick]);
 
   return (
@@ -116,11 +115,6 @@ export function GraphNodes({
           const hasIncomingRequest = node.isRequester; // This node sent a request TO current user
           const isInactive = node.hasChats === false; // Node has no chats yet
           const isHidden = node.opinion.visible === false;
-
-          // Skip rendering hidden nodes for non-owners
-          if (isHidden && !isCurrentUser) {
-            return null;
-          }
 
           // Get zone-based sizing
           const zone = getNodeZone(node, config);
@@ -170,8 +164,8 @@ export function GraphNodes({
                 x: { type: "spring", stiffness: 50, damping: 20, mass: 1 },
                 y: { type: "spring", stiffness: 50, damping: 20, mass: 1 },
               }}
-              style={{ cursor: isHidden && !isCurrentUser ? 'not-allowed' : 'pointer' }}
-              onClick={() => handleClick(node, isHidden)}
+              style={{ cursor: 'pointer' }}
+              onClick={() => handleClick(node)}
               onMouseEnter={() => onNodeHover?.(node)}
               onMouseLeave={() => onNodeHover?.(null)}
               onContextMenu={(e) => handleContextMenu(e, node)}

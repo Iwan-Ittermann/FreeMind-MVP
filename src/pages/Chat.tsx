@@ -73,8 +73,16 @@ export default function Chat() {
       <FloatingChat
         chatId={chatId}
         topicId={topicId || undefined}
-        myOpinion={myOpinion?.text || 'Unknown opinion'}
-        theirOpinion={theirOpinion.text}
+        myOpinion={{
+          text: myOpinion?.text || 'Unknown opinion',
+          visible: myOpinion?.visible ?? true,
+          notice_text: myOpinion?.notice_text ?? null,
+        }}
+        theirOpinion={{
+          text: theirOpinion.text,
+          visible: theirOpinion.visible,
+          notice_text: theirOpinion.notice_text,
+        }}
         myOpinionId={myOpinionId || undefined}
         theirOpinionId={theirOpinionId || undefined}
         onClose={handleClose}
@@ -148,8 +156,16 @@ export default function Chat() {
     <FloatingChat
       chatId={chatId}
       topicId={topicId || undefined}
-      myOpinion={myOpinion.text}
-      theirOpinion={theirOpinion.text}
+      myOpinion={{
+        text: myOpinion.text,
+        visible: myOpinion.visible,
+        notice_text: myOpinion.notice_text,
+      }}
+      theirOpinion={{
+        text: theirOpinion.text,
+        visible: theirOpinion.visible,
+        notice_text: theirOpinion.notice_text,
+      }}
       myOpinionId={myOpinionId || undefined}
       theirOpinionId={theirOpinionId || undefined}
       onClose={handleClose}
