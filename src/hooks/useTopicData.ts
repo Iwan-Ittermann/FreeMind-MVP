@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Opinion, ChatRating } from '@/types/graph';
 
@@ -194,15 +194,10 @@ export function useTopicData(topicId: string) {
 
       if (opinionsError) throw opinionsError;
 
-      // Fetch ALL chats for this topic (to show edges even without ratings)
-      const { data: chatsData, error: chatsError } = await supabase
-        .from('chats')
-        .select('opinion_a_id, opinion_b_id')
-        .eq('topic_id', topicId);
-
-      if (chatsError) throw chatsError;
-
-      // Fetch ratings using the function (for chats that have ratings)
+      // Fetch aggregated opinion-pair ratings.
+      // IMPORTANT: We intentionally do NOT fetch the raw `chats` table here, because
+      // chat visibility is participant-restricted and would cause different users
+      // to compute different layouts.
       const { data: ratingsData, error: ratingsError } = await supabase
         .rpc('get_opinion_pair_ratings', { topic_uuid: topicId });
 
@@ -219,30 +214,14 @@ export function useTopicData(topicId: string) {
         noticeText: op.notice_text ?? undefined,
       }));
 
-      // Create a map of ratings by opinion pair for quick lookup
-      // empathy: -50 to +50, disagreement: 0 to 100
-      const ratingsMap = new Map<string, { empathy: number; disagreement: number }>();
-      (ratingsData || []).forEach(r => {
-        const key = [r.opinion_a_id, r.opinion_b_id].sort().join('-');
-        ratingsMap.set(key, {
-          empathy: Number(r.avg_empathy) ?? 0,
-          disagreement: Number(r.avg_disagreement) ?? 50,
-        });
-      });
-
-      // Create ratings for ALL chats (using defaults if no ratings exist)
+      // Build deterministic graph edges/weights from aggregated ratings
       // Default empathy: 0 (neutral), default disagreement: 50 (middle)
-      const formattedRatings: ChatRating[] = (chatsData || []).map(chat => {
-        const key = [chat.opinion_a_id, chat.opinion_b_id].sort().join('-');
-        const existingRating = ratingsMap.get(key);
-        
-        return {
-          opinionA: chat.opinion_a_id,
-          opinionB: chat.opinion_b_id,
-          empathy: existingRating?.empathy ?? 0,
-          disagreement: existingRating?.disagreement ?? 50,
-        };
-      });
+      const formattedRatings: ChatRating[] = (ratingsData || []).map(r => ({
+        opinionA: r.opinion_a_id,
+        opinionB: r.opinion_b_id,
+        empathy: Number(r.avg_empathy ?? 0),
+        disagreement: Number(r.avg_disagreement ?? 50),
+      }));
 
       return {
         id: topic.id,
