@@ -201,10 +201,19 @@ export function ReportCard({ report, contentText }: ReportCardProps) {
         <span className="text-muted-foreground">{report.offense}</span>
       </div>
 
-      {/* Content preview */}
-      {contentText && (
+      {/* Content preview - use report.contentText if available */}
+      {(report.contentText || contentText) && (
         <div className="p-3 rounded bg-muted/50 border border-border mb-3">
-          <p className="text-sm text-foreground line-clamp-3">{contentText}</p>
+          <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Gemeldeter Inhalt</p>
+          <p className="text-sm text-foreground line-clamp-3">{report.contentText || contentText}</p>
+        </div>
+      )}
+
+      {/* Reported user IP */}
+      {report.reportedUserIp && (
+        <div className="mb-3 flex items-center gap-2">
+          <p className="text-xs text-muted-foreground uppercase tracking-wide">IP des gemeldeten Users:</p>
+          <span className="font-mono text-xs bg-muted px-2 py-0.5 rounded">{report.reportedUserIp}</span>
         </div>
       )}
 
