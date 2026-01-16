@@ -11,11 +11,17 @@ import { MiniGraph } from './MiniGraph';
 import { useChatMessages } from '@/hooks/useChatMessages';
 import { useTypingIndicator } from '@/hooks/useTypingIndicator';
 
+interface OpinionData {
+  text: string;
+  visible: boolean;
+  notice_text: string | null;
+}
+
 interface FloatingChatProps {
   chatId: string | null;
   topicId?: string;
-  myOpinion: string;
-  theirOpinion: string;
+  myOpinion: OpinionData;
+  theirOpinion: OpinionData;
   myOpinionId?: string;
   theirOpinionId?: string;
   onClose: () => void;
@@ -82,19 +88,23 @@ export function FloatingChat({
   const displayMessages = [
     {
       id: 'opinion-theirs',
-      content: theirOpinion,
+      content: theirOpinion.visible ? theirOpinion.text : (theirOpinion.notice_text || 'This content has been hidden.'),
       isOwn: false,
       timestamp: new Date(0), // Earliest
       reactions: [] as string[],
       isOpinion: true,
+      visible: theirOpinion.visible,
+      noticeText: theirOpinion.notice_text,
     },
     {
       id: 'opinion-mine',
-      content: myOpinion,
+      content: myOpinion.visible ? myOpinion.text : (myOpinion.notice_text || 'This content has been hidden.'),
       isOwn: true,
       timestamp: new Date(1), // Second earliest
       reactions: [] as string[],
       isOpinion: true,
+      visible: myOpinion.visible,
+      noticeText: myOpinion.notice_text,
     },
     ...dbMessages.map(msg => ({
       id: msg.id,
@@ -103,6 +113,8 @@ export function FloatingChat({
       timestamp: msg.createdAt,
       reactions: [] as string[],
       isOpinion: false,
+      visible: true, // Regular messages handled separately
+      noticeText: null as string | null,
     })),
   ];
 
@@ -331,6 +343,8 @@ export function FloatingChat({
                     reactions={msg.reactions}
                     isOpinion={msg.isOpinion}
                     onReact={(reaction) => handleReaction(msg.id, reaction)}
+                    visible={msg.visible}
+                    noticeText={msg.noticeText}
                   />
                 ))}
               </AnimatePresence>
