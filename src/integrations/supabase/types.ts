@@ -249,6 +249,63 @@ export type Database = {
           },
         ]
       }
+      court_cases: {
+        Row: {
+          admin_id: string | null
+          case_number: string | null
+          court_name: string | null
+          created_at: string | null
+          decision_date: string | null
+          decision_type: string | null
+          id: string
+          report_id: string
+          status: string | null
+          topic_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          admin_id?: string | null
+          case_number?: string | null
+          court_name?: string | null
+          created_at?: string | null
+          decision_date?: string | null
+          decision_type?: string | null
+          id?: string
+          report_id: string
+          status?: string | null
+          topic_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          admin_id?: string | null
+          case_number?: string | null
+          court_name?: string | null
+          created_at?: string | null
+          decision_date?: string | null
+          decision_type?: string | null
+          id?: string
+          report_id?: string
+          status?: string | null
+          topic_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "court_cases_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "reports"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "court_cases_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       laws: {
         Row: {
           created_at: string | null
@@ -377,24 +434,33 @@ export type Database = {
       topics: {
         Row: {
           created_at: string
+          created_by: string | null
           description: string | null
           id: string
           is_active: boolean
+          status: string | null
           title: string
+          url_slug: string
         }
         Insert: {
           created_at?: string
+          created_by?: string | null
           description?: string | null
           id?: string
           is_active?: boolean
+          status?: string | null
           title: string
+          url_slug: string
         }
         Update: {
           created_at?: string
+          created_by?: string | null
           description?: string | null
           id?: string
           is_active?: boolean
+          status?: string | null
           title?: string
+          url_slug?: string
         }
         Relationships: []
       }
@@ -418,6 +484,38 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_topics: {
+        Row: {
+          id: string
+          ip_address: string | null
+          joined_at: string | null
+          topic_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          ip_address?: string | null
+          joined_at?: string | null
+          topic_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          ip_address?: string | null
+          joined_at?: string | null
+          topic_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_topics_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -478,9 +576,22 @@ export type Database = {
       }
     }
     Functions: {
+      approve_court_case: { Args: { _case_id: string }; Returns: undefined }
       can_view_opinion: {
         Args: { _opinion_id: string; _user_id: string; _visible: boolean }
         Returns: boolean
+      }
+      create_court_case: {
+        Args: {
+          _case_number?: string
+          _court_name?: string
+          _report_id: string
+        }
+        Returns: string
+      }
+      create_topic: {
+        Args: { _description?: string; _title: string }
+        Returns: string
       }
       get_graph_pairs: {
         Args: { topic_uuid: string }
@@ -510,7 +621,19 @@ export type Database = {
         }
         Returns: string
       }
+      get_user_topics: {
+        Args: never
+        Returns: {
+          description: string
+          joined_at: string
+          status: string
+          title: string
+          topic_id: string
+          url_slug: string
+        }[]
+      }
       grant_admin_role: { Args: { _password: string }; Returns: boolean }
+      has_joined_topic: { Args: { _topic_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -521,6 +644,10 @@ export type Database = {
       is_chat_participant: {
         Args: { chat_id: string; checking_user_id: string }
         Returns: boolean
+      }
+      join_topic: {
+        Args: { _ip_address?: string; _topic_slug: string }
+        Returns: string
       }
       log_audit: {
         Args: {
@@ -570,6 +697,20 @@ export type Database = {
           _notice_text?: string
           _visible: boolean
         }
+        Returns: undefined
+      }
+      update_court_case_decision: {
+        Args: {
+          _case_id: string
+          _case_number?: string
+          _court_name?: string
+          _decision_date?: string
+          _decision_type: string
+        }
+        Returns: undefined
+      }
+      update_topic_status: {
+        Args: { _new_status: string; _topic_id: string }
         Returns: undefined
       }
     }

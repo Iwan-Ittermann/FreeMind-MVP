@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Shield, FileText, History, AlertTriangle, ArrowLeft, Loader2 } from 'lucide-react';
+import { Lock, Shield, FileText, History, AlertTriangle, ArrowLeft, Loader2, Layers } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { ReportCard } from '@/components/moderation/ReportCard';
 import { AuditLogTable } from '@/components/moderation/AuditLogTable';
+import { TopicPanel } from '@/components/admin/TopicPanel';
 import { useReports } from '@/hooks/useReports';
 import { useGrantAdminRole } from '@/hooks/useAdminRole';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-
 
 
 export default function Admin() {
@@ -136,8 +136,12 @@ export default function Admin() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
             >
-              <Tabs defaultValue="pending" className="w-full">
-                <TabsList className="grid w-full max-w-md grid-cols-3 mb-6">
+              <Tabs defaultValue="topics" className="w-full">
+                <TabsList className="grid w-full max-w-lg grid-cols-4 mb-6">
+                  <TabsTrigger value="topics">
+                    <Layers className="w-4 h-4 mr-2" />
+                    Topics
+                  </TabsTrigger>
                   <TabsTrigger value="pending" className="relative">
                     <AlertTriangle className="w-4 h-4 mr-2" />
                     Offen
@@ -159,6 +163,10 @@ export default function Admin() {
                     Audit-Log
                   </TabsTrigger>
                 </TabsList>
+
+                <TabsContent value="topics">
+                  <TopicPanel />
+                </TabsContent>
 
                 <TabsContent value="pending">
                   {reportsLoading ? (
