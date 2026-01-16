@@ -160,10 +160,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "chat_requests_requester_opinion_id_fkey"
+            columns: ["requester_opinion_id"]
+            isOneToOne: false
+            referencedRelation: "opinions_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "chat_requests_target_opinion_id_fkey"
             columns: ["target_opinion_id"]
             isOneToOne: false
             referencedRelation: "opinions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_requests_target_opinion_id_fkey"
+            columns: ["target_opinion_id"]
+            isOneToOne: false
+            referencedRelation: "opinions_public"
             referencedColumns: ["id"]
           },
           {
@@ -206,10 +220,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "chats_opinion_a_id_fkey"
+            columns: ["opinion_a_id"]
+            isOneToOne: false
+            referencedRelation: "opinions_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "chats_opinion_b_id_fkey"
             columns: ["opinion_b_id"]
             isOneToOne: false
             referencedRelation: "opinions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chats_opinion_b_id_fkey"
+            columns: ["opinion_b_id"]
+            isOneToOne: false
+            referencedRelation: "opinions_public"
             referencedColumns: ["id"]
           },
           {
@@ -407,8 +435,53 @@ export type Database = {
         }
         Relationships: []
       }
+      opinions_public: {
+        Row: {
+          created_at: string | null
+          id: string | null
+          notice_text: string | null
+          status: string | null
+          text: string | null
+          topic_id: string | null
+          user_id: string | null
+          visible: boolean | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string | null
+          notice_text?: string | null
+          status?: string | null
+          text?: string | null
+          topic_id?: string | null
+          user_id?: string | null
+          visible?: boolean | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string | null
+          notice_text?: string | null
+          status?: string | null
+          text?: string | null
+          topic_id?: string | null
+          user_id?: string | null
+          visible?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "opinions_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
+      can_view_opinion: {
+        Args: { _opinion_id: string; _user_id: string; _visible: boolean }
+        Returns: boolean
+      }
       get_opinion_pair_ratings: {
         Args: { topic_uuid: string }
         Returns: {

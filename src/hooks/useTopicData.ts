@@ -124,8 +124,9 @@ export function useTopicData(topicId: string) {
           
           if (chat && chat.topic_id === topicId) {
             // Determine which opinion sent the message by looking up sender's opinion
+            // Use the secure view that excludes ip_address
             const { data: senderOpinion } = await supabase
-              .from('opinions')
+              .from('opinions_public')
               .select('id')
               .eq('user_id', senderId)
               .eq('topic_id', topicId)
@@ -185,9 +186,9 @@ export function useTopicData(topicId: string) {
       if (topicError) throw topicError;
       if (!topic) throw new Error('Topic not found');
 
-      // Fetch opinions for this topic
+      // Fetch opinions for this topic using secure view (excludes ip_address)
       const { data: opinions, error: opinionsError } = await supabase
-        .from('opinions')
+        .from('opinions_public')
         .select('*')
         .eq('topic_id', topicId);
 
@@ -264,8 +265,9 @@ export function useOpinionCount(topicId: string) {
   return useQuery({
     queryKey: ['opinionCount', topicId],
     queryFn: async () => {
+      // Use secure view that excludes ip_address
       const { count, error } = await supabase
-        .from('opinions')
+        .from('opinions_public')
         .select('*', { count: 'exact', head: true })
         .eq('topic_id', topicId);
 
