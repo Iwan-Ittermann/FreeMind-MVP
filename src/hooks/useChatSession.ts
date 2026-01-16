@@ -49,13 +49,13 @@ export function useChatSession(theirOpinionId: string | null): ChatSession {
     enabled: !!chatId && !!user?.id,
   });
 
-  // Fetch the other person's opinion
+  // Fetch the other person's opinion using secure view (excludes ip_address)
   const { data: theirOpinion, isLoading: loadingTheir, error: theirError } = useQuery({
     queryKey: ['opinion', theirOpinionId],
     queryFn: async () => {
       if (!theirOpinionId) return null;
       const { data, error } = await supabase
-        .from('opinions')
+        .from('opinions_public')
         .select('*')
         .eq('id', theirOpinionId)
         .maybeSingle();
@@ -65,13 +65,13 @@ export function useChatSession(theirOpinionId: string | null): ChatSession {
     enabled: !!theirOpinionId,
   });
 
-  // Fetch the current user's opinion for this topic
+  // Fetch the current user's opinion for this topic using secure view (excludes ip_address)
   const { data: myOpinion, isLoading: loadingMy, error: myError } = useQuery({
     queryKey: ['myOpinion', theirOpinion?.topic_id, user?.id],
     queryFn: async () => {
       if (!theirOpinion?.topic_id || !user?.id) return null;
       const { data, error } = await supabase
-        .from('opinions')
+        .from('opinions_public')
         .select('*')
         .eq('topic_id', theirOpinion.topic_id)
         .eq('user_id', user.id)
