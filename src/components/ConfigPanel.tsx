@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings, Lock, Unlock, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Settings, Lock, Unlock, Trash2, ChevronDown, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
@@ -15,6 +16,7 @@ export function ConfigPanel() {
   const [password, setPassword] = useState('');
   const [isResetting, setIsResetting] = useState(false);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const handleUnlock = () => {
     if (password === CONFIG_PASSWORD) {
@@ -51,6 +53,10 @@ export function ConfigPanel() {
     } finally {
       setIsResetting(false);
     }
+  };
+
+  const handleOpenAdmin = () => {
+    navigate('/admin');
   };
 
   return (
@@ -104,6 +110,14 @@ export function ConfigPanel() {
               </div>
             ) : (
               <div className="space-y-3">
+                <Button
+                  onClick={handleOpenAdmin}
+                  variant="outline"
+                  className="w-full border-primary/50 text-primary hover:bg-primary/10 h-10"
+                >
+                  <Shield className="w-4 h-4 mr-2" />
+                  Admin Dashboard
+                </Button>
                 <Button
                   onClick={handleResetDatabase}
                   disabled={isResetting}
