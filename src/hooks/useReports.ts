@@ -19,6 +19,7 @@ export interface Report {
   // Joined data
   contentText?: string;
   contentCreatorId?: string;
+  reportedUserIp?: string;
 }
 
 interface ReportContentParams {
@@ -43,27 +44,44 @@ export function useReports(isAdmin: boolean = false) {
   return useQuery({
     queryKey: ['reports', isAdmin, user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Fetch reports
+      const { data: reportsData, error: reportsError } = await supabase
         .from('reports')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (reportsError) throw reportsError;
 
-      return data.map((report): Report => ({
-        id: report.id,
-        contentId: report.content_id,
-        contentType: report.content_type as Report['contentType'],
-        reportingUserId: report.reporting_user_id,
-        lawBook: report.law_book,
-        paragraph: report.paragraph,
-        offense: report.offense,
-        description: report.description,
-        createdAt: new Date(report.created_at),
-        status: report.status as Report['status'],
-        adminId: report.admin_id,
-        reviewTimestamp: report.review_timestamp ? new Date(report.review_timestamp) : null,
-      }));
+      // Fetch content text for each report via the contents view
+      const contentIds = reportsData.map(r => r.content_id);
+      const { data: contentsData } = await supabase
+        .from('contents')
+        .select('content_id, text')
+        .in('content_id', contentIds);
+
+      const contentMap = new Map(contentsData?.map(c => [c.content_id, c.text]) || []);
+
+      return reportsData.map((report): Report => {
+        // Use stored IP or fallback to sample data for older reports
+        const reportedUserIp = report.reported_user_ip_address || '192.168.1.xxx (Beispieldaten)';
+        
+        return {
+          id: report.id,
+          contentId: report.content_id,
+          contentType: report.content_type as Report['contentType'],
+          reportingUserId: report.reporting_user_id,
+          lawBook: report.law_book,
+          paragraph: report.paragraph,
+          offense: report.offense,
+          description: report.description,
+          createdAt: new Date(report.created_at),
+          status: report.status as Report['status'],
+          adminId: report.admin_id,
+          reviewTimestamp: report.review_timestamp ? new Date(report.review_timestamp) : null,
+          contentText: contentMap.get(report.content_id) || undefined,
+          reportedUserIp,
+        };
+      });
     },
     enabled: !!user,
   });
