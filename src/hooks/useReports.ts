@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
+import { getClientIP } from './useClientIP';
 
 export interface Report {
   id: string;
@@ -74,6 +75,9 @@ export function useReportContent() {
 
   return useMutation({
     mutationFn: async (params: ReportContentParams) => {
+      // Fetch reporter's IP address for legal compliance
+      const reporterIp = await getClientIP();
+
       const { data, error } = await supabase.rpc('report_content', {
         _content_id: params.contentId,
         _content_type: params.contentType,
@@ -81,6 +85,7 @@ export function useReportContent() {
         _paragraph: params.paragraph,
         _offense: params.offense,
         _description: params.description || null,
+        _reporter_ip: reporterIp,
       });
 
       if (error) throw error;

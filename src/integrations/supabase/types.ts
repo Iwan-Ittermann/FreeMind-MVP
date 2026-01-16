@@ -255,6 +255,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          ip_address: string | null
           notice_text: string | null
           status: string | null
           text: string
@@ -265,6 +266,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          ip_address?: string | null
           notice_text?: string | null
           status?: string | null
           text: string
@@ -275,6 +277,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          ip_address?: string | null
           notice_text?: string | null
           status?: string | null
           text?: string
@@ -303,6 +306,8 @@ export type Database = {
           law_book: string
           offense: string
           paragraph: string
+          reported_user_ip_address: string | null
+          reporter_ip_address: string | null
           reporting_user_id: string
           review_timestamp: string | null
           status: string | null
@@ -317,6 +322,8 @@ export type Database = {
           law_book: string
           offense: string
           paragraph: string
+          reported_user_ip_address?: string | null
+          reporter_ip_address?: string | null
           reporting_user_id: string
           review_timestamp?: string | null
           status?: string | null
@@ -331,6 +338,8 @@ export type Database = {
           law_book?: string
           offense?: string
           paragraph?: string
+          reported_user_ip_address?: string | null
+          reporter_ip_address?: string | null
           reporting_user_id?: string
           review_timestamp?: string | null
           status?: string | null
@@ -439,20 +448,37 @@ export type Database = {
         }
         Returns: undefined
       }
-      report_content: {
-        Args: {
-          _content_id: string
-          _content_type: string
-          _description?: string
-          _law_book: string
-          _offense: string
-          _paragraph: string
-        }
-        Returns: string
-      }
+      report_content:
+        | {
+            Args: {
+              _content_id: string
+              _content_type: string
+              _description?: string
+              _law_book: string
+              _offense: string
+              _paragraph: string
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              _content_id: string
+              _content_type: string
+              _description?: string
+              _law_book: string
+              _offense: string
+              _paragraph: string
+              _reporter_ip?: string
+            }
+            Returns: string
+          }
       review_report: {
         Args: { _new_status: string; _notice_text?: string; _report_id: string }
         Returns: undefined
+      }
+      submit_opinion: {
+        Args: { _ip_address?: string; _text: string; _topic_id: string }
+        Returns: string
       }
       toggle_soft_delete: {
         Args: {
