@@ -14,27 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_logs: {
+        Row: {
+          action: string
+          collection_name: string
+          details: Json | null
+          id: string
+          record_id: string | null
+          timestamp: string
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          collection_name: string
+          details?: Json | null
+          id?: string
+          record_id?: string | null
+          timestamp?: string
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          collection_name?: string
+          details?: Json | null
+          id?: string
+          record_id?: string | null
+          timestamp?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           chat_id: string
           content: string
           created_at: string
           id: string
+          notice_text: string | null
           sender_id: string
+          status: string | null
+          visible: boolean | null
         }
         Insert: {
           chat_id: string
           content: string
           created_at?: string
           id?: string
+          notice_text?: string | null
           sender_id: string
+          status?: string | null
+          visible?: boolean | null
         }
         Update: {
           chat_id?: string
           content?: string
           created_at?: string
           id?: string
+          notice_text?: string | null
           sender_id?: string
+          status?: string | null
+          visible?: boolean | null
         }
         Relationships: [
           {
@@ -182,27 +221,66 @@ export type Database = {
           },
         ]
       }
+      laws: {
+        Row: {
+          created_at: string | null
+          effective_date: string
+          id: string
+          law_book: string
+          offense: string
+          paragraph: string
+          version: string
+        }
+        Insert: {
+          created_at?: string | null
+          effective_date?: string
+          id?: string
+          law_book: string
+          offense: string
+          paragraph: string
+          version?: string
+        }
+        Update: {
+          created_at?: string | null
+          effective_date?: string
+          id?: string
+          law_book?: string
+          offense?: string
+          paragraph?: string
+          version?: string
+        }
+        Relationships: []
+      }
       opinions: {
         Row: {
           created_at: string
           id: string
+          notice_text: string | null
+          status: string | null
           text: string
           topic_id: string
           user_id: string
+          visible: boolean | null
         }
         Insert: {
           created_at?: string
           id?: string
+          notice_text?: string | null
+          status?: string | null
           text: string
           topic_id: string
           user_id: string
+          visible?: boolean | null
         }
         Update: {
           created_at?: string
           id?: string
+          notice_text?: string | null
+          status?: string | null
           text?: string
           topic_id?: string
           user_id?: string
+          visible?: boolean | null
         }
         Relationships: [
           {
@@ -213,6 +291,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      reports: {
+        Row: {
+          admin_id: string | null
+          content_id: string
+          content_type: string
+          created_at: string
+          description: string | null
+          id: string
+          law_book: string
+          offense: string
+          paragraph: string
+          reporting_user_id: string
+          review_timestamp: string | null
+          status: string | null
+        }
+        Insert: {
+          admin_id?: string | null
+          content_id: string
+          content_type: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          law_book: string
+          offense: string
+          paragraph: string
+          reporting_user_id: string
+          review_timestamp?: string | null
+          status?: string | null
+        }
+        Update: {
+          admin_id?: string | null
+          content_id?: string
+          content_type?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          law_book?: string
+          offense?: string
+          paragraph?: string
+          reporting_user_id?: string
+          review_timestamp?: string | null
+          status?: string | null
+        }
+        Relationships: []
       }
       topics: {
         Row: {
@@ -238,9 +361,43 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      contents: {
+        Row: {
+          content_id: string | null
+          content_type: string | null
+          created_at: string | null
+          creator_id: string | null
+          notice_text: string | null
+          status: string | null
+          text: string | null
+          topic_id: string | null
+          visible: boolean | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_opinion_pair_ratings: {
@@ -261,13 +418,53 @@ export type Database = {
         }
         Returns: string
       }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       is_chat_participant: {
         Args: { chat_id: string; checking_user_id: string }
         Returns: boolean
       }
+      log_audit: {
+        Args: {
+          _action: string
+          _collection_name: string
+          _details?: Json
+          _record_id: string
+        }
+        Returns: undefined
+      }
+      report_content: {
+        Args: {
+          _content_id: string
+          _content_type: string
+          _description?: string
+          _law_book: string
+          _offense: string
+          _paragraph: string
+        }
+        Returns: string
+      }
+      review_report: {
+        Args: { _new_status: string; _notice_text?: string; _report_id: string }
+        Returns: undefined
+      }
+      toggle_soft_delete: {
+        Args: {
+          _content_id: string
+          _content_type: string
+          _notice_text?: string
+          _visible: boolean
+        }
+        Returns: undefined
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -394,6 +591,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const

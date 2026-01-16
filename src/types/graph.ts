@@ -5,6 +5,9 @@ export interface Opinion {
   text: string;
   authorId?: string;
   createdAt?: Date;
+  status?: 'Visible' | 'Reported-Unreviewed' | 'In-Review' | 'Soft-Deleted';
+  visible?: boolean;
+  noticeText?: string;
 }
 
 export interface ChatRating {
