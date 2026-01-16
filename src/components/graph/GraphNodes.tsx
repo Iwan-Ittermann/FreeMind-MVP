@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { GraphNode, LayoutConfig } from '@/types/graph';
 import { ReportDialog } from '@/components/moderation/ReportDialog';
@@ -12,6 +12,9 @@ interface GraphNodesProps {
   onNodeClick?: (node: GraphNode) => void;
   onNodeHover?: (node: GraphNode | null) => void;
 }
+
+// Long press duration in ms
+const LONG_PRESS_DURATION = 500;
 
 // Determine which zone a node is in based on distance from center
 function getNodeZone(node: GraphNode, config: LayoutConfig): 'green' | 'yellow' | 'pink' | 'outer' {
@@ -45,6 +48,10 @@ export function GraphNodes({
   const { nodeRadius } = config;
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [reportingNode, setReportingNode] = useState<GraphNode | null>(null);
+  
+  // Long press handling for touch devices
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const longPressTriggered = useRef(false);
 
   const handleContextMenu = (e: React.MouseEvent, node: GraphNode) => {
     e.preventDefault();
@@ -53,6 +60,51 @@ export function GraphNodes({
     setReportingNode(node);
     setReportDialogOpen(true);
   };
+
+  const openReportDialog = useCallback((node: GraphNode) => {
+    // Don't allow reporting own content
+    if (node.opinion.authorId === currentUserId) return;
+    setReportingNode(node);
+    setReportDialogOpen(true);
+  }, [currentUserId]);
+
+  const handleTouchStart = useCallback((node: GraphNode) => {
+    longPressTriggered.current = false;
+    longPressTimer.current = setTimeout(() => {
+      longPressTriggered.current = true;
+      // Haptic feedback if available
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+      openReportDialog(node);
+    }, LONG_PRESS_DURATION);
+  }, [openReportDialog]);
+
+  const handleTouchEnd = useCallback(() => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  }, []);
+
+  const handleTouchMove = useCallback(() => {
+    // Cancel long press if user moves finger
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  }, []);
+
+  const handleClick = useCallback((node: GraphNode, isHidden: boolean) => {
+    // Don't trigger click if long press was triggered
+    if (longPressTriggered.current) {
+      longPressTriggered.current = false;
+      return;
+    }
+    if (!isHidden) {
+      onNodeClick?.(node);
+    }
+  }, [onNodeClick]);
 
   return (
     <>
@@ -119,10 +171,13 @@ export function GraphNodes({
                 y: { type: "spring", stiffness: 50, damping: 20, mass: 1 },
               }}
               style={{ cursor: isHidden && !isCurrentUser ? 'not-allowed' : 'pointer' }}
-              onClick={() => !isHidden && onNodeClick?.(node)}
+              onClick={() => handleClick(node, isHidden)}
               onMouseEnter={() => onNodeHover?.(node)}
               onMouseLeave={() => onNodeHover?.(null)}
               onContextMenu={(e) => handleContextMenu(e, node)}
+              onTouchStart={() => handleTouchStart(node)}
+              onTouchEnd={handleTouchEnd}
+              onTouchMove={handleTouchMove}
             >
               {/* Outer glow for highlighted nodes */}
               {isHighlighted && (
