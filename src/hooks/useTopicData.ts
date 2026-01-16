@@ -89,7 +89,7 @@ export function useTopicData(topicId: string) {
           queryClient.invalidateQueries({ queryKey: ['topic', topicId] });
         }
       )
-      // Listen for chat_request changes (pending request edges)
+      // Listen for chat_request changes (pending request edges AND accepted edges for graph)
       .on(
         'postgres_changes',
         {
@@ -99,7 +99,9 @@ export function useTopicData(topicId: string) {
           filter: `topic_id=eq.${topicId}`,
         },
         () => {
+          // Invalidate both chatRequests AND topic (graph layout depends on accepted requests)
           queryClient.invalidateQueries({ queryKey: ['chatRequests', topicId] });
+          queryClient.invalidateQueries({ queryKey: ['topic', topicId] });
         }
       )
       // Listen for new messages (activity indicator + animation)
@@ -186,20 +188,20 @@ export function useTopicData(topicId: string) {
       if (topicError) throw topicError;
       if (!topic) throw new Error('Topic not found');
 
-      // Fetch opinions for this topic using secure view (excludes ip_address)
+      // Fetch ONLY visible opinions for canonical layout (all users see same set)
       const { data: opinions, error: opinionsError } = await supabase
         .from('opinions_public')
         .select('*')
-        .eq('topic_id', topicId);
+        .eq('topic_id', topicId)
+        .eq('visible', true);
 
       if (opinionsError) throw opinionsError;
 
-      // Fetch aggregated opinion-pair ratings.
-      // IMPORTANT: We intentionally do NOT fetch the raw `chats` table here, because
-      // chat visibility is participant-restricted and would cause different users
-      // to compute different layouts.
+      // Fetch canonical graph pairs using SECURITY DEFINER function
+      // This returns only accepted chat_requests with both opinions visible
+      // All users get the same result regardless of RLS on chats table
       const { data: ratingsData, error: ratingsError } = await supabase
-        .rpc('get_opinion_pair_ratings', { topic_uuid: topicId });
+        .rpc('get_graph_pairs', { topic_uuid: topicId });
 
       if (ratingsError) throw ratingsError;
 
