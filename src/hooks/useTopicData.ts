@@ -207,12 +207,15 @@ export function useTopicData(topicId: string) {
 
       if (ratingsError) throw ratingsError;
 
-      // Transform opinions to our graph format
+      // Transform opinions to our graph format (including moderation fields)
       const formattedOpinions: Opinion[] = (opinions || []).map(op => ({
         id: op.id,
         text: op.text,
         authorId: op.user_id,
         createdAt: new Date(op.created_at),
+        status: op.status as Opinion['status'],
+        visible: op.visible ?? true,
+        noticeText: op.notice_text ?? undefined,
       }));
 
       // Create a map of ratings by opinion pair for quick lookup
