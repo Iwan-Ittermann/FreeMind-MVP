@@ -4,32 +4,17 @@ import { useAuth } from './useAuth';
 
 // Grant admin role to current user (called after password verification)
 export function useGrantAdminRole() {
-  const { user } = useAuth();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async () => {
-      if (!user?.id) throw new Error('Not authenticated');
-
-      // Check if role already exists
-      const { data: existing } = await supabase
-        .from('user_roles')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('role', 'admin')
-        .maybeSingle();
-
-      if (existing) return existing.id;
-
-      // Insert admin role
-      const { data, error } = await supabase
-        .from('user_roles')
-        .insert({ user_id: user.id, role: 'admin' })
-        .select('id')
-        .single();
+    mutationFn: async (password: string) => {
+      const { data, error } = await supabase.rpc('grant_admin_role', {
+        _password: password,
+      });
 
       if (error) throw error;
-      return data.id;
+      if (!data) throw new Error('Invalid password');
+      return true;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-role'] });

@@ -13,7 +13,7 @@ import { useGrantAdminRole } from '@/hooks/useAdminRole';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 
-const ADMIN_PASSWORD = 'Wonderful';
+
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -32,18 +32,14 @@ export default function Admin() {
   const { data: reports = [], isLoading: reportsLoading } = useReports(isUnlocked);
 
   const handleUnlock = async () => {
-    if (password === ADMIN_PASSWORD) {
-      try {
-        // Grant admin role to the user on successful password
-        await grantAdminRole.mutateAsync();
-        setIsUnlocked(true);
-        setPassword('');
-        toast.success('Admin-Dashboard freigeschaltet');
-      } catch (err: any) {
-        toast.error(err.message || 'Fehler beim Freischalten');
-      }
-    } else {
-      toast.error('Falsches Passwort');
+    try {
+      // Grant admin role to the user using password verification
+      await grantAdminRole.mutateAsync(password);
+      setIsUnlocked(true);
+      setPassword('');
+      toast.success('Admin-Dashboard freigeschaltet');
+    } catch (err: any) {
+      toast.error(err.message || 'Falsches Passwort');
       setPassword('');
     }
   };
