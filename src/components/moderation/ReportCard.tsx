@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Report, useReviewReport } from '@/hooks/useReports';
+import { useCourtCaseByReport, CourtCase } from '@/hooks/useCourtCases';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
+import { CourtCaseDialog } from './CourtCaseDialog';
 import {
   AlertTriangle,
   CheckCircle,
@@ -12,6 +14,8 @@ import {
   FileText,
   Scale,
   Loader2,
+  Gavel,
+  Plus,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -47,10 +51,100 @@ const statusConfig = {
   },
 };
 
+const decisionConfig = {
+  'Pending': { label: 'Anhängig', color: 'bg-yellow-500/20 text-yellow-500 border-yellow-500/30' },
+  'Dismissed': { label: 'Eingestellt', color: 'bg-gray-500/20 text-gray-500 border-gray-500/30' },
+  'Acquittal': { label: 'Freispruch', color: 'bg-green-500/20 text-green-500 border-green-500/30' },
+  'Conviction': { label: 'Verurteilung', color: 'bg-red-500/20 text-red-500 border-red-500/30' },
+};
+
+function CourtCaseSection({ courtCase, reportId }: { courtCase: CourtCase | null; reportId: string }) {
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  if (!courtCase) {
+    return (
+      <>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setDialogOpen(true)}
+          className="w-full mt-2"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Gerichtsdaten hinzufügen
+        </Button>
+        <CourtCaseDialog
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+          reportId={reportId}
+        />
+      </>
+    );
+  }
+
+  const decision = decisionConfig[courtCase.decision_type];
+
+  return (
+    <>
+      <div className="mt-3 p-3 rounded-lg border border-border bg-muted/30">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <Gavel className="w-4 h-4 text-muted-foreground" />
+            <span className="text-sm font-medium">Gerichtsverfahren</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge className={courtCase.status === 'Active' ? 'bg-green-500/20 text-green-500' : 'bg-gray-500/20 text-gray-500'}>
+              {courtCase.status === 'Active' ? 'Aktiv' : 'Inaktiv'}
+            </Badge>
+            <Badge className={decision.color}>
+              {decision.label}
+            </Badge>
+          </div>
+        </div>
+        
+        {(courtCase.court_name || courtCase.case_number) && (
+          <div className="text-xs text-muted-foreground mb-2">
+            {courtCase.court_name && <span>{courtCase.court_name}</span>}
+            {courtCase.court_name && courtCase.case_number && <span> · </span>}
+            {courtCase.case_number && <span className="font-mono">{courtCase.case_number}</span>}
+          </div>
+        )}
+
+        {courtCase.decision_date && (
+          <div className="text-xs text-muted-foreground">
+            Entscheidung: {new Date(courtCase.decision_date).toLocaleDateString('de-DE')}
+          </div>
+        )}
+
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setDialogOpen(true)}
+          className="w-full mt-2 text-muted-foreground"
+        >
+          Bearbeiten
+        </Button>
+      </div>
+      <CourtCaseDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        reportId={reportId}
+        existingCase={courtCase}
+      />
+    </>
+  );
+}
+
 export function ReportCard({ report, contentText }: ReportCardProps) {
   const reviewMutation = useReviewReport();
   const [customNotice, setCustomNotice] = useState('');
   const [showActions, setShowActions] = useState(false);
+  
+  // Fetch court case for this report (only for Suspicion status)
+  const { data: courtCase } = useCourtCaseByReport(
+    report.id, 
+    report.status === 'Suspicion'
+  );
 
   const config = statusConfig[report.status];
   const StatusIcon = config.icon;
@@ -127,6 +221,11 @@ export function ReportCard({ report, contentText }: ReportCardProps) {
         <div className="text-xs text-muted-foreground mb-3">
           Geprüft am {report.reviewTimestamp.toLocaleDateString('de-DE')}
         </div>
+      )}
+
+      {/* Court case section for Suspicion status */}
+      {report.status === 'Suspicion' && (
+        <CourtCaseSection courtCase={courtCase || null} reportId={report.id} />
       )}
 
       {/* Actions for unreviewed/in-review reports */}
