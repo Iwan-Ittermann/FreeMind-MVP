@@ -482,6 +482,16 @@ export type Database = {
         Args: { _opinion_id: string; _user_id: string; _visible: boolean }
         Returns: boolean
       }
+      get_graph_pairs: {
+        Args: { topic_uuid: string }
+        Returns: {
+          avg_disagreement: number
+          avg_empathy: number
+          opinion_a_id: string
+          opinion_b_id: string
+          rating_count: number
+        }[]
+      }
       get_opinion_pair_ratings: {
         Args: { topic_uuid: string }
         Returns: {
