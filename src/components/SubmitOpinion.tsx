@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { getClientIP } from '@/hooks/useClientIP';
 import { z } from 'zod';
 
 const opinionSchema = z.object({
@@ -49,10 +50,14 @@ export function SubmitOpinion({ topicId, onSuccess, hasExistingOpinion = false }
     setIsSubmitting(true);
 
     try {
-      const { error: insertError } = await supabase.from('opinions').insert({
-        topic_id: topicId,
-        user_id: user.id,
-        text: result.data.text,
+      // Fetch IP address for legal compliance
+      const ipAddress = await getClientIP();
+
+      // Use the submit_opinion function to securely store with IP
+      const { error: insertError } = await supabase.rpc('submit_opinion', {
+        _topic_id: topicId,
+        _text: result.data.text,
+        _ip_address: ipAddress,
       });
 
       if (insertError) {
