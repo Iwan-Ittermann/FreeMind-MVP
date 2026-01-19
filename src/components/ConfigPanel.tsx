@@ -62,7 +62,8 @@ export function ConfigPanel({ open, onOpenChange }: ConfigPanelProps) {
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-[320px] sm:w-[400px]">
+      <SheetContent side="right" className="w-[280px] sm:w-[320px]">
+      
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <Settings className="w-5 h-5" />
