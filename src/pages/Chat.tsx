@@ -17,6 +17,7 @@ export default function Chat() {
     topicId,
     myOpinion, 
     theirOpinion,
+    theirUserId,
     myOpinionId,
     theirOpinionId,
     isLoading, 
@@ -24,6 +25,7 @@ export default function Chat() {
     saveRating,
     isSavingRating,
     existingRating,
+    averageBridgingScore,
   } = useChatSession(theirOpinionIdParam);
 
   const handleClose = () => {
@@ -168,12 +170,14 @@ export default function Chat() {
       }}
       myOpinionId={myOpinionId || undefined}
       theirOpinionId={theirOpinionId || undefined}
+      theirUserId={theirUserId}
       onClose={handleClose}
       onSubmitRating={handleSubmitRating}
       isSavingRating={isSavingRating}
       isReadOnly={false}
       initialEmpathy={existingRating?.empathy}
       initialDisagreement={existingRating?.disagreement}
+      averageBridgingScore={averageBridgingScore}
     />
   );
 }
