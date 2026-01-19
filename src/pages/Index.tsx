@@ -4,8 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, X, Send, Check, Flag } from 'lucide-react';
 import { OpinionGraph } from '@/components/graph/OpinionGraph';
 import { InfoPanel } from '@/components/InfoPanel';
-import { SubmitOpinion } from '@/components/SubmitOpinion';
-import { ConfigPanel } from '@/components/ConfigPanel';
+import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { ReportDialog } from '@/components/moderation/ReportDialog';
 import { GraphNode, GraphEdge, ChatRequest } from '@/types/graph';
@@ -145,33 +144,27 @@ const Index = () => {
   const hasRealData = topicData && topicData.opinions.length > 0;
 
   return (
-    <div className="min-h-screen bg-black text-white overflow-x-hidden">
-      <div className="container mx-auto px-4 py-6 md:py-8">
+    <div className="min-h-screen bg-black text-white overflow-x-hidden flex flex-col">
+      {/* Header */}
+      <Header 
+        title={topicData?.title || "How to fix Climate Change?"}
+        topicId={DEFAULT_TOPIC_ID}
+        hasExistingOpinion={!!myOpinion}
+        onOpinionSubmitted={handleOpinionSubmitted}
+      />
+
+      <div className="flex-1 container mx-auto px-4 py-6 md:py-8">
         <div className="flex flex-col lg:flex-row items-center lg:items-start gap-6 md:gap-8 lg:gap-16">
           {/* Left panel - Info */}
           <motion.div 
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
-            className="w-full lg:flex-1 lg:max-w-md lg:pt-12 order-1 lg:order-none"
+            className="w-full lg:flex-1 lg:max-w-md lg:pt-4 order-1 lg:order-none"
           >
             <InfoPanel 
               question={topicData?.title || "How to fix Climate Change?"}
               opinionCount={hasRealData ? topicData.opinions.length : 40}
             />
-            
-            {/* Submit Opinion Form */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.7 }}
-              className="mt-4 md:mt-6"
-            >
-              <SubmitOpinion 
-                topicId={DEFAULT_TOPIC_ID} 
-                onSuccess={handleOpinionSubmitted}
-                hasExistingOpinion={!!myOpinion}
-              />
-            </motion.div>
             
             {/* Info about mock data */}
             {!hasRealData && (
@@ -333,9 +326,6 @@ const Index = () => {
           </motion.div>
         </div>
       </div>
-      
-      {/* Hidden config panel */}
-      <ConfigPanel />
     </div>
   );
 };

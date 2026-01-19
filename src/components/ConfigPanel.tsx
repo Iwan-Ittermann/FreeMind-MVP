@@ -1,145 +1,144 @@
-import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Settings, Lock, Unlock, Trash2, ChevronDown, Shield } from 'lucide-react';
+import { Settings, Shield, Download, Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { emailToPassphrase } from '@/lib/passphrase';
 import { toast } from 'sonner';
-import { useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
 
-const CONFIG_PASSWORD = 'Wonderful';
+interface ConfigPanelProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
 
-export function ConfigPanel() {
-  const [isVisible, setIsVisible] = useState(false);
-  const [isUnlocked, setIsUnlocked] = useState(false);
-  const [password, setPassword] = useState('');
-  const [isResetting, setIsResetting] = useState(false);
-  const queryClient = useQueryClient();
+export function ConfigPanel({ open, onOpenChange }: ConfigPanelProps) {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [copied, setCopied] = useState(false);
 
-  const handleUnlock = () => {
-    if (password === CONFIG_PASSWORD) {
-      setIsUnlocked(true);
-      setPassword('');
-      toast.success('Config unlocked');
-    } else {
-      toast.error('Incorrect password');
-      setPassword('');
-    }
-  };
+  const passphrase = user?.email ? emailToPassphrase(user.email) : null;
 
-  const handleLock = () => {
-    setIsUnlocked(false);
-  };
-
-  const handleResetDatabase = async () => {
-    if (!confirm('Are you sure you want to reset the database? This will delete ALL opinions, chats, messages, ratings, and requests. This cannot be undone!')) {
-      return;
-    }
-
-    setIsResetting(true);
+  const handleCopy = async () => {
+    if (!passphrase) return;
+    
     try {
-      const { error } = await supabase.functions.invoke('reset-database', {
-        body: { password: CONFIG_PASSWORD },
-      });
-
-      if (error) throw error;
-
-      toast.success('Database reset successfully');
-      queryClient.invalidateQueries();
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to reset database');
-    } finally {
-      setIsResetting(false);
+      await navigator.clipboard.writeText(passphrase);
+      setCopied(true);
+      toast.success('Passphrase copied!');
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error('Failed to copy');
     }
+  };
+
+  const handleDownload = () => {
+    if (!passphrase) return;
+    
+    const content = `Your Freemind Passphrase\n========================\n\n${passphrase}\n\nKeep this safe! You'll need it to log back in.`;
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'freemind-passphrase.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success('Passphrase downloaded!');
   };
 
   const handleOpenAdmin = () => {
+    onOpenChange(false);
     navigate('/admin');
   };
 
   return (
-    <div className="fixed bottom-4 left-4 z-50">
-      {/* Toggle button */}
-      <button
-        onClick={() => setIsVisible(!isVisible)}
-        className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
-      >
-        <Settings className="w-4 h-4 text-white/30 hover:text-white/50" />
-      </button>
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="right" className="w-[320px] sm:w-[400px]">
+        <SheetHeader>
+          <SheetTitle className="flex items-center gap-2">
+            <Settings className="w-5 h-5" />
+            Settings
+          </SheetTitle>
+          <SheetDescription>
+            Manage your account and preferences
+          </SheetDescription>
+        </SheetHeader>
 
-      <AnimatePresence>
-        {isVisible && (
-          <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            className="absolute bottom-10 left-0 bg-black/95 border border-white/10 rounded-lg p-4 min-w-[280px] shadow-2xl"
-          >
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-medium text-white/80 flex items-center gap-2">
-                {isUnlocked ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
-                Configuration
-              </h3>
-              <button
-                onClick={() => setIsVisible(false)}
-                className="text-white/40 hover:text-white transition-colors"
-              >
-                <ChevronDown className="w-4 h-4" />
-              </button>
+        <div className="mt-6 space-y-6">
+          {/* Passphrase Section */}
+          {user && passphrase && (
+            <div className="space-y-3">
+              <label className="text-sm font-medium text-foreground">
+                Your Passphrase
+              </label>
+              <div className="flex items-center gap-2">
+                <div className="flex-1 px-3 py-2 rounded-lg bg-muted font-mono text-sm text-foreground truncate">
+                  {passphrase}
+                </div>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  onClick={handleCopy}
+                  className="h-9 w-9 shrink-0"
+                >
+                  {copied ? (
+                    <Check className="h-4 w-4 text-green-500" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
+                </Button>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  onClick={handleDownload}
+                  className="h-9 w-9 shrink-0"
+                >
+                  <Download className="h-4 w-4" />
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Save this passphrase securely. You'll need it to log back in.
+              </p>
             </div>
+          )}
 
-            {!isUnlocked ? (
-              <div className="space-y-3">
-                <Input
-                  type="password"
-                  placeholder="Enter password..."
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleUnlock()}
-                  className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-10"
-                />
-                <Button
-                  onClick={handleUnlock}
-                  variant="outline"
-                  className="w-full border-white/20 text-white hover:bg-white/10 h-10"
-                >
-                  Unlock
-                </Button>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <Button
-                  onClick={handleOpenAdmin}
-                  variant="outline"
-                  className="w-full border-primary/50 text-primary hover:bg-primary/10 h-10"
-                >
-                  <Shield className="w-4 h-4 mr-2" />
-                  Admin Dashboard
-                </Button>
-                <Button
-                  onClick={handleResetDatabase}
-                  disabled={isResetting}
-                  variant="destructive"
-                  className="w-full h-10"
-                >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  {isResetting ? 'Resetting...' : 'Reset Database'}
-                </Button>
-                <Button
-                  onClick={handleLock}
-                  variant="ghost"
-                  className="w-full text-white/60 hover:text-white hover:bg-white/5 h-9 text-sm"
-                >
-                  <Lock className="w-3 h-3 mr-2" />
-                  Lock Config
-                </Button>
-              </div>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+          {!user && (
+            <p className="text-sm text-muted-foreground">
+              Sign in to view your passphrase and access settings.
+            </p>
+          )}
+
+          {/* Divider */}
+          <div className="border-t border-border" />
+
+          {/* Admin Dashboard */}
+          <div className="space-y-3">
+            <label className="text-sm font-medium text-foreground">
+              Administration
+            </label>
+            <Button
+              onClick={handleOpenAdmin}
+              variant="outline"
+              className="w-full justify-start"
+            >
+              <Shield className="w-4 h-4 mr-2" />
+              Admin Dashboard
+            </Button>
+            <p className="text-xs text-muted-foreground">
+              Requires admin password to access moderation tools.
+            </p>
+          </div>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }
