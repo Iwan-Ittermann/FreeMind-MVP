@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Copy, RefreshCw, LogIn, UserPlus, AlertCircle, Check } from 'lucide-react';
+import { Copy, RefreshCw, LogIn, UserPlus, AlertCircle, Check, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -51,6 +51,32 @@ export default function Auth() {
     setCopied(true);
     toast.success('Passphrase copied! Save it somewhere safe.');
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleDownload = () => {
+    const timestamp = new Date().toISOString();
+    const formattedDate = new Date().toLocaleString();
+    const content = `FreeMind Passphrase
+==================
+Passphrase: ${generatedPassphrase}
+Downloaded: ${formattedDate}
+Timestamp: ${timestamp}
+
+⚠️ IMPORTANT: Keep this file safe! This is your only way to log in.
+There is no password recovery available.
+
+Do not share this passphrase with anyone.`;
+
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `freemind-passphrase-${Date.now()}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success('Passphrase downloaded! Keep the file safe.');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -183,8 +209,19 @@ export default function Auth() {
                     type="button"
                     variant="outline"
                     size="icon"
+                    onClick={handleDownload}
+                    className="border-white/20 bg-transparent hover:bg-white/10 h-12 w-12 md:h-10 md:w-10 flex-shrink-0"
+                    title="Download passphrase as .txt file"
+                  >
+                    <Download className="w-5 h-5 md:w-4 md:h-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
                     onClick={handleGenerateNew}
                     className="border-white/20 bg-transparent hover:bg-white/10 h-12 w-12 md:h-10 md:w-10 flex-shrink-0"
+                    title="Generate new passphrase"
                   >
                     <RefreshCw className="w-5 h-5 md:w-4 md:h-4" />
                   </Button>
@@ -193,7 +230,7 @@ export default function Auth() {
 
               <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
                 <p className="text-sm text-yellow-200">
-                  ⚠️ <strong>Important:</strong> Copy and save your passphrase before continuing. 
+                  ⚠️ <strong>Important:</strong> Copy or download your passphrase before continuing. 
                   There is no way to recover it if lost.
                 </p>
               </div>

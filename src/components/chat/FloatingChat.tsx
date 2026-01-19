@@ -199,7 +199,16 @@ export function FloatingChat({
               <p className="text-xs text-white/40">Read-only mode</p>
             ) : (
               <p className={`text-xs ${getBridgingScoreColor()}`}>
-                Bridging Score: <span className="font-mono font-bold">{bridgingScore.toLocaleString()}</span>
+                Bridging Score:{' '}
+                <motion.span
+                  key={bridgingScore}
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                  className="font-mono font-bold inline-block"
+                >
+                  {bridgingScore.toLocaleString()}
+                </motion.span>
               </p>
             )}
           </div>
@@ -219,17 +228,17 @@ export function FloatingChat({
 
       {/* Main content area - relative for mobile slider positioning */}
       <div className="flex-1 flex overflow-hidden relative">
-        {/* Mobile collapsible left slider - Empathy (hidden in read-only) */}
+        {/* Mobile collapsible left slider - Empathy (hidden in read-only) - TALLER for better touch input */}
         {!isReadOnly && (
           <div className="md:hidden absolute left-0 top-0 z-20 flex">
             <AnimatePresence>
               {mobileLeftSliderOpen && (
                 <motion.div
-                  initial={{ x: -60 }}
+                  initial={{ x: -72 }}
                   animate={{ x: 0 }}
-                  exit={{ x: -60 }}
+                  exit={{ x: -72 }}
                   transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                  className="w-14 h-36 bg-black/95 border-r border-b border-white/10 rounded-br-lg flex flex-col items-center justify-center py-2"
+                  className="w-[72px] h-56 bg-black/95 border-r border-b border-white/10 rounded-br-lg flex flex-col items-center justify-center py-3"
                 >
                   <VerticalRatingSlider
                     value={empathy}
@@ -247,30 +256,30 @@ export function FloatingChat({
             </AnimatePresence>
             <button
               onClick={() => setMobileLeftSliderOpen(!mobileLeftSliderOpen)}
-              className={`h-10 px-1 bg-black/90 border border-white/10 rounded-r-lg flex items-center gap-0.5 ${mobileLeftSliderOpen ? 'border-l-0' : ''}`}
+              className={`h-12 px-1.5 bg-black/90 border border-white/10 rounded-r-lg flex items-center gap-1 ${mobileLeftSliderOpen ? 'border-l-0' : ''}`}
             >
-              <span className="w-1.5 h-6 rounded-full bg-rose-400" />
-              <span className="text-[8px] text-rose-400 font-bold">{empathy}</span>
+              <span className="w-2 h-8 rounded-full bg-rose-400" />
+              <span className="text-[10px] text-rose-400 font-bold">{empathy}</span>
               {mobileLeftSliderOpen ? (
-                <ChevronLeft className="w-3 h-3 text-white/40" />
+                <ChevronLeft className="w-4 h-4 text-white/40" />
               ) : (
-                <ChevronRight className="w-3 h-3 text-white/40" />
+                <ChevronRight className="w-4 h-4 text-white/40" />
               )}
             </button>
           </div>
         )}
 
-        {/* Mobile collapsible right slider - Disagreement (hidden in read-only) */}
+        {/* Mobile collapsible right slider - Disagreement (hidden in read-only) - TALLER for better touch input */}
         {!isReadOnly && (
           <div className="md:hidden absolute right-0 top-0 z-20 flex flex-row-reverse">
             <AnimatePresence>
               {mobileRightSliderOpen && (
                 <motion.div
-                  initial={{ x: 60 }}
+                  initial={{ x: 72 }}
                   animate={{ x: 0 }}
-                  exit={{ x: 60 }}
+                  exit={{ x: 72 }}
                   transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                  className="w-14 h-36 bg-black/95 border-l border-b border-white/10 rounded-bl-lg flex flex-col items-center justify-center py-2"
+                  className="w-[72px] h-56 bg-black/95 border-l border-b border-white/10 rounded-bl-lg flex flex-col items-center justify-center py-3"
                 >
                   <VerticalRatingSlider
                     value={disagreement}
@@ -288,14 +297,14 @@ export function FloatingChat({
             </AnimatePresence>
             <button
               onClick={() => setMobileRightSliderOpen(!mobileRightSliderOpen)}
-              className={`h-10 px-1 bg-black/90 border border-white/10 rounded-l-lg flex items-center gap-0.5 flex-row-reverse ${mobileRightSliderOpen ? 'border-r-0' : ''}`}
+              className={`h-12 px-1.5 bg-black/90 border border-white/10 rounded-l-lg flex items-center gap-1 flex-row-reverse ${mobileRightSliderOpen ? 'border-r-0' : ''}`}
             >
-              <span className="w-1.5 h-6 rounded-full bg-orange-400" />
-              <span className="text-[8px] text-orange-400 font-bold">{disagreement}</span>
+              <span className="w-2 h-8 rounded-full bg-orange-400" />
+              <span className="text-[10px] text-orange-400 font-bold">{disagreement}</span>
               {mobileRightSliderOpen ? (
-                <ChevronRight className="w-3 h-3 text-white/40" />
+                <ChevronRight className="w-4 h-4 text-white/40" />
               ) : (
-                <ChevronLeft className="w-3 h-3 text-white/40" />
+                <ChevronLeft className="w-4 h-4 text-white/40" />
               )}
             </button>
           </div>
