@@ -91,9 +91,9 @@ export function VerticalRatingSlider({
           {label}
         </span>
 
-        {/* Slider track */}
+        {/* Slider track - increased width for better touch targets */}
         <div
-          className="relative w-1.5 flex-1 rounded-full bg-white/10 cursor-pointer"
+          className="relative w-3 flex-1 rounded-full bg-white/10 cursor-pointer touch-none"
           onClick={handleClick}
           onMouseMove={handleDrag}
           onTouchMove={handleTouchMove}
@@ -101,7 +101,7 @@ export function VerticalRatingSlider({
           {/* Zero marker */}
           {showZeroMarker && zeroPosition !== null && (
             <div
-              className="absolute left-1/2 -translate-x-1/2 w-3 h-0.5 bg-white/40 z-10"
+              className="absolute left-1/2 -translate-x-1/2 w-5 h-0.5 bg-white/40 z-10"
               style={{ bottom: `${zeroPosition}%` }}
             />
           )}
@@ -130,11 +130,11 @@ export function VerticalRatingSlider({
             />
           )}
           
-          {/* Thumb */}
+          {/* Thumb - larger for better touch targets */}
           <motion.div
-            className={`absolute left-1/2 -translate-x-1/2 w-3 h-3 rounded-full ${colors.bg} shadow-lg border border-black`}
+            className={`absolute left-1/2 -translate-x-1/2 w-5 h-5 rounded-full ${colors.bg} shadow-lg border-2 border-black`}
             initial={false}
-            animate={{ bottom: `calc(${percentage}% - 6px)` }}
+            animate={{ bottom: `calc(${percentage}% - 10px)` }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
           />
         </div>

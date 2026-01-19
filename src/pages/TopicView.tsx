@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, X, Send, Check, Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
+import { MessageSquare, X, Send, Check, Loader2, AlertCircle, ArrowLeft, Flag } from 'lucide-react';
 import { OpinionGraph } from '@/components/graph/OpinionGraph';
 import { InfoPanel } from '@/components/InfoPanel';
 import { SubmitOpinion } from '@/components/SubmitOpinion';
 import { ConfigPanel } from '@/components/ConfigPanel';
 import { Button } from '@/components/ui/button';
+import { ReportDialog } from '@/components/moderation/ReportDialog';
 import { GraphNode, GraphEdge, ChatRequest } from '@/types/graph';
 import { useTopicData } from '@/hooks/useTopicData';
 import { useChatRequests } from '@/hooks/useChatRequests';
@@ -21,6 +22,7 @@ export default function TopicView() {
   const { user, loading: authLoading } = useAuth();
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [graphSize, setGraphSize] = useState({ width: 600, height: 600 });
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const queryClient = useQueryClient();
   
   const { data: hasJoined, isLoading: joinedLoading } = useHasJoinedTopic(topicId || '');
@@ -277,13 +279,23 @@ export default function TopicView() {
                       Submit your opinion first to chat
                     </p>
                   ) : actionState === 'accepted' ? (
-                    <Button
-                      onClick={handleOpenChat}
-                      className="w-full bg-primary hover:bg-primary/90 h-12 text-base"
-                    >
-                      <MessageSquare className="w-5 h-5 mr-2" />
-                      Open Chat with This Opinion
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={handleOpenChat}
+                        className="flex-1 bg-primary hover:bg-primary/90 h-12 text-base"
+                      >
+                        <MessageSquare className="w-5 h-5 mr-2" />
+                        Open Chat
+                      </Button>
+                      <Button
+                        onClick={() => setReportDialogOpen(true)}
+                        variant="ghost"
+                        className="h-12 px-3 text-destructive/70 hover:text-destructive hover:bg-destructive/10"
+                        title="Report"
+                      >
+                        <Flag className="w-5 h-5" />
+                      </Button>
+                    </div>
                   ) : actionState === 'pending_sent' ? (
                     <p className="text-sm text-accent italic text-center py-2">
                       ⏳ Waiting for them to accept your request...
@@ -296,7 +308,7 @@ export default function TopicView() {
                         className="flex-1 bg-accent hover:bg-accent/90 text-accent-foreground h-12 text-base"
                       >
                         <Check className="w-5 h-5 mr-2" />
-                        {isAccepting ? 'Accepting...' : 'Accept'}
+                        {isAccepting ? '...' : 'Accept'}
                       </Button>
                       <Button
                         onClick={handleDeclineRequest}
@@ -305,23 +317,44 @@ export default function TopicView() {
                         className="flex-1 border-destructive text-destructive hover:bg-destructive/10 h-12 text-base"
                       >
                         <X className="w-5 h-5 mr-2" />
-                        {isDeclining ? 'Declining...' : 'Decline'}
+                        {isDeclining ? '...' : 'Decline'}
                       </Button>
                     </div>
                   ) : (
-                    <Button
-                      onClick={handleRequestChat}
-                      disabled={isSending}
-                      variant="outline"
-                      className="w-full border-accent text-accent hover:bg-accent/10 h-12 text-base"
-                    >
-                      <Send className="w-5 h-5 mr-2" />
-                      {isSending ? 'Sending...' : 'Request to Chat'}
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={handleRequestChat}
+                        disabled={isSending}
+                        variant="outline"
+                        className="flex-1 border-accent text-accent hover:bg-accent/10 h-12 text-base"
+                      >
+                        <Send className="w-5 h-5 mr-2" />
+                        {isSending ? '...' : 'Request Chat'}
+                      </Button>
+                      <Button
+                        onClick={() => setReportDialogOpen(true)}
+                        variant="ghost"
+                        className="h-12 px-3 text-destructive/70 hover:text-destructive hover:bg-destructive/10"
+                        title="Report"
+                      >
+                        <Flag className="w-5 h-5" />
+                      </Button>
+                    </div>
                   )}
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {/* Report Dialog */}
+            {selectedNode && (
+              <ReportDialog
+                open={reportDialogOpen}
+                onOpenChange={setReportDialogOpen}
+                contentId={selectedNode.id}
+                contentType="Opinion"
+                contentPreview={selectedNode.opinion.text}
+              />
+            )}
           </motion.div>
         </div>
       </div>

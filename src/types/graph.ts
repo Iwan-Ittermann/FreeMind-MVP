@@ -36,6 +36,8 @@ export interface GraphNode {
   isRequester?: boolean; // This node sent a pending request to current user
   hasChats?: boolean; // Whether this node has participated in any chats
   zone?: 'green' | 'yellow' | 'pink' | 'outer'; // Which zone the node is in
+  hasUnreadMessages?: boolean; // Has unread messages from this node
+  unreadCount?: number; // Number of unread messages
 }
 
 export interface GraphEdge {

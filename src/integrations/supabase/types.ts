@@ -51,6 +51,7 @@ export type Database = {
           created_at: string
           id: string
           notice_text: string | null
+          read_at: string | null
           sender_id: string
           status: string | null
           visible: boolean | null
@@ -61,6 +62,7 @@ export type Database = {
           created_at?: string
           id?: string
           notice_text?: string | null
+          read_at?: string | null
           sender_id: string
           status?: string | null
           visible?: boolean | null
@@ -71,6 +73,7 @@ export type Database = {
           created_at?: string
           id?: string
           notice_text?: string | null
+          read_at?: string | null
           sender_id?: string
           status?: string | null
           visible?: boolean | null
@@ -463,6 +466,41 @@ export type Database = {
           url_slug?: string
         }
         Relationships: []
+      }
+      user_blocks: {
+        Row: {
+          blocked_user_id: string
+          blocker_id: string
+          chat_id: string | null
+          created_at: string
+          id: string
+          reason: string | null
+        }
+        Insert: {
+          blocked_user_id: string
+          blocker_id: string
+          chat_id?: string | null
+          created_at?: string
+          id?: string
+          reason?: string | null
+        }
+        Update: {
+          blocked_user_id?: string
+          blocker_id?: string
+          chat_id?: string | null
+          created_at?: string
+          id?: string
+          reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_blocks_chat_id_fkey"
+            columns: ["chat_id"]
+            isOneToOne: false
+            referencedRelation: "chats"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
