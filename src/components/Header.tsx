@@ -63,7 +63,7 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted 
 
           {/* Right: Actions */}
           <div className="flex items-center gap-2">
-            {/* Add Opinion Button - highlighted if no opinion yet */}
+            {/* Add Opinion Button - highlighted if no opinion yet, hidden if opinion exists */}
             {showAddOpinionButton && (
               <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
@@ -81,17 +81,7 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted 
               </motion.div>
             )}
 
-            {/* Edit Opinion Button - subtle when opinion exists */}
-            {showEditOpinionButton && (
-              <Button
-                onClick={() => setOpinionDialogOpen(true)}
-                size="icon"
-                variant="ghost"
-                className="h-9 w-9 text-white/60 hover:text-white hover:bg-white/10"
-              >
-                <Pencil className="h-4 w-4" />
-              </Button>
-            )}
+            {/* Opinion submitted indicator - no button, just shows check */}
 
             {/* Config Button */}
             <Button
