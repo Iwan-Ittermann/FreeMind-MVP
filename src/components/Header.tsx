@@ -34,8 +34,8 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted 
     onOpinionSubmitted?.();
   };
 
-  const showAddOpinionButton = user && topicId && !hasExistingOpinion;
-  const showEditOpinionButton = user && topicId && hasExistingOpinion;
+  const showOpinionButton = user && topicId;
+  const canAddOpinion = !hasExistingOpinion;
 
   return (
     <>
@@ -63,25 +63,27 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted 
 
           {/* Right: Actions */}
           <div className="flex items-center gap-2">
-            {/* Add Opinion Button - highlighted if no opinion yet, hidden if opinion exists */}
-            {showAddOpinionButton && (
+            {/* Add Opinion Button - highlighted if no opinion yet, greyed out if opinion exists */}
+            {showOpinionButton && (
               <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 className="relative"
               >
                 <Button
-                  onClick={() => setOpinionDialogOpen(true)}
+                  onClick={() => canAddOpinion && setOpinionDialogOpen(true)}
                   size="icon"
                   variant="ghost"
-                  className="relative h-9 w-9 bg-accent/20 text-accent hover:bg-accent/30 hover:text-accent ring-2 ring-accent/50 animate-pulse"
+                  disabled={!canAddOpinion}
+                  className={canAddOpinion 
+                    ? "relative h-9 w-9 bg-accent/20 text-accent hover:bg-accent/30 hover:text-accent ring-2 ring-accent/50 animate-pulse"
+                    : "relative h-9 w-9 text-white/30 cursor-not-allowed"
+                  }
                 >
                   <Pencil className="h-4 w-4" />
                 </Button>
               </motion.div>
             )}
-
-            {/* Opinion submitted indicator - no button, just shows check */}
 
             {/* Config Button */}
             <Button
