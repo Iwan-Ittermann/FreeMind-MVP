@@ -18,6 +18,7 @@ interface ChatSession {
   topicId: string | null;
   myOpinion: Opinion | null;
   theirOpinion: Opinion | null;
+  theirUserId: string | null;
   myOpinionId: string | null;
   theirOpinionId: string | null;
   isLoading: boolean;
@@ -25,6 +26,10 @@ interface ChatSession {
   saveRating: (empathy: number, disagreement: number) => Promise<void>;
   isSavingRating: boolean;
   existingRating: { empathy: number; disagreement: number } | null;
+  // Average bridging score from both participants
+  averageBridgingScore: number | null;
+  myBridgingScore: number | null;
+  theirBridgingScore: number | null;
 }
 
 export function useChatSession(theirOpinionId: string | null): ChatSession {
@@ -32,22 +37,33 @@ export function useChatSession(theirOpinionId: string | null): ChatSession {
   const queryClient = useQueryClient();
   const [chatId, setChatId] = useState<string | null>(null);
 
-  // Fetch existing rating for the current user
-  const { data: existingRating, isLoading: loadingRating } = useQuery({
-    queryKey: ['chatRating', chatId, user?.id],
+  // Fetch ALL ratings for the chat (both participants)
+  const { data: allRatings, isLoading: loadingRatings } = useQuery({
+    queryKey: ['chatAllRatings', chatId],
     queryFn: async () => {
-      if (!chatId || !user?.id) return null;
+      if (!chatId) return null;
       const { data, error } = await supabase
         .from('chat_ratings')
-        .select('empathy, disagreement')
-        .eq('chat_id', chatId)
-        .eq('rater_id', user.id)
-        .maybeSingle();
+        .select('empathy, disagreement, rater_id')
+        .eq('chat_id', chatId);
       if (error) throw error;
       return data;
     },
-    enabled: !!chatId && !!user?.id,
+    enabled: !!chatId,
   });
+
+  // Extract current user's rating and partner's rating
+  const existingRating = allRatings?.find(r => r.rater_id === user?.id) || null;
+  const partnerRating = allRatings?.find(r => r.rater_id !== user?.id) || null;
+
+  // Calculate bridging scores
+  const myBridgingScore = existingRating ? existingRating.empathy * existingRating.disagreement : null;
+  const theirBridgingScore = partnerRating ? partnerRating.empathy * partnerRating.disagreement : null;
+  
+  // Average bridging score (only if both have rated)
+  const averageBridgingScore = (myBridgingScore !== null && theirBridgingScore !== null) 
+    ? Math.round((myBridgingScore + theirBridgingScore) / 2)
+    : myBridgingScore ?? theirBridgingScore;
 
   // Fetch the other person's opinion using secure view (excludes ip_address)
   const { data: theirOpinion, isLoading: loadingTheir, error: theirError } = useQuery({
@@ -138,6 +154,8 @@ export function useChatSession(theirOpinionId: string | null): ChatSession {
       }
     },
     onSuccess: () => {
+      // Invalidate ratings so average updates
+      queryClient.invalidateQueries({ queryKey: ['chatAllRatings', chatId] });
       // Invalidate topic data so the graph updates when user goes back
       if (theirOpinion?.topic_id) {
         queryClient.invalidateQueries({ queryKey: ['topic', theirOpinion.topic_id] });
@@ -149,12 +167,16 @@ export function useChatSession(theirOpinionId: string | null): ChatSession {
     await ratingMutation.mutateAsync({ empathy, disagreement });
   };
 
-  const isLoading = loadingTheir || loadingMy || loadingRating;
+  const isLoading = loadingTheir || loadingMy || loadingRatings;
   const error = theirError?.message || myError?.message || null;
+
+  // Get the other user's ID from their opinion
+  const theirUserId = theirOpinion?.user_id || null;
 
   return {
     chatId,
     topicId: theirOpinion?.topic_id || null,
+    theirUserId,
     myOpinion: myOpinion
       ? { 
           id: myOpinion.id, 
@@ -184,5 +206,8 @@ export function useChatSession(theirOpinionId: string | null): ChatSession {
     saveRating,
     isSavingRating: ratingMutation.isPending,
     existingRating: existingRating ? { empathy: existingRating.empathy, disagreement: existingRating.disagreement } : null,
+    averageBridgingScore,
+    myBridgingScore,
+    theirBridgingScore,
   };
 }

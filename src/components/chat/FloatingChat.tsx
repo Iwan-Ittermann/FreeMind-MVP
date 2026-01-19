@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, ArrowLeft, Languages, Check, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Send, ArrowLeft, Languages, Check, ChevronRight, ChevronLeft, Ban, Unlock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ChatBubble } from './ChatBubble';
@@ -10,6 +10,8 @@ import { AIConciliateButton } from './AIConciliateButton';
 import { MiniGraph } from './MiniGraph';
 import { useChatMessages } from '@/hooks/useChatMessages';
 import { useTypingIndicator } from '@/hooks/useTypingIndicator';
+import { useUserBlocks } from '@/hooks/useUserBlocks';
+import { toast } from 'sonner';
 
 interface OpinionData {
   text: string;
@@ -24,12 +26,14 @@ interface FloatingChatProps {
   theirOpinion: OpinionData;
   myOpinionId?: string;
   theirOpinionId?: string;
+  theirUserId?: string | null;
   onClose: () => void;
   onSubmitRating?: (empathy: number, disagreement: number) => void;
   isSavingRating?: boolean;
   isReadOnly?: boolean;
   initialEmpathy?: number;
   initialDisagreement?: number;
+  averageBridgingScore?: number | null;
 }
 
 export function FloatingChat({ 
@@ -39,15 +43,18 @@ export function FloatingChat({
   theirOpinion,
   myOpinionId,
   theirOpinionId,
+  theirUserId,
   onClose,
   onSubmitRating,
   isSavingRating = false,
   isReadOnly = false,
   initialEmpathy,
   initialDisagreement,
+  averageBridgingScore,
 }: FloatingChatProps) {
   const { messages: dbMessages, sendMessage, isSending } = useChatMessages(chatId);
   const { partnerTyping, setTyping } = useTypingIndicator(chatId);
+  const { isBlocked, isBlockedByOther, blockUser, unblockUser, isBlocking, isUnblocking } = useUserBlocks(chatId, theirUserId || null);
   const [inputValue, setInputValue] = useState('');
   const [translateEnabled, setTranslateEnabled] = useState(false);
   // Empathy: -50 to +50, default 0
@@ -157,12 +164,33 @@ export function FloatingChat({
   // Calculate Bridging Score: empathy × disagreement
   // empathy is -50 to +50, disagreement is 0 to 100
   // Bridging score range: -5000 to +5000
-  const bridgingScore = empathy * disagreement;
+  const myBridgingScore = empathy * disagreement;
+  
+  // Use average if available, otherwise use current user's score
+  const displayBridgingScore = averageBridgingScore ?? myBridgingScore;
 
-  const getBridgingScoreColor = () => {
-    if (bridgingScore > 2500) return 'text-green-400';
-    if (bridgingScore >= 0) return 'text-orange-400';
+  const getBridgingScoreColor = (score: number) => {
+    if (score > 2500) return 'text-green-400';
+    if (score >= 0) return 'text-orange-400';
     return 'text-primary'; // red for negative
+  };
+
+  const handleBlock = async () => {
+    try {
+      await blockUser();
+      toast.success('User blocked in this chat');
+    } catch (err) {
+      toast.error('Failed to block user');
+    }
+  };
+
+  const handleUnblock = async () => {
+    try {
+      await unblockUser();
+      toast.success('User unblocked');
+    } catch (err) {
+      toast.error('Failed to unblock user');
+    }
   };
 
   return (
@@ -198,23 +226,38 @@ export function FloatingChat({
             {isReadOnly ? (
               <p className="text-xs text-white/40">Read-only mode</p>
             ) : (
-              <p className={`text-xs ${getBridgingScoreColor()}`}>
+              <p className={`text-xs ${getBridgingScoreColor(displayBridgingScore)}`}>
                 Bridging Score:{' '}
                 <motion.span
-                  key={bridgingScore}
+                  key={displayBridgingScore}
                   initial={{ opacity: 0, y: -5 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                   className="font-mono font-bold inline-block"
                 >
-                  {bridgingScore.toLocaleString()}
+                  {displayBridgingScore.toLocaleString()}
                 </motion.span>
+                {averageBridgingScore !== null && (
+                  <span className="text-white/40 ml-1">(avg)</span>
+                )}
               </p>
             )}
           </div>
         </div>
 
         <div className="flex items-center gap-1">
+          {/* Block/Unblock button */}
+          {!isReadOnly && theirUserId && (
+            <Button
+              variant="ghost"
+              onClick={isBlocked ? handleUnblock : handleBlock}
+              disabled={isBlocking || isUnblocking}
+              className={`h-10 w-10 p-0 ${isBlocked ? 'text-destructive bg-destructive/10' : 'text-white/60 hover:text-white hover:bg-white/5'}`}
+              title={isBlocked ? 'Unblock user' : 'Block user'}
+            >
+              {isBlocked ? <Unlock className="w-5 h-5" /> : <Ban className="w-5 h-5" />}
+            </Button>
+          )}
           <Button
             variant="ghost"
             onClick={() => setTranslateEnabled(!translateEnabled)}
@@ -371,43 +414,72 @@ export function FloatingChat({
 
           {/* Input Area (hidden in read-only) */}
           {!isReadOnly && (
-            <div className="border-t border-white/10 bg-black p-4">
-              <div className="max-w-lg mx-auto">
-                <div className="flex gap-2 items-center">
-                  {/* Mobile save button */}
-                  <motion.button
-                    onClick={handleSaveRating}
-                    disabled={isSavingRating}
-                    className={`md:hidden w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
-                      hasUnsavedChanges
-                        ? 'bg-primary ring-2 ring-primary ring-offset-2 ring-offset-black' 
-                        : 'bg-white/10'
-                    }`}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    <Check className={`w-4 h-4 ${hasUnsavedChanges ? 'text-white' : 'text-white/40'}`} />
-                  </motion.button>
-                  <Input
-                    value={inputValue}
-                    onChange={(e) => handleInputChange(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-                    placeholder="Type a message..."
-                    className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-12 rounded-full px-5 text-base"
-                    disabled={isSending}
-                  />
-                  <Button 
-                    onClick={handleSend}
-                    disabled={!inputValue.trim() || isSending}
-                    className="bg-primary hover:bg-primary/90 h-12 w-12 rounded-full p-0 flex-shrink-0"
-                  >
-                    <Send className="w-5 h-5" />
-                  </Button>
-                  <div className="hidden md:block">
-                    <AIConciliateButton compact />
+            <>
+              {/* Blocked state */}
+              {isBlocked ? (
+                <div className="border-t border-destructive/20 bg-destructive/5 p-4">
+                  <div className="max-w-lg mx-auto text-center">
+                    <p className="text-sm text-destructive mb-3">
+                      You have blocked this user. Unblock to continue chatting.
+                    </p>
+                    <Button
+                      onClick={handleUnblock}
+                      disabled={isUnblocking}
+                      variant="outline"
+                      size="sm"
+                      className="border-destructive text-destructive hover:bg-destructive/10"
+                    >
+                      <Unlock className="w-4 h-4 mr-2" />
+                      {isUnblocking ? 'Unblocking...' : 'Unblock User'}
+                    </Button>
                   </div>
                 </div>
-              </div>
-            </div>
+              ) : isBlockedByOther ? (
+                <div className="border-t border-white/10 bg-muted/20 p-4">
+                  <p className="text-center text-sm text-white/40">
+                    This user has limited their chat. You cannot send messages.
+                  </p>
+                </div>
+              ) : (
+                <div className="border-t border-white/10 bg-black p-4">
+                  <div className="max-w-lg mx-auto">
+                    <div className="flex gap-2 items-center">
+                      {/* Mobile save button */}
+                      <motion.button
+                        onClick={handleSaveRating}
+                        disabled={isSavingRating}
+                        className={`md:hidden w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
+                          hasUnsavedChanges
+                            ? 'bg-primary ring-2 ring-primary ring-offset-2 ring-offset-black' 
+                            : 'bg-white/10'
+                        }`}
+                        whileTap={{ scale: 0.9 }}
+                      >
+                        <Check className={`w-4 h-4 ${hasUnsavedChanges ? 'text-white' : 'text-white/40'}`} />
+                      </motion.button>
+                      <Input
+                        value={inputValue}
+                        onChange={(e) => handleInputChange(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
+                        placeholder="Type a message..."
+                        className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-12 rounded-full px-5 text-base"
+                        disabled={isSending}
+                      />
+                      <Button 
+                        onClick={handleSend}
+                        disabled={!inputValue.trim() || isSending}
+                        className="bg-primary hover:bg-primary/90 h-12 w-12 rounded-full p-0 flex-shrink-0"
+                      >
+                        <Send className="w-5 h-5" />
+                      </Button>
+                      <div className="hidden md:block">
+                        <AIConciliateButton compact />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
           )}
 
           {/* Read-only indicator */}
