@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Shield, FileText, History, AlertTriangle, ArrowLeft, Loader2, Layers } from 'lucide-react';
+import { Lock, Shield, FileText, History, AlertTriangle, ArrowLeft, Loader2, Layers, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -12,6 +12,8 @@ import { TopicPanel } from '@/components/admin/TopicPanel';
 import { useReports } from '@/hooks/useReports';
 import { useGrantAdminRole } from '@/hooks/useAdminRole';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 
@@ -20,7 +22,9 @@ export default function Admin() {
   const { user, loading: authLoading } = useAuth();
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [password, setPassword] = useState('');
+  const [isResetting, setIsResetting] = useState(false);
   const grantAdminRole = useGrantAdminRole();
+  const queryClient = useQueryClient();
 
   // Redirect to auth if not logged in
   useEffect(() => {
@@ -41,6 +45,28 @@ export default function Admin() {
     } catch (err: any) {
       toast.error(err.message || 'Falsches Passwort');
       setPassword('');
+    }
+  };
+
+  const handleResetDatabase = async () => {
+    if (!confirm('Are you sure you want to reset the database? This will delete ALL opinions, chats, messages, ratings, and requests. This cannot be undone!')) {
+      return;
+    }
+
+    setIsResetting(true);
+    try {
+      const { error } = await supabase.functions.invoke('reset-database', {
+        body: { password: 'Wonderful' },
+      });
+
+      if (error) throw error;
+
+      toast.success('Database reset successfully');
+      queryClient.invalidateQueries();
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to reset database');
+    } finally {
+      setIsResetting(false);
     }
   };
 
@@ -137,7 +163,7 @@ export default function Admin() {
               exit={{ opacity: 0, y: -20 }}
             >
               <Tabs defaultValue="topics" className="w-full">
-                <TabsList className="grid w-full max-w-lg grid-cols-4 mb-6">
+                <TabsList className="grid w-full max-w-2xl grid-cols-5 mb-6">
                   <TabsTrigger value="topics">
                     <Layers className="w-4 h-4 mr-2" />
                     Topics
@@ -161,6 +187,10 @@ export default function Admin() {
                   <TabsTrigger value="audit">
                     <History className="w-4 h-4 mr-2" />
                     Audit-Log
+                  </TabsTrigger>
+                  <TabsTrigger value="danger" className="text-destructive">
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Danger
                   </TabsTrigger>
                 </TabsList>
 
@@ -205,6 +235,38 @@ export default function Admin() {
                 <TabsContent value="audit">
                   <div className="bg-card border border-border rounded-lg p-4">
                     <AuditLogTable enabled={isUnlocked} />
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="danger">
+                  <div className="max-w-md">
+                    <div className="bg-destructive/5 border border-destructive/20 rounded-lg p-6">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-full bg-destructive/10 flex items-center justify-center">
+                          <Trash2 className="w-5 h-5 text-destructive" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-destructive">Danger Zone</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Irreversible actions
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <p className="text-sm text-muted-foreground mb-4">
+                        This will permanently delete all opinions, chats, messages, ratings, and requests. This action cannot be undone.
+                      </p>
+                      
+                      <Button
+                        onClick={handleResetDatabase}
+                        disabled={isResetting}
+                        variant="destructive"
+                        className="w-full"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        {isResetting ? 'Resetting...' : 'Reset Database'}
+                      </Button>
+                    </div>
                   </div>
                 </TabsContent>
               </Tabs>

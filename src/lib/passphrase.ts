@@ -63,6 +63,25 @@ export function passphraseToEmail(passphrase: string): string {
 }
 
 /**
+ * Extracts passphrase from email format
+ * Reverse of passphraseToEmail
+ */
+export function emailToPassphrase(email: string): string | null {
+  if (!email || !email.endsWith('@freemind.local')) {
+    return null;
+  }
+  
+  const localPart = email.replace('@freemind.local', '');
+  const passphrase = localPart.replace(/\./g, '-');
+  
+  if (isValidPassphrase(passphrase)) {
+    return passphrase;
+  }
+  
+  return null;
+}
+
+/**
  * Generates a deterministic password from passphrase
  * Uses the passphrase itself with a salt for the password
  */
