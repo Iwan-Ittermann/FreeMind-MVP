@@ -164,8 +164,8 @@ Do not share this passphrase with anyone.`;
             onClick={() => setMode('signup')}
             className={`flex-1 py-3 md:py-2 px-4 rounded-md text-sm font-medium transition-colors ${
               mode === 'signup' 
-                ? 'bg-primary text-white' 
-                : 'text-white/60 hover:text-white'
+                ? 'bg-white/20 text-white' 
+                : 'text-white/40 hover:text-white/60'
             }`}
           >
             <UserPlus className="inline-block w-4 h-4 mr-2" />
@@ -175,8 +175,8 @@ Do not share this passphrase with anyone.`;
             onClick={() => setMode('login')}
             className={`flex-1 py-3 md:py-2 px-4 rounded-md text-sm font-medium transition-colors ${
               mode === 'login' 
-                ? 'bg-primary text-white' 
-                : 'text-white/60 hover:text-white'
+                ? 'bg-white/20 text-white' 
+                : 'text-white/40 hover:text-white/60'
             }`}
           >
             <LogIn className="inline-block w-4 h-4 mr-2" />
