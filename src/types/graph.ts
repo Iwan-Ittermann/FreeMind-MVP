@@ -49,9 +49,18 @@ export interface GraphEdge {
   status: 'pending' | 'accepted'; // Edge type for visual styling
 }
 
+export interface GreenZoneSlot {
+  position: number;  // 1-5
+  x: number;
+  y: number;
+  occupied: boolean;
+  nodeId?: string;
+}
+
 export interface GraphData {
   nodes: GraphNode[];
   edges: GraphEdge[];
+  greenZoneSlots: GreenZoneSlot[];
 }
 
 export interface LayoutConfig {
