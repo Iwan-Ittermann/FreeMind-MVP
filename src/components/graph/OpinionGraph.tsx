@@ -1,11 +1,11 @@
 import { useState, useMemo, useCallback } from 'react';
-import { motion } from 'framer-motion';
 import { ConcentricCircles } from './ConcentricCircles';
 import { GraphEdges } from './GraphEdges';
 import { GraphNodes } from './GraphNodes';
+import { GreenZoneSlots } from './GreenZoneSlots';
 import { MessageDots } from './MessageDots';
 import { calculateLayout, generateMockData } from '@/lib/freemind-layout';
-import { GraphNode, GraphEdge, LayoutConfig, Opinion, ChatRating, ChatRequest } from '@/types/graph';
+import { GraphNode, GraphEdge, LayoutConfig, Opinion, ChatRating, ChatRequest, GreenZoneSlot } from '@/types/graph';
 import { ActiveChat, MessageAnimationData } from '@/hooks/useTopicData';
 
 interface OpinionGraphProps {
@@ -107,6 +107,7 @@ export function OpinionGraph({
     return {
       nodes: nodesWithRequestInfo,
       edges: [...baseData.edges, ...uniquePendingEdges],
+      greenZoneSlots: baseData.greenZoneSlots,
     };
   }, [opinions, ratings, config, chatRequests, currentUserOpinionId]);
 
@@ -132,6 +133,9 @@ export function OpinionGraph({
         
         {/* Concentric colored circles */}
         <ConcentricCircles config={config} />
+        
+        {/* Green zone placeholder slots */}
+        <GreenZoneSlots slots={graphData.greenZoneSlots} config={config} />
         
         {/* Edges between nodes */}
         <GraphEdges 

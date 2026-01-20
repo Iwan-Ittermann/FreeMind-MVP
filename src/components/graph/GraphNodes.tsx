@@ -12,11 +12,14 @@ interface GraphNodesProps {
   onNodeHover?: (node: GraphNode | null) => void;
 }
 
-// Determine which zone a node is in based on distance from center
+// Determine which zone a node is in based on zone property or distance from center
 function getNodeZone(node: GraphNode, config: LayoutConfig): 'green' | 'yellow' | 'pink' | 'outer' {
+  // If node has explicit zone assignment (top 5), use it
+  if (node.zone === 'green') return 'green';
+  
   const dist = node.distanceToCenter || config.outerRadius;
   
-  if (dist <= config.greenRadius) return 'green';
+  // Non-top-5 nodes can't be in green zone, even if they're close to center
   if (dist <= config.yellowRadius) return 'yellow';
   if (dist <= config.pinkRadius) return 'pink';
   return 'outer';

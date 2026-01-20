@@ -17,7 +17,10 @@
  * - Nodes with no chats: outer ring, evenly spaced, marked as inactive
  */
 
-import { GraphNode, GraphEdge, GraphData, ChatRating, Opinion, LayoutConfig } from '@/types/graph';
+import { GraphNode, GraphEdge, GraphData, ChatRating, Opinion, LayoutConfig, GreenZoneSlot } from '@/types/graph';
+
+// Maximum number of nodes that can occupy the green zone
+const MAX_GREEN_ZONE_NODES = 5;
 
 /**
  * Calculate the Bridging Score for a specific opinion in a specific chat
@@ -418,6 +421,27 @@ function scoreToRadius(
   return minRadius + invertedScore * (maxRadius - minRadius);
 }
 
+/**
+ * Calculate pentagon slot positions for the green zone
+ * Returns 5 positions arranged in a pentagon pattern within the green zone
+ */
+function calculateGreenZoneSlotPositions(config: LayoutConfig): { x: number; y: number }[] {
+  const positions: { x: number; y: number }[] = [];
+  const slotRadius = config.greenRadius * 0.6; // Position slots at 60% of green zone radius
+  
+  for (let i = 0; i < MAX_GREEN_ZONE_NODES; i++) {
+    // Pentagon positions starting from top (12 o'clock) going clockwise
+    // Offset by -π/2 to start from top
+    const angle = (i * 2 * Math.PI / MAX_GREEN_ZONE_NODES) - Math.PI / 2;
+    positions.push({
+      x: config.centerX + Math.cos(angle) * slotRadius,
+      y: config.centerY + Math.sin(angle) * slotRadius,
+    });
+  }
+  
+  return positions;
+}
+
 // Main layout function
 export function calculateLayout(
   opinions: Opinion[],
@@ -430,11 +454,48 @@ export function calculateLayout(
     nodeScores.set(op.id, calculateFreeMindScore(op.id, ratings));
   });
 
-  // Step 2: Separate active (has chats) and inactive (no chats) nodes
+  // Step 2: Identify top 5 bridge nodes for green zone
+  const bridgeNodes = opinions
+    .filter(op => {
+      const scores = nodeScores.get(op.id);
+      return scores && scores.hasChats && isBridgeNode(scores.freeMindScore);
+    })
+    .map(op => ({
+      opinion: op,
+      freeMindScore: nodeScores.get(op.id)!.freeMindScore,
+    }))
+    // Sort by FreeMind score descending, then by ID for determinism
+    .sort((a, b) => {
+      if (b.freeMindScore !== a.freeMindScore) {
+        return b.freeMindScore - a.freeMindScore;
+      }
+      return a.opinion.id.localeCompare(b.opinion.id);
+    })
+    .slice(0, MAX_GREEN_ZONE_NODES);
+
+  // Create a set of top 5 node IDs for quick lookup
+  const top5NodeIds = new Set(bridgeNodes.map(n => n.opinion.id));
+  
+  // Calculate pentagon positions for green zone slots
+  const slotPositions = calculateGreenZoneSlotPositions(config);
+  
+  // Create green zone slots with occupancy info
+  const greenZoneSlots: GreenZoneSlot[] = slotPositions.map((pos, i) => {
+    const occupyingNode = bridgeNodes[i];
+    return {
+      position: i + 1,
+      x: pos.x,
+      y: pos.y,
+      occupied: !!occupyingNode,
+      nodeId: occupyingNode?.opinion.id,
+    };
+  });
+
+  // Step 3: Separate active (has chats) and inactive (no chats) nodes
   const activeOpinions = opinions.filter(op => nodeScores.get(op.id)?.hasChats);
   const inactiveOpinions = opinions.filter(op => !nodeScores.get(op.id)?.hasChats);
 
-  // Step 3: Create edges from ratings
+  // Step 4: Create edges from ratings
   const edges: GraphEdge[] = ratings.map(r => ({
     source: r.opinionA,
     target: r.opinionB,
@@ -444,21 +505,32 @@ export function calculateLayout(
     status: 'accepted' as const,
   }));
 
-  // Step 4: Calculate deterministic angles based on disagreement ratings
+  // Step 5: Calculate deterministic angles based on disagreement ratings
+  // (used for non-green-zone nodes)
   const angleMap = calculateDeterministicAngles(opinions, ratings);
 
-  // Step 5: Position active nodes based on FreeMind score (radius) and disagreement (angle)
+  // Step 6: Position active nodes
   const activeNodes: GraphNode[] = activeOpinions.map((op) => {
     const scores = nodeScores.get(op.id)!;
+    const isTop5 = top5NodeIds.has(op.id);
     
-    // Calculate radius based on FreeMind score
-    const targetRadius = scoreToRadius(scores.freeMindScore, config);
-
-    // Use disagreement-based angle
-    const angle = angleMap.get(op.id) || 0;
-
-    const x = config.centerX + Math.cos(angle) * targetRadius;
-    const y = config.centerY + Math.sin(angle) * targetRadius;
+    let x: number, y: number, distanceToCenter: number;
+    
+    if (isTop5) {
+      // Top 5 nodes get fixed pentagon positions
+      const slotIndex = bridgeNodes.findIndex(n => n.opinion.id === op.id);
+      const slotPos = slotPositions[slotIndex];
+      x = slotPos.x;
+      y = slotPos.y;
+      distanceToCenter = config.greenRadius * 0.6;
+    } else {
+      // Non-top-5 nodes use normal positioning
+      const targetRadius = scoreToRadius(scores.freeMindScore, config);
+      const angle = angleMap.get(op.id) || 0;
+      x = config.centerX + Math.cos(angle) * targetRadius;
+      y = config.centerY + Math.sin(angle) * targetRadius;
+      distanceToCenter = targetRadius;
+    }
 
     return {
       id: op.id,
@@ -466,12 +538,13 @@ export function calculateLayout(
       y,
       opinion: op,
       isBridge: isBridgeNode(scores.freeMindScore),
-      distanceToCenter: targetRadius,
+      distanceToCenter,
       hasChats: true,
+      zone: isTop5 ? 'green' : undefined, // Mark top 5 as green zone
     } as GraphNode;
   });
 
-  // Step 6: Place inactive nodes on outer ring using disagreement-based angles
+  // Step 7: Place inactive nodes on outer ring using disagreement-based angles
   const inactiveRadius = config.outerRadius - config.nodeRadius * 2;
   const inactiveNodes: GraphNode[] = inactiveOpinions.map((op) => {
     const angle = angleMap.get(op.id) || 0;
@@ -490,7 +563,7 @@ export function calculateLayout(
   // Combine active and inactive nodes
   const allNodes = [...activeNodes, ...inactiveNodes];
 
-  return { nodes: allNodes, edges };
+  return { nodes: allNodes, edges, greenZoneSlots };
 }
 
 // Generate mock data for testing
