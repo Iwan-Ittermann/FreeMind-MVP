@@ -63,7 +63,7 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted 
 
           {/* Right: Actions */}
           <div className="flex items-center gap-2">
-            {/* Add Opinion Button - highlighted if no opinion yet, greyed out if opinion exists */}
+            {/* Add Opinion Button - prominent CTA, greyed out if opinion exists */}
             {showOpinionButton && (
               <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
@@ -72,15 +72,14 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted 
               >
                 <Button
                   onClick={() => canAddOpinion && setOpinionDialogOpen(true)}
-                  size="icon"
-                  variant="ghost"
                   disabled={!canAddOpinion}
                   className={canAddOpinion 
-                    ? "relative h-9 w-9 bg-accent/20 text-accent hover:bg-accent/30 hover:text-accent ring-2 ring-accent/50 animate-pulse"
-                    : "relative h-9 w-9 text-white/30 cursor-not-allowed"
+                    ? "h-9 px-3 md:px-4 bg-accent text-accent-foreground hover:bg-accent/90 font-medium shadow-lg shadow-accent/25 animate-pulse"
+                    : "h-9 px-3 md:px-4 bg-muted text-muted-foreground cursor-not-allowed"
                   }
                 >
-                  <Pencil className="h-4 w-4" />
+                  <Pencil className="h-4 w-4 md:mr-2" />
+                  <span className="hidden md:inline">Add Opinion</span>
                 </Button>
               </motion.div>
             )}
