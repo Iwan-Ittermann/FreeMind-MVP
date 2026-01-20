@@ -168,56 +168,227 @@ function optimizeAngularPositions(
 }
 
 /**
- * Apply repulsion forces to prevent node overlap
+ * Calculate deterministic angles for nodes based on disagreement ratings.
+ * 
+ * Algorithm:
+ * 1. Find the pair with maximum disagreement → place at 0° and 180°
+ * 2. For each remaining connected node, calculate weighted angle based on disagreement
+ * 3. Place inactive nodes evenly in remaining gaps
+ * 
+ * This produces identical results for all users viewing the same data.
  */
-function applyRepulsionForces(
-  nodes: GraphNode[],
-  config: LayoutConfig
-): GraphNode[] {
-  const updated = nodes.map(n => ({ ...n }));
-  const repulsionStrength = 300;
-  const minDistance = config.nodeRadius * 3;
+function calculateDeterministicAngles(
+  opinions: Opinion[],
+  ratings: ChatRating[]
+): Map<string, number> {
+  const angleMap = new Map<string, number>();
   
-  for (let i = 0; i < updated.length; i++) {
-    let fx = 0, fy = 0;
-    
-    for (let j = 0; j < updated.length; j++) {
-      if (i === j) continue;
-      
-      const dx = updated[i].x - updated[j].x;
-      const dy = updated[i].y - updated[j].y;
-      const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-      
-      if (dist < minDistance) {
-        fx += (dx / dist) * repulsionStrength / (dist * dist);
-        fy += (dy / dist) * repulsionStrength / (dist * dist);
-      }
-    }
-    
-    // Apply forces with damping
-    updated[i].x += fx * 0.1;
-    updated[i].y += fy * 0.1;
-    
-    // Keep within bounds while maintaining radius
-    const targetRadius = updated[i].distanceToCenter || config.yellowRadius;
-    const currentDist = Math.sqrt(
-      Math.pow(updated[i].x - config.centerX, 2) + 
-      Math.pow(updated[i].y - config.centerY, 2)
-    );
-    
-    if (currentDist > 0) {
-      const angle = Math.atan2(updated[i].y - config.centerY, updated[i].x - config.centerX);
-      // Constrain radius while allowing some flexibility
-      const constrainedRadius = Math.max(
-        config.nodeRadius * 2,
-        Math.min(config.outerRadius - config.nodeRadius, targetRadius)
-      );
-      updated[i].x = config.centerX + Math.cos(angle) * constrainedRadius;
-      updated[i].y = config.centerY + Math.sin(angle) * constrainedRadius;
+  if (opinions.length === 0) return angleMap;
+  
+  // Build adjacency map with disagreement weights
+  const adjacency = new Map<string, Map<string, number>>();
+  opinions.forEach(op => adjacency.set(op.id, new Map()));
+  
+  ratings.forEach(r => {
+    adjacency.get(r.opinionA)?.set(r.opinionB, r.disagreement);
+    adjacency.get(r.opinionB)?.set(r.opinionA, r.disagreement);
+  });
+  
+  // Find active nodes (those with at least one rating)
+  const activeNodes = opinions.filter(op => (adjacency.get(op.id)?.size || 0) > 0);
+  const inactiveNodes = opinions.filter(op => (adjacency.get(op.id)?.size || 0) === 0);
+  
+  if (activeNodes.length === 0) {
+    // No ratings at all - distribute all nodes evenly
+    const sortedOpinions = [...opinions].sort((a, b) => a.id.localeCompare(b.id));
+    sortedOpinions.forEach((op, i) => {
+      angleMap.set(op.id, (i / sortedOpinions.length) * 2 * Math.PI);
+    });
+    return angleMap;
+  }
+  
+  // Step 1: Find the pair with maximum disagreement (deterministic tie-breaker)
+  let maxDisagreement = -1;
+  let anchorPair: [string, string] | null = null;
+  
+  // Sort ratings for deterministic iteration
+  const sortedRatings = [...ratings].sort((a, b) => {
+    const keyA = [a.opinionA, a.opinionB].sort().join('-');
+    const keyB = [b.opinionA, b.opinionB].sort().join('-');
+    return keyA.localeCompare(keyB);
+  });
+  
+  for (const r of sortedRatings) {
+    if (r.disagreement > maxDisagreement) {
+      maxDisagreement = r.disagreement;
+      // Deterministic ordering of the pair
+      anchorPair = [r.opinionA, r.opinionB].sort() as [string, string];
     }
   }
   
-  return updated;
+  if (!anchorPair) {
+    // Fallback: use first two active nodes sorted by ID
+    const sorted = activeNodes.map(n => n.id).sort();
+    anchorPair = [sorted[0], sorted[1] || sorted[0]];
+  }
+  
+  // Place anchors at 0° and 180°
+  angleMap.set(anchorPair[0], 0);
+  if (anchorPair[1] !== anchorPair[0]) {
+    angleMap.set(anchorPair[1], Math.PI);
+  }
+  
+  // Step 2: Position remaining active nodes based on disagreement constraints
+  const remainingActive = activeNodes
+    .filter(n => !angleMap.has(n.id))
+    .sort((a, b) => a.id.localeCompare(b.id)); // Deterministic order
+  
+  for (const node of remainingActive) {
+    const connections = adjacency.get(node.id) || new Map();
+    
+    // Calculate weighted target angle based on connections to placed nodes
+    let weightedAngleSum = 0;
+    let totalWeight = 0;
+    
+    for (const [connectedId, disagreement] of connections) {
+      if (angleMap.has(connectedId)) {
+        const connectedAngle = angleMap.get(connectedId)!;
+        
+        // Target angle offset based on disagreement (0-100 → 0-π radians)
+        const targetOffset = (disagreement / 100) * Math.PI;
+        
+        // We want to be targetOffset radians away from the connected node
+        // Choose the direction that creates the best separation
+        const candidateAngle1 = connectedAngle + targetOffset;
+        const candidateAngle2 = connectedAngle - targetOffset;
+        
+        // Weight by disagreement (higher disagreement = stronger constraint)
+        const weight = disagreement + 1; // +1 to avoid zero weight
+        
+        // Use the candidate that's further from already placed nodes
+        const score1 = getMinAngularDistance(candidateAngle1, angleMap);
+        const score2 = getMinAngularDistance(candidateAngle2, angleMap);
+        
+        const bestCandidate = score1 >= score2 ? candidateAngle1 : candidateAngle2;
+        
+        weightedAngleSum += normalizeAngle(bestCandidate) * weight;
+        totalWeight += weight;
+      }
+    }
+    
+    let finalAngle: number;
+    
+    if (totalWeight > 0) {
+      // Use weighted average of target angles
+      finalAngle = weightedAngleSum / totalWeight;
+    } else {
+      // No connections to placed nodes - find the largest gap
+      finalAngle = findLargestGap(angleMap);
+    }
+    
+    // Ensure we don't overlap with existing nodes (minimum separation)
+    finalAngle = adjustForMinSeparation(finalAngle, angleMap, 0.15);
+    
+    angleMap.set(node.id, normalizeAngle(finalAngle));
+  }
+  
+  // Step 3: Place inactive nodes evenly in remaining gaps
+  const sortedInactive = inactiveNodes.sort((a, b) => a.id.localeCompare(b.id));
+  
+  for (const node of sortedInactive) {
+    const gapAngle = findLargestGap(angleMap);
+    angleMap.set(node.id, gapAngle);
+  }
+  
+  return angleMap;
+}
+
+/**
+ * Normalize angle to [0, 2π)
+ */
+function normalizeAngle(angle: number): number {
+  let normalized = angle % (2 * Math.PI);
+  if (normalized < 0) normalized += 2 * Math.PI;
+  return normalized;
+}
+
+/**
+ * Get minimum angular distance from an angle to any placed node
+ */
+function getMinAngularDistance(angle: number, placed: Map<string, number>): number {
+  let minDist = Math.PI; // Start with max possible
+  
+  for (const placedAngle of placed.values()) {
+    let dist = Math.abs(normalizeAngle(angle) - normalizeAngle(placedAngle));
+    if (dist > Math.PI) dist = 2 * Math.PI - dist;
+    minDist = Math.min(minDist, dist);
+  }
+  
+  return minDist;
+}
+
+/**
+ * Find the angle at the center of the largest gap between placed nodes
+ */
+function findLargestGap(placed: Map<string, number>): number {
+  if (placed.size === 0) return 0;
+  if (placed.size === 1) return normalizeAngle([...placed.values()][0] + Math.PI);
+  
+  const angles = [...placed.values()].map(normalizeAngle).sort((a, b) => a - b);
+  
+  let maxGap = 0;
+  let gapStart = 0;
+  
+  // Check gaps between consecutive angles
+  for (let i = 0; i < angles.length; i++) {
+    const next = (i + 1) % angles.length;
+    let gap = angles[next] - angles[i];
+    if (gap <= 0) gap += 2 * Math.PI; // Wrap around
+    
+    if (gap > maxGap) {
+      maxGap = gap;
+      gapStart = angles[i];
+    }
+  }
+  
+  return normalizeAngle(gapStart + maxGap / 2);
+}
+
+/**
+ * Adjust angle to maintain minimum separation from existing nodes
+ */
+function adjustForMinSeparation(
+  angle: number, 
+  placed: Map<string, number>, 
+  minSep: number
+): number {
+  if (placed.size === 0) return angle;
+  
+  let adjusted = normalizeAngle(angle);
+  let iterations = 0;
+  const maxIterations = 20;
+  
+  while (iterations < maxIterations) {
+    let tooClose = false;
+    
+    for (const placedAngle of placed.values()) {
+      let dist = Math.abs(adjusted - normalizeAngle(placedAngle));
+      if (dist > Math.PI) dist = 2 * Math.PI - dist;
+      
+      if (dist < minSep) {
+        // Push away from this node
+        const direction = adjusted > normalizeAngle(placedAngle) ? 1 : -1;
+        adjusted = normalizeAngle(adjusted + direction * 0.1);
+        tooClose = true;
+        break;
+      }
+    }
+    
+    if (!tooClose) break;
+    iterations++;
+  }
+  
+  return adjusted;
 }
 
 /**
@@ -273,27 +444,21 @@ export function calculateLayout(
     status: 'accepted' as const,
   }));
 
-  // Step 4: Sort all opinions by ID to ensure consistent ordering across all users
-  const sortedOpinions = [...opinions].sort((a, b) => a.id.localeCompare(b.id));
+  // Step 4: Calculate deterministic angles based on disagreement ratings
+  const angleMap = calculateDeterministicAngles(opinions, ratings);
 
-  // Create a deterministic angle for each node based on its position in sorted order
-  const getNodeAngle = (opinionId: string): number => {
-    const sortedIndex = sortedOpinions.findIndex(op => op.id === opinionId);
-    return (sortedIndex / sortedOpinions.length) * 2 * Math.PI;
-  };
-
-  // Step 5: Position active nodes based on FreeMind score
+  // Step 5: Position active nodes based on FreeMind score (radius) and disagreement (angle)
   const activeNodes: GraphNode[] = activeOpinions.map((op) => {
     const scores = nodeScores.get(op.id)!;
     
     // Calculate radius based on FreeMind score
     const targetRadius = scoreToRadius(scores.freeMindScore, config);
 
-    // Use deterministic angle based on sorted position
-    const baseAngle = getNodeAngle(op.id);
+    // Use disagreement-based angle
+    const angle = angleMap.get(op.id) || 0;
 
-    const x = config.centerX + Math.cos(baseAngle) * targetRadius;
-    const y = config.centerY + Math.sin(baseAngle) * targetRadius;
+    const x = config.centerX + Math.cos(angle) * targetRadius;
+    const y = config.centerY + Math.sin(angle) * targetRadius;
 
     return {
       id: op.id,
@@ -306,10 +471,10 @@ export function calculateLayout(
     } as GraphNode;
   });
 
-  // Step 6: Place inactive nodes on outer ring (they have score of 0 = no chats)
+  // Step 6: Place inactive nodes on outer ring using disagreement-based angles
   const inactiveRadius = config.outerRadius - config.nodeRadius * 2;
   const inactiveNodes: GraphNode[] = inactiveOpinions.map((op) => {
-    const angle = getNodeAngle(op.id);
+    const angle = angleMap.get(op.id) || 0;
 
     return {
       id: op.id,
@@ -322,17 +487,8 @@ export function calculateLayout(
     } as GraphNode;
   });
 
-  // Step 7: Skip angular optimization - it causes non-deterministic layouts across users
-  // The deterministic angle based on sorted ID position is sufficient
-  // and ensures all users see the same graph
-
-  // Step 8: Skip repulsion forces as they also introduce non-determinism
-  // The spread of nodes based on sorted positions should be sufficient
-  const refinedActiveNodes = activeNodes;
-  const refinedInactiveNodes = inactiveNodes;
-
   // Combine active and inactive nodes
-  const allNodes = [...refinedActiveNodes, ...refinedInactiveNodes];
+  const allNodes = [...activeNodes, ...inactiveNodes];
 
   return { nodes: allNodes, edges };
 }
