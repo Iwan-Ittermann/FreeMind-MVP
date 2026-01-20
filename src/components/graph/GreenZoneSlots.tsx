@@ -46,18 +46,6 @@ export function GreenZoneSlots({ slots, config }: GreenZoneSlotsProps) {
               r={slotRadius * 0.6}
               fill="hsl(0 0% 100% / 0.03)"
             />
-            
-            {/* Empty throne icon - small crown outline */}
-            <text
-              x={slot.x}
-              y={slot.y - slotRadius * 1.5}
-              textAnchor="middle"
-              dominantBaseline="central"
-              className="text-[10px] pointer-events-none"
-              style={{ opacity: 0.3 }}
-            >
-              👑
-            </text>
           </motion.g>
         );
       })}

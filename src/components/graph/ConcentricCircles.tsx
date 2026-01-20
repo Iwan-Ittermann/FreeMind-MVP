@@ -46,6 +46,18 @@ export function ConcentricCircles({ config }: ConcentricCirclesProps) {
         fill="hsl(var(--success))"
         opacity={0.9}
       />
+      
+      {/* Central crown - goal indicator */}
+      <text
+        x={centerX}
+        y={centerY}
+        textAnchor="middle"
+        dominantBaseline="central"
+        className="pointer-events-none"
+        style={{ fontSize: greenRadius * 0.5 }}
+      >
+        👑
+      </text>
     </g>
   );
 }

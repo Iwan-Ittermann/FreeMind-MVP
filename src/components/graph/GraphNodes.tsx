@@ -194,26 +194,12 @@ export function GraphNodes({
               className="transition-all duration-200"
             />
             
-            {/* Bridge node indicator - crown for green zone, dot for others */}
-            {node.isBridge && !isHighlighted && !isHidden && (
-              zone === 'green' ? (
-                // Crown for nodes that reached the green zone
-                <g transform={`translate(0, ${-baseRadius * 1.8})`}>
-                  <text
-                    textAnchor="middle"
-                    dominantBaseline="central"
-                    className="text-[12px] pointer-events-none"
-                    style={{ fontSize: baseRadius * 1.5 }}
-                  >
-                    👑
-                  </text>
-                </g>
-              ) : (
-                <circle
-                  r={baseRadius * 0.4}
-                  fill="hsl(var(--accent))"
-                />
-              )
+            {/* Bridge node indicator - dot for non-green-zone bridge nodes */}
+            {node.isBridge && !isHighlighted && !isHidden && zone !== 'green' && (
+              <circle
+                r={baseRadius * 0.4}
+                fill="hsl(var(--accent))"
+              />
             )}
 
             {/* Hidden content indicator */}
