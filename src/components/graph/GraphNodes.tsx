@@ -71,8 +71,8 @@ export function GraphNodes({
           fillColor = "hsl(0 0% 30%)"; // Dark grey for hidden content
           strokeColor = "hsl(0 70% 50%)"; // Red tint stroke
         } else if (isHighlighted) {
-          fillColor = "hsl(var(--secondary))"; // Blue when highlighted
-          strokeColor = "hsl(var(--secondary))";
+          fillColor = "hsl(0 0% 100%)"; // White when highlighted
+          strokeColor = "hsl(0 0% 100% / 0.8)"; // Subtle white stroke
         } else if (isCurrentUser) {
           fillColor = "hsl(var(--primary))"; // Primary color for current user
           strokeColor = "hsl(var(--primary))";
@@ -111,12 +111,11 @@ export function GraphNodes({
             onMouseEnter={() => onNodeHover?.(node)}
             onMouseLeave={() => onNodeHover?.(null)}
           >
-            {/* Outer glow for highlighted nodes */}
+            {/* Outer glow for highlighted nodes - subtle white */}
             {isHighlighted && (
               <circle
-                r={baseRadius * 2.5}
-                fill="hsl(var(--secondary) / 0.3)"
-                className="animate-pulse"
+                r={baseRadius * 2}
+                fill="hsl(0 0% 100% / 0.15)"
               />
             )}
 
