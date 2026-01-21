@@ -57,7 +57,7 @@ export function InfoPanel({ question, opinionCount }: InfoPanelProps) {
             transition={{ delay: 0.3 + index * 0.1 }}
             className="flex items-center gap-3 text-white/60"
           >
-            <div className="w-9 h-9 md:w-10 md:h-10 rounded-full border border-white/20 flex items-center justify-center flex-shrink-0">
+            <div className="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center flex-shrink-0">
               <step.icon size={16} className="md:w-[18px] md:h-[18px]" />
             </div>
             <span className="text-sm">
