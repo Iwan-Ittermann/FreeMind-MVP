@@ -123,7 +123,8 @@ export default function TopicView() {
   };
 
   const handleEdgeClick = (edge: GraphEdge) => {
-    navigate(`/chat?their=${edge.target}&readonly=true&topic=${topicId}`);
+    // Open read-only chat view for any edge - pass both opinion IDs
+    navigate(`/chat?their=${edge.target}&source=${edge.source}&readonly=true&topic=${topicId}`);
   };
 
   // Determine the action state for selected node

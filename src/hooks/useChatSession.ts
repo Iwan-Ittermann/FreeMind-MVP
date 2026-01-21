@@ -32,7 +32,7 @@ interface ChatSession {
   theirBridgingScore: number | null;
 }
 
-export function useChatSession(theirOpinionId: string | null): ChatSession {
+export function useChatSession(theirOpinionId: string | null, sourceOpinionId?: string | null): ChatSession {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [chatId, setChatId] = useState<string | null>(null);
@@ -81,7 +81,24 @@ export function useChatSession(theirOpinionId: string | null): ChatSession {
     enabled: !!theirOpinionId,
   });
 
+  // Fetch source opinion if provided (for read-only edge viewing)
+  const { data: sourceOpinion, isLoading: loadingSource, error: sourceError } = useQuery({
+    queryKey: ['opinion', sourceOpinionId],
+    queryFn: async () => {
+      if (!sourceOpinionId) return null;
+      const { data, error } = await supabase
+        .from('opinions_public')
+        .select('*')
+        .eq('id', sourceOpinionId)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!sourceOpinionId,
+  });
+
   // Fetch the current user's opinion for this topic using secure view (excludes ip_address)
+  // Only fetch if we don't have a sourceOpinionId (normal chat mode)
   const { data: myOpinion, isLoading: loadingMy, error: myError } = useQuery({
     queryKey: ['myOpinion', theirOpinion?.topic_id, user?.id],
     queryFn: async () => {
@@ -95,17 +112,25 @@ export function useChatSession(theirOpinionId: string | null): ChatSession {
       if (error) throw error;
       return data;
     },
-    enabled: !!theirOpinion?.topic_id && !!user?.id,
+    enabled: !!theirOpinion?.topic_id && !!user?.id && !sourceOpinionId,
   });
 
+  // Determine which opinion to use as "my" opinion
+  // If sourceOpinionId is provided (read-only edge view), use sourceOpinion
+  // Otherwise use the current user's opinion
+  const effectiveMyOpinion = sourceOpinionId ? sourceOpinion : myOpinion;
+
   // Create or get existing chat when both opinions are loaded
+  // Only do this for non-read-only mode (when sourceOpinionId is not provided)
   useEffect(() => {
     async function getOrCreateChat() {
-      if (!myOpinion || !theirOpinion || chatId) return;
+      // Don't create chats in read-only edge viewing mode
+      if (sourceOpinionId) return;
+      if (!effectiveMyOpinion || !theirOpinion || chatId) return;
 
       const { data, error } = await supabase.rpc('get_or_create_chat', {
-        topic_uuid: myOpinion.topic_id,
-        opinion_a_uuid: myOpinion.id,
+        topic_uuid: effectiveMyOpinion.topic_id,
+        opinion_a_uuid: effectiveMyOpinion.id,
         opinion_b_uuid: theirOpinion.id,
       });
 
@@ -118,7 +143,7 @@ export function useChatSession(theirOpinionId: string | null): ChatSession {
     }
 
     getOrCreateChat();
-  }, [myOpinion, theirOpinion, chatId]);
+  }, [effectiveMyOpinion, theirOpinion, chatId, sourceOpinionId]);
 
   // Mutation for saving/updating rating
   const ratingMutation = useMutation({
@@ -167,8 +192,8 @@ export function useChatSession(theirOpinionId: string | null): ChatSession {
     await ratingMutation.mutateAsync({ empathy, disagreement });
   };
 
-  const isLoading = loadingTheir || loadingMy || loadingRatings;
-  const error = theirError?.message || myError?.message || null;
+  const isLoading = loadingTheir || loadingMy || loadingSource || loadingRatings;
+  const error = theirError?.message || myError?.message || sourceError?.message || null;
 
   // Get the other user's ID from their opinion
   const theirUserId = theirOpinion?.user_id || null;
@@ -177,15 +202,15 @@ export function useChatSession(theirOpinionId: string | null): ChatSession {
     chatId,
     topicId: theirOpinion?.topic_id || null,
     theirUserId,
-    myOpinion: myOpinion
+    myOpinion: effectiveMyOpinion
       ? { 
-          id: myOpinion.id, 
-          topic_id: myOpinion.topic_id, 
-          text: myOpinion.text, 
-          user_id: myOpinion.user_id,
-          visible: myOpinion.visible ?? true,
-          status: myOpinion.status ?? null,
-          notice_text: myOpinion.notice_text ?? null,
+          id: effectiveMyOpinion.id, 
+          topic_id: effectiveMyOpinion.topic_id, 
+          text: effectiveMyOpinion.text, 
+          user_id: effectiveMyOpinion.user_id,
+          visible: effectiveMyOpinion.visible ?? true,
+          status: effectiveMyOpinion.status ?? null,
+          notice_text: effectiveMyOpinion.notice_text ?? null,
         }
       : null,
     theirOpinion: theirOpinion
@@ -199,7 +224,7 @@ export function useChatSession(theirOpinionId: string | null): ChatSession {
           notice_text: theirOpinion.notice_text ?? null,
         }
       : null,
-    myOpinionId: myOpinion?.id || null,
+    myOpinionId: effectiveMyOpinion?.id || null,
     theirOpinionId: theirOpinion?.id || null,
     isLoading,
     error,

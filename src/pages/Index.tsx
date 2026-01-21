@@ -115,8 +115,8 @@ const Index = () => {
   };
 
   const handleEdgeClick = (edge: GraphEdge) => {
-    // Open read-only chat view for any edge
-    navigate(`/chat?their=${edge.target}&readonly=true`);
+    // Open read-only chat view for any edge - pass both opinion IDs
+    navigate(`/chat?their=${edge.target}&source=${edge.source}&readonly=true`);
   };
 
   // Determine the action state for selected node

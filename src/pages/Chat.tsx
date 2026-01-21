@@ -10,6 +10,7 @@ export default function Chat() {
   const [searchParams] = useSearchParams();
   
   const theirOpinionIdParam = searchParams.get('their');
+  const sourceOpinionIdParam = searchParams.get('source'); // For read-only edge viewing
   const isReadOnly = searchParams.get('readonly') === 'true';
   
   const { 
@@ -26,7 +27,7 @@ export default function Chat() {
     isSavingRating,
     existingRating,
     averageBridgingScore,
-  } = useChatSession(theirOpinionIdParam);
+  } = useChatSession(theirOpinionIdParam, isReadOnly ? sourceOpinionIdParam : undefined);
 
   const handleClose = () => {
     navigate('/');
