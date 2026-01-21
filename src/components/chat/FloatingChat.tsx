@@ -361,31 +361,19 @@ export function FloatingChat({
               ) : (
                 <div className="border-t border-white/10 bg-black">
                   {/* Mobile rating buttons - above typing area */}
-                  <div className="md:hidden flex justify-between items-center px-4 py-2 border-b border-white/5">
+                  <div className="md:hidden flex justify-between items-end px-4 py-2 border-b border-white/5 relative">
                     {/* Left - Empathy */}
-                    <div className="flex items-center">
-                      <button
-                        onClick={() => setMobileLeftSliderOpen(!mobileLeftSliderOpen)}
-                        className="h-10 px-2 bg-white/5 border border-white/10 rounded-lg flex items-center gap-2"
-                      >
-                        <span className="w-2 h-6 rounded-full bg-rose-400" />
-                        <span className="text-xs text-rose-400 font-bold">{empathy}</span>
-                        {mobileLeftSliderOpen ? (
-                          <ChevronLeft className="w-4 h-4 text-white/40" />
-                        ) : (
-                          <ChevronRight className="w-4 h-4 text-white/40" />
-                        )}
-                      </button>
+                    <div className="flex flex-col items-start">
                       <AnimatePresence>
                         {mobileLeftSliderOpen && (
                           <motion.div
-                            initial={{ width: 0, opacity: 0 }}
-                            animate={{ width: 'auto', opacity: 1 }}
-                            exit={{ width: 0, opacity: 0 }}
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 160, opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
                             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                            className="overflow-hidden ml-2"
+                            className="overflow-hidden mb-2"
                           >
-                            <div className="w-[140px] h-10 bg-black/95 border border-white/10 rounded-lg flex items-center px-3">
+                            <div className="h-40 w-16 bg-black/95 border border-white/10 rounded-lg flex items-center justify-center py-2">
                               <VerticalRatingSlider
                                 value={empathy}
                                 onChange={setEmpathy}
@@ -401,9 +389,16 @@ export function FloatingChat({
                           </motion.div>
                         )}
                       </AnimatePresence>
+                      <button
+                        onClick={() => setMobileLeftSliderOpen(!mobileLeftSliderOpen)}
+                        className="h-10 px-2 bg-white/5 border border-white/10 rounded-lg flex items-center gap-2"
+                      >
+                        <span className="w-2 h-6 rounded-full bg-rose-400" />
+                        <span className="text-xs text-rose-400 font-bold">{empathy}</span>
+                      </button>
                     </div>
 
-                    {/* Save button */}
+                    {/* Save button - centered */}
                     <motion.button
                       onClick={handleSaveRating}
                       disabled={isSavingRating}
@@ -418,29 +413,17 @@ export function FloatingChat({
                     </motion.button>
 
                     {/* Right - Disagreement */}
-                    <div className="flex items-center flex-row-reverse">
-                      <button
-                        onClick={() => setMobileRightSliderOpen(!mobileRightSliderOpen)}
-                        className="h-10 px-2 bg-white/5 border border-white/10 rounded-lg flex items-center gap-2 flex-row-reverse"
-                      >
-                        <span className="w-2 h-6 rounded-full bg-orange-400" />
-                        <span className="text-xs text-orange-400 font-bold">{disagreement}</span>
-                        {mobileRightSliderOpen ? (
-                          <ChevronRight className="w-4 h-4 text-white/40" />
-                        ) : (
-                          <ChevronLeft className="w-4 h-4 text-white/40" />
-                        )}
-                      </button>
+                    <div className="flex flex-col items-end">
                       <AnimatePresence>
                         {mobileRightSliderOpen && (
                           <motion.div
-                            initial={{ width: 0, opacity: 0 }}
-                            animate={{ width: 'auto', opacity: 1 }}
-                            exit={{ width: 0, opacity: 0 }}
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 160, opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
                             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                            className="overflow-hidden mr-2"
+                            className="overflow-hidden mb-2"
                           >
-                            <div className="w-[140px] h-10 bg-black/95 border border-white/10 rounded-lg flex items-center px-3">
+                            <div className="h-40 w-16 bg-black/95 border border-white/10 rounded-lg flex items-center justify-center py-2">
                               <VerticalRatingSlider
                                 value={disagreement}
                                 onChange={setDisagreement}
@@ -456,6 +439,13 @@ export function FloatingChat({
                           </motion.div>
                         )}
                       </AnimatePresence>
+                      <button
+                        onClick={() => setMobileRightSliderOpen(!mobileRightSliderOpen)}
+                        className="h-10 px-2 bg-white/5 border border-white/10 rounded-lg flex items-center gap-2 flex-row-reverse"
+                      >
+                        <span className="w-2 h-6 rounded-full bg-orange-400" />
+                        <span className="text-xs text-orange-400 font-bold">{disagreement}</span>
+                      </button>
                     </div>
                   </div>
 
