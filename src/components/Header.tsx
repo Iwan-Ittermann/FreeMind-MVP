@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Pencil, Settings, LogIn, LogOut } from 'lucide-react';
+import { Pencil, Settings, LogIn, LogOut, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -84,12 +84,23 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted 
               </motion.div>
             )}
 
+            {/* About Link */}
+            <Link to="/about">
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted"
+              >
+                <Info className="h-4 w-4" />
+              </Button>
+            </Link>
+
             {/* Config Button */}
             <Button
               onClick={() => setConfigOpen(true)}
               size="icon"
               variant="ghost"
-              className="h-9 w-9 text-white/60 hover:text-white hover:bg-white/10"
+              className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted"
             >
               <Settings className="h-4 w-4" />
             </Button>
