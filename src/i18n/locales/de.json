@@ -1,7 +1,7 @@
 {
   "about": {
     "title": "Über FreeMind",
-    "tagline": "Online-Meinungsverschiedenheiten in Verständnis verwandeln",
+    "tagline": "Respektvoller Dialog statt Hass und Polarisierung",
     "problem": {
       "title": "Das Problem",
       "description": "Die heutigen sozialen Plattformen belohnen {{highlight}}. Algorithmen verstärken Konflikte, weil wütende Interaktion Klicks generiert. Das Ergebnis? Wir haben verlernt, konstruktiv mit Andersdenkenden zu diskutieren.",
@@ -16,15 +16,15 @@
     "steps": {
       "state": {
         "title": "MEINUNG",
-        "description": "Teile deine Perspektive zur Frage. Deine Meinung wird zu einem Knoten im Graphen."
+        "description": "Teile deine Perspektive zur Frage. Deine Meinung wird zu einem Punkt auf dem Kreis."
       },
       "chat": {
         "title": "CHAT",
-        "description": "Verbinde dich mit Menschen, die anders denken. Fordere Gespräche mit anderen Knoten an."
+        "description": "Verbinde dich mit Menschen, die anders denken. Fordere Gespräche mit anderen Meinungen an."
       },
       "rate": {
         "title": "BEWERTEN",
-        "description": "Bewerte deinen Gesprächspartner nach Empathie und Meinungsverschiedenheit, um Bridging-Scores zu berechnen."
+        "description": "Bewerte euren Chat nach Empathie und Meinungsverschiedenheit, um eure Bridging-Score zu berechnen."
       }
     },
     "bridgingScore": {
@@ -39,23 +39,23 @@
       "green": {
         "name": "Grüne Zone",
         "range": "> 2500",
-        "meaning": "Hohe Empathie + Hohe Meinungsverschiedenheit = Echte Brückenbildung. Du hast jemanden verstanden, mit dem du grundlegend nicht übereinstimmst."
+        "meaning": "Hohe Empathie + Hohe Meinungsverschiedenheit = Echte Brückenbildung. Ihr habt hohen Respekt trotz großer Meinungsverschiedenheit. Bravo!"
       },
       "orange": {
         "name": "Orange Zone",
         "range": "0 – 2500",
-        "meaning": "Moderates Bridging-Potenzial. Gutes Gespräch, aber Raum für mehr Empathie oder tiefere Meinungsverschiedenheiten."
+        "meaning": "Mittlere Zone. Ihr bleibt respektvoll trotz moderater oder großer Meinungsverschiedenheit. Genau darum geht es."
       },
       "red": {
         "name": "Rote Zone",
         "range": "< 0",
-        "meaning": "Negative Empathie deutet auf schädliche Interaktion hin. Das Gespräch war nicht konstruktiv."
+        "meaning": "Der Rand. Hier landen Meinungen die bei großer Meinungsverschiedenheit beidseitig negative Respektbewertungen erhalten."
       }
     },
     "graph": {
       "title": "Den Graphen lesen",
       "circles": {
-        "title": "Konzentrische Kreise",
+        "title": "Drei Ringe",
         "description": "Der Graph zeigt drei Ringe, die Bridging-Score-Zonen darstellen. Je näher am Zentrum, desto höher der Bridging-Score."
       },
       "nodes": {
