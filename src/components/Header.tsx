@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { SubmitOpinionDialog } from './SubmitOpinionDialog';
 import { ConfigPanel } from './ConfigPanel';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface HeaderProps {
   title?: string;
@@ -94,6 +95,9 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted 
                 <Info className="h-4 w-4" />
               </Button>
             </Link>
+
+            {/* Language Switcher */}
+            <LanguageSwitcher />
 
             {/* Config Button */}
             <Button
