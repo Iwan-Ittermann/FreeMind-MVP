@@ -69,7 +69,7 @@ const privacyFeatures = [
   },
   {
     icon: Bot,
-    title: "AI Conciliation",
+    title: "AI Conciliation (Planned)",
     description: "AI mediator available to help de-escalate heated discussions and find common ground."
   },
   {
