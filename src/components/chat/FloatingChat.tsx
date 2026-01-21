@@ -375,12 +375,12 @@ export function FloatingChat({
                         {mobileLeftSliderOpen && (
                           <motion.div
                             initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 160, opacity: 1 }}
+                            animate={{ height: 320, opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
                             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                             className="absolute bottom-full left-0 mb-2 overflow-hidden"
                           >
-                            <div className="h-40 w-16 bg-black/95 border border-white/10 rounded-lg flex items-center justify-center py-2">
+                            <div className="h-80 w-16 bg-black/95 border border-white/10 rounded-lg flex items-center justify-center py-2">
                               <VerticalRatingSlider
                                 value={empathy}
                                 onChange={setEmpathy}
@@ -425,12 +425,12 @@ export function FloatingChat({
                         {mobileRightSliderOpen && (
                           <motion.div
                             initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 160, opacity: 1 }}
+                            animate={{ height: 320, opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
                             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                             className="absolute bottom-full right-0 mb-2 overflow-hidden"
                           >
-                            <div className="h-40 w-16 bg-black/95 border border-white/10 rounded-lg flex items-center justify-center py-2">
+                            <div className="h-80 w-16 bg-black/95 border border-white/10 rounded-lg flex items-center justify-center py-2">
                               <VerticalRatingSlider
                                 value={disagreement}
                                 onChange={setDisagreement}
