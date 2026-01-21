@@ -1,0 +1,101 @@
+{
+  "about": {
+    "title": "About FreeMind",
+    "tagline": "Transforming online disagreement into understanding",
+    "problem": {
+      "title": "The Problem",
+      "description": "Today's social platforms reward {{highlight}} . Algorithms amplify conflict because angry engagement drives clicks. The result? We've forgotten how to disagree constructively with people who think differently.",
+      "outrage": "outrage over understanding",
+      "engagementDriven": "Engagement-Driven",
+      "engagementDesc": "Rewards anger, division, and echo chambers",
+      "empathyDriven": "Empathy-Driven",
+      "empathyDesc": "Rewards understanding, bridging, and growth"
+    },
+    "howItWorks": "How It Works",
+    "step": "Step",
+    "steps": {
+      "state": {
+        "title": "STATE",
+        "description": "Share your perspective on the question. Your opinion becomes a node on the graph."
+      },
+      "chat": {
+        "title": "CHAT",
+        "description": "Connect with people who think differently. Request conversations with other nodes."
+      },
+      "rate": {
+        "title": "RATE",
+        "description": "Evaluate your conversation partner on empathy and disagreement to calculate bridging scores."
+      }
+    },
+    "bridgingScore": {
+      "title": "The Bridging Score",
+      "formula": "The Formula",
+      "formulaText": "Bridging = Empathy × Disagreement",
+      "explanation": "{{empathy}} ranges from -50 to +50. {{disagreement}} ranges from 0 to 100. Your score ranges from {{minScore}} to {{maxScore}}.",
+      "empathy": "Empathy",
+      "disagreement": "Disagreement"
+    },
+    "zones": {
+      "green": {
+        "name": "Green Zone",
+        "range": "> 2500",
+        "meaning": "High empathy + High disagreement = True bridging. You understood someone you deeply disagree with."
+      },
+      "orange": {
+        "name": "Orange Zone",
+        "range": "0 – 2500",
+        "meaning": "Moderate bridging potential. Good conversation, but room to grow in empathy or find deeper disagreement."
+      },
+      "red": {
+        "name": "Red Zone",
+        "range": "< 0",
+        "meaning": "Negative empathy indicates harmful interaction. The conversation wasn't constructive."
+      }
+    },
+    "graph": {
+      "title": "Reading the Graph",
+      "circles": {
+        "title": "Concentric Circles",
+        "description": "The graph displays three rings representing bridging score zones. The closer to the center, the higher the bridging score."
+      },
+      "nodes": {
+        "title": "Nodes & Edges",
+        "description": "Each node is an opinion. Lines connecting nodes represent conversations. Thicker lines indicate deeper engagement."
+      },
+      "top5": {
+        "title": "Top 5 Bridgers",
+        "description": "The five highest-scoring bridgers appear in the green center zone with special prominence."
+      },
+      "position": {
+        "title": "Your Position",
+        "description": "Your node is highlighted. Click other nodes to request conversations or view existing chats."
+      }
+    },
+    "privacy": {
+      "title": "Privacy & Safety",
+      "anonymous": {
+        "title": "Anonymous Identity",
+        "description": "Passphrase-based login with no email or phone required. Your identity stays private."
+      },
+      "ai": {
+        "title": "AI Conciliation (Planned)",
+        "description": "AI mediator available to help de-escalate heated discussions and find common ground."
+      },
+      "legal": {
+        "title": "Criminal Prosecution",
+        "description": "No biased community guidelines. Reported content that might break the law is hidden, and pressing charges is supported."
+      }
+    },
+    "cta": {
+      "title": "Ready to bridge the divide?",
+      "description": "Join the conversation and discover what happens when empathy meets disagreement.",
+      "getStarted": "Get Started",
+      "backHome": "Back to Home"
+    }
+  },
+  "common": {
+    "language": "Language",
+    "english": "English",
+    "german": "Deutsch"
+  }
+}
