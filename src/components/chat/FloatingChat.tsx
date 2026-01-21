@@ -361,9 +361,16 @@ export function FloatingChat({
               ) : (
                 <div className="border-t border-white/10 bg-black">
                   {/* Mobile rating buttons - above typing area */}
-                  <div className="md:hidden flex justify-between items-end px-4 py-2 border-b border-white/5 relative">
+                  <div className="md:hidden flex justify-between items-center px-4 py-2 border-b border-white/5">
                     {/* Left - Empathy */}
-                    <div className="flex flex-col items-start">
+                    <div className="relative">
+                      <button
+                        onClick={() => setMobileLeftSliderOpen(!mobileLeftSliderOpen)}
+                        className="h-10 px-2 bg-white/5 border border-white/10 rounded-lg flex items-center gap-2"
+                      >
+                        <span className="w-2 h-6 rounded-full bg-rose-400" />
+                        <span className="text-xs text-rose-400 font-bold">{empathy}</span>
+                      </button>
                       <AnimatePresence>
                         {mobileLeftSliderOpen && (
                           <motion.div
@@ -371,7 +378,7 @@ export function FloatingChat({
                             animate={{ height: 160, opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
                             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                            className="overflow-hidden mb-2"
+                            className="absolute bottom-full left-0 mb-2 overflow-hidden"
                           >
                             <div className="h-40 w-16 bg-black/95 border border-white/10 rounded-lg flex items-center justify-center py-2">
                               <VerticalRatingSlider
@@ -389,13 +396,6 @@ export function FloatingChat({
                           </motion.div>
                         )}
                       </AnimatePresence>
-                      <button
-                        onClick={() => setMobileLeftSliderOpen(!mobileLeftSliderOpen)}
-                        className="h-10 px-2 bg-white/5 border border-white/10 rounded-lg flex items-center gap-2"
-                      >
-                        <span className="w-2 h-6 rounded-full bg-rose-400" />
-                        <span className="text-xs text-rose-400 font-bold">{empathy}</span>
-                      </button>
                     </div>
 
                     {/* Save button - centered */}
@@ -413,7 +413,14 @@ export function FloatingChat({
                     </motion.button>
 
                     {/* Right - Disagreement */}
-                    <div className="flex flex-col items-end">
+                    <div className="relative">
+                      <button
+                        onClick={() => setMobileRightSliderOpen(!mobileRightSliderOpen)}
+                        className="h-10 px-2 bg-white/5 border border-white/10 rounded-lg flex items-center gap-2 flex-row-reverse"
+                      >
+                        <span className="w-2 h-6 rounded-full bg-orange-400" />
+                        <span className="text-xs text-orange-400 font-bold">{disagreement}</span>
+                      </button>
                       <AnimatePresence>
                         {mobileRightSliderOpen && (
                           <motion.div
@@ -421,7 +428,7 @@ export function FloatingChat({
                             animate={{ height: 160, opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
                             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                            className="overflow-hidden mb-2"
+                            className="absolute bottom-full right-0 mb-2 overflow-hidden"
                           >
                             <div className="h-40 w-16 bg-black/95 border border-white/10 rounded-lg flex items-center justify-center py-2">
                               <VerticalRatingSlider
@@ -439,13 +446,6 @@ export function FloatingChat({
                           </motion.div>
                         )}
                       </AnimatePresence>
-                      <button
-                        onClick={() => setMobileRightSliderOpen(!mobileRightSliderOpen)}
-                        className="h-10 px-2 bg-white/5 border border-white/10 rounded-lg flex items-center gap-2 flex-row-reverse"
-                      >
-                        <span className="w-2 h-6 rounded-full bg-orange-400" />
-                        <span className="text-xs text-orange-400 font-bold">{disagreement}</span>
-                      </button>
                     </div>
                   </div>
 
