@@ -74,7 +74,7 @@ const privacyFeatures = [
   },
   {
     icon: Gavel,
-    title: "Community Moderation",
+    title: "Illegal Content Prosecuted",
     description: "Report system with court-style review process ensures fair and transparent content moderation."
   }
 ];
