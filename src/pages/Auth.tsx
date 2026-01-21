@@ -222,7 +222,7 @@ Do not share this passphrase with anyone.`;
               <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
                 <p className="text-sm text-yellow-200">
                   ⚠️ <strong>Important:</strong> Store your passphrase carefully. There is no way to recover it if lost.
-                  ⚠️ <strong>Important:</strong> No illegal content. Your IP adress is tracked.
+                  ⚠️ <strong>Nothing illegal. IP adresses are logged.</strong>
                 </p>
               </div>
             </>
