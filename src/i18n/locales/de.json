@@ -49,26 +49,26 @@
       "red": {
         "name": "Rote Zone",
         "range": "< 0",
-        "meaning": "Der Rand. Hier landen Meinungen die bei großer Meinungsverschiedenheit beidseitig negative Respektbewertungen erhalten."
+        "meaning": "Der Rand. Hier landen Meinungen mit beidseitig negativen Respektbewertungen und großer Meinungsverschiedenheit."
       }
     },
     "graph": {
       "title": "Den Graphen lesen",
       "circles": {
         "title": "Drei Ringe",
-        "description": "Der Graph zeigt drei Ringe, die Bridging-Score-Zonen darstellen. Je näher am Zentrum, desto höher der Bridging-Score."
+        "description": "Der Graph zeigt drei Ringe. Je näher am Zentrum, desto höher der Bridging-Score dieser Meinung."
       },
       "nodes": {
-        "title": "Knoten & Kanten",
-        "description": "Jeder Knoten ist eine Meinung. Linien zwischen Knoten stellen Gespräche dar. Dickere Linien bedeuten tieferes Engagement."
+        "title": "Punkte & Linien",
+        "description": "Jeder Punkt ist eine Meinung. Jede Linie stellt einen Chat zwischen zwei Meinungen dar."
       },
       "top5": {
-        "title": "Top 5 Brückenbauer",
-        "description": "Die fünf am höchsten bewerteten Brückenbauer erscheinen prominent in der grünen Mittelzone."
+        "title": "Top 5",
+        "description": "Die fünf Meinungen mit den besten Chats erscheinen in der Mitte."
       },
       "position": {
         "title": "Deine Position",
-        "description": "Dein Knoten ist hervorgehoben. Klicke andere Knoten an, um Gespräche anzufragen oder bestehende Chats anzusehen."
+        "description": "Deine Meinung ist ROT hervorgehoben. Klicke andere Meinungen an, um Gespräche anzufragen oder bestehende Chats anzusehen."
       }
     },
     "privacy": {
@@ -87,8 +87,8 @@
       }
     },
     "cta": {
-      "title": "Bereit, die Kluft zu überbrücken?",
-      "description": "Nimm an der Konversation teil und entdecke, was passiert, wenn Empathie auf Meinungsverschiedenheit trifft.",
+      "title": "Bereit, Respekt zu bekommmen und erhalten?",
+      "description": "Teile deine Meinung und chatte mit Andersdenkenden.",
       "getStarted": "Jetzt starten",
       "backHome": "Zurück zur Startseite"
     }
