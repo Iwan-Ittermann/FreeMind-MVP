@@ -269,90 +269,8 @@ export function FloatingChat({
         </div>
       </div>
 
-      {/* Main content area - relative for mobile slider positioning */}
-      <div className="flex-1 flex overflow-hidden relative">
-        {/* Mobile collapsible left slider - Empathy (hidden in read-only) - TALLER for better touch input */}
-        {!isReadOnly && (
-          <div className="md:hidden absolute left-0 top-0 z-20 flex">
-            <AnimatePresence>
-              {mobileLeftSliderOpen && (
-                <motion.div
-                  initial={{ x: -72 }}
-                  animate={{ x: 0 }}
-                  exit={{ x: -72 }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                  className="w-[72px] h-56 bg-black/95 border-r border-b border-white/10 rounded-br-lg flex flex-col items-center justify-center py-3"
-                >
-                  <VerticalRatingSlider
-                    value={empathy}
-                    onChange={setEmpathy}
-                    label="Empathy"
-                    color="rose"
-                    lowLabel="Hostile"
-                    highLabel="Empathetic"
-                    min={-50}
-                    max={50}
-                    compact
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
-            <button
-              onClick={() => setMobileLeftSliderOpen(!mobileLeftSliderOpen)}
-              className={`h-12 px-1.5 bg-black/90 border border-white/10 rounded-r-lg flex items-center gap-1 ${mobileLeftSliderOpen ? 'border-l-0' : ''}`}
-            >
-              <span className="w-2 h-8 rounded-full bg-rose-400" />
-              <span className="text-[10px] text-rose-400 font-bold">{empathy}</span>
-              {mobileLeftSliderOpen ? (
-                <ChevronLeft className="w-4 h-4 text-white/40" />
-              ) : (
-                <ChevronRight className="w-4 h-4 text-white/40" />
-              )}
-            </button>
-          </div>
-        )}
-
-        {/* Mobile collapsible right slider - Disagreement (hidden in read-only) - TALLER for better touch input */}
-        {!isReadOnly && (
-          <div className="md:hidden absolute right-0 top-0 z-20 flex flex-row-reverse">
-            <AnimatePresence>
-              {mobileRightSliderOpen && (
-                <motion.div
-                  initial={{ x: 72 }}
-                  animate={{ x: 0 }}
-                  exit={{ x: 72 }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                  className="w-[72px] h-56 bg-black/95 border-l border-b border-white/10 rounded-bl-lg flex flex-col items-center justify-center py-3"
-                >
-                  <VerticalRatingSlider
-                    value={disagreement}
-                    onChange={setDisagreement}
-                    label="Disagree"
-                    color="orange"
-                    lowLabel="Aligned"
-                    highLabel="Opposed"
-                    min={0}
-                    max={100}
-                    compact
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
-            <button
-              onClick={() => setMobileRightSliderOpen(!mobileRightSliderOpen)}
-              className={`h-12 px-1.5 bg-black/90 border border-white/10 rounded-l-lg flex items-center gap-1 flex-row-reverse ${mobileRightSliderOpen ? 'border-r-0' : ''}`}
-            >
-              <span className="w-2 h-8 rounded-full bg-orange-400" />
-              <span className="text-[10px] text-orange-400 font-bold">{disagreement}</span>
-              {mobileRightSliderOpen ? (
-                <ChevronRight className="w-4 h-4 text-white/40" />
-              ) : (
-                <ChevronLeft className="w-4 h-4 text-white/40" />
-              )}
-            </button>
-          </div>
-        )}
-
+      {/* Main content area */}
+      <div className="flex-1 flex overflow-hidden">
         {/* Desktop Left rail - Empathy slider (hidden in read-only) */}
         {!isReadOnly && (
           <div className="hidden md:flex flex-col items-center justify-center w-20 border-r border-white/10 bg-black/50 py-6">
@@ -441,39 +359,128 @@ export function FloatingChat({
                   </p>
                 </div>
               ) : (
-                <div className="border-t border-white/10 bg-black p-4">
-                  <div className="max-w-lg mx-auto">
-                    <div className="flex gap-2 items-center">
-                      {/* Mobile save button */}
-                      <motion.button
-                        onClick={handleSaveRating}
-                        disabled={isSavingRating}
-                        className={`md:hidden w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
-                          hasUnsavedChanges
-                            ? 'bg-primary ring-2 ring-primary ring-offset-2 ring-offset-black' 
-                            : 'bg-white/10'
-                        }`}
-                        whileTap={{ scale: 0.9 }}
+                <div className="border-t border-white/10 bg-black">
+                  {/* Mobile rating buttons - above typing area */}
+                  <div className="md:hidden flex justify-between items-center px-4 py-2 border-b border-white/5">
+                    {/* Left - Empathy */}
+                    <div className="flex items-center">
+                      <button
+                        onClick={() => setMobileLeftSliderOpen(!mobileLeftSliderOpen)}
+                        className="h-10 px-2 bg-white/5 border border-white/10 rounded-lg flex items-center gap-2"
                       >
-                        <Check className={`w-4 h-4 ${hasUnsavedChanges ? 'text-white' : 'text-white/40'}`} />
-                      </motion.button>
-                      <Input
-                        value={inputValue}
-                        onChange={(e) => handleInputChange(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-                        placeholder="Type a message..."
-                        className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-12 rounded-full px-5 text-base"
-                        disabled={isSending}
-                      />
-                      <Button 
-                        onClick={handleSend}
-                        disabled={!inputValue.trim() || isSending}
-                        className="bg-primary hover:bg-primary/90 h-12 w-12 rounded-full p-0 flex-shrink-0"
+                        <span className="w-2 h-6 rounded-full bg-rose-400" />
+                        <span className="text-xs text-rose-400 font-bold">{empathy}</span>
+                        {mobileLeftSliderOpen ? (
+                          <ChevronLeft className="w-4 h-4 text-white/40" />
+                        ) : (
+                          <ChevronRight className="w-4 h-4 text-white/40" />
+                        )}
+                      </button>
+                      <AnimatePresence>
+                        {mobileLeftSliderOpen && (
+                          <motion.div
+                            initial={{ width: 0, opacity: 0 }}
+                            animate={{ width: 'auto', opacity: 1 }}
+                            exit={{ width: 0, opacity: 0 }}
+                            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                            className="overflow-hidden ml-2"
+                          >
+                            <div className="w-[140px] h-10 bg-black/95 border border-white/10 rounded-lg flex items-center px-3">
+                              <VerticalRatingSlider
+                                value={empathy}
+                                onChange={setEmpathy}
+                                label="Empathy"
+                                color="rose"
+                                lowLabel="Hostile"
+                                highLabel="Empathetic"
+                                min={-50}
+                                max={50}
+                                compact
+                              />
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+
+                    {/* Save button */}
+                    <motion.button
+                      onClick={handleSaveRating}
+                      disabled={isSavingRating}
+                      className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
+                        hasUnsavedChanges
+                          ? 'bg-primary ring-2 ring-primary ring-offset-2 ring-offset-black' 
+                          : 'bg-white/10'
+                      }`}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      <Check className={`w-4 h-4 ${hasUnsavedChanges ? 'text-white' : 'text-white/40'}`} />
+                    </motion.button>
+
+                    {/* Right - Disagreement */}
+                    <div className="flex items-center flex-row-reverse">
+                      <button
+                        onClick={() => setMobileRightSliderOpen(!mobileRightSliderOpen)}
+                        className="h-10 px-2 bg-white/5 border border-white/10 rounded-lg flex items-center gap-2 flex-row-reverse"
                       >
-                        <Send className="w-5 h-5" />
-                      </Button>
-                      <div className="hidden md:block">
-                        <AIConciliateButton compact />
+                        <span className="w-2 h-6 rounded-full bg-orange-400" />
+                        <span className="text-xs text-orange-400 font-bold">{disagreement}</span>
+                        {mobileRightSliderOpen ? (
+                          <ChevronRight className="w-4 h-4 text-white/40" />
+                        ) : (
+                          <ChevronLeft className="w-4 h-4 text-white/40" />
+                        )}
+                      </button>
+                      <AnimatePresence>
+                        {mobileRightSliderOpen && (
+                          <motion.div
+                            initial={{ width: 0, opacity: 0 }}
+                            animate={{ width: 'auto', opacity: 1 }}
+                            exit={{ width: 0, opacity: 0 }}
+                            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                            className="overflow-hidden mr-2"
+                          >
+                            <div className="w-[140px] h-10 bg-black/95 border border-white/10 rounded-lg flex items-center px-3">
+                              <VerticalRatingSlider
+                                value={disagreement}
+                                onChange={setDisagreement}
+                                label="Disagree"
+                                color="orange"
+                                lowLabel="Aligned"
+                                highLabel="Opposed"
+                                min={0}
+                                max={100}
+                                compact
+                              />
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </div>
+
+                  {/* Input area */}
+                  <div className="p-4">
+                    <div className="max-w-lg mx-auto">
+                      <div className="flex gap-2 items-center">
+                        <Input
+                          value={inputValue}
+                          onChange={(e) => handleInputChange(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
+                          placeholder="Type a message..."
+                          className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-12 rounded-full px-5 text-base"
+                          disabled={isSending}
+                        />
+                        <Button 
+                          onClick={handleSend}
+                          disabled={!inputValue.trim() || isSending}
+                          className="bg-primary hover:bg-primary/90 h-12 w-12 rounded-full p-0 flex-shrink-0"
+                        >
+                          <Send className="w-5 h-5" />
+                        </Button>
+                        <div className="hidden md:block">
+                          <AIConciliateButton compact />
+                        </div>
                       </div>
                     </div>
                   </div>
