@@ -20,7 +20,7 @@ import {
 import { STGB_PARAGRAPHS, MIN_JUSTIFICATION_LENGTH, type StGBParagraph } from '@/lib/stgb-paragraphs';
 import { useReportContent } from '@/hooks/useReports';
 import { toast } from 'sonner';
-import { AlertTriangle, Loader2, Info } from 'lucide-react';
+import { AlertTriangle, Loader2, Info, ExternalLink } from 'lucide-react';
 
 interface ReportDialogProps {
   open: boolean;
@@ -137,13 +137,22 @@ export function ReportDialog({
             <div className="p-3 rounded-lg bg-muted/50 border border-border">
               <div className="flex items-start gap-2">
                 <Info className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
-                <div>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
+                <div className="space-y-2">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                     {selectedParagraphInfo.id} StGB – {selectedParagraphInfo.offense}
                   </p>
                   <p className="text-sm text-foreground/80 italic">
                     {selectedParagraphInfo.text}
                   </p>
+                  <a
+                    href={selectedParagraphInfo.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
+                  >
+                    <ExternalLink className="w-3 h-3" />
+                    Offizieller Gesetzestext
+                  </a>
                 </div>
               </div>
             </div>
