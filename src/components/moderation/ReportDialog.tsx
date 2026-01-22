@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -17,10 +17,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useLaws } from '@/hooks/useLaws';
+import { STGB_PARAGRAPHS, MIN_JUSTIFICATION_LENGTH, type StGBParagraph } from '@/lib/stgb-paragraphs';
 import { useReportContent } from '@/hooks/useReports';
 import { toast } from 'sonner';
-import { AlertTriangle, Loader2 } from 'lucide-react';
+import { AlertTriangle, Loader2, Info } from 'lucide-react';
 
 interface ReportDialogProps {
   open: boolean;
@@ -37,17 +37,28 @@ export function ReportDialog({
   contentType,
   contentPreview,
 }: ReportDialogProps) {
-  const { data: laws = [], isLoading: lawsLoading } = useLaws();
   const reportMutation = useReportContent();
   
-  const [selectedLawId, setSelectedLawId] = useState<string>('');
-  const [description, setDescription] = useState('');
+  const [selectedParagraph, setSelectedParagraph] = useState<StGBParagraph | ''>('');
+  const [justification, setJustification] = useState('');
 
-  const selectedLaw = laws.find((l) => l.id === selectedLawId);
+  const selectedParagraphInfo = useMemo(() => {
+    if (!selectedParagraph) return null;
+    return STGB_PARAGRAPHS.find((p) => p.id === selectedParagraph) || null;
+  }, [selectedParagraph]);
+
+  const justificationLength = justification.trim().length;
+  const isJustificationValid = justificationLength >= MIN_JUSTIFICATION_LENGTH;
+  const canSubmit = selectedParagraph && isJustificationValid;
 
   const handleSubmit = async () => {
-    if (!selectedLaw) {
+    if (!selectedParagraphInfo) {
       toast.error('Bitte wählen Sie einen Tatbestand aus');
+      return;
+    }
+
+    if (!isJustificationValid) {
+      toast.error('Begründung ist Pflicht und muss mindestens 100 Zeichen lang sein.');
       return;
     }
 
@@ -55,16 +66,16 @@ export function ReportDialog({
       await reportMutation.mutateAsync({
         contentId,
         contentType,
-        lawBook: selectedLaw.lawBook,
-        paragraph: selectedLaw.paragraph,
-        offense: selectedLaw.offense,
-        description: description.trim() || undefined,
+        lawBook: 'StGB',
+        paragraph: selectedParagraphInfo.id,
+        offense: selectedParagraphInfo.offense,
+        description: justification.trim(),
       });
 
       toast.success('Meldung erfolgreich eingereicht');
       onOpenChange(false);
-      setSelectedLawId('');
-      setDescription('');
+      setSelectedParagraph('');
+      setJustification('');
     } catch (err: any) {
       toast.error(err.message || 'Fehler beim Einreichen der Meldung');
     }
@@ -72,13 +83,13 @@ export function ReportDialog({
 
   const handleClose = () => {
     onOpenChange(false);
-    setSelectedLawId('');
-    setDescription('');
+    setSelectedParagraph('');
+    setJustification('');
   };
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[500px] bg-background border-border">
+      <DialogContent className="sm:max-w-[500px] bg-background border-border max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-foreground">
             <AlertTriangle className="w-5 h-5 text-destructive" />
@@ -102,33 +113,65 @@ export function ReportDialog({
 
           {/* Law selection */}
           <div className="space-y-2">
-            <Label htmlFor="law-select">Vermuteter Tatbestand *</Label>
-            <Select value={selectedLawId} onValueChange={setSelectedLawId}>
+            <Label htmlFor="law-select">Vermuteter Tatbestand (StGB) *</Label>
+            <Select 
+              value={selectedParagraph} 
+              onValueChange={(value) => setSelectedParagraph(value as StGBParagraph)}
+            >
               <SelectTrigger id="law-select" className="w-full">
-                <SelectValue placeholder={lawsLoading ? 'Laden...' : 'Tatbestand auswählen'} />
+                <SelectValue placeholder="Tatbestand auswählen" />
               </SelectTrigger>
               <SelectContent>
-                {laws.map((law) => (
-                  <SelectItem key={law.id} value={law.id}>
-                    <span className="font-mono text-xs mr-2">{law.lawBook} {law.paragraph}</span>
-                    {law.offense}
+                {STGB_PARAGRAPHS.map((para) => (
+                  <SelectItem key={para.id} value={para.id}>
+                    <span className="font-mono text-xs mr-2">{para.id}</span>
+                    {para.offense}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
 
-          {/* Description */}
+          {/* Paragraph text display */}
+          {selectedParagraphInfo && (
+            <div className="p-3 rounded-lg bg-muted/50 border border-border">
+              <div className="flex items-start gap-2">
+                <Info className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
+                    {selectedParagraphInfo.id} StGB – {selectedParagraphInfo.offense}
+                  </p>
+                  <p className="text-sm text-foreground/80 italic">
+                    {selectedParagraphInfo.text}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Justification (required) */}
           <div className="space-y-2">
-            <Label htmlFor="description">Begründung (optional)</Label>
+            <Label htmlFor="justification">
+              Begründung *
+            </Label>
             <Textarea
-              id="description"
-              placeholder="Beschreiben Sie, warum Sie diesen Inhalt für rechtswidrig halten..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={4}
-              className="resize-none"
+              id="justification"
+              placeholder="Beschreiben Sie ausführlich, warum Sie diesen Inhalt für rechtswidrig halten. Mindestens 100 Zeichen erforderlich."
+              value={justification}
+              onChange={(e) => setJustification(e.target.value)}
+              rows={5}
+              className={`resize-none ${!isJustificationValid && justificationLength > 0 ? 'border-destructive' : ''}`}
             />
+            <div className="flex justify-between items-center text-xs">
+              <span className={`${justificationLength < MIN_JUSTIFICATION_LENGTH ? 'text-muted-foreground' : 'text-green-600'}`}>
+                {justificationLength} / {MIN_JUSTIFICATION_LENGTH} Zeichen (Minimum)
+              </span>
+              {justificationLength > 0 && !isJustificationValid && (
+                <span className="text-destructive">
+                  Noch {MIN_JUSTIFICATION_LENGTH - justificationLength} Zeichen erforderlich
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
@@ -138,7 +181,7 @@ export function ReportDialog({
           </Button>
           <Button 
             onClick={handleSubmit}
-            disabled={!selectedLawId || reportMutation.isPending}
+            disabled={!canSubmit || reportMutation.isPending}
             variant="destructive"
           >
             {reportMutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
