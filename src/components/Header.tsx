@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Pencil, Settings, LogIn, LogOut, Info, MessageCircle, MessagesSquare } from 'lucide-react';
+import { Pencil, Settings, MessageCircle, MessagesSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { SubmitOpinionDialog } from './SubmitOpinionDialog';
 import { ConfigPanel } from './ConfigPanel';
-import { LanguageSwitcher } from './LanguageSwitcher';
+
 import { OpinionsSidebar } from './OpinionsSidebar';
 import { ChatsSidebar } from './ChatsSidebar';
 interface HeaderProps {
@@ -25,14 +25,6 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted 
   const [configOpen, setConfigOpen] = useState(false);
   const [opinionsOpen, setOpinionsOpen] = useState(false);
   const [chatsOpen, setChatsOpen] = useState(false);
-  const handleSignOut = async () => {
-    const { error } = await signOut();
-    if (error) {
-      toast.error('Failed to sign out');
-    } else {
-      toast.success('Signed out');
-    }
-  };
 
   const handleOpinionSuccess = () => {
     setOpinionDialogOpen(false);
@@ -115,20 +107,6 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted 
               </Button>
             )}
 
-            {/* About Link */}
-            <Link to="/about">
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted"
-              >
-                <Info className="h-4 w-4" />
-              </Button>
-            </Link>
-
-            {/* Language Switcher */}
-            <LanguageSwitcher />
-
             {/* Config Button */}
             <Button
               onClick={() => setConfigOpen(true)}
@@ -139,28 +117,6 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted 
               <Settings className="h-4 w-4" />
             </Button>
 
-            {/* Auth Button */}
-            {user ? (
-              <Button
-                onClick={handleSignOut}
-                size="sm"
-                variant="ghost"
-                className="text-white/60 hover:text-white hover:bg-white/10 h-9 px-3"
-              >
-                <LogOut className="h-4 w-4 md:mr-2" />
-                <span className="hidden md:inline">Sign Out</span>
-              </Button>
-            ) : (
-              <Link to="/auth">
-                <Button
-                  size="sm"
-                  className="bg-primary hover:bg-primary/90 h-9 px-3"
-                >
-                  <LogIn className="h-4 w-4 md:mr-2" />
-                  <span className="hidden md:inline">Sign In</span>
-                </Button>
-              </Link>
-            )}
           </div>
         </div>
       </header>

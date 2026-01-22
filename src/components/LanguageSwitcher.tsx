@@ -13,10 +13,33 @@ const languages = [
   { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
 ];
 
-export function LanguageSwitcher() {
-  const { i18n } = useTranslation();
+interface LanguageSwitcherProps {
+  variant?: 'icon' | 'full';
+}
+
+export function LanguageSwitcher({ variant = 'icon' }: LanguageSwitcherProps) {
+  const { i18n, t } = useTranslation();
 
   const currentLanguage = languages.find((lang) => lang.code === i18n.language) || languages[0];
+
+  if (variant === 'full') {
+    return (
+      <div className="flex gap-2">
+        {languages.map((lang) => (
+          <Button
+            key={lang.code}
+            variant={i18n.language === lang.code ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => i18n.changeLanguage(lang.code)}
+            className="flex-1"
+          >
+            <span className="mr-2">{lang.flag}</span>
+            {lang.label}
+          </Button>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <DropdownMenu>

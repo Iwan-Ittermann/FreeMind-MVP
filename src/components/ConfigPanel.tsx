@@ -1,11 +1,12 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { Settings, Shield, Download, Copy, Check } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Settings, Shield, Download, Copy, Check, Info, LogIn, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { emailToPassphrase } from '@/lib/passphrase';
 import { toast } from 'sonner';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from './LanguageSwitcher';
 import {
   Sheet,
   SheetContent,
@@ -20,11 +21,22 @@ interface ConfigPanelProps {
 }
 
 export function ConfigPanel({ open, onOpenChange }: ConfigPanelProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const [copied, setCopied] = useState(false);
 
   const passphrase = user?.email ? emailToPassphrase(user.email) : null;
+
+  const handleSignOut = async () => {
+    const { error } = await signOut();
+    if (error) {
+      toast.error(t('config.signOutFailed', 'Failed to sign out'));
+    } else {
+      toast.success(t('config.signedOut', 'Signed out'));
+      onOpenChange(false);
+    }
+  };
 
   const handleCopy = async () => {
     if (!passphrase) return;
@@ -32,17 +44,17 @@ export function ConfigPanel({ open, onOpenChange }: ConfigPanelProps) {
     try {
       await navigator.clipboard.writeText(passphrase);
       setCopied(true);
-      toast.success('Passphrase copied!');
+      toast.success(t('config.passphraseCopied'));
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error('Failed to copy');
+      toast.error(t('config.failedToCopy'));
     }
   };
 
   const handleDownload = () => {
     if (!passphrase) return;
     
-    const content = `Your Freemind Passphrase\n========================\n\n${passphrase}\n\nKeep this safe! You'll need it to log back in.`;
+    const content = `${t('auth.downloadFileTitle')}\n========================\n\n${passphrase}\n\n${t('auth.downloadFileWarning')}`;
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -52,7 +64,7 @@ export function ConfigPanel({ open, onOpenChange }: ConfigPanelProps) {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    toast.success('Passphrase downloaded!');
+    toast.success(t('config.passphraseDownloaded'));
   };
 
   const handleOpenAdmin = () => {
@@ -67,19 +79,45 @@ export function ConfigPanel({ open, onOpenChange }: ConfigPanelProps) {
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <Settings className="w-5 h-5" />
-            Settings
+            {t('config.settings')}
           </SheetTitle>
           <SheetDescription>
-            Manage your account and preferences
+            {t('config.managePreferences')}
           </SheetDescription>
         </SheetHeader>
 
         <div className="mt-6 space-y-6">
+          {/* Language Section */}
+          <div className="space-y-3">
+            <label className="text-sm font-medium text-foreground">
+              {t('common.language')}
+            </label>
+            <LanguageSwitcher variant="full" />
+          </div>
+
+          {/* Divider */}
+          <div className="border-t border-border" />
+
+          {/* About Link */}
+          <div className="space-y-3">
+            <Link 
+              to="/about" 
+              onClick={() => onOpenChange(false)}
+              className="flex items-center gap-2 w-full p-2 rounded-lg hover:bg-muted transition-colors"
+            >
+              <Info className="w-4 h-4 text-muted-foreground" />
+              <span className="text-sm">{t('about.title', 'About FreeMind')}</span>
+            </Link>
+          </div>
+
+          {/* Divider */}
+          <div className="border-t border-border" />
+
           {/* Passphrase Section */}
           {user && passphrase && (
             <div className="space-y-3">
               <label className="text-sm font-medium text-foreground">
-                Your Passphrase
+                {t('config.yourPassphrase')}
               </label>
               <div className="flex items-center gap-2">
                 <div className="flex-1 px-3 py-2 rounded-lg bg-muted font-mono text-sm text-foreground truncate">
@@ -107,14 +145,14 @@ export function ConfigPanel({ open, onOpenChange }: ConfigPanelProps) {
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Save this passphrase securely. You'll need it to log back in.
+                {t('config.savePassphraseNote')}
               </p>
             </div>
           )}
 
           {!user && (
             <p className="text-sm text-muted-foreground">
-              Sign in to view your passphrase and access settings.
+              {t('config.signInToViewSettings')}
             </p>
           )}
 
@@ -124,7 +162,7 @@ export function ConfigPanel({ open, onOpenChange }: ConfigPanelProps) {
           {/* Admin Dashboard */}
           <div className="space-y-3">
             <label className="text-sm font-medium text-foreground">
-              Administration
+              {t('config.administration')}
             </label>
             <Button
               onClick={handleOpenAdmin}
@@ -132,11 +170,35 @@ export function ConfigPanel({ open, onOpenChange }: ConfigPanelProps) {
               className="w-full justify-start"
             >
               <Shield className="w-4 h-4 mr-2" />
-              Admin Dashboard
+              {t('config.adminDashboard')}
             </Button>
             <p className="text-xs text-muted-foreground">
-              Requires admin password to access moderation tools.
+              {t('config.adminPasswordRequired')}
             </p>
+          </div>
+
+          {/* Divider */}
+          <div className="border-t border-border" />
+
+          {/* Auth Section */}
+          <div className="space-y-3">
+            {user ? (
+              <Button
+                onClick={handleSignOut}
+                variant="outline"
+                className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                {t('common.signOut')}
+              </Button>
+            ) : (
+              <Link to="/auth" onClick={() => onOpenChange(false)}>
+                <Button className="w-full justify-start bg-primary hover:bg-primary/90">
+                  <LogIn className="w-4 h-4 mr-2" />
+                  {t('common.signIn')}
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </SheetContent>
