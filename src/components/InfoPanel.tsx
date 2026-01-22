@@ -1,5 +1,6 @@
 import { MessageSquare, MessagesSquare, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 interface InfoPanelProps {
   question: string;
@@ -7,10 +8,12 @@ interface InfoPanelProps {
 }
 
 export function InfoPanel({ question, opinionCount }: InfoPanelProps) {
+  const { t } = useTranslation();
+  
   const steps = [
-    { icon: MessageSquare, action: 'STATE', description: 'your mind' },
-    { icon: MessagesSquare, action: 'CHAT', description: 'with others' },
-    { icon: Star, action: 'RATE', description: 'your chat' },
+    { icon: MessageSquare, action: t('infoPanel.state'), description: t('infoPanel.stateDesc') },
+    { icon: MessagesSquare, action: t('infoPanel.chat'), description: t('infoPanel.chatDesc') },
+    { icon: Star, action: t('infoPanel.rate'), description: t('infoPanel.rateDesc') },
   ];
 
   return (
@@ -26,7 +29,7 @@ export function InfoPanel({ question, opinionCount }: InfoPanelProps) {
           {question}
         </h2>
         <p className="mt-2 text-white/60 text-sm">
-          {opinionCount} opinions
+          {opinionCount} {t('common.opinions')}
         </p>
       </motion.div>
 
@@ -38,7 +41,7 @@ export function InfoPanel({ question, opinionCount }: InfoPanelProps) {
         className="hidden md:block"
       >
         <p className="text-white/60 text-sm">
-          {opinionCount} opinions shared
+          {opinionCount} {t('common.opinionsShared')}
         </p>
       </motion.div>
 
