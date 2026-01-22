@@ -13,7 +13,8 @@ i18n
       en: { translation: en },
       de: { translation: de },
     },
-    fallbackLng: 'en',
+    fallbackLng: 'de', // German is now the fallback
+    lng: 'de', // German is now the default language
     interpolation: {
       escapeValue: false,
     },
