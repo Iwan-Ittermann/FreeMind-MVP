@@ -252,5 +252,22 @@
       "getStarted": "Get Started",
       "backHome": "Back to Home"
     }
+  },
+  "sidebar": {
+    "allOpinions": "All Opinions",
+    "browseOpinions": "Browse all opinions on this topic",
+    "searchOpinions": "Search opinions...",
+    "noOpinionsFound": "No opinions found",
+    "noOpinionsYet": "No opinions yet",
+    "of": "of",
+    "myChats": "My Chats",
+    "yourConversations": "Your conversations with others",
+    "searchChats": "Search chats...",
+    "noChatsFound": "No chats found",
+    "noChatsYet": "No chats yet",
+    "chats": "chats",
+    "signInToSeeChats": "Sign in to see your chats",
+    "submitOpinionFirst": "Submit your opinion first to start chatting",
+    "yesterday": "Yesterday"
   }
 }

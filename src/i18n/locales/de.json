@@ -252,5 +252,22 @@
       "getStarted": "Jetzt starten",
       "backHome": "Zurück zur Startseite"
     }
+  },
+  "sidebar": {
+    "allOpinions": "Alle Meinungen",
+    "browseOpinions": "Alle Meinungen zu diesem Thema durchsuchen",
+    "searchOpinions": "Meinungen suchen...",
+    "noOpinionsFound": "Keine Meinungen gefunden",
+    "noOpinionsYet": "Noch keine Meinungen",
+    "of": "von",
+    "myChats": "Meine Chats",
+    "yourConversations": "Deine Gespräche mit anderen",
+    "searchChats": "Chats suchen...",
+    "noChatsFound": "Keine Chats gefunden",
+    "noChatsYet": "Noch keine Chats",
+    "chats": "Chats",
+    "signInToSeeChats": "Melde dich an, um deine Chats zu sehen",
+    "submitOpinionFirst": "Teile zuerst deine Meinung, um zu chatten",
+    "yesterday": "Gestern"
   }
 }

@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Pencil, Settings, LogIn, LogOut, Info } from 'lucide-react';
+import { Pencil, Settings, LogIn, LogOut, Info, MessageCircle, MessagesSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import { SubmitOpinionDialog } from './SubmitOpinionDialog';
 import { ConfigPanel } from './ConfigPanel';
 import { LanguageSwitcher } from './LanguageSwitcher';
-
+import { OpinionsSidebar } from './OpinionsSidebar';
+import { ChatsSidebar } from './ChatsSidebar';
 interface HeaderProps {
   title?: string;
   topicId?: string;
@@ -17,10 +19,12 @@ interface HeaderProps {
 }
 
 export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted }: HeaderProps) {
+  const { t } = useTranslation();
   const { user, signOut } = useAuth();
   const [opinionDialogOpen, setOpinionDialogOpen] = useState(false);
   const [configOpen, setConfigOpen] = useState(false);
-
+  const [opinionsOpen, setOpinionsOpen] = useState(false);
+  const [chatsOpen, setChatsOpen] = useState(false);
   const handleSignOut = async () => {
     const { error } = await signOut();
     if (error) {
@@ -80,9 +84,35 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted 
                   }
                 >
                   <Pencil className="h-4 w-4 md:mr-2" />
-                  <span className="hidden md:inline">Add Opinion</span>
+                  <span className="hidden md:inline">{t('header.addOpinion')}</span>
                 </Button>
               </motion.div>
+            )}
+
+            {/* Opinions Sidebar Button */}
+            {topicId && (
+              <Button
+                onClick={() => { setOpinionsOpen(true); setChatsOpen(false); }}
+                size="icon"
+                variant="ghost"
+                className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted"
+                title={t('sidebar.allOpinions', 'All Opinions')}
+              >
+                <MessageCircle className="h-4 w-4" />
+              </Button>
+            )}
+
+            {/* Chats Sidebar Button */}
+            {topicId && user && (
+              <Button
+                onClick={() => { setChatsOpen(true); setOpinionsOpen(false); }}
+                size="icon"
+                variant="ghost"
+                className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted"
+                title={t('sidebar.myChats', 'My Chats')}
+              >
+                <MessagesSquare className="h-4 w-4" />
+              </Button>
             )}
 
             {/* About Link */}
@@ -148,6 +178,24 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted 
 
       {/* Config Panel */}
       <ConfigPanel open={configOpen} onOpenChange={setConfigOpen} />
+
+      {/* Opinions Sidebar */}
+      {topicId && (
+        <OpinionsSidebar 
+          open={opinionsOpen} 
+          onOpenChange={setOpinionsOpen} 
+          topicId={topicId} 
+        />
+      )}
+
+      {/* Chats Sidebar */}
+      {topicId && (
+        <ChatsSidebar 
+          open={chatsOpen} 
+          onOpenChange={setChatsOpen} 
+          topicId={topicId} 
+        />
+      )}
     </>
   );
 }
