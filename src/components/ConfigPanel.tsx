@@ -1,5 +1,5 @@
-import { useNavigate, Link } from 'react-router-dom';
-import { Settings, Shield, Download, Copy, Check, Info, LogIn, LogOut } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Settings, Download, Copy, Check, Info, LogIn, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { emailToPassphrase } from '@/lib/passphrase';
@@ -22,7 +22,6 @@ interface ConfigPanelProps {
 
 export function ConfigPanel({ open, onOpenChange }: ConfigPanelProps) {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const [copied, setCopied] = useState(false);
 
@@ -67,10 +66,6 @@ export function ConfigPanel({ open, onOpenChange }: ConfigPanelProps) {
     toast.success(t('config.passphraseDownloaded'));
   };
 
-  const handleOpenAdmin = () => {
-    onOpenChange(false);
-    navigate('/admin');
-  };
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -155,27 +150,6 @@ export function ConfigPanel({ open, onOpenChange }: ConfigPanelProps) {
               {t('config.signInToViewSettings')}
             </p>
           )}
-
-          {/* Divider */}
-          <div className="border-t border-border" />
-
-          {/* Admin Dashboard */}
-          <div className="space-y-3">
-            <label className="text-sm font-medium text-foreground">
-              {t('config.administration')}
-            </label>
-            <Button
-              onClick={handleOpenAdmin}
-              variant="outline"
-              className="w-full justify-start"
-            >
-              <Shield className="w-4 h-4 mr-2" />
-              {t('config.adminDashboard')}
-            </Button>
-            <p className="text-xs text-muted-foreground">
-              {t('config.adminPasswordRequired')}
-            </p>
-          </div>
 
           {/* Divider */}
           <div className="border-t border-border" />

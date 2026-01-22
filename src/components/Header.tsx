@@ -60,24 +60,32 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted 
 
           {/* Right: Actions */}
           <div className="flex items-center gap-2">
-            {/* Add Opinion Button - prominent CTA, greyed out if opinion exists */}
+            {/* Add Opinion Button - prominent CTA when active, icon-only when disabled */}
             {showOpinionButton && (
               <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 className="relative"
               >
-                <Button
-                  onClick={() => canAddOpinion && setOpinionDialogOpen(true)}
-                  disabled={!canAddOpinion}
-                  className={canAddOpinion 
-                    ? "h-9 px-3 md:px-4 bg-accent text-accent-foreground hover:bg-accent/90 font-medium shadow-lg shadow-accent/25 animate-pulse"
-                    : "h-9 px-3 md:px-4 bg-muted text-muted-foreground cursor-not-allowed"
-                  }
-                >
-                  <Pencil className="h-4 w-4 md:mr-2" />
-                  <span className="hidden md:inline">{t('header.addOpinion')}</span>
-                </Button>
+                {canAddOpinion ? (
+                  <Button
+                    onClick={() => setOpinionDialogOpen(true)}
+                    className="h-9 px-3 md:px-4 bg-accent text-accent-foreground hover:bg-accent/90 font-medium shadow-lg shadow-accent/25 animate-pulse"
+                  >
+                    <Pencil className="h-4 w-4 md:mr-2" />
+                    <span className="hidden md:inline">{t('header.addOpinion')}</span>
+                  </Button>
+                ) : (
+                  <Button
+                    disabled
+                    size="icon"
+                    variant="ghost"
+                    className="h-9 w-9 bg-muted text-muted-foreground cursor-not-allowed"
+                    title={t('index.thisIsYourOpinion')}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                )}
               </motion.div>
             )}
 
