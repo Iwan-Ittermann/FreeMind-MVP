@@ -14,6 +14,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useHasJoinedTopic } from '@/hooks/useTopics';
 import { usePresence } from '@/hooks/usePresence';
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
+import { useBrowserNotification } from '@/hooks/useBrowserNotification';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
@@ -57,6 +58,14 @@ export default function TopicView() {
 
   // Track unread messages
   const { data: unreadMessageCounts } = useUnreadMessages(topicId || '', myOpinion?.id);
+
+  // Calculate total unread count for browser notification
+  const totalUnreadCount = unreadMessageCounts 
+    ? Array.from(unreadMessageCounts.values()).reduce((sum, count) => sum + count, 0)
+    : 0;
+
+  // Update browser tab title with unread count
+  useBrowserNotification(totalUnreadCount, topicData?.title || 'freemind');
 
   // Transform chat requests to graph format
   const graphChatRequests: ChatRequest[] = chatRequests.map(r => ({
