@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Settings, Download, Copy, Check, Info, LogIn, LogOut } from 'lucide-react';
+import { Settings, Download, Copy, Check, Info, LogIn, LogOut, GraduationCap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { emailToPassphrase } from '@/lib/passphrase';
@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { useTutorialContext } from '@/contexts/TutorialContext';
 import {
   Sheet,
   SheetContent,
@@ -23,6 +24,7 @@ interface ConfigPanelProps {
 export function ConfigPanel({ open, onOpenChange }: ConfigPanelProps) {
   const { t } = useTranslation();
   const { user, signOut } = useAuth();
+  const { startTutorial } = useTutorialContext();
   const [copied, setCopied] = useState(false);
 
   const passphrase = user?.email ? emailToPassphrase(user.email) : null;
@@ -103,6 +105,16 @@ export function ConfigPanel({ open, onOpenChange }: ConfigPanelProps) {
               <Info className="w-4 h-4 text-muted-foreground" />
               <span className="text-sm">{t('about.title', 'About FreeMind')}</span>
             </Link>
+            <button
+              onClick={() => {
+                onOpenChange(false);
+                setTimeout(() => startTutorial(), 300);
+              }}
+              className="flex items-center gap-2 w-full p-2 rounded-lg hover:bg-muted transition-colors text-left"
+            >
+              <GraduationCap className="w-4 h-4 text-muted-foreground" />
+              <span className="text-sm">{t('tutorial.startTutorial', 'Start Tutorial')}</span>
+            </button>
           </div>
 
           {/* Divider */}

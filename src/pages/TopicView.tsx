@@ -6,6 +6,7 @@ import { OpinionGraph } from '@/components/graph/OpinionGraph';
 import { InfoPanel } from '@/components/InfoPanel';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
+import { Tutorial } from '@/components/Tutorial';
 import { ReportDialog } from '@/components/moderation/ReportDialog';
 import { GraphNode, GraphEdge, ChatRequest } from '@/types/graph';
 import { useTopicData } from '@/hooks/useTopicData';
@@ -15,6 +16,7 @@ import { useHasJoinedTopic } from '@/hooks/useTopics';
 import { usePresence } from '@/hooks/usePresence';
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { useBrowserNotification } from '@/hooks/useBrowserNotification';
+import { useTutorialContext } from '@/contexts/TutorialContext';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
@@ -22,6 +24,7 @@ export default function TopicView() {
   const { topicId } = useParams<{ topicId: string }>();
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
+  const tutorial = useTutorialContext();
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [graphSize, setGraphSize] = useState({ width: 600, height: 600 });
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
@@ -372,6 +375,17 @@ export default function TopicView() {
           </motion.div>
         </div>
       </div>
+
+      {/* Tutorial Overlay */}
+      <Tutorial
+        isActive={tutorial.isActive}
+        currentStep={tutorial.currentStep}
+        currentStepData={tutorial.currentStepData}
+        totalSteps={tutorial.totalSteps}
+        onNext={tutorial.nextStep}
+        onPrev={tutorial.prevStep}
+        onSkip={tutorial.skipTutorial}
+      />
     </div>
   );
 }

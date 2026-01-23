@@ -269,5 +269,32 @@
     "signInToSeeChats": "Sign in to see your chats",
     "submitOpinionFirst": "Submit your opinion first to start chatting",
     "yesterday": "Yesterday"
+  },
+  "tutorial": {
+    "opinionSidebar": {
+      "title": "Opinion List",
+      "text": "All opinions can be found here. Browse and interact with other perspectives."
+    },
+    "settings": {
+      "title": "Settings",
+      "text": "Here you find: your passphrase, sign in/out, more information, and this tutorial."
+    },
+    "addOpinion": {
+      "title": "Create Opinion",
+      "text": "Add your own opinion to join the conversation! Share your perspective on the topic."
+    },
+    "chats": {
+      "title": "Your Chats",
+      "text": "All your active chats can be found here. Continue conversations with others."
+    },
+    "end": {
+      "title": "Congratulations!",
+      "text": "You're ready to explore FreeMind! Start by sharing your opinion and connecting with others."
+    },
+    "skip": "Skip",
+    "previous": "Back",
+    "next": "Next",
+    "finish": "Finish",
+    "startTutorial": "Start Tutorial"
   }
 }

@@ -66,6 +66,7 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted 
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 className="relative"
+                data-tutorial="add-opinion-button"
               >
                 {canAddOpinion ? (
                   <Button
@@ -97,6 +98,7 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted 
                 variant="ghost"
                 className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted"
                 title={t('sidebar.allOpinions', 'All Opinions')}
+                data-tutorial="opinions-button"
               >
                 <List className="h-4 w-4" />
               </Button>
@@ -110,6 +112,7 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted 
                 variant="ghost"
                 className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted"
                 title={t('sidebar.myChats', 'My Chats')}
+                data-tutorial="chats-button"
               >
                 <MessagesSquare className="h-4 w-4" />
               </Button>
@@ -121,6 +124,7 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted 
               size="icon"
               variant="ghost"
               className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted"
+              data-tutorial="settings-button"
             >
               <Settings className="h-4 w-4" />
             </Button>
