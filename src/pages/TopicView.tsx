@@ -13,6 +13,7 @@ import { useChatRequests } from '@/hooks/useChatRequests';
 import { useAuth } from '@/hooks/useAuth';
 import { useHasJoinedTopic } from '@/hooks/useTopics';
 import { usePresence } from '@/hooks/usePresence';
+import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
@@ -53,6 +54,9 @@ export default function TopicView() {
 
   // Track online presence
   const { onlineOpinionIds } = usePresence(topicId || '', myOpinion?.id);
+
+  // Track unread messages
+  const { data: unreadMessageCounts } = useUnreadMessages(topicId || '', myOpinion?.id);
 
   // Transform chat requests to graph format
   const graphChatRequests: ChatRequest[] = chatRequests.map(r => ({
@@ -223,6 +227,7 @@ export default function TopicView() {
               currentUserId={user?.id}
               currentUserOpinionId={myOpinion?.id}
               onlineOpinionIds={onlineOpinionIds}
+              unreadMessageCounts={unreadMessageCounts}
               width={graphSize.width}
               height={graphSize.height}
               onNodeSelect={setSelectedNode}
