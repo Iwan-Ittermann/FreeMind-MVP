@@ -670,7 +670,6 @@ export type Database = {
           url_slug: string
         }[]
       }
-      grant_admin_role: { Args: { _password: string }; Returns: boolean }
       has_joined_topic: { Args: { _topic_id: string }; Returns: boolean }
       has_role: {
         Args: {
