@@ -87,10 +87,6 @@ export function VerticalRatingSlider({
   if (compact) {
     return (
       <div className="flex flex-col items-center h-full gap-1">
-        {/* Label */}
-        <span className={`text-[8px] font-medium uppercase tracking-wider ${colors.text}`}>
-          {label}
-        </span>
 
         {/* Slider track - increased width for better touch targets */}
         <div
@@ -150,10 +146,6 @@ export function VerticalRatingSlider({
 
   return (
     <div className="flex flex-col items-center h-full gap-2">
-      {/* Label */}
-      <span className={`text-[10px] font-medium uppercase tracking-wider ${colors.text}`}>
-        {label}
-      </span>
       
       {/* High label */}
       <span className="text-[9px] text-white/30">{highLabel}</span>
