@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, X, Send, Check, Flag } from 'lucide-react';
 import { OpinionGraph } from '@/components/graph/OpinionGraph';
 import { InfoPanel } from '@/components/InfoPanel';
+import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Tutorial } from '@/components/Tutorial';
@@ -349,6 +350,9 @@ const Index = () => {
           </motion.div>
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
 
       {/* Tutorial Overlay */}
       <Tutorial
