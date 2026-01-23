@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
-interface PresenceState {
+interface PresencePayload {
   opinionId: string;
-  oderId: string;
 }
 
 export function usePresence(topicId: string, currentUserOpinionId: string | null | undefined) {
@@ -12,36 +11,33 @@ export function usePresence(topicId: string, currentUserOpinionId: string | null
   useEffect(() => {
     if (!topicId) return;
 
-    const channel = supabase.channel(`presence-topic-${topicId}`, {
-      config: {
-        presence: {
-          key: currentUserOpinionId || 'anonymous',
-        },
-      },
-    });
+    const channel = supabase.channel(`presence-topic-${topicId}`);
+
+    const updatePresenceState = () => {
+      const state = channel.presenceState<PresencePayload>();
+      const opinionIds = new Set<string>();
+      
+      // Extract all opinion IDs from presence state
+      Object.values(state).forEach(presences => {
+        presences.forEach((presence) => {
+          if (presence.opinionId) {
+            opinionIds.add(presence.opinionId);
+          }
+        });
+      });
+      
+      setOnlineOpinionIds(opinionIds);
+    };
 
     channel
-      .on('presence', { event: 'sync' }, () => {
-        const state = channel.presenceState<PresenceState>();
-        const opinionIds = new Set<string>();
-        
-        // Extract all opinion IDs from presence state
-        Object.values(state).forEach(presences => {
-          presences.forEach((presence: PresenceState) => {
-            if (presence.opinionId) {
-              opinionIds.add(presence.opinionId);
-            }
-          });
-        });
-        
-        setOnlineOpinionIds(opinionIds);
-      })
+      .on('presence', { event: 'sync' }, updatePresenceState)
+      .on('presence', { event: 'join' }, updatePresenceState)
+      .on('presence', { event: 'leave' }, updatePresenceState)
       .subscribe(async (status) => {
         if (status === 'SUBSCRIBED' && currentUserOpinionId) {
           // Track current user's presence
           await channel.track({
             opinionId: currentUserOpinionId,
-            oderId: currentUserOpinionId, // Using opinionId as unique identifier
           });
         }
       });

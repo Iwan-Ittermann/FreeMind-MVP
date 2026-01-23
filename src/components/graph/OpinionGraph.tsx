@@ -17,6 +17,7 @@ interface OpinionGraphProps {
   currentUserId?: string | null;
   currentUserOpinionId?: string | null;
   onlineOpinionIds?: Set<string>;
+  unreadMessageCounts?: Map<string, number>;
   onNodeSelect?: (node: GraphNode | null) => void;
   onEdgeClick?: (edge: GraphEdge) => void;
   width?: number;
@@ -33,6 +34,7 @@ export function OpinionGraph({
   currentUserId,
   currentUserOpinionId,
   onlineOpinionIds = new Set(),
+  unreadMessageCounts = new Map(),
   onNodeSelect,
   onEdgeClick,
   width = 600,
@@ -88,16 +90,21 @@ export function OpinionGraph({
         status: 'pending' as const,
       }));
 
-    // Mark nodes that are requesting to chat with current user + online status
-    const nodesWithRequestInfo = baseData.nodes.map(node => ({
-      ...node,
-      isRequester: currentUserOpinionId ? chatRequests.some(
-        req => req.status === 'pending' && 
-               req.requesterOpinionId === node.id && 
-               req.targetOpinionId === currentUserOpinionId
-      ) : false,
-      isOnline: onlineOpinionIds.has(node.id),
-    }));
+    // Mark nodes with request info, online status, and unread messages
+    const nodesWithRequestInfo = baseData.nodes.map(node => {
+      const unreadCount = unreadMessageCounts.get(node.id) || 0;
+      return {
+        ...node,
+        isRequester: currentUserOpinionId ? chatRequests.some(
+          req => req.status === 'pending' && 
+                 req.requesterOpinionId === node.id && 
+                 req.targetOpinionId === currentUserOpinionId
+        ) : false,
+        isOnline: onlineOpinionIds.has(node.id),
+        hasUnreadMessages: unreadCount > 0,
+        unreadCount,
+      };
+    });
 
     // Combine edges, avoiding duplicates (accepted takes priority)
     const acceptedPairs = new Set(
@@ -112,7 +119,7 @@ export function OpinionGraph({
       edges: [...baseData.edges, ...uniquePendingEdges],
       greenZoneSlots: baseData.greenZoneSlots,
     };
-  }, [opinions, ratings, config, chatRequests, currentUserOpinionId, onlineOpinionIds]);
+  }, [opinions, ratings, config, chatRequests, currentUserOpinionId, onlineOpinionIds, unreadMessageCounts]);
 
   const handleNodeClick = useCallback((node: GraphNode) => {
     setSelectedNode(prev => prev?.id === node.id ? null : node);
