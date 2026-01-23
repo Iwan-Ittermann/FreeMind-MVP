@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useTutorialContext } from "@/contexts/TutorialContext";
 import { generatePassphrase, isValidPassphrase, passphraseToEmail, passphraseToPassword } from "@/lib/passphrase";
 
 type AuthMode = "login" | "signup";
@@ -14,6 +15,7 @@ type AuthMode = "login" | "signup";
 export default function Auth() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
+  const { startTutorial, hasCompletedTutorial } = useTutorialContext();
 
   const [mode, setMode] = useState<AuthMode>("signup");
   const [passphrase, setPassphrase] = useState("");
@@ -108,7 +110,13 @@ Do not share this passphrase with anyone.`;
           }
         } else {
           toast.success("Account created! Redirecting...");
-          navigate("/");
+          // Start tutorial after account creation if not completed before
+          if (!hasCompletedTutorial()) {
+            navigate("/");
+            setTimeout(() => startTutorial(), 500);
+          } else {
+            navigate("/");
+          }
         }
       } else {
         const { error: signInError } = await supabase.auth.signInWithPassword({

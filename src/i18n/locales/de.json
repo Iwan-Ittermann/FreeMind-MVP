@@ -269,5 +269,32 @@
     "signInToSeeChats": "Melde dich an, um deine Chats zu sehen",
     "submitOpinionFirst": "Teile zuerst deine Meinung, um zu chatten",
     "yesterday": "Gestern"
+  },
+  "tutorial": {
+    "opinionSidebar": {
+      "title": "Liste aller Meinungen",
+      "text": "Hier findest du alle Meinungen. Durchsuche und interagiere mit anderen Perspektiven."
+    },
+    "settings": {
+      "title": "Einstellungen",
+      "text": "Hier findest du: deinen Schlüssel, An-/Abmeldung, mehr Infos und dieses Tutorial."
+    },
+    "addOpinion": {
+      "title": "Meinung hinzufügen",
+      "text": "Bist du bereit? Poste deine Meinung, um darüber zu diskutieren."
+    },
+    "chats": {
+      "title": "Deine Chats",
+      "text": "Hier findest du alle deine aktiven Chats. Führe Gespräche mit anderen fort."
+    },
+    "end": {
+      "title": "Glückwunsch!",
+      "text": "Du bist bereit, FreeMind zu erkunden! Teile deine Meinung und verbinde dich mit anderen."
+    },
+    "skip": "Überspringen",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "finish": "Fertig",
+    "startTutorial": "Tutorial starten"
   }
 }
