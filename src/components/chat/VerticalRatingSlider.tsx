@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Check } from 'lucide-react';
+import { Check, Heart, HeartCrack, Swords, Handshake } from 'lucide-react';
 
 interface VerticalRatingSliderProps {
   value: number;
@@ -84,9 +84,16 @@ export function VerticalRatingSlider({
   const showZeroMarker = min < 0 && max > 0;
   const zeroPosition = showZeroMarker ? ((0 - min) / range) * 100 : null;
 
+  // Determine which icons to show based on scale type
+  const isEmpathyScale = min < 0;
+  const HighIcon = isEmpathyScale ? Heart : Swords;
+  const LowIcon = isEmpathyScale ? HeartCrack : Handshake;
+
   if (compact) {
     return (
       <div className="flex flex-col items-center h-full gap-1">
+        {/* Top icon */}
+        <HighIcon className={`w-4 h-4 ${colors.text} flex-shrink-0`} />
 
         {/* Slider track - increased width for better touch targets */}
         <div
@@ -135,6 +142,9 @@ export function VerticalRatingSlider({
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
           />
         </div>
+
+        {/* Bottom icon */}
+        <LowIcon className={`w-4 h-4 ${colors.text} flex-shrink-0`} />
 
         {/* Points value */}
         <span className={`text-xs font-mono font-bold ${colors.text}`}>
