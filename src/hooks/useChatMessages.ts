@@ -23,10 +23,11 @@ export function useChatMessages(chatId: string | null): UseChatMessagesResult {
   const queryClient = useQueryClient();
 
   // Fetch existing messages
+  // Include user?.id in query key to refetch when user changes (fixes isOwn calculation)
   const { data: messages = [], isLoading } = useQuery({
-    queryKey: ['chat-messages', chatId],
+    queryKey: ['chat-messages', chatId, user?.id],
     queryFn: async () => {
-      if (!chatId) return [];
+      if (!chatId || !user?.id) return [];
       
       const { data, error } = await supabase
         .from('chat_messages')
@@ -40,11 +41,11 @@ export function useChatMessages(chatId: string | null): UseChatMessagesResult {
         id: msg.id,
         content: msg.content,
         senderId: msg.sender_id,
-        isOwn: msg.sender_id === user?.id,
+        isOwn: msg.sender_id === user.id,
         createdAt: new Date(msg.created_at),
       }));
     },
-    enabled: !!chatId,
+    enabled: !!chatId && !!user?.id,
   });
 
   // Subscribe to real-time updates
