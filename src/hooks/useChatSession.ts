@@ -52,6 +52,32 @@ export function useChatSession(theirOpinionId: string | null, sourceOpinionId?: 
     enabled: !!chatId,
   });
 
+  // Real-time subscription for chat ratings updates
+  useEffect(() => {
+    if (!chatId) return;
+
+    const channel = supabase
+      .channel(`chat-ratings-${chatId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen for INSERT, UPDATE, DELETE
+          schema: 'public',
+          table: 'chat_ratings',
+          filter: `chat_id=eq.${chatId}`,
+        },
+        () => {
+          // Invalidate the ratings query to refetch
+          queryClient.invalidateQueries({ queryKey: ['chatAllRatings', chatId] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [chatId, queryClient]);
+
   // Extract current user's rating and partner's rating
   const existingRating = allRatings?.find(r => r.rater_id === user?.id) || null;
   const partnerRating = allRatings?.find(r => r.rater_id !== user?.id) || null;
