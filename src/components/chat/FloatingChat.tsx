@@ -11,6 +11,7 @@ import { MiniGraph } from './MiniGraph';
 import { useChatMessages } from '@/hooks/useChatMessages';
 import { useTypingIndicator } from '@/hooks/useTypingIndicator';
 import { useUserBlocks } from '@/hooks/useUserBlocks';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 interface OpinionData {
@@ -52,12 +53,13 @@ export function FloatingChat({
   initialDisagreement,
   averageBridgingScore,
 }: FloatingChatProps) {
+  const { t } = useTranslation();
   const { messages: dbMessages, sendMessage, isSending } = useChatMessages(chatId);
   const { partnerTyping, setTyping } = useTypingIndicator(chatId);
   const { isBlocked, isBlockedByOther, blockUser, unblockUser, isBlocking, isUnblocking } = useUserBlocks(chatId, theirUserId || null);
   const [inputValue, setInputValue] = useState('');
   const [translateEnabled, setTranslateEnabled] = useState(false);
-  // Empathy: -50 to +50, default 0
+  // Respect: -50 to +50, default 0
   const [empathy, setEmpathy] = useState(initialEmpathy ?? 0);
   // Disagreement: 0 to 100, default 50
   const [disagreement, setDisagreement] = useState(initialDisagreement ?? 50);
@@ -277,10 +279,10 @@ export function FloatingChat({
             <VerticalRatingSlider
               value={empathy}
               onChange={setEmpathy}
-              label="Empathy"
+              label={t('floatingChat.respect')}
               color="rose"
-              lowLabel="Hostile"
-              highLabel="Empathetic"
+              lowLabel={t('floatingChat.disrespectful')}
+              highLabel={t('floatingChat.respectful')}
               min={-50}
               max={50}
               hasUnsavedChanges={hasUnsavedChanges}
@@ -384,10 +386,10 @@ export function FloatingChat({
                               <VerticalRatingSlider
                                 value={empathy}
                                 onChange={setEmpathy}
-                                label="Empathy"
+                                label={t('floatingChat.respect')}
                                 color="rose"
-                                lowLabel="Hostile"
-                                highLabel="Empathetic"
+                                lowLabel={t('floatingChat.disrespectful')}
+                                highLabel={t('floatingChat.respectful')}
                                 min={-50}
                                 max={50}
                                 compact
@@ -434,10 +436,10 @@ export function FloatingChat({
                               <VerticalRatingSlider
                                 value={disagreement}
                                 onChange={setDisagreement}
-                                label="Disagree"
+                                label={t('floatingChat.disagreement')}
                                 color="orange"
-                                lowLabel="Aligned"
-                                highLabel="Opposed"
+                                lowLabel={t('floatingChat.aligned')}
+                                highLabel={t('floatingChat.opposed')}
                                 min={0}
                                 max={100}
                                 compact
@@ -495,10 +497,10 @@ export function FloatingChat({
             <VerticalRatingSlider
               value={disagreement}
               onChange={setDisagreement}
-              label="Disagree"
+              label={t('floatingChat.disagreement')}
               color="orange"
-              lowLabel="Aligned"
-              highLabel="Opposed"
+              lowLabel={t('floatingChat.aligned')}
+              highLabel={t('floatingChat.opposed')}
               min={0}
               max={100}
               hasUnsavedChanges={hasUnsavedChanges}
