@@ -13,6 +13,7 @@ import { useChatRequests } from '@/hooks/useChatRequests';
 import { useAuth } from '@/hooks/useAuth';
 import { usePresence } from '@/hooks/usePresence';
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
+import { useBrowserNotification } from '@/hooks/useBrowserNotification';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
@@ -48,6 +49,14 @@ const Index = () => {
 
   // Track unread messages
   const { data: unreadMessageCounts } = useUnreadMessages(DEFAULT_TOPIC_ID, myOpinion?.id);
+
+  // Calculate total unread count for browser notification
+  const totalUnreadCount = unreadMessageCounts 
+    ? Array.from(unreadMessageCounts.values()).reduce((sum, count) => sum + count, 0)
+    : 0;
+
+  // Update browser tab title with unread count
+  useBrowserNotification(totalUnreadCount);
 
   // Transform chat requests to graph format
   const graphChatRequests: ChatRequest[] = chatRequests.map(r => ({

@@ -115,24 +115,6 @@ export function GraphNodes({
             onMouseEnter={() => onNodeHover?.(node)}
             onMouseLeave={() => onNodeHover?.(null)}
           >
-            {/* Online presence indicator - small green pulsating dot inside node */}
-            {isOnline && !isHighlighted && !hasIncomingRequest && (
-              <motion.circle
-                r={baseRadius * 0.35}
-                fill="hsl(var(--success))"
-                initial={{ opacity: 0.6, scale: 0.9 }}
-                animate={{ 
-                  opacity: [0.5, 1, 0.5], 
-                  scale: [0.9, 1.1, 0.9] 
-                }}
-                transition={{ 
-                  duration: 1.5, 
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              />
-            )}
-
             {/* Outer glow for highlighted nodes - subtle white */}
             {isHighlighted && (
               <circle
@@ -218,6 +200,24 @@ export function GraphNodes({
               <circle
                 r={baseRadius * 0.4}
                 fill="hsl(var(--accent))"
+              />
+            )}
+
+            {/* Online presence indicator - small green pulsating dot INSIDE node (rendered after main circle) */}
+            {isOnline && !isHighlighted && !hasIncomingRequest && !isCurrentUser && (
+              <motion.circle
+                r={baseRadius * 0.35}
+                fill="hsl(153 96% 43%)"
+                initial={{ opacity: 0.6, scale: 0.9 }}
+                animate={{ 
+                  opacity: [0.5, 1, 0.5], 
+                  scale: [0.9, 1.1, 0.9] 
+                }}
+                transition={{ 
+                  duration: 1.5, 
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
               />
             )}
 
