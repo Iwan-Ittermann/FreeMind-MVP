@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Pencil, Settings, MessageCircle, MessagesSquare } from 'lucide-react';
+import { Pencil, Settings, List, MessagesSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -98,7 +98,7 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted 
                 className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted"
                 title={t('sidebar.allOpinions', 'All Opinions')}
               >
-                <MessageCircle className="h-4 w-4" />
+                <List className="h-4 w-4" />
               </Button>
             )}
 
