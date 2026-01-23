@@ -16,6 +16,7 @@ interface OpinionGraphProps {
   messageAnimations?: MessageAnimationData[];
   currentUserId?: string | null;
   currentUserOpinionId?: string | null;
+  onlineOpinionIds?: Set<string>;
   onNodeSelect?: (node: GraphNode | null) => void;
   onEdgeClick?: (edge: GraphEdge) => void;
   width?: number;
@@ -31,6 +32,7 @@ export function OpinionGraph({
   messageAnimations = [],
   currentUserId,
   currentUserOpinionId,
+  onlineOpinionIds = new Set(),
   onNodeSelect,
   onEdgeClick,
   width = 600,
@@ -86,7 +88,7 @@ export function OpinionGraph({
         status: 'pending' as const,
       }));
 
-    // Mark nodes that are requesting to chat with current user
+    // Mark nodes that are requesting to chat with current user + online status
     const nodesWithRequestInfo = baseData.nodes.map(node => ({
       ...node,
       isRequester: currentUserOpinionId ? chatRequests.some(
@@ -94,6 +96,7 @@ export function OpinionGraph({
                req.requesterOpinionId === node.id && 
                req.targetOpinionId === currentUserOpinionId
       ) : false,
+      isOnline: onlineOpinionIds.has(node.id),
     }));
 
     // Combine edges, avoiding duplicates (accepted takes priority)
@@ -109,7 +112,7 @@ export function OpinionGraph({
       edges: [...baseData.edges, ...uniquePendingEdges],
       greenZoneSlots: baseData.greenZoneSlots,
     };
-  }, [opinions, ratings, config, chatRequests, currentUserOpinionId]);
+  }, [opinions, ratings, config, chatRequests, currentUserOpinionId, onlineOpinionIds]);
 
   const handleNodeClick = useCallback((node: GraphNode) => {
     setSelectedNode(prev => prev?.id === node.id ? null : node);

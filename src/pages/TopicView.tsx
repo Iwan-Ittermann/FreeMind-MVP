@@ -12,6 +12,7 @@ import { useTopicData } from '@/hooks/useTopicData';
 import { useChatRequests } from '@/hooks/useChatRequests';
 import { useAuth } from '@/hooks/useAuth';
 import { useHasJoinedTopic } from '@/hooks/useTopics';
+import { usePresence } from '@/hooks/usePresence';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
@@ -49,6 +50,9 @@ export default function TopicView() {
 
   // Find current user's opinion
   const myOpinion = topicData?.opinions.find(op => op.authorId === user?.id);
+
+  // Track online presence
+  const { onlineOpinionIds } = usePresence(topicId || '', myOpinion?.id);
 
   // Transform chat requests to graph format
   const graphChatRequests: ChatRequest[] = chatRequests.map(r => ({
@@ -218,6 +222,7 @@ export default function TopicView() {
               messageAnimations={messageAnimations}
               currentUserId={user?.id}
               currentUserOpinionId={myOpinion?.id}
+              onlineOpinionIds={onlineOpinionIds}
               width={graphSize.width}
               height={graphSize.height}
               onNodeSelect={setSelectedNode}

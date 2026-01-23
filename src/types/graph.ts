@@ -38,6 +38,7 @@ export interface GraphNode {
   zone?: 'green' | 'yellow' | 'pink' | 'outer'; // Which zone the node is in
   hasUnreadMessages?: boolean; // Has unread messages from this node
   unreadCount?: number; // Number of unread messages
+  isOnline?: boolean; // Whether the user behind this opinion is currently online
 }
 
 export interface GraphEdge {

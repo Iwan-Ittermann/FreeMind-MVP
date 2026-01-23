@@ -11,6 +11,7 @@ import { GraphNode, GraphEdge, ChatRequest } from '@/types/graph';
 import { useTopicData } from '@/hooks/useTopicData';
 import { useChatRequests } from '@/hooks/useChatRequests';
 import { useAuth } from '@/hooks/useAuth';
+import { usePresence } from '@/hooks/usePresence';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
@@ -40,6 +41,9 @@ const Index = () => {
 
   // Find current user's opinion
   const myOpinion = topicData?.opinions.find(op => op.authorId === user?.id);
+
+  // Track online presence
+  const { onlineOpinionIds } = usePresence(DEFAULT_TOPIC_ID, myOpinion?.id);
 
   // Transform chat requests to graph format
   const graphChatRequests: ChatRequest[] = chatRequests.map(r => ({
@@ -189,6 +193,7 @@ const Index = () => {
               messageAnimations={messageAnimations}
               currentUserId={user?.id}
               currentUserOpinionId={myOpinion?.id}
+              onlineOpinionIds={onlineOpinionIds}
               width={graphSize.width}
               height={graphSize.height}
               onNodeSelect={setSelectedNode}
