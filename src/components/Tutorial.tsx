@@ -165,37 +165,26 @@ export function Tutorial({
           </p>
 
           {/* Navigation buttons */}
-          <div className="flex items-center justify-between gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onSkip}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              {t('tutorial.skip', 'Skip')}
-            </Button>
-
-            <div className="flex gap-2">
-              {!isFirstStep && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={onPrev}
-                  className="gap-1"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                  {t('tutorial.previous', 'Back')}
-                </Button>
-              )}
+          <div className="flex items-center justify-end gap-2">
+            {!isFirstStep && (
               <Button
+                variant="outline"
                 size="sm"
-                onClick={onNext}
-                className="gap-1 bg-accent text-accent-foreground hover:bg-accent/90"
+                onClick={onPrev}
+                className="gap-1 border-border text-foreground hover:bg-muted"
               >
-                {isLastStep ? t('tutorial.finish', 'Finish') : t('tutorial.next', 'Next')}
-                {!isLastStep && <ChevronRight className="h-4 w-4" />}
+                <ChevronLeft className="h-4 w-4" />
+                {t('tutorial.previous', 'Back')}
               </Button>
-            </div>
+            )}
+            <Button
+              size="sm"
+              onClick={onNext}
+              className="gap-1 bg-accent text-accent-foreground hover:bg-accent/90"
+            >
+              {isLastStep ? t('tutorial.finish', 'Finish') : t('tutorial.next', 'Next')}
+              {!isLastStep && <ChevronRight className="h-4 w-4" />}
+            </Button>
           </div>
         </motion.div>
       </div>
