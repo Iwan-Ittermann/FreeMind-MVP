@@ -49,6 +49,10 @@ export default function Admin() {
   };
 
   const handleResetDatabase = async () => {
+    // Prompt for password instead of hardcoding
+    const enteredPassword = prompt('Enter admin password to confirm database reset:');
+    if (!enteredPassword) return;
+    
     if (!confirm('Are you sure you want to reset the database? This will delete ALL opinions, chats, messages, ratings, and requests. This cannot be undone!')) {
       return;
     }
@@ -56,7 +60,7 @@ export default function Admin() {
     setIsResetting(true);
     try {
       const { error } = await supabase.functions.invoke('reset-database', {
-        body: { password: 'Wonderful' },
+        body: { password: enteredPassword },
       });
 
       if (error) throw error;

@@ -2,18 +2,20 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 
-// Grant admin role to current user (called after password verification)
+// Grant admin role to current user (called after password verification via edge function)
 export function useGrantAdminRole() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (password: string) => {
-      const { data, error } = await supabase.rpc('grant_admin_role', {
-        _password: password,
+      // Use edge function for password verification instead of database RPC
+      // This keeps the password server-side only
+      const { data, error } = await supabase.functions.invoke('verify-admin-password', {
+        body: { password },
       });
 
       if (error) throw error;
-      if (!data) throw new Error('Invalid password');
+      if (!data?.success) throw new Error(data?.error || 'Invalid password');
       return true;
     },
     onSuccess: () => {
