@@ -173,16 +173,24 @@ export function GraphNodes({
               </>
             )}
             
-            {/* Unread message notification badge */}
+            {/* Unread message notification badge - small white count badge at top-right */}
             {hasUnreadMessages && !hasIncomingRequest && !isHighlighted && !isCurrentUser && (
-              <g transform={`translate(${baseRadius * 1.3}, ${-baseRadius * 1.3})`}>
-                <motion.circle 
-                  r={5} 
-                  fill="hsl(var(--primary))"
-                  initial={{ scale: 1 }}
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
+              <g transform={`translate(${baseRadius * 1.2}, ${-baseRadius * 1.2})`}>
+                {/* Background circle */}
+                <circle 
+                  r={6} 
+                  fill="hsl(0 0% 100%)"
+                  stroke="hsl(0 0% 0%)"
+                  strokeWidth={1}
                 />
+                {/* Count text */}
+                <text 
+                  textAnchor="middle" 
+                  dominantBaseline="central" 
+                  className="text-[7px] fill-black font-bold pointer-events-none select-none"
+                >
+                  {node.unreadCount && node.unreadCount > 9 ? '9+' : (node.unreadCount || '!')}
+                </text>
               </g>
             )}
             
