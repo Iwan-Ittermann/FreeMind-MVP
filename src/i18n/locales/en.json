@@ -295,6 +295,29 @@
     "previous": "Back",
     "next": "Next",
     "finish": "Finish",
-    "startTutorial": "Start Tutorial"
+    "startTutorial": "Start Tutorial",
+    "startChatTutorial": "Start Chat Tutorial"
+  },
+  "chatTutorial": {
+    "intro": {
+      "title": "Your First Chat",
+      "text": "Great! You started a first chat."
+    },
+    "rating": {
+      "title": "Rate Your Chat",
+      "text": "With these scales you can rate your chat."
+    },
+    "graph": {
+      "title": "Your Position",
+      "text": "Your ratings affect your positions."
+    },
+    "bridging": {
+      "title": "Bridging Score",
+      "text": "Higher scores move you closer to the center. Balanced and respectful ratings increase the score."
+    },
+    "end": {
+      "title": "You Are Ready",
+      "text": "Have fun with your first chat!"
+    }
   }
 }

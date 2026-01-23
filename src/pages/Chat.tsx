@@ -1,13 +1,16 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FloatingChat } from '@/components/chat/FloatingChat';
+import { ChatTutorial } from '@/components/chat/ChatTutorial';
 import { useAuth } from '@/hooks/useAuth';
 import { useChatSession } from '@/hooks/useChatSession';
+import { useChatTutorialContext } from '@/contexts/ChatTutorialContext';
 import { toast } from 'sonner';
 
 export default function Chat() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
+  const chatTutorial = useChatTutorialContext();
   
   const theirOpinionIdParam = searchParams.get('their');
   const sourceOpinionIdParam = searchParams.get('source'); // For read-only edge viewing
@@ -156,29 +159,42 @@ export default function Chat() {
   }
 
   return (
-    <FloatingChat
-      chatId={chatId}
-      topicId={topicId || undefined}
-      myOpinion={{
-        text: myOpinion.text,
-        visible: myOpinion.visible,
-        notice_text: myOpinion.notice_text,
-      }}
-      theirOpinion={{
-        text: theirOpinion.text,
-        visible: theirOpinion.visible,
-        notice_text: theirOpinion.notice_text,
-      }}
-      myOpinionId={myOpinionId || undefined}
-      theirOpinionId={theirOpinionId || undefined}
-      theirUserId={theirUserId}
-      onClose={handleClose}
-      onSubmitRating={handleSubmitRating}
-      isSavingRating={isSavingRating}
-      isReadOnly={false}
-      initialEmpathy={existingRating?.empathy}
-      initialDisagreement={existingRating?.disagreement}
-      averageBridgingScore={averageBridgingScore}
-    />
+    <>
+      <FloatingChat
+        chatId={chatId}
+        topicId={topicId || undefined}
+        myOpinion={{
+          text: myOpinion.text,
+          visible: myOpinion.visible,
+          notice_text: myOpinion.notice_text,
+        }}
+        theirOpinion={{
+          text: theirOpinion.text,
+          visible: theirOpinion.visible,
+          notice_text: theirOpinion.notice_text,
+        }}
+        myOpinionId={myOpinionId || undefined}
+        theirOpinionId={theirOpinionId || undefined}
+        theirUserId={theirUserId}
+        onClose={handleClose}
+        onSubmitRating={handleSubmitRating}
+        isSavingRating={isSavingRating}
+        isReadOnly={false}
+        initialEmpathy={existingRating?.empathy}
+        initialDisagreement={existingRating?.disagreement}
+        averageBridgingScore={averageBridgingScore}
+      />
+
+      {/* Chat Tutorial Overlay */}
+      <ChatTutorial
+        isActive={chatTutorial.isActive}
+        currentStep={chatTutorial.currentStep}
+        currentStepData={chatTutorial.currentStepData}
+        totalSteps={chatTutorial.totalSteps}
+        onNext={chatTutorial.nextStep}
+        onPrev={chatTutorial.prevStep}
+        onEnd={chatTutorial.endTutorial}
+      />
+    </>
   );
 }

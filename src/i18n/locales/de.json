@@ -295,6 +295,29 @@
     "previous": "Zurück",
     "next": "Weiter",
     "finish": "Fertig",
-    "startTutorial": "Tutorial starten"
+    "startTutorial": "Tutorial starten",
+    "startChatTutorial": "Chat-Tutorial starten"
+  },
+  "chatTutorial": {
+    "intro": {
+      "title": "Dein erster Chat",
+      "text": "Super, du hast einen Chat gestartet."
+    },
+    "rating": {
+      "title": "Bewertet euren Chat",
+      "text": "Mit diesen Skalen bewertet ihr euren Chat."
+    },
+    "graph": {
+      "title": "Deine Position",
+      "text": "Eure Bewertungen verändern eure Position im Kreis."
+    },
+    "bridging": {
+      "title": "Bridging Score",
+      "text": "Je höher euer Score, desto näher kommt ihr zur Mitte. Am besten ist hohe Meinungsverschiedenheit und hoher Respekt."
+    },
+    "end": {
+      "title": "Du bist bereit",
+      "text": "Viel Spaß mit deinem ersten Chat!"
+    }
   }
 }

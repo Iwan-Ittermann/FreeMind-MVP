@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import { Settings, Download, Copy, Check, Info, LogIn, LogOut, GraduationCap } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Settings, Download, Copy, Check, Info, LogIn, LogOut, GraduationCap, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { emailToPassphrase } from '@/lib/passphrase';
@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { useTutorialContext } from '@/contexts/TutorialContext';
+import { useChatTutorialContext } from '@/contexts/ChatTutorialContext';
 import {
   Sheet,
   SheetContent,
@@ -19,12 +20,16 @@ import {
 interface ConfigPanelProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  hasActiveChats?: boolean;
+  firstChatOpinionId?: string | null;
 }
 
-export function ConfigPanel({ open, onOpenChange }: ConfigPanelProps) {
+export function ConfigPanel({ open, onOpenChange, hasActiveChats = false, firstChatOpinionId }: ConfigPanelProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { startTutorial } = useTutorialContext();
+  const { startTutorial: startChatTutorial } = useChatTutorialContext();
   const [copied, setCopied] = useState(false);
 
   const passphrase = user?.email ? emailToPassphrase(user.email) : null;
@@ -68,6 +73,14 @@ export function ConfigPanel({ open, onOpenChange }: ConfigPanelProps) {
     toast.success(t('config.passphraseDownloaded'));
   };
 
+  const handleStartChatTutorial = () => {
+    onOpenChange(false);
+    // Navigate to a chat first, then start tutorial
+    if (firstChatOpinionId) {
+      navigate(`/chat?their=${firstChatOpinionId}`);
+      setTimeout(() => startChatTutorial(), 500);
+    }
+  };
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -115,6 +128,15 @@ export function ConfigPanel({ open, onOpenChange }: ConfigPanelProps) {
               <GraduationCap className="w-4 h-4 text-muted-foreground" />
               <span className="text-sm">{t('tutorial.startTutorial', 'Start Tutorial')}</span>
             </button>
+            {hasActiveChats && (
+              <button
+                onClick={handleStartChatTutorial}
+                className="flex items-center gap-2 w-full p-2 rounded-lg hover:bg-muted transition-colors text-left"
+              >
+                <MessageCircle className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm">{t('tutorial.startChatTutorial', 'Start Chat Tutorial')}</span>
+              </button>
+            )}
           </div>
 
           {/* Divider */}
