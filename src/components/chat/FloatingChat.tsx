@@ -363,7 +363,7 @@ export function FloatingChat({
               ) : (
                 <div className="border-t border-white/10 bg-black">
                   {/* Mobile rating buttons - above typing area */}
-                  <div className="md:hidden flex justify-between items-center px-4 py-2 border-b border-white/5" data-chat-tutorial="rating-scales">
+                  <div className="md:hidden flex justify-between items-center px-4 py-2 border-b border-white/5" data-chat-tutorial="rating-scales-mobile">
                     {/* Left - Empathy */}
                     <div className="relative">
                       <button

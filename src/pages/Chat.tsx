@@ -1,9 +1,11 @@
+import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FloatingChat } from '@/components/chat/FloatingChat';
 import { ChatTutorial } from '@/components/chat/ChatTutorial';
 import { useAuth } from '@/hooks/useAuth';
 import { useChatSession } from '@/hooks/useChatSession';
 import { useChatTutorialContext } from '@/contexts/ChatTutorialContext';
+import { hasChatTutorialBeenSeen } from '@/hooks/useChatTutorial';
 import { toast } from 'sonner';
 
 export default function Chat() {
@@ -31,6 +33,20 @@ export default function Chat() {
     existingRating,
     averageBridgingScore,
   } = useChatSession(theirOpinionIdParam, isReadOnly ? sourceOpinionIdParam : undefined);
+
+  // Auto-start chat tutorial on first chat open (non-read-only)
+  useEffect(() => {
+    if (!isReadOnly && !isLoading && chatId && user && !chatTutorial.isActive) {
+      // Check if this is the user's first time opening a chat
+      if (!hasChatTutorialBeenSeen()) {
+        // Small delay to ensure UI is rendered
+        const timer = setTimeout(() => {
+          chatTutorial.startTutorial();
+        }, 500);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [isReadOnly, isLoading, chatId, user, chatTutorial]);
 
   const handleClose = () => {
     navigate('/');
