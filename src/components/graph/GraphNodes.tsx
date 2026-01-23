@@ -60,6 +60,7 @@ export function GraphNodes({
         const isInactive = node.hasChats === false; // Node has no chats yet
         const isHidden = node.opinion.visible === false;
         const hasUnreadMessages = node.hasUnreadMessages;
+        const isOnline = node.isOnline && !isCurrentUser; // Don't show online indicator for own node
 
         // Get zone-based sizing
         const zone = getNodeZone(node, config);
@@ -114,6 +115,26 @@ export function GraphNodes({
             onMouseEnter={() => onNodeHover?.(node)}
             onMouseLeave={() => onNodeHover?.(null)}
           >
+            {/* Online presence indicator - subtle green breathing ring */}
+            {isOnline && !isHighlighted && !hasIncomingRequest && (
+              <motion.circle
+                r={baseRadius * 1.8}
+                fill="none"
+                stroke="hsl(var(--success))"
+                strokeWidth={1.5}
+                initial={{ opacity: 0.4, scale: 0.95 }}
+                animate={{ 
+                  opacity: [0.3, 0.6, 0.3], 
+                  scale: [0.95, 1.05, 0.95] 
+                }}
+                transition={{ 
+                  duration: 2, 
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+            )}
+
             {/* Outer glow for highlighted nodes - subtle white */}
             {isHighlighted && (
               <circle
