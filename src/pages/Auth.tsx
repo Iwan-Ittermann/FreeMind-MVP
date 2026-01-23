@@ -177,8 +177,8 @@ Do not share this passphrase with anyone.`;
           {mode === "signup" ? (
             <>
               <div className="space-y-2">
-                <label className="text-sm text-white/80">Your Secret Passphrase</label>
-                <p className="text-xs text-white/50">This is your only way to log in. Save it somewhere safe!</p>
+                <label className="text-sm text-white/80">Dein anonymer Schlüssel</label>
+                <p className="text-xs text-white/50">Das ist dein einziger Zugang. Speichere ihn sicher!</p>
                 <div className="flex gap-2">
                   <div className="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 md:px-4 py-3 font-mono text-base md:text-lg break-all">
                     {generatedPassphrase}
@@ -202,7 +202,7 @@ Do not share this passphrase with anyone.`;
                     size="icon"
                     onClick={handleDownload}
                     className="border-white/20 bg-transparent hover:bg-white/10 h-12 w-12 md:h-10 md:w-10 flex-shrink-0"
-                    title="Download passphrase as .txt file"
+                    title="Schlüssel als .txt herunterladen"
                   >
                     <Download className="w-5 h-5 md:w-4 md:h-4" />
                   </Button>
@@ -212,7 +212,7 @@ Do not share this passphrase with anyone.`;
                     size="icon"
                     onClick={handleGenerateNew}
                     className="border-white/20 bg-transparent hover:bg-white/10 h-12 w-12 md:h-10 md:w-10 flex-shrink-0"
-                    title="Generate new passphrase"
+                    title="Neuen Schlüssel generieren"
                   >
                     <RefreshCw className="w-5 h-5 md:w-4 md:h-4" />
                   </Button>
@@ -221,8 +221,8 @@ Do not share this passphrase with anyone.`;
 
               <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
                 <p className="text-sm text-yellow-200">
-                  ⚠️ <strong>Important:</strong> Store your passphrase carefully. There is no way to recover it if lost.
-                  ⚠️ <strong>Nothing illegal. IP adresses are logged.</strong>
+                  ⚠️ <strong>Wichtig:</strong> Speicher deinen Schlüssel. Du kannst ihn NICHT zurücksetzen.
+                  <br />⚠️ <strong>Keine illegalen Inhalte. IP Adressen werden gespeichert.</strong>
                 </p>
               </div>
             </>
@@ -259,20 +259,20 @@ Do not share this passphrase with anyone.`;
             {isSubmitting ? (
               <span className="flex items-center gap-2">
                 <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-white" />
-                {mode === "signup" ? "Creating Account..." : "Logging In..."}
+                {mode === "signup" ? "Account wird erstellt..." : "Anmeldung..."}
               </span>
             ) : mode === "signup" ? (
-              "Create Account"
+              "Account erstellen"
             ) : (
-              "Log In"
+              "Anmelden"
             )}
           </Button>
         </form>
 
-        {/* Back link */}
+        {/* Continue without account link */}
         <p className="text-center mt-6 md:mt-8 text-white/40 text-sm">
           <a href="/" className="hover:text-white transition-colors py-2 inline-block">
-            ← Back to home
+            Weiter ohne Account →
           </a>
         </p>
       </motion.div>

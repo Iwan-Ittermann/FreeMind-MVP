@@ -63,7 +63,7 @@ export default function Splash() {
   const handleCTAClick = () => {
     const duration = Math.round((Date.now() - visitStart) / 1000);
     trackFBEvent('Lead', { 
-      content_name: 'Mehr erfahren Button',
+      content_name: 'Beim Test mitmachen Button',
       duration_before_click: duration 
     });
   };
@@ -176,12 +176,12 @@ export default function Splash() {
 
           {/* CTA Button */}
           <motion.div variants={fadeInUp} className="pt-4">
-            <Link to="/about" onClick={handleCTAClick}>
+            <Link to="/auth" onClick={handleCTAClick}>
               <Button
                 size="lg"
                 className="text-lg px-8 py-6 font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
               >
-                Mehr erfahren
+                Beim Test mitmachen
               </Button>
             </Link>
           </motion.div>
