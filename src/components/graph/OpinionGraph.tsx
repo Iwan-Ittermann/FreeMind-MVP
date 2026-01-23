@@ -66,7 +66,7 @@ export function OpinionGraph({
   // Use provided data or generate mock data
   const { opinions, ratings } = useMemo(() => {
     if (useMockData || !externalOpinions || externalOpinions.length === 0) {
-      return generateMockData(40);
+      return generateMockData(100);
     }
     return { 
       opinions: externalOpinions, 
