@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { SubmitOpinionDialog } from './SubmitOpinionDialog';
 import { ConfigPanel } from './ConfigPanel';
 
@@ -16,15 +18,40 @@ interface HeaderProps {
   topicId?: string;
   hasExistingOpinion?: boolean;
   onOpinionSubmitted?: () => void;
+  myOpinionId?: string;
 }
 
-export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted }: HeaderProps) {
+export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted, myOpinionId }: HeaderProps) {
   const { t } = useTranslation();
   const { user, signOut } = useAuth();
   const [opinionDialogOpen, setOpinionDialogOpen] = useState(false);
   const [configOpen, setConfigOpen] = useState(false);
   const [opinionsOpen, setOpinionsOpen] = useState(false);
   const [chatsOpen, setChatsOpen] = useState(false);
+
+  // Fetch user's active chats to determine if chat tutorial should show
+  const { data: userChats } = useQuery({
+    queryKey: ['userChatsForTutorial', topicId, myOpinionId],
+    queryFn: async () => {
+      if (!myOpinionId || !topicId) return [];
+      
+      const { data, error } = await supabase
+        .from('chats')
+        .select('id, opinion_a_id, opinion_b_id')
+        .eq('topic_id', topicId)
+        .or(`opinion_a_id.eq.${myOpinionId},opinion_b_id.eq.${myOpinionId}`)
+        .limit(1);
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!myOpinionId && !!topicId,
+  });
+
+  const hasActiveChats = (userChats?.length ?? 0) > 0;
+  const firstChatOpinionId = userChats?.[0] 
+    ? (userChats[0].opinion_a_id === myOpinionId ? userChats[0].opinion_b_id : userChats[0].opinion_a_id)
+    : null;
 
   const handleOpinionSuccess = () => {
     setOpinionDialogOpen(false);
@@ -145,7 +172,12 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted 
       )}
 
       {/* Config Panel */}
-      <ConfigPanel open={configOpen} onOpenChange={setConfigOpen} />
+      <ConfigPanel 
+        open={configOpen} 
+        onOpenChange={setConfigOpen}
+        hasActiveChats={hasActiveChats}
+        firstChatOpinionId={firstChatOpinionId}
+      />
 
       {/* Opinions Sidebar */}
       {topicId && (

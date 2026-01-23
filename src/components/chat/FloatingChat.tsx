@@ -209,7 +209,7 @@ export function FloatingChat({
         <div className="flex items-center gap-4">
           {/* Mini Graph */}
           {topicId && (
-            <div className="hidden sm:block">
+            <div className="hidden sm:block" data-chat-tutorial="mini-graph">
               <MiniGraph
                 topicId={topicId}
                 myOpinionId={myOpinionId}
@@ -219,7 +219,7 @@ export function FloatingChat({
             </div>
           )}
           
-          <div className="text-center">
+          <div className="text-center" data-chat-tutorial="bridging-score">
             <p className="text-sm font-medium text-white">
               {isReadOnly ? 'Viewing Discussion' : 'Discussion'}
             </p>
@@ -273,7 +273,7 @@ export function FloatingChat({
       <div className="flex-1 flex overflow-hidden">
         {/* Desktop Left rail - Empathy slider (hidden in read-only) */}
         {!isReadOnly && (
-          <div className="hidden md:flex flex-col items-center justify-center w-20 border-r border-white/10 bg-black/50 py-6">
+          <div className="hidden md:flex flex-col items-center justify-center w-20 border-r border-white/10 bg-black/50 py-6" data-chat-tutorial="rating-scales">
             <VerticalRatingSlider
               value={empathy}
               onChange={setEmpathy}
@@ -361,7 +361,7 @@ export function FloatingChat({
               ) : (
                 <div className="border-t border-white/10 bg-black">
                   {/* Mobile rating buttons - above typing area */}
-                  <div className="md:hidden flex justify-between items-center px-4 py-2 border-b border-white/5">
+                  <div className="md:hidden flex justify-between items-center px-4 py-2 border-b border-white/5" data-chat-tutorial="rating-scales">
                     {/* Left - Empathy */}
                     <div className="relative">
                       <button

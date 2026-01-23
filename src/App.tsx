@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { TutorialProvider } from "@/contexts/TutorialContext";
+import { ChatTutorialProvider } from "@/contexts/ChatTutorialContext";
 import Splash from "./pages/Splash";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -21,23 +22,25 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <TutorialProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-          <Route path="/test" element={<Splash />} />
-          <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/chat" element={<Chat />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/legal" element={<Legal />} />
-            <Route path="/t/:slug" element={<TopicJoin />} />
-            <Route path="/topic/:topicId" element={<TopicView />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <ChatTutorialProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+            <Route path="/test" element={<Splash />} />
+            <Route path="/" element={<Index />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/chat" element={<Chat />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/legal" element={<Legal />} />
+              <Route path="/t/:slug" element={<TopicJoin />} />
+              <Route path="/topic/:topicId" element={<TopicView />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </ChatTutorialProvider>
       </TutorialProvider>
     </TooltipProvider>
   </QueryClientProvider>
