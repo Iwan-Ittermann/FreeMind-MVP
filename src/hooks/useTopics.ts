@@ -124,6 +124,25 @@ export function useUpdateTopicStatus() {
   });
 }
 
+// Admin: Update topic title
+export function useUpdateTopicTitle() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ topicId, title }: { topicId: string; title: string }) => {
+      const { error } = await supabase
+        .from('topics')
+        .update({ title })
+        .eq('id', topicId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['topics'] });
+    },
+  });
+}
+
 // User: Join topic
 export function useJoinTopic() {
   const queryClient = useQueryClient();
