@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Users, Archive, Trash2, Link2, Copy, Loader2, ExternalLink } from 'lucide-react';
+import { Plus, Users, Archive, Trash2, Link2, Copy, Loader2, ExternalLink, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAllTopics, useUpdateTopicStatus, Topic } from '@/hooks/useTopics';
 import { CreateTopicDialog } from './CreateTopicDialog';
+import { EditTopicTitleDialog } from './EditTopicTitleDialog';
 import { toast } from 'sonner';
 
 interface TopicCardProps {
@@ -113,10 +114,16 @@ function TopicCard({ topic, onArchive, onDelete, onRestore, isUpdating }: TopicC
   );
 }
 
+// Main topic ID constant
+const MAIN_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
+
 export function TopicPanel() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [editTitleDialogOpen, setEditTitleDialogOpen] = useState(false);
   const { data: topics = [], isLoading } = useAllTopics(true);
   const updateStatus = useUpdateTopicStatus();
+  
+  const mainTopic = topics.find(t => t.id === MAIN_TOPIC_ID) || null;
 
   const activeTopics = topics.filter(t => t.status === 'Active');
   const archivedTopics = topics.filter(t => t.status === 'Archived');
@@ -166,10 +173,16 @@ export function TopicPanel() {
             Manage discussion topics ({topics.length} total)
           </p>
         </div>
-        <Button onClick={() => setCreateDialogOpen(true)}>
-          <Plus className="w-4 h-4 mr-2" />
-          Create Topic
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setEditTitleDialogOpen(true)}>
+            <Pencil className="w-4 h-4 mr-2" />
+            Edit Main Title
+          </Button>
+          <Button onClick={() => setCreateDialogOpen(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            Create Topic
+          </Button>
+        </div>
       </div>
 
       <Tabs defaultValue="active" className="w-full">
@@ -277,6 +290,12 @@ export function TopicPanel() {
       <CreateTopicDialog 
         open={createDialogOpen} 
         onOpenChange={setCreateDialogOpen} 
+      />
+      
+      <EditTopicTitleDialog
+        open={editTitleDialogOpen}
+        onOpenChange={setEditTitleDialogOpen}
+        topic={mainTopic}
       />
     </div>
   );
