@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FloatingChat } from '@/components/chat/FloatingChat';
 import { ChatTutorial } from '@/components/chat/ChatTutorial';
@@ -13,6 +13,7 @@ export default function Chat() {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
   const chatTutorial = useChatTutorialContext();
+  const tutorialAttemptedRef = useRef(false);
   
   const theirOpinionIdParam = searchParams.get('their');
   const sourceOpinionIdParam = searchParams.get('source'); // For read-only edge viewing
@@ -36,9 +37,13 @@ export default function Chat() {
 
   // Auto-start chat tutorial on first chat open (non-read-only)
   useEffect(() => {
-    if (!isReadOnly && !isLoading && chatId && user && !chatTutorial.isActive) {
+    // Only attempt once per component mount
+    if (tutorialAttemptedRef.current) return;
+    
+    if (!isReadOnly && !isLoading && chatId && user) {
       // Check if this is the user's first time opening a chat
       if (!hasChatTutorialBeenSeen()) {
+        tutorialAttemptedRef.current = true;
         // Small delay to ensure UI is rendered
         const timer = setTimeout(() => {
           chatTutorial.startTutorial();
@@ -46,7 +51,7 @@ export default function Chat() {
         return () => clearTimeout(timer);
       }
     }
-  }, [isReadOnly, isLoading, chatId, user, chatTutorial]);
+  }, [isReadOnly, isLoading, chatId, user, chatTutorial.startTutorial]);
 
   const handleClose = () => {
     navigate('/');
