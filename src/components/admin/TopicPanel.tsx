@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Users, Archive, Trash2, Link2, Copy, Loader2, ExternalLink, Pencil } from 'lucide-react';
+import { Plus, Users, Archive, Trash2, Link2, Copy, Loader2, ExternalLink, Pencil, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAllTopics, useUpdateTopicStatus, Topic } from '@/hooks/useTopics';
 import { CreateTopicDialog } from './CreateTopicDialog';
 import { EditTopicTitleDialog } from './EditTopicTitleDialog';
+import { EditSiteTitleDialog } from './EditSiteTitleDialog';
 import { toast } from 'sonner';
 
 interface TopicCardProps {
@@ -120,6 +121,7 @@ const MAIN_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
 export function TopicPanel() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editTitleDialogOpen, setEditTitleDialogOpen] = useState(false);
+  const [editSiteTitleDialogOpen, setEditSiteTitleDialogOpen] = useState(false);
   const { data: topics = [], isLoading } = useAllTopics(true);
   const updateStatus = useUpdateTopicStatus();
   
@@ -174,6 +176,10 @@ export function TopicPanel() {
           </p>
         </div>
         <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setEditSiteTitleDialogOpen(true)}>
+            <Globe className="w-4 h-4 mr-2" />
+            Edit Site Title
+          </Button>
           <Button variant="outline" onClick={() => setEditTitleDialogOpen(true)}>
             <Pencil className="w-4 h-4 mr-2" />
             Edit Main Title
@@ -296,6 +302,11 @@ export function TopicPanel() {
         open={editTitleDialogOpen}
         onOpenChange={setEditTitleDialogOpen}
         topic={mainTopic}
+      />
+
+      <EditSiteTitleDialog
+        open={editSiteTitleDialogOpen}
+        onOpenChange={setEditSiteTitleDialogOpen}
       />
     </div>
   );
