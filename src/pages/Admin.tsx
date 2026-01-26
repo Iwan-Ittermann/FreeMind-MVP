@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Shield, FileText, History, AlertTriangle, ArrowLeft, Loader2, Layers, Trash2, GraduationCap } from 'lucide-react';
+import { Lock, Shield, FileText, History, AlertTriangle, ArrowLeft, Loader2, Layers, Trash2, GraduationCap, Bot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -10,6 +10,7 @@ import { ReportCard } from '@/components/moderation/ReportCard';
 import { AuditLogTable } from '@/components/moderation/AuditLogTable';
 import { TopicPanel } from '@/components/admin/TopicPanel';
 import { TutorialSettingsPanel } from '@/components/admin/TutorialSettingsPanel';
+import { FakeNodesPanel } from '@/components/admin/FakeNodesPanel';
 import { useReports } from '@/hooks/useReports';
 import { useGrantAdminRole } from '@/hooks/useAdminRole';
 import { useAuth } from '@/hooks/useAuth';
@@ -168,10 +169,14 @@ export default function Admin() {
               exit={{ opacity: 0, y: -20 }}
             >
               <Tabs defaultValue="topics" className="w-full">
-                <TabsList className="grid w-full max-w-3xl grid-cols-6 mb-6">
+                <TabsList className="grid w-full max-w-4xl grid-cols-7 mb-6">
                   <TabsTrigger value="topics">
                     <Layers className="w-4 h-4 mr-2" />
                     Topics
+                  </TabsTrigger>
+                  <TabsTrigger value="fake-nodes">
+                    <Bot className="w-4 h-4 mr-2" />
+                    Fake Nodes
                   </TabsTrigger>
                   <TabsTrigger value="tutorials">
                     <GraduationCap className="w-4 h-4 mr-2" />
@@ -205,6 +210,12 @@ export default function Admin() {
 
                 <TabsContent value="topics">
                   <TopicPanel />
+                </TabsContent>
+
+                <TabsContent value="fake-nodes">
+                  <div className="max-w-2xl">
+                    <FakeNodesPanel />
+                  </div>
                 </TabsContent>
 
                 <TabsContent value="tutorials">

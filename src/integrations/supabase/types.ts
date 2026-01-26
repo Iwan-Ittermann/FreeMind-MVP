@@ -333,6 +333,38 @@ export type Database = {
           },
         ]
       }
+      fake_nodes: {
+        Row: {
+          created_at: string
+          id: string
+          opinion_text: string
+          topic_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          opinion_text: string
+          topic_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          opinion_text?: string
+          topic_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fake_nodes_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       laws: {
         Row: {
           created_at: string | null
