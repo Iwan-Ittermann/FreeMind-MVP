@@ -98,7 +98,7 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
                   className="h-9 px-3 md:px-4 bg-accent text-accent-foreground hover:bg-accent/90 font-medium shadow-lg shadow-accent/25 animate-pulse"
                 >
                   <UserPlus className="h-4 w-4 md:mr-2" />
-                  <span className="hidden md:inline">{t('auth.signUp')}</span>
+                  <span className="hidden md:inline">{t('common.signUp')}</span>
                 </Button>
               </motion.div>
             )}
