@@ -75,7 +75,8 @@
     "passphraseCopied": "Passphrase kopiert! Speichere sie sicher.",
     "passphraseDownloaded": "Passphrase heruntergeladen! Bewahre die Datei sicher auf.",
     "downloadFileTitle": "FreeMind Passphrase",
-    "downloadFileWarning": "WICHTIG: Bewahre diese Datei sicher auf! Das ist deine einzige Möglichkeit, dich einzuloggen.\nEs gibt keine Passwort-Wiederherstellung.\n\nTeile diese Passphrase mit niemandem."
+    "downloadFileWarning": "WICHTIG: Bewahre diese Datei sicher auf! Das ist deine einzige Möglichkeit, dich einzuloggen.\nEs gibt keine Passwort-Wiederherstellung.\n\nTeile diese Passphrase mit niemandem.",
+    "back": "Zurück"
   },
   "chat": {
     "chatNotFound": "Chat nicht gefunden.",
