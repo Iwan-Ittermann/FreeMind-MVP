@@ -1,4 +1,6 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useTutorialSettings } from './useTutorialSettings';
 
 const TUTORIAL_STORAGE_KEY = 'freemind_tutorial_completed';
 
@@ -43,8 +45,17 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
 ];
 
 export function useTutorial() {
+  const { i18n } = useTranslation();
+  const { isStepMuted } = useTutorialSettings();
   const [isActive, setIsActive] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
+
+  const currentLanguage = i18n.language.startsWith('de') ? 'de' : 'en';
+
+  // Filter out muted steps
+  const activeSteps = useMemo(() => {
+    return TUTORIAL_STEPS.filter(step => !isStepMuted('onboarding', step.id, currentLanguage));
+  }, [isStepMuted, currentLanguage]);
 
   const startTutorial = useCallback(() => {
     setCurrentStep(0);
@@ -58,12 +69,12 @@ export function useTutorial() {
   }, []);
 
   const nextStep = useCallback(() => {
-    if (currentStep < TUTORIAL_STEPS.length - 1) {
+    if (currentStep < activeSteps.length - 1) {
       setCurrentStep((prev) => prev + 1);
     } else {
       endTutorial();
     }
-  }, [currentStep, endTutorial]);
+  }, [currentStep, activeSteps.length, endTutorial]);
 
   const prevStep = useCallback(() => {
     if (currentStep > 0) {
@@ -86,8 +97,8 @@ export function useTutorial() {
   return {
     isActive,
     currentStep,
-    currentStepData: TUTORIAL_STEPS[currentStep],
-    totalSteps: TUTORIAL_STEPS.length,
+    currentStepData: activeSteps[currentStep] || activeSteps[0],
+    totalSteps: activeSteps.length,
     startTutorial,
     endTutorial,
     nextStep,

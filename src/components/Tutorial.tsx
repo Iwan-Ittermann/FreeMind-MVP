@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { X, ChevronLeft, ChevronRight, GraduationCap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { TutorialStep } from '@/hooks/useTutorial';
+import { useTutorialSettings } from '@/hooks/useTutorialSettings';
 
 interface TutorialProps {
   isActive: boolean;
@@ -31,10 +32,18 @@ export function Tutorial({
   onPrev,
   onSkip,
 }: TutorialProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { getCustomTitle, getCustomText } = useTutorialSettings();
   const [highlightPosition, setHighlightPosition] = useState<HighlightPosition | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
   const tooltipRef = useRef<HTMLDivElement>(null);
+
+  // Get custom or default title/text
+  const currentLanguage = i18n.language.startsWith('de') ? 'de' : 'en';
+  const customTitle = getCustomTitle('onboarding', currentStepData.id, currentLanguage);
+  const customText = getCustomText('onboarding', currentStepData.id, currentLanguage);
+  const displayTitle = customTitle || t(currentStepData.titleKey);
+  const displayText = customText || t(currentStepData.textKey);
 
   useEffect(() => {
     if (!isActive || !currentStepData.targetSelector) {
@@ -156,12 +165,12 @@ export function Tutorial({
 
           {/* Title */}
           <h3 className="font-semibold text-foreground text-base mb-2">
-            {t(currentStepData.titleKey)}
+            {displayTitle}
           </h3>
 
           {/* Description */}
           <p className="text-sm text-muted-foreground mb-4">
-            {t(currentStepData.textKey)}
+            {displayText}
           </p>
 
           {/* Navigation buttons */}
