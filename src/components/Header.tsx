@@ -1,18 +1,17 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { Pencil, Settings, List, MessagesSquare } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Pencil, Settings, List, MessagesSquare, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
-import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { SubmitOpinionDialog } from './SubmitOpinionDialog';
 import { ConfigPanel } from './ConfigPanel';
-
 import { OpinionsSidebar } from './OpinionsSidebar';
 import { ChatsSidebar } from './ChatsSidebar';
+
 interface HeaderProps {
   title?: string;
   topicId?: string;
@@ -23,7 +22,8 @@ interface HeaderProps {
 
 export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted, myOpinionId }: HeaderProps) {
   const { t } = useTranslation();
-  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [opinionDialogOpen, setOpinionDialogOpen] = useState(false);
   const [configOpen, setConfigOpen] = useState(false);
   const [opinionsOpen, setOpinionsOpen] = useState(false);
@@ -87,6 +87,22 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
 
           {/* Right: Actions */}
           <div className="flex items-center gap-2">
+            {/* Signup Button - shown when not logged in */}
+            {!user && (
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+              >
+                <Button
+                  onClick={() => navigate('/auth')}
+                  className="h-9 px-3 md:px-4 bg-accent text-accent-foreground hover:bg-accent/90 font-medium shadow-lg shadow-accent/25 animate-pulse"
+                >
+                  <UserPlus className="h-4 w-4 md:mr-2" />
+                  <span className="hidden md:inline">{t('auth.signUp')}</span>
+                </Button>
+              </motion.div>
+            )}
+
             {/* Add Opinion Button - prominent CTA when active, icon-only when disabled */}
             {showOpinionButton && (
               <motion.div

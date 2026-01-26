@@ -30,11 +30,11 @@ function AppContent() {
       <BrowserRouter>
         <Routes>
           <Route path="/eching" element={<Splash />} />
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<About />} />
+          <Route path="/home" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/admin" element={<Admin />} />
-          <Route path="/about" element={<About />} />
           <Route path="/legal" element={<Legal />} />
           <Route path="/t/:slug" element={<TopicJoin />} />
           <Route path="/topic/:topicId" element={<TopicView />} />
