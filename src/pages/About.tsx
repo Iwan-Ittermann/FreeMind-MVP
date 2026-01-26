@@ -240,31 +240,31 @@ export default function About() {
           </div>
         </motion.section>
 
-        {/* Call to Action */}
-        <motion.section className="text-center" {...fadeInUp}>
+        {/* Call to Action - inline section */}
+        <motion.section className="text-center pb-24" {...fadeInUp}>
           <div className="bg-gradient-to-br from-primary/10 via-accent/10 to-primary/10 border border-primary/20 rounded-2xl p-8 md:p-12">
             <h2 className="text-2xl md:text-3xl font-bold mb-4 text-foreground">
               {t("about.cta.title")}
             </h2>
-            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+            <p className="text-muted-foreground max-w-md mx-auto">
               {t("about.cta.description")}
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/">
-                <Button size="lg" className="w-full sm:w-auto">
-                  {t("about.cta.getStarted")}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-              <Link to="/">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto">
-                  {t("about.cta.backHome")}
-                </Button>
-              </Link>
-            </div>
           </div>
         </motion.section>
       </main>
+
+      {/* Floating CTA Button */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+        <Link to="/home">
+          <Button 
+            size="lg" 
+            className="shadow-2xl shadow-primary/30 animate-pulse px-8"
+          >
+            {t("about.cta.getStarted")}
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </Link>
+      </div>
     </div>
   );
 }
