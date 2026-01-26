@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Opinion, ChatRating } from '@/types/graph';
 
@@ -24,6 +24,51 @@ export interface MessageAnimationData {
   sourceOpinionId: string;
   targetOpinionId: string;
   timestamp: number;
+}
+
+// Seeded random number generator for deterministic fake node ratings
+function seededRandom(seed: string): () => number {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    const char = seed.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return function() {
+    hash = Math.imul(hash ^ (hash >>> 16), 0x85ebca6b);
+    hash = Math.imul(hash ^ (hash >>> 13), 0xc2b2ae35);
+    hash ^= hash >>> 16;
+    return (hash >>> 0) / 0xffffffff;
+  };
+}
+
+// Generate random ratings for fake nodes
+function generateFakeNodeRatings(fakeNodeIds: string[]): ChatRating[] {
+  const ratings: ChatRating[] = [];
+  
+  if (fakeNodeIds.length < 2) return ratings;
+  
+  // Create deterministic ratings between fake nodes
+  for (let i = 0; i < fakeNodeIds.length; i++) {
+    for (let j = i + 1; j < fakeNodeIds.length; j++) {
+      const seedStr = `${fakeNodeIds[i]}-${fakeNodeIds[j]}`;
+      const rng = seededRandom(seedStr);
+      
+      // Empathy: -20 to +50
+      const empathy = Math.round(-20 + rng() * 70);
+      // Disagreement: 80 to 100
+      const disagreement = Math.round(80 + rng() * 20);
+      
+      ratings.push({
+        opinionA: fakeNodeIds[i],
+        opinionB: fakeNodeIds[j],
+        empathy,
+        disagreement,
+      });
+    }
+  }
+  
+  return ratings;
 }
 
 export function useTopicData(topicId: string) {
@@ -83,6 +128,19 @@ export function useTopicData(topicId: string) {
           event: '*',
           schema: 'public',
           table: 'chats',
+          filter: `topic_id=eq.${topicId}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['topic', topicId] });
+        }
+      )
+      // Listen for fake_nodes changes (admin-managed fake opinions)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'fake_nodes',
           filter: `topic_id=eq.${topicId}`,
         },
         () => {
@@ -197,6 +255,14 @@ export function useTopicData(topicId: string) {
 
       if (opinionsError) throw opinionsError;
 
+      // Fetch fake nodes for this topic
+      const { data: fakeNodes, error: fakeNodesError } = await supabase
+        .from('fake_nodes')
+        .select('*')
+        .eq('topic_id', topicId);
+
+      if (fakeNodesError) throw fakeNodesError;
+
       // Fetch canonical graph pairs using SECURITY DEFINER function
       // This returns only accepted chat_requests with both opinions visible
       // All users get the same result regardless of RLS on chats table
@@ -216,6 +282,19 @@ export function useTopicData(topicId: string) {
         noticeText: op.notice_text ?? undefined,
       }));
 
+      // Add fake nodes as opinions (with fake- prefix to distinguish)
+      const fakeOpinions: Opinion[] = (fakeNodes || []).map(fn => ({
+        id: `fake-${fn.id}`,
+        text: fn.opinion_text,
+        authorId: undefined,
+        createdAt: new Date(fn.created_at),
+        status: 'Visible' as const,
+        visible: true,
+      }));
+
+      // Combine real and fake opinions
+      const allOpinions = [...formattedOpinions, ...fakeOpinions];
+
       // Build deterministic graph edges/weights from aggregated ratings
       // Default empathy: 0 (neutral), default disagreement: 50 (middle)
       const formattedRatings: ChatRating[] = (ratingsData || []).map(r => ({
@@ -225,12 +304,19 @@ export function useTopicData(topicId: string) {
         disagreement: Number(r.avg_disagreement ?? 50),
       }));
 
+      // Generate ratings for fake nodes (connections between fake nodes only)
+      const fakeNodeIds = fakeOpinions.map(op => op.id);
+      const fakeRatings = generateFakeNodeRatings(fakeNodeIds);
+
+      // Combine real and fake ratings
+      const allRatings = [...formattedRatings, ...fakeRatings];
+
       return {
         id: topic.id,
         title: topic.title,
         description: topic.description,
-        opinions: formattedOpinions,
-        ratings: formattedRatings,
+        opinions: allOpinions,
+        ratings: allRatings,
       };
     },
   });
