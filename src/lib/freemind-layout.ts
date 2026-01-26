@@ -289,8 +289,8 @@ function calculateDeterministicAngles(
       finalAngle = findLargestGap(angleMap);
     }
     
-    // Ensure we don't overlap with existing nodes (minimum separation)
-    finalAngle = adjustForMinSeparation(finalAngle, angleMap, 0.15);
+    // Ensure we don't overlap with existing nodes (larger minimum separation for better spread)
+    finalAngle = adjustForMinSeparation(finalAngle, angleMap, 0.35);
     
     angleMap.set(node.id, normalizeAngle(finalAngle));
   }
@@ -359,6 +359,7 @@ function findLargestGap(placed: Map<string, number>): number {
 
 /**
  * Adjust angle to maintain minimum separation from existing nodes
+ * Uses larger minimum separation for better spread in the yellow zone
  */
 function adjustForMinSeparation(
   angle: number, 
@@ -369,7 +370,7 @@ function adjustForMinSeparation(
   
   let adjusted = normalizeAngle(angle);
   let iterations = 0;
-  const maxIterations = 20;
+  const maxIterations = 50; // More iterations for better convergence
   
   while (iterations < maxIterations) {
     let tooClose = false;
@@ -379,9 +380,9 @@ function adjustForMinSeparation(
       if (dist > Math.PI) dist = 2 * Math.PI - dist;
       
       if (dist < minSep) {
-        // Push away from this node
+        // Push away from this node with larger step
         const direction = adjusted > normalizeAngle(placedAngle) ? 1 : -1;
-        adjusted = normalizeAngle(adjusted + direction * 0.1);
+        adjusted = normalizeAngle(adjusted + direction * 0.15);
         tooClose = true;
         break;
       }
@@ -593,7 +594,8 @@ export function generateMockData(count: number = 30): { opinions: Opinion[]; rat
     clusterNodes.push(opinions.slice(startIdx, startIdx + nodesPerCluster));
     startIdx += nodesPerCluster;
   }
-  // Remaining are inactive (no ratings)
+  // Remaining nodes after clusters will be connected to create a complete graph
+  const remainingNodes = opinions.slice(startIdx);
   
   // Helper to add rating
   const addRating = (a: string, b: string, empathy: number, disagreement: number) => {
@@ -646,7 +648,7 @@ export function generateMockData(count: number = 30): { opinions: Opinion[]; rat
     // Intra-cluster connections: low disagreement, moderate empathy (yellow zone tendencies)
     for (let i = 0; i < cluster.length; i++) {
       for (let j = i + 1; j < cluster.length; j++) {
-        if (Math.random() < 0.4) {
+        if (Math.random() < 0.5) { // Increased density for more edges
           // Low disagreement (5-30), moderate empathy (-10 to +30) → moderate bridging score
           addRating(cluster[i].id, cluster[j].id, -10 + Math.random() * 40, 5 + Math.random() * 25);
         }
@@ -658,8 +660,8 @@ export function generateMockData(count: number = 30): { opinions: Opinion[]; rat
       const otherCluster = clusterNodes[otherC];
       const clusterDistance = Math.abs(otherC - c); // 1-4 representing ideological distance
       
-      // Connect some nodes between clusters
-      const connectionDensity = 0.15 / clusterDistance; // Fewer connections for distant clusters
+      // Connect some nodes between clusters - increased density
+      const connectionDensity = 0.25 / clusterDistance; // More connections
       
       for (let i = 0; i < cluster.length; i++) {
         for (let j = 0; j < otherCluster.length; j++) {
@@ -672,6 +674,33 @@ export function generateMockData(count: number = 30): { opinions: Opinion[]; rat
           }
         }
       }
+    }
+  }
+  
+  // 4. Connect remaining nodes (previously inactive) to give them edges
+  // These become yellow zone nodes with moderate scores
+  for (let i = 0; i < remainingNodes.length; i++) {
+    // Connect each remaining node to 2-4 random cluster nodes
+    const connectCount = 2 + Math.floor(Math.random() * 3);
+    const connectedClusters = new Set<number>();
+    
+    for (let c = 0; c < connectCount; c++) {
+      const clusterIdx = Math.floor(Math.random() * clusterCount);
+      connectedClusters.add(clusterIdx);
+      
+      if (clusterNodes[clusterIdx].length > 0) {
+        const targetNode = clusterNodes[clusterIdx][Math.floor(Math.random() * clusterNodes[clusterIdx].length)];
+        // Moderate empathy and disagreement for yellow zone placement
+        const empathy = -5 + Math.random() * 35; // -5 to 30
+        const disagreement = 30 + Math.random() * 40; // 30 to 70
+        addRating(remainingNodes[i].id, targetNode.id, empathy, disagreement);
+      }
+    }
+    
+    // Also connect some remaining nodes to each other
+    if (i > 0 && Math.random() < 0.3) {
+      const prevNode = remainingNodes[Math.floor(Math.random() * i)];
+      addRating(remainingNodes[i].id, prevNode.id, 5 + Math.random() * 25, 20 + Math.random() * 40);
     }
   }
 
