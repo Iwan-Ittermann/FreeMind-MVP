@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Loader2, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -7,7 +8,6 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -36,6 +36,7 @@ export function SubmitOpinionDialog({
   onSuccess,
   hasExistingOpinion,
 }: SubmitOpinionDialogProps) {
+  const { t } = useTranslation();
   const [text, setText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -79,13 +80,13 @@ export function SubmitOpinionDialog({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Opinion Already Submitted</DialogTitle>
-            <DialogDescription>
-              You have already shared your opinion on this topic. Each user can only submit one opinion per topic.
-            </DialogDescription>
+            <DialogTitle>{t('opinion.alreadySubmittedTitle')}</DialogTitle>
           </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            {t('opinion.alreadySubmittedDesc')}
+          </p>
           <div className="flex justify-end">
-            <Button onClick={() => onOpenChange(false)}>Close</Button>
+            <Button onClick={() => onOpenChange(false)}>{t('common.close')}</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -96,16 +97,13 @@ export function SubmitOpinionDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Share Your Opinion</DialogTitle>
-          <DialogDescription>
-            State your mind on this topic. Be clear and concise.
-          </DialogDescription>
+          <DialogTitle>{t('opinion.shareYourOpinion')}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
           <div className="relative">
             <Textarea
-              placeholder="What do you think about this topic?"
+              placeholder={t('opinion.whatDoYouThink')}
               value={text}
               onChange={(e) => setText(e.target.value)}
               className="min-h-[120px] resize-none bg-background"
@@ -132,7 +130,7 @@ export function SubmitOpinionDialog({
               onClick={() => onOpenChange(false)}
               disabled={isSubmitting}
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button
               onClick={handleSubmit}
@@ -143,7 +141,7 @@ export function SubmitOpinionDialog({
               ) : (
                 <Send className="h-4 w-4 mr-2" />
               )}
-              Submit
+              {t('common.submit')}
             </Button>
           </div>
         </div>
