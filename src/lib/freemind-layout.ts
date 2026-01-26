@@ -566,7 +566,7 @@ export function calculateLayout(
   return { nodes: allNodes, edges, greenZoneSlots };
 }
 
-// Generate mock data for testing
+// Generate mock data for testing with diverse zone distribution and clusters
 export function generateMockData(count: number = 30): { opinions: Opinion[]; ratings: ChatRating[] } {
   const opinions: Opinion[] = Array.from({ length: count }, (_, i) => ({
     id: `opinion-${i}`,
@@ -575,21 +575,102 @@ export function generateMockData(count: number = 30): { opinions: Opinion[]; rat
 
   const ratings: ChatRating[] = [];
   
-  // Create random connections (not all pairs, about 30% density)
-  // Leave some nodes without any connections to test inactive state
-  const activeCount = Math.floor(count * 0.7);
+  // Define clusters with different characteristics
+  // Each cluster represents a group of opinions with similar viewpoints
+  const clusterCount = 5;
+  const nodesPerCluster = Math.floor(count * 0.6 / clusterCount); // 60% in clusters
+  const bridgeNodeCount = Math.floor(count * 0.08); // 8% bridge builders (green zone)
+  const polarizingNodeCount = Math.floor(count * 0.12); // 12% polarizing (red zone)
+  const inactiveCount = count - (nodesPerCluster * clusterCount) - bridgeNodeCount - polarizingNodeCount;
   
-  for (let i = 0; i < activeCount; i++) {
-    for (let j = i + 1; j < activeCount; j++) {
-      if (Math.random() < 0.3) {
-        ratings.push({
-          opinionA: opinions[i].id,
-          opinionB: opinions[j].id,
-          // Empathy: -50 to +50
-          empathy: Math.round(Math.random() * 100 - 50),
-          // Disagreement: 0 to 100
-          disagreement: Math.round(Math.random() * 100),
-        });
+  // Assign nodes to groups
+  const bridgeNodes = opinions.slice(0, bridgeNodeCount);
+  const polarizingNodes = opinions.slice(bridgeNodeCount, bridgeNodeCount + polarizingNodeCount);
+  const clusterNodes: Opinion[][] = [];
+  
+  let startIdx = bridgeNodeCount + polarizingNodeCount;
+  for (let c = 0; c < clusterCount; c++) {
+    clusterNodes.push(opinions.slice(startIdx, startIdx + nodesPerCluster));
+    startIdx += nodesPerCluster;
+  }
+  // Remaining are inactive (no ratings)
+  
+  // Helper to add rating
+  const addRating = (a: string, b: string, empathy: number, disagreement: number) => {
+    ratings.push({
+      opinionA: a,
+      opinionB: b,
+      empathy: Math.round(empathy),
+      disagreement: Math.round(disagreement),
+    });
+  };
+  
+  // 1. Bridge nodes: High empathy + high disagreement = high bridging score (green zone)
+  // Connect bridge nodes to each other and to various clusters
+  for (let i = 0; i < bridgeNodes.length; i++) {
+    for (let j = i + 1; j < bridgeNodes.length; j++) {
+      // High empathy (30-50), high disagreement (60-100) → bridging score > 2500
+      addRating(bridgeNodes[i].id, bridgeNodes[j].id, 35 + Math.random() * 15, 70 + Math.random() * 30);
+    }
+    // Connect to nodes from different clusters with high empathy
+    for (let c = 0; c < clusterCount; c++) {
+      if (clusterNodes[c].length > 0 && Math.random() < 0.5) {
+        const targetNode = clusterNodes[c][Math.floor(Math.random() * clusterNodes[c].length)];
+        addRating(bridgeNodes[i].id, targetNode.id, 30 + Math.random() * 20, 50 + Math.random() * 50);
+      }
+    }
+  }
+  
+  // 2. Polarizing nodes: Negative empathy + high disagreement = negative bridging score (red zone)
+  for (let i = 0; i < polarizingNodes.length; i++) {
+    // Connect to random nodes with hostile interactions
+    const connectCount = 3 + Math.floor(Math.random() * 3);
+    for (let c = 0; c < connectCount; c++) {
+      const clusterIdx = Math.floor(Math.random() * clusterCount);
+      if (clusterNodes[clusterIdx].length > 0) {
+        const targetNode = clusterNodes[clusterIdx][Math.floor(Math.random() * clusterNodes[clusterIdx].length)];
+        // Negative empathy (-50 to -20), high disagreement (70-100) → negative bridging score
+        addRating(polarizingNodes[i].id, targetNode.id, -50 + Math.random() * 30, 70 + Math.random() * 30);
+      }
+    }
+    // Some polarizing nodes fight with each other too
+    if (i > 0 && Math.random() < 0.4) {
+      addRating(polarizingNodes[i].id, polarizingNodes[i - 1].id, -40 + Math.random() * 20, 80 + Math.random() * 20);
+    }
+  }
+  
+  // 3. Cluster nodes: Similar opinions within cluster (low disagreement), different between clusters (high disagreement)
+  for (let c = 0; c < clusterCount; c++) {
+    const cluster = clusterNodes[c];
+    
+    // Intra-cluster connections: low disagreement, moderate empathy (yellow zone tendencies)
+    for (let i = 0; i < cluster.length; i++) {
+      for (let j = i + 1; j < cluster.length; j++) {
+        if (Math.random() < 0.4) {
+          // Low disagreement (5-30), moderate empathy (-10 to +30) → moderate bridging score
+          addRating(cluster[i].id, cluster[j].id, -10 + Math.random() * 40, 5 + Math.random() * 25);
+        }
+      }
+    }
+    
+    // Inter-cluster connections: higher disagreement based on cluster "distance"
+    for (let otherC = c + 1; otherC < clusterCount; otherC++) {
+      const otherCluster = clusterNodes[otherC];
+      const clusterDistance = Math.abs(otherC - c); // 1-4 representing ideological distance
+      
+      // Connect some nodes between clusters
+      const connectionDensity = 0.15 / clusterDistance; // Fewer connections for distant clusters
+      
+      for (let i = 0; i < cluster.length; i++) {
+        for (let j = 0; j < otherCluster.length; j++) {
+          if (Math.random() < connectionDensity) {
+            // Disagreement scales with cluster distance
+            const baseDisagreement = 20 + clusterDistance * 20;
+            // Empathy varies more widely
+            const empathy = -20 + Math.random() * 50;
+            addRating(cluster[i].id, otherCluster[j].id, empathy, baseDisagreement + Math.random() * 20);
+          }
+        }
       }
     }
   }
