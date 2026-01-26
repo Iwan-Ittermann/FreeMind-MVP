@@ -1,4 +1,6 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useTutorialSettings } from './useTutorialSettings';
 
 const CHAT_TUTORIAL_SEEN_KEY = 'freemind-chat-tutorial-seen';
 
@@ -67,9 +69,13 @@ export function markChatTutorialAsSeen(): void {
 }
 
 export function useChatTutorial() {
+  const { i18n } = useTranslation();
+  const { isStepMuted } = useTutorialSettings();
   const [isActive, setIsActive] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+
+  const currentLanguage = i18n.language.startsWith('de') ? 'de' : 'en';
 
   // Track mobile state
   useEffect(() => {
@@ -79,18 +85,18 @@ export function useChatTutorial() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Get filtered steps for mobile (skip steps with no mobile selector and content)
-  const getActiveSteps = useCallback(() => {
-    if (!isMobile) return CHAT_TUTORIAL_STEPS;
-    
-    // On mobile, skip the graph step since mini-graph is hidden
+  // Get filtered steps - filter by muted status and mobile visibility
+  const activeSteps = useMemo(() => {
     return CHAT_TUTORIAL_STEPS.filter(step => {
-      if (step.id === 'graph') return false; // Skip graph step on mobile
+      // Filter out muted steps
+      if (isStepMuted('chat', step.id, currentLanguage)) return false;
+      
+      // On mobile, skip the graph step since mini-graph is hidden
+      if (isMobile && step.id === 'graph') return false;
+      
       return true;
     });
-  }, [isMobile]);
-
-  const activeSteps = getActiveSteps();
+  }, [isStepMuted, currentLanguage, isMobile]);
 
   // Get the correct selector based on device
   const getCurrentStepWithSelector = useCallback((step: ChatTutorialStep) => {

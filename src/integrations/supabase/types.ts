@@ -491,6 +491,42 @@ export type Database = {
         }
         Relationships: []
       }
+      tutorial_settings: {
+        Row: {
+          created_at: string
+          custom_text: string | null
+          custom_title: string | null
+          id: string
+          is_muted: boolean
+          language: string
+          step_id: string
+          tutorial_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          custom_text?: string | null
+          custom_title?: string | null
+          id?: string
+          is_muted?: boolean
+          language?: string
+          step_id: string
+          tutorial_type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          custom_text?: string | null
+          custom_title?: string | null
+          id?: string
+          is_muted?: boolean
+          language?: string
+          step_id?: string
+          tutorial_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_blocks: {
         Row: {
           blocked_user_id: string

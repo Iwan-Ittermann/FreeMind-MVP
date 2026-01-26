@@ -49,7 +49,7 @@ export default function TopicView() {
   // Redirect if not joined
   useEffect(() => {
     if (!joinedLoading && !authLoading && !hasJoined && user) {
-      navigate('/');
+      navigate('/home');
       toast.error('You need to join this topic first');
     }
   }, [hasJoined, joinedLoading, authLoading, user, navigate]);
@@ -190,7 +190,7 @@ export default function TopicView() {
             <p className="text-muted-foreground mb-6">
               This topic doesn't exist or you don't have access.
             </p>
-            <Button onClick={() => navigate('/')} variant="outline">
+            <Button onClick={() => navigate('/home')} variant="outline">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Go Home
             </Button>

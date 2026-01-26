@@ -54,7 +54,7 @@ export default function Chat() {
   }, [isReadOnly, isLoading, chatId, user, chatTutorial.startTutorial]);
 
   const handleClose = () => {
-    navigate('/');
+    navigate('/home');
   };
 
   const handleSubmitRating = async (empathy: number, disagreement: number) => {
@@ -86,7 +86,7 @@ export default function Chat() {
           <div className="text-center">
             <p className="text-white/60 mb-4 text-sm md:text-base">Chat not found.</p>
             <button 
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/home')}
               className="text-primary hover:underline py-2 px-4 text-base"
             >
               Go Back
@@ -153,7 +153,7 @@ export default function Chat() {
             {error || "You need to submit your own opinion first before chatting with others."}
           </p>
           <button 
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/home')}
             className="text-primary hover:underline py-2 px-4 text-base"
           >
             Go Back
@@ -169,7 +169,7 @@ export default function Chat() {
         <div className="text-center">
           <p className="text-white/60 mb-4 text-sm md:text-base">Opinion not found.</p>
           <button 
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/home')}
             className="text-primary hover:underline py-2 px-4 text-base"
           >
             Go Back

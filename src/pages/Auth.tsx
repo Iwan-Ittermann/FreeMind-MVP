@@ -27,7 +27,7 @@ export default function Auth() {
   // Redirect if already logged in
   useEffect(() => {
     if (!loading && user) {
-      navigate("/");
+      navigate("/home");
     }
   }, [user, loading, navigate]);
 
@@ -279,7 +279,7 @@ Do not share this passphrase with anyone.`;
 
         {/* Continue without account link */}
         <p className="text-center mt-6 md:mt-8 text-white/40 text-sm">
-          <a href="/" className="hover:text-white transition-colors py-2 inline-block">
+          <a href="/home" className="hover:text-white transition-colors py-2 inline-block">
             Weiter ohne Account →
           </a>
         </p>
