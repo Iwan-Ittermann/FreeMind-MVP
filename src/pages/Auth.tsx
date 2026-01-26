@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { Copy, RefreshCw, LogIn, UserPlus, AlertCircle, Check, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ export default function Auth() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const { startTutorial, hasCompletedTutorial } = useTutorialContext();
+  const { t } = useTranslation();
 
   const [mode, setMode] = useState<AuthMode>("signup");
   const [passphrase, setPassphrase] = useState("");
@@ -267,20 +269,20 @@ Do not share this passphrase with anyone.`;
             {isSubmitting ? (
               <span className="flex items-center gap-2">
                 <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-white" />
-                {mode === "signup" ? "Account wird erstellt..." : "Anmeldung..."}
+                {mode === "signup" ? t("auth.creatingAccount") : t("auth.loggingIn")}
               </span>
             ) : mode === "signup" ? (
-              "Account erstellen"
+              t("common.signUp")
             ) : (
-              "Anmelden"
+              t("common.logIn")
             )}
           </Button>
         </form>
 
-        {/* Continue without account link */}
+        {/* Back link */}
         <p className="text-center mt-6 md:mt-8 text-white/40 text-sm">
           <a href="/home" className="hover:text-white transition-colors py-2 inline-block">
-            Weiter ohne Account →
+            ← {t("auth.back")}
           </a>
         </p>
       </motion.div>
