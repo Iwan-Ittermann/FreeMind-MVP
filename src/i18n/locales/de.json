@@ -194,7 +194,10 @@
       "formulaText": "Bridging = Empathie × Meinungsverschiedenheit",
       "explanation": "{{empathy}} reicht von -50 bis +50. {{disagreement}} reicht von 0 bis 100. Dein Score reicht von {{minScore}} bis {{maxScore}}.",
       "empathy": "Empathie",
-      "disagreement": "Meinungsverschiedenheit"
+      "disagreement": "Meinungsverschiedenheit",
+      "rangesFrom": "reicht von -50 bis +50.",
+      "disagreementRanges": "reicht von 0 bis 100. Dein Score reicht von",
+      "to": "bis"
     },
     "zones": {
       "green": {
