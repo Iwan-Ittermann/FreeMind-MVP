@@ -78,8 +78,8 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
 
           {/* Center: Title (desktop only) */}
           {title && (
-            <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2">
-              <h1 className="text-sm font-medium text-white/80 max-w-md truncate">
+            <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 max-w-[40%] pr-4">
+              <h1 className="text-sm font-medium text-white/80 truncate">
                 {title}
               </h1>
             </div>
@@ -182,6 +182,7 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
           open={opinionDialogOpen}
           onOpenChange={setOpinionDialogOpen}
           topicId={topicId}
+          topicTitle={title}
           onSuccess={handleOpinionSuccess}
           hasExistingOpinion={hasExistingOpinion}
         />

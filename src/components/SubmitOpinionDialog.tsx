@@ -25,6 +25,7 @@ interface SubmitOpinionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   topicId: string;
+  topicTitle?: string;
   onSuccess?: () => void;
   hasExistingOpinion?: boolean;
 }
@@ -33,6 +34,7 @@ export function SubmitOpinionDialog({
   open,
   onOpenChange,
   topicId,
+  topicTitle,
   onSuccess,
   hasExistingOpinion,
 }: SubmitOpinionDialogProps) {
@@ -98,6 +100,9 @@ export function SubmitOpinionDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{t('opinion.shareYourOpinion')}</DialogTitle>
+          {topicTitle && (
+            <p className="text-sm text-muted-foreground mt-1">{topicTitle}</p>
+          )}
         </DialogHeader>
 
         <div className="space-y-4">
