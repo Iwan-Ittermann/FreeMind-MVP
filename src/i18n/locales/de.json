@@ -189,11 +189,11 @@
       }
     },
     "bridgingScore": {
-      "title": "Der Bridging-Score",
+      "title": "Die Dialog-Punkte",
       "formula": "Die Formel",
-      "formulaText": "Bridging = Empathie × Meinungsverschiedenheit",
+      "formulaText": "Dialog-Punkte = Respekt × Meinungsverschiedenheit",
       "explanation": "{{empathy}} reicht von -50 bis +50. {{disagreement}} reicht von 0 bis 100. Dein Score reicht von {{minScore}} bis {{maxScore}}.",
-      "empathy": "Empathie",
+      "empathy": "Respekt",
       "disagreement": "Meinungsverschiedenheit",
       "rangesFrom": "reicht von -50 bis +50.",
       "disagreementRanges": "reicht von 0 bis 100. Dein Score reicht von",
