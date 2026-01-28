@@ -46,7 +46,7 @@ export function ChatTutorial({
   const displayText = customText || t(currentStepData.textKey);
 
   useEffect(() => {
-    if (!isActive || !currentStepData.targetSelector) {
+    if (!isActive || !currentStepData || !currentStepData.targetSelector) {
       setHighlightPosition(null);
       // Center the tooltip for intro/final steps
       setTooltipPosition({
@@ -109,7 +109,7 @@ export function ChatTutorial({
     };
   }, [isActive, currentStepData]);
 
-  if (!isActive) return null;
+  if (!isActive || !currentStepData) return null;
 
   const isLastStep = currentStep === totalSteps - 1;
   const isFirstStep = currentStep === 0;

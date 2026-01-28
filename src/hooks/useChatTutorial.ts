@@ -131,10 +131,14 @@ export function useChatTutorial() {
     }
   }, [currentStep]);
 
+  // Safe fallback when all steps are muted
+  const rawCurrentStep = activeSteps[currentStep] || activeSteps[0] || null;
+  const safeCurrentStepData = rawCurrentStep ? getCurrentStepWithSelector(rawCurrentStep) : null;
+
   return {
-    isActive,
+    isActive: isActive && safeCurrentStepData !== null,
     currentStep,
-    currentStepData: getCurrentStepWithSelector(activeSteps[currentStep] || activeSteps[0]),
+    currentStepData: safeCurrentStepData,
     totalSteps: activeSteps.length,
     startTutorial,
     endTutorial,
