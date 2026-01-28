@@ -162,24 +162,28 @@ Do not share this passphrase with anyone.`;
         </p>
 
         {/* Mode Toggle */}
-        <div className="flex bg-white/10 rounded-lg p-1 mb-6 md:mb-8">
+        <div className="flex bg-white/5 rounded-lg p-1 mb-6 md:mb-8">
           <button
             onClick={() => setMode("signup")}
-            className={`flex-1 py-3 md:py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-              mode === "signup" ? "bg-white/20 text-white" : "text-white/40 hover:text-white/60"
+            className={`flex-1 py-3 md:py-2 px-4 rounded-md text-sm font-medium transition-all ${
+              mode === "signup" 
+                ? "bg-primary text-white shadow-lg" 
+                : "text-white/30 hover:text-white/50 hover:bg-white/5"
             }`}
           >
             <UserPlus className="inline-block w-4 h-4 mr-2" />
-            Sign Up
+            {t("common.signUp")}
           </button>
           <button
             onClick={() => setMode("login")}
-            className={`flex-1 py-3 md:py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-              mode === "login" ? "bg-white/20 text-white" : "text-white/40 hover:text-white/60"
+            className={`flex-1 py-3 md:py-2 px-4 rounded-md text-sm font-medium transition-all ${
+              mode === "login" 
+                ? "bg-primary text-white shadow-lg" 
+                : "text-white/30 hover:text-white/50 hover:bg-white/5"
             }`}
           >
             <LogIn className="inline-block w-4 h-4 mr-2" />
-            Log In
+            {t("common.logIn")}
           </button>
         </div>
 
