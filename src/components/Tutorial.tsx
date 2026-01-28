@@ -46,7 +46,7 @@ export function Tutorial({
   const displayText = customText || (currentStepData ? t(currentStepData.textKey) : '');
 
   useEffect(() => {
-    if (!isActive || !currentStepData.targetSelector) {
+    if (!isActive || !currentStepData || !currentStepData.targetSelector) {
       setHighlightPosition(null);
       // Center the tooltip for final step
       setTooltipPosition({

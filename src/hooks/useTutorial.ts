@@ -94,10 +94,13 @@ export function useTutorial() {
     localStorage.removeItem(TUTORIAL_STORAGE_KEY);
   }, []);
 
+  // Safe fallback when all steps are muted
+  const safeCurrentStepData = activeSteps[currentStep] || activeSteps[0] || null;
+
   return {
-    isActive,
+    isActive: isActive && safeCurrentStepData !== null,
     currentStep,
-    currentStepData: activeSteps[currentStep] || activeSteps[0],
+    currentStepData: safeCurrentStepData,
     totalSteps: activeSteps.length,
     startTutorial,
     endTutorial,
