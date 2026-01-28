@@ -40,10 +40,10 @@ export function Tutorial({
 
   // Get custom or default title/text
   const currentLanguage = i18n.language.startsWith('de') ? 'de' : 'en';
-  const customTitle = getCustomTitle('onboarding', currentStepData.id, currentLanguage);
-  const customText = getCustomText('onboarding', currentStepData.id, currentLanguage);
-  const displayTitle = customTitle || t(currentStepData.titleKey);
-  const displayText = customText || t(currentStepData.textKey);
+  const customTitle = currentStepData ? getCustomTitle('onboarding', currentStepData.id, currentLanguage) : null;
+  const customText = currentStepData ? getCustomText('onboarding', currentStepData.id, currentLanguage) : null;
+  const displayTitle = customTitle || (currentStepData ? t(currentStepData.titleKey) : '');
+  const displayText = customText || (currentStepData ? t(currentStepData.textKey) : '');
 
   useEffect(() => {
     if (!isActive || !currentStepData.targetSelector) {
@@ -102,7 +102,7 @@ export function Tutorial({
     };
   }, [isActive, currentStepData]);
 
-  if (!isActive) return null;
+  if (!isActive || !currentStepData) return null;
 
   const isLastStep = currentStep === totalSteps - 1;
   const isFirstStep = currentStep === 0;
