@@ -137,10 +137,10 @@ export default function About() {
             </div>
             <p className="text-center text-muted-foreground max-w-xl mx-auto">
               <span className="text-foreground font-medium">{t("about.bridgingScore.empathy")}</span>
-              {" "}ranges from -50 to +50.{" "}
+              {" "}{t("about.bridgingScore.rangesFrom")}{" "}
               <span className="text-foreground font-medium">{t("about.bridgingScore.disagreement")}</span>
-              {" "}ranges from 0 to 100. Your score ranges from{" "}
-              <span className="text-destructive font-medium">-5000</span> to{" "}
+              {" "}{t("about.bridgingScore.disagreementRanges")}{" "}
+              <span className="text-destructive font-medium">-5000</span> {t("about.bridgingScore.to")}{" "}
               <span className="text-success font-medium">+5000</span>.
             </p>
           </div>
