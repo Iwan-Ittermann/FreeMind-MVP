@@ -9,7 +9,7 @@ import { useTutorialSettings } from '@/hooks/useTutorialSettings';
 interface ChatTutorialProps {
   isActive: boolean;
   currentStep: number;
-  currentStepData: ChatTutorialStep;
+  currentStepData: ChatTutorialStep | null;
   totalSteps: number;
   onNext: () => void;
   onPrev: () => void;
@@ -40,10 +40,10 @@ export function ChatTutorial({
 
   // Get custom or default title/text
   const currentLanguage = i18n.language.startsWith('de') ? 'de' : 'en';
-  const customTitle = getCustomTitle('chat', currentStepData.id, currentLanguage);
-  const customText = getCustomText('chat', currentStepData.id, currentLanguage);
-  const displayTitle = customTitle || t(currentStepData.titleKey);
-  const displayText = customText || t(currentStepData.textKey);
+  const customTitle = currentStepData ? getCustomTitle('chat', currentStepData.id, currentLanguage) : null;
+  const customText = currentStepData ? getCustomText('chat', currentStepData.id, currentLanguage) : null;
+  const displayTitle = currentStepData ? (customTitle || t(currentStepData.titleKey)) : '';
+  const displayText = currentStepData ? (customText || t(currentStepData.textKey)) : '';
 
   useEffect(() => {
     if (!isActive || !currentStepData || !currentStepData.targetSelector) {
