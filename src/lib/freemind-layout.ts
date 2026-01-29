@@ -295,12 +295,25 @@ function calculateDeterministicAngles(
     angleMap.set(node.id, normalizeAngle(finalAngle));
   }
   
-  // Step 3: Place inactive nodes evenly in remaining gaps
+  // Step 3: Place inactive nodes evenly distributed around the circle
+  // Sort them for determinism
   const sortedInactive = inactiveNodes.sort((a, b) => a.id.localeCompare(b.id));
   
-  for (const node of sortedInactive) {
-    const gapAngle = findLargestGap(angleMap);
-    angleMap.set(node.id, gapAngle);
+  if (sortedInactive.length > 0) {
+    // Distribute inactive nodes evenly around the circle, offset from active nodes
+    // Find an initial offset angle that's in the largest gap from active nodes
+    const startAngle = angleMap.size > 0 ? findLargestGap(angleMap) : 0;
+    const angleStep = (2 * Math.PI) / sortedInactive.length;
+    
+    sortedInactive.forEach((node, index) => {
+      // Calculate evenly spaced angle
+      let targetAngle = normalizeAngle(startAngle + index * angleStep);
+      
+      // Adjust to avoid overlapping with active nodes (with smaller separation for inactive)
+      targetAngle = adjustForMinSeparation(targetAngle, angleMap, 0.2);
+      
+      angleMap.set(node.id, targetAngle);
+    });
   }
   
   return angleMap;
