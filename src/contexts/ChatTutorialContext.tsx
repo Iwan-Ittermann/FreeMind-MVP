@@ -4,7 +4,7 @@ import { useChatTutorial, ChatTutorialStep } from '@/hooks/useChatTutorial';
 interface ChatTutorialContextType {
   isActive: boolean;
   currentStep: number;
-  currentStepData: ChatTutorialStep;
+  currentStepData: ChatTutorialStep | null;
   totalSteps: number;
   startTutorial: () => void;
   endTutorial: () => void;
