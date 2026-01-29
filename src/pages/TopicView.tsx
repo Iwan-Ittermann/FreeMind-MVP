@@ -301,7 +301,7 @@ export default function TopicView() {
                     <div className="flex gap-2">
                       <Button
                         onClick={handleOpenChat}
-                        className="flex-1 bg-primary hover:bg-primary/90 h-12 text-base"
+                        className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 h-12 text-base"
                       >
                         <MessageSquare className="w-5 h-5 mr-2" />
                         Open Chat
@@ -324,7 +324,7 @@ export default function TopicView() {
                       <Button
                         onClick={handleAcceptRequest}
                         disabled={isAccepting || isDeclining}
-                        className="flex-1 bg-accent hover:bg-accent/90 text-accent-foreground h-12 text-base"
+                        className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 h-12 text-base"
                       >
                         <Check className="w-5 h-5 mr-2" />
                         {isAccepting ? '...' : 'Accept'}
