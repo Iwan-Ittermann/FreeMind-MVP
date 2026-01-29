@@ -259,7 +259,7 @@ export function OpinionsSidebar({ open, onOpenChange, topicId }: OpinionsSidebar
                           <Button
                             onClick={() => handleOpenChat(opinion.id)}
                             size="sm"
-                            className="w-full bg-primary hover:bg-primary/90"
+                            className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                           >
                             <MessageSquare className="w-4 h-4 mr-2" />
                             {t('index.openChat', 'Open Chat')}
