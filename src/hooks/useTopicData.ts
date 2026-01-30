@@ -94,8 +94,10 @@ export function useTopicData(topicId: string) {
   useEffect(() => {
     if (!topicId) return;
 
+    // Use unique channel name with timestamp to avoid subscription conflicts across remounts
+    const channelName = `topic-${topicId}-realtime-${Date.now()}`;
     const channel = supabase
-      .channel(`topic-${topicId}-realtime`)
+      .channel(channelName)
       // Listen for opinion changes (new nodes, updates, deletes)
       .on(
         'postgres_changes',
@@ -106,7 +108,7 @@ export function useTopicData(topicId: string) {
           filter: `topic_id=eq.${topicId}`,
         },
         () => {
-          queryClient.invalidateQueries({ queryKey: ['topic', topicId] });
+          queryClient.refetchQueries({ queryKey: ['topic', topicId] });
         }
       )
       // Listen for chat rating changes (affects node positions)
@@ -118,7 +120,7 @@ export function useTopicData(topicId: string) {
           table: 'chat_ratings',
         },
         () => {
-          queryClient.invalidateQueries({ queryKey: ['topic', topicId] });
+          queryClient.refetchQueries({ queryKey: ['topic', topicId] });
         }
       )
       // Listen for new/updated chats (new edges)
@@ -131,7 +133,7 @@ export function useTopicData(topicId: string) {
           filter: `topic_id=eq.${topicId}`,
         },
         () => {
-          queryClient.invalidateQueries({ queryKey: ['topic', topicId] });
+          queryClient.refetchQueries({ queryKey: ['topic', topicId] });
         }
       )
       // Listen for fake_nodes changes (admin-managed fake opinions)
@@ -144,7 +146,7 @@ export function useTopicData(topicId: string) {
           filter: `topic_id=eq.${topicId}`,
         },
         () => {
-          queryClient.invalidateQueries({ queryKey: ['topic', topicId] });
+          queryClient.refetchQueries({ queryKey: ['topic', topicId] });
         }
       )
       // Listen for chat_request changes (pending request edges AND accepted edges for graph)
@@ -157,9 +159,9 @@ export function useTopicData(topicId: string) {
           filter: `topic_id=eq.${topicId}`,
         },
         () => {
-          // Invalidate both chatRequests AND topic (graph layout depends on accepted requests)
-          queryClient.invalidateQueries({ queryKey: ['chatRequests', topicId] });
-          queryClient.invalidateQueries({ queryKey: ['topic', topicId] });
+          // Force immediate refetch for both chatRequests AND topic
+          queryClient.refetchQueries({ queryKey: ['chatRequests', topicId] });
+          queryClient.refetchQueries({ queryKey: ['topic', topicId] });
         }
       )
       // Listen for new messages (activity indicator + animation)
@@ -223,6 +225,9 @@ export function useTopicData(topicId: string) {
                 lastActivity: Date.now(),
               }];
             });
+
+            // Also refetch unread messages to update badge counts immediately
+            queryClient.refetchQueries({ queryKey: ['unreadMessages', topicId] });
           }
         }
       )
