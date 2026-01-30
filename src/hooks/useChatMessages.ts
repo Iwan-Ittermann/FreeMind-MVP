@@ -48,12 +48,14 @@ export function useChatMessages(chatId: string | null): UseChatMessagesResult {
     enabled: !!chatId && !!user?.id,
   });
 
-  // Subscribe to real-time updates
+  // Subscribe to real-time updates with unique channel name
   useEffect(() => {
     if (!chatId) return;
 
+    // Use unique channel name with timestamp to avoid subscription conflicts
+    const channelName = `chat-messages-${chatId}-${Date.now()}`;
     const channel = supabase
-      .channel(`chat-${chatId}`)
+      .channel(channelName)
       .on(
         'postgres_changes',
         {
@@ -72,8 +74,8 @@ export function useChatMessages(chatId: string | null): UseChatMessagesResult {
             createdAt: new Date(newMsg.created_at),
           };
           
-          // Add message to cache if not already there
-          queryClient.setQueryData(['chat-messages', chatId], (old: ChatMessage[] = []) => {
+          // Add message to cache immediately if not already there
+          queryClient.setQueryData(['chat-messages', chatId, user?.id], (old: ChatMessage[] = []) => {
             if (old.some(m => m.id === message.id)) return old;
             return [...old, message];
           });

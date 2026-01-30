@@ -30,12 +30,14 @@ export function useChatRequests(topicId: string) {
     enabled: !!topicId,
   });
 
-  // Subscribe to realtime updates
+  // Subscribe to realtime updates with unique channel name
   useEffect(() => {
     if (!topicId) return;
 
+    // Use unique channel name with timestamp to avoid conflicts
+    const channelName = `chat-requests-${topicId}-${Date.now()}`;
     const channel = supabase
-      .channel('chat-requests-changes')
+      .channel(channelName)
       .on(
         'postgres_changes',
         {
@@ -45,7 +47,8 @@ export function useChatRequests(topicId: string) {
           filter: `topic_id=eq.${topicId}`,
         },
         () => {
-          queryClient.invalidateQueries({ queryKey: ['chatRequests', topicId] });
+          // Force immediate refetch instead of just invalidating
+          queryClient.refetchQueries({ queryKey: ['chatRequests', topicId] });
         }
       )
       .subscribe();

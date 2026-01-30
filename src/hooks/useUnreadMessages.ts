@@ -12,12 +12,14 @@ export function useUnreadMessages(topicId: string, myOpinionId: string | null | 
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
-  // Subscribe to real-time updates for new messages
+  // Subscribe to real-time updates for new messages with unique channel
   useEffect(() => {
     if (!topicId || !user?.id) return;
 
+    // Use unique channel name with timestamp to avoid subscription conflicts
+    const channelName = `unread-messages-${topicId}-${user.id}-${Date.now()}`;
     const channel = supabase
-      .channel(`unread-messages-${topicId}`)
+      .channel(channelName)
       .on(
         'postgres_changes',
         {
@@ -26,8 +28,8 @@ export function useUnreadMessages(topicId: string, myOpinionId: string | null | 
           table: 'chat_messages',
         },
         () => {
-          // Invalidate unread counts when new message arrives
-          queryClient.invalidateQueries({ queryKey: ['unreadMessages', topicId, myOpinionId] });
+          // Force immediate refetch instead of just invalidating
+          queryClient.refetchQueries({ queryKey: ['unreadMessages', topicId, myOpinionId] });
         }
       )
       .on(
@@ -38,8 +40,8 @@ export function useUnreadMessages(topicId: string, myOpinionId: string | null | 
           table: 'chat_messages',
         },
         () => {
-          // Invalidate when messages are marked as read
-          queryClient.invalidateQueries({ queryKey: ['unreadMessages', topicId, myOpinionId] });
+          // Force immediate refetch when messages are marked as read
+          queryClient.refetchQueries({ queryKey: ['unreadMessages', topicId, myOpinionId] });
         }
       )
       .subscribe();
