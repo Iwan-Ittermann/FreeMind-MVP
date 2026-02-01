@@ -15,6 +15,7 @@ import TopicJoin from "./pages/TopicJoin";
 import TopicView from "./pages/TopicView";
 import About from "./pages/About";
 import Legal from "./pages/Legal";
+import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +37,7 @@ function AppContent() {
           <Route path="/chat" element={<Chat />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/legal" element={<Legal />} />
+          <Route path="/landing" element={<Landing />} />
           <Route path="/t/:slug" element={<TopicJoin />} />
           <Route path="/topic/:topicId" element={<TopicView />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
