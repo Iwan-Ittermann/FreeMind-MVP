@@ -363,82 +363,93 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Dialog Zones Section - Parallax Scroll */}
-      <section ref={zonesRef} className="py-24 md:py-32 bg-foreground relative overflow-hidden min-h-[150vh]">
+      {/* Dialog Zones Section - Sticky Scroll */}
+      <section ref={zonesRef} className="bg-foreground relative">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-success/[0.02] to-transparent" />
         
-        <div className="container mx-auto px-6 max-w-6xl relative">
-          <motion.div className="text-center mb-12" {...fadeInUp}>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-medium mb-6">
-              Hass rutscht an den Rand
-            </h2>
-            <p className="text-lg text-background/50 max-w-2xl mx-auto">
-              Wer auf FreeMind respektlos mit gegnerischen Meinungen umgeht, rutscht automatisch an den Rand — 
-              hier gibt es keine Likes von Fans und Followern.
-            </p>
-          </motion.div>
+        {/* Scrollable container - height determines scroll duration */}
+        <div className="relative h-[300vh]">
+          {/* Sticky content that stays fixed while scrolling */}
+          <div className="sticky top-0 h-screen flex items-center overflow-hidden">
+            <div className="container mx-auto px-6 max-w-6xl">
+              <motion.div className="text-center mb-8 md:mb-12" {...fadeInUp}>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-medium mb-4 md:mb-6 text-background">
+                  Hass rutscht an den Rand
+                </h2>
+                <p className="text-base md:text-lg text-background/50 max-w-2xl mx-auto">
+                  Wer auf FreeMind respektlos mit gegnerischen Meinungen umgeht, rutscht automatisch an den Rand — 
+                  hier gibt es keine Likes von Fans und Followern.
+                </p>
+              </motion.div>
 
-          <div className="sticky top-24 flex flex-col lg:flex-row items-center gap-12 py-12">
-            {/* Animated Zone Circles */}
-            <div className="flex-1 flex justify-center">
-              <div className="relative w-[320px] h-[320px] md:w-[400px] md:h-[400px]">
-                {/* Zone 3 - Outer (Red/Primary) */}
-                <motion.div 
-                  className="absolute inset-0 rounded-full bg-primary/90 flex items-center justify-center"
-                  style={{ 
-                    scale: zoneTransforms[2].scale,
-                    opacity: zoneTransforms[2].opacity,
-                  }}
-                />
-                
-                {/* Zone 2 - Middle (Yellow/Accent) */}
-                <motion.div 
-                  className="absolute rounded-full bg-accent/95 flex items-center justify-center"
-                  style={{ 
-                    scale: zoneTransforms[1].scale,
-                    opacity: zoneTransforms[1].opacity,
-                    width: '66%',
-                    height: '66%',
-                    top: '17%',
-                    left: '17%',
-                  }}
-                />
-                
-                {/* Zone 1 - Center (Green/Success) */}
-                <motion.div 
-                  className="absolute rounded-full bg-success/90 flex items-center justify-center"
-                  style={{ 
-                    scale: zoneTransforms[0].scale,
-                    opacity: zoneTransforms[0].opacity,
-                    width: '33%',
-                    height: '33%',
-                    top: '33.5%',
-                    left: '33.5%',
-                  }}
-                >
-                  <span className="text-3xl md:text-4xl">👑</span>
-                </motion.div>
-              </div>
-            </div>
-
-            {/* Zone explanations - scroll triggered */}
-            <div className="flex-1 space-y-6">
-              {zones.map((zone, i) => (
-                <motion.div
-                  key={i}
-                  className="flex items-start gap-4 p-4 rounded-xl bg-background/[0.02] border border-background/10"
-                  style={{
-                    opacity: textTransforms[i].opacity,
-                    x: textTransforms[i].x,
-                  }}
-                >
-                  <div className={`w-4 h-4 rounded-full ${zone.colorClass} mt-1 flex-shrink-0`} />
-                  <div>
-                    <h4 className="font-medium text-background mb-1">{zone.name}</h4>
-                    <p className="text-sm text-background/50">{zone.description}</p>
+              <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+                {/* Static Zone Circles - always visible, zones animate in */}
+                <div className="flex-1 flex justify-center">
+                  <div className="relative w-[280px] h-[280px] md:w-[360px] md:h-[360px] lg:w-[400px] lg:h-[400px]">
+                    {/* Zone 3 - Outer (Red/Primary) */}
+                    <motion.div 
+                      className="absolute inset-0 rounded-full bg-primary/90"
+                      style={{ 
+                        scale: zoneTransforms[2].scale,
+                        opacity: zoneTransforms[2].opacity,
+                      }}
+                    />
+                    
+                    {/* Zone 2 - Middle (Yellow/Accent) */}
+                    <motion.div 
+                      className="absolute rounded-full bg-accent/95"
+                      style={{ 
+                        scale: zoneTransforms[1].scale,
+                        opacity: zoneTransforms[1].opacity,
+                        width: '66%',
+                        height: '66%',
+                        top: '17%',
+                        left: '17%',
+                      }}
+                    />
+                    
+                    {/* Zone 1 - Center (Green/Success) */}
+                    <motion.div 
+                      className="absolute rounded-full bg-success/90 flex items-center justify-center"
+                      style={{ 
+                        scale: zoneTransforms[0].scale,
+                        opacity: zoneTransforms[0].opacity,
+                        width: '33%',
+                        height: '33%',
+                        top: '33.5%',
+                        left: '33.5%',
+                      }}
+                    >
+                      <motion.span 
+                        className="text-2xl md:text-3xl lg:text-4xl"
+                        style={{ opacity: zoneTransforms[0].opacity }}
+                      >
+                        👑
+                      </motion.span>
+                    </motion.div>
                   </div>
-                </motion.div>
-              ))}
+                </div>
+
+                {/* Zone explanations - scroll triggered */}
+                <div className="flex-1 space-y-4 md:space-y-6 max-w-md lg:max-w-none">
+                  {zones.map((zone, i) => (
+                    <motion.div
+                      key={i}
+                      className="flex items-start gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-background/[0.02] border border-background/10"
+                      style={{
+                        opacity: textTransforms[i].opacity,
+                        x: textTransforms[i].x,
+                      }}
+                    >
+                      <div className={`w-3 h-3 md:w-4 md:h-4 rounded-full ${zone.colorClass} mt-1 flex-shrink-0`} />
+                      <div>
+                        <h4 className="font-medium text-background mb-1 text-sm md:text-base">{zone.name}</h4>
+                        <p className="text-xs md:text-sm text-background/50">{zone.description}</p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
