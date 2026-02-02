@@ -1,19 +1,22 @@
-import { useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FloatingChat } from '@/components/chat/FloatingChat';
 import { ChatTutorial } from '@/components/chat/ChatTutorial';
+import { FloatingHelpButton } from '@/components/FloatingHelpButton';
+import { VideoMiniPlayer } from '@/components/VideoMiniPlayer';
 import { useAuth } from '@/hooks/useAuth';
 import { useChatSession } from '@/hooks/useChatSession';
 import { useChatTutorialContext } from '@/contexts/ChatTutorialContext';
-import { hasChatTutorialBeenSeen } from '@/hooks/useChatTutorial';
 import { toast } from 'sonner';
+
+const VIDEO_URL = 'https://jmkbkwhiucnksdygbomc.supabase.co/storage/v1/object/public/tutorials/freemind-video-tutorial.mp4';
 
 export default function Chat() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
   const chatTutorial = useChatTutorialContext();
-  const tutorialAttemptedRef = useRef(false);
+  const [videoOpen, setVideoOpen] = useState(false);
   
   const theirOpinionIdParam = searchParams.get('their');
   const sourceOpinionIdParam = searchParams.get('source'); // For read-only edge viewing
@@ -35,23 +38,6 @@ export default function Chat() {
     averageBridgingScore,
   } = useChatSession(theirOpinionIdParam, isReadOnly ? sourceOpinionIdParam : undefined);
 
-  // Auto-start chat tutorial on first chat open (non-read-only)
-  useEffect(() => {
-    // Only attempt once per component mount
-    if (tutorialAttemptedRef.current) return;
-    
-    if (!isReadOnly && !isLoading && chatId && user) {
-      // Check if this is the user's first time opening a chat
-      if (!hasChatTutorialBeenSeen()) {
-        tutorialAttemptedRef.current = true;
-        // Small delay to ensure UI is rendered
-        const timer = setTimeout(() => {
-          chatTutorial.startTutorial();
-        }, 500);
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [isReadOnly, isLoading, chatId, user, chatTutorial.startTutorial]);
 
   const handleClose = () => {
     navigate('/home');
@@ -204,6 +190,19 @@ export default function Chat() {
         initialEmpathy={existingRating?.empathy}
         initialDisagreement={existingRating?.disagreement}
         averageBridgingScore={averageBridgingScore}
+      />
+
+      {/* Floating Help Button (non-read-only only) */}
+      <FloatingHelpButton
+        onStartTutorial={() => chatTutorial.startTutorial()}
+        onOpenVideo={() => setVideoOpen(true)}
+      />
+
+      {/* Video Mini Player */}
+      <VideoMiniPlayer
+        isOpen={videoOpen}
+        onClose={() => setVideoOpen(false)}
+        videoSrc={VIDEO_URL}
       />
 
       {/* Chat Tutorial Overlay */}

@@ -302,6 +302,16 @@
     "startTutorial": "Start Tutorial",
     "startChatTutorial": "Start Chat Tutorial"
   },
+  "help": {
+    "startTutorial": "Start Tutorial",
+    "watchVideo": "Watch Video",
+    "closeHelp": "Close"
+  },
+  "videoPlayer": {
+    "close": "Close video",
+    "expand": "Expand",
+    "minimize": "Minimize"
+  },
   "chatTutorial": {
     "intro": {
       "title": "Your First Chat",
