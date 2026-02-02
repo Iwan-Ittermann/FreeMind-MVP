@@ -31,13 +31,13 @@ function AppContent() {
       <BrowserRouter>
         <Routes>
           <Route path="/eching" element={<Splash />} />
-          <Route path="/" element={<About />} />
+          <Route path="/" element={<Landing />} />
+          <Route path="/about" element={<About />} />
           <Route path="/home" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/legal" element={<Legal />} />
-          <Route path="/landing" element={<Landing />} />
           <Route path="/t/:slug" element={<TopicJoin />} />
           <Route path="/topic/:topicId" element={<TopicView />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
