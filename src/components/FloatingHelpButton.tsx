@@ -7,9 +7,10 @@ import { cn } from '@/lib/utils';
 interface FloatingHelpButtonProps {
   onStartTutorial: () => void;
   onOpenVideo: () => void;
+  position?: 'bottom-right' | 'top-right';
 }
 
-export function FloatingHelpButton({ onStartTutorial, onOpenVideo }: FloatingHelpButtonProps) {
+export function FloatingHelpButton({ onStartTutorial, onOpenVideo, position = 'bottom-right' }: FloatingHelpButtonProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const { t } = useTranslation();
 
@@ -24,7 +25,12 @@ export function FloatingHelpButton({ onStartTutorial, onOpenVideo }: FloatingHel
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[60] flex flex-col-reverse items-end gap-3">
+    <div className={cn(
+      "fixed z-[60] flex items-end gap-3",
+      position === 'top-right' 
+        ? "top-16 right-4 flex-col" 
+        : "bottom-6 right-6 flex-col-reverse"
+    )}>
       {/* Main FAB button */}
       <motion.button
         onClick={() => setIsExpanded(!isExpanded)}
