@@ -8,6 +8,8 @@ import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Tutorial } from '@/components/Tutorial';
+import { FloatingHelpButton } from '@/components/FloatingHelpButton';
+import { VideoMiniPlayer } from '@/components/VideoMiniPlayer';
 import { ReportDialog } from '@/components/moderation/ReportDialog';
 import { GraphNode, GraphEdge, ChatRequest } from '@/types/graph';
 import { useTopicData } from '@/hooks/useTopicData';
@@ -20,6 +22,7 @@ import { useTutorialContext } from '@/contexts/TutorialContext';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
+const VIDEO_URL = 'https://jmkbkwhiucnksdygbomc.supabase.co/storage/v1/object/public/tutorials/freemind-video-tutorial.mp4';
 const DEFAULT_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
 
 const Index = () => {
@@ -29,6 +32,7 @@ const Index = () => {
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [graphSize, setGraphSize] = useState({ width: 600, height: 600 });
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const [videoOpen, setVideoOpen] = useState(false);
   const queryClient = useQueryClient();
   
   const { data: topicData, isLoading, error, activeChats, messageAnimations } = useTopicData(DEFAULT_TOPIC_ID);
@@ -353,6 +357,19 @@ const Index = () => {
 
       {/* Footer */}
       <Footer />
+
+      {/* Floating Help Button */}
+      <FloatingHelpButton
+        onStartTutorial={() => tutorial.startTutorial()}
+        onOpenVideo={() => setVideoOpen(true)}
+      />
+
+      {/* Video Mini Player */}
+      <VideoMiniPlayer
+        isOpen={videoOpen}
+        onClose={() => setVideoOpen(false)}
+        videoSrc={VIDEO_URL}
+      />
 
       {/* Tutorial Overlay */}
       <Tutorial
