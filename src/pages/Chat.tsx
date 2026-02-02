@@ -193,10 +193,11 @@ export default function Chat() {
         averageBridgingScore={averageBridgingScore}
       />
 
-      {/* Floating Help Button (non-read-only only) */}
+      {/* Floating Help Button - positioned near header to avoid rating scales */}
       <FloatingHelpButton
         onStartTutorial={() => chatTutorial.startTutorial()}
         onOpenVideo={() => setVideoOpen(true)}
+        position="top-right"
       />
 
       {/* Video Mini Player - starts at 00:39 for chat context */}
