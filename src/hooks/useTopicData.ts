@@ -51,7 +51,9 @@ function generateFakeNodeRatings(fakeNodeIds: string[]): ChatRating[] {
   // Create deterministic ratings between fake nodes
   for (let i = 0; i < fakeNodeIds.length; i++) {
     for (let j = i + 1; j < fakeNodeIds.length; j++) {
-      const seedStr = `${fakeNodeIds[i]}-${fakeNodeIds[j]}`;
+      // IMPORTANT: make the seed order-invariant so all clients generate
+      // identical fake ratings regardless of fetch ordering.
+      const seedStr = [fakeNodeIds[i], fakeNodeIds[j]].sort().join('-');
       const rng = seededRandom(seedStr);
       
       // Empathy: -20 to +50
@@ -240,6 +242,16 @@ export function useTopicData(topicId: string) {
 
   const query = useQuery({
     queryKey: ['topic', topicId],
+    enabled: !!topicId,
+    // Fallback for browsers/environments where realtime websocket events can be
+    // delayed/blocked: keep the graph consistent by periodically refreshing.
+    // (Also helps recover from missed events / reconnects.)
+    refetchInterval: () => {
+      if (typeof document === 'undefined') return false;
+      return document.visibilityState === 'visible' ? 4000 : false;
+    },
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
     queryFn: async (): Promise<TopicData> => {
       // Fetch topic
       const { data: topic, error: topicError } = await supabase
@@ -256,7 +268,8 @@ export function useTopicData(topicId: string) {
         .from('opinions_public')
         .select('*')
         .eq('topic_id', topicId)
-        .eq('visible', true);
+        .eq('visible', true)
+        .order('id', { ascending: true });
 
       if (opinionsError) throw opinionsError;
 
@@ -264,7 +277,8 @@ export function useTopicData(topicId: string) {
       const { data: fakeNodes, error: fakeNodesError } = await supabase
         .from('fake_nodes')
         .select('*')
-        .eq('topic_id', topicId);
+        .eq('topic_id', topicId)
+        .order('id', { ascending: true });
 
       if (fakeNodesError) throw fakeNodesError;
 
@@ -298,7 +312,9 @@ export function useTopicData(topicId: string) {
       }));
 
       // Combine real and fake opinions
-      const allOpinions = [...formattedOpinions, ...fakeOpinions];
+      const allOpinions = [...formattedOpinions, ...fakeOpinions]
+        // Stable ordering across clients (helps deterministic layout)
+        .sort((a, b) => a.id.localeCompare(b.id));
 
       // Build deterministic graph edges/weights from aggregated ratings
       // Default empathy: 0 (neutral), default disagreement: 50 (middle)
@@ -310,7 +326,7 @@ export function useTopicData(topicId: string) {
       }));
 
       // Generate ratings for fake nodes (connections between fake nodes only)
-      const fakeNodeIds = fakeOpinions.map(op => op.id);
+      const fakeNodeIds = fakeOpinions.map(op => op.id).sort();
       const fakeRatings = generateFakeNodeRatings(fakeNodeIds);
 
       // Combine real and fake ratings
