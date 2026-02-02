@@ -11,7 +11,6 @@ import { Tutorial } from '@/components/Tutorial';
 import { FloatingHelpButton } from '@/components/FloatingHelpButton';
 import { VideoMiniPlayer } from '@/components/VideoMiniPlayer';
 import { ReportDialog } from '@/components/moderation/ReportDialog';
-import { ReportDialog } from '@/components/moderation/ReportDialog';
 import { GraphNode, GraphEdge, ChatRequest } from '@/types/graph';
 import { useTopicData } from '@/hooks/useTopicData';
 import { useChatRequests } from '@/hooks/useChatRequests';
@@ -386,6 +385,19 @@ export default function TopicView() {
 
       {/* Footer */}
       <Footer />
+
+      {/* Floating Help Button */}
+      <FloatingHelpButton
+        onStartTutorial={() => tutorial.startTutorial()}
+        onOpenVideo={() => setVideoOpen(true)}
+      />
+
+      {/* Video Mini Player */}
+      <VideoMiniPlayer
+        isOpen={videoOpen}
+        onClose={() => setVideoOpen(false)}
+        videoSrc={VIDEO_URL}
+      />
 
       {/* Tutorial Overlay */}
       <Tutorial
