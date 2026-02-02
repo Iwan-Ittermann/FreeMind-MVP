@@ -8,6 +8,9 @@ import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Tutorial } from '@/components/Tutorial';
+import { FloatingHelpButton } from '@/components/FloatingHelpButton';
+import { VideoMiniPlayer } from '@/components/VideoMiniPlayer';
+import { ReportDialog } from '@/components/moderation/ReportDialog';
 import { ReportDialog } from '@/components/moderation/ReportDialog';
 import { GraphNode, GraphEdge, ChatRequest } from '@/types/graph';
 import { useTopicData } from '@/hooks/useTopicData';
@@ -21,6 +24,8 @@ import { useTutorialContext } from '@/contexts/TutorialContext';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
+const VIDEO_URL = 'https://jmkbkwhiucnksdygbomc.supabase.co/storage/v1/object/public/tutorials/freemind-video-tutorial.mp4';
+
 export default function TopicView() {
   const { topicId } = useParams<{ topicId: string }>();
   const navigate = useNavigate();
@@ -29,6 +34,7 @@ export default function TopicView() {
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [graphSize, setGraphSize] = useState({ width: 600, height: 600 });
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const [videoOpen, setVideoOpen] = useState(false);
   const queryClient = useQueryClient();
   
   const { data: hasJoined, isLoading: joinedLoading } = useHasJoinedTopic(topicId || '');
