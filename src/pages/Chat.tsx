@@ -10,6 +10,7 @@ import { useChatTutorialContext } from '@/contexts/ChatTutorialContext';
 import { toast } from 'sonner';
 
 const VIDEO_URL = 'https://jmkbkwhiucnksdygbomc.supabase.co/storage/v1/object/public/tutorials/freemind-video-tutorial.mp4';
+const CHAT_VIDEO_START_TIME = 39; // Start at 00:39 for chat-specific tutorial
 
 export default function Chat() {
   const navigate = useNavigate();
@@ -198,11 +199,12 @@ export default function Chat() {
         onOpenVideo={() => setVideoOpen(true)}
       />
 
-      {/* Video Mini Player */}
+      {/* Video Mini Player - starts at 00:39 for chat context */}
       <VideoMiniPlayer
         isOpen={videoOpen}
         onClose={() => setVideoOpen(false)}
         videoSrc={VIDEO_URL}
+        startTime={CHAT_VIDEO_START_TIME}
       />
 
       {/* Chat Tutorial Overlay */}

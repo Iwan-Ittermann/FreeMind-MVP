@@ -258,7 +258,7 @@ export default function About() {
         <Link to="/home">
           <Button 
             size="lg" 
-            className="shadow-2xl shadow-primary/30 animate-pulse px-8"
+            className="shadow-2xl shadow-primary/30 animate-pulse-fast px-8"
           >
             {t("about.cta.getStarted")}
             <ArrowRight className="ml-2 h-4 w-4" />

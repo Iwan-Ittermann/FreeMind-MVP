@@ -8,9 +8,10 @@ interface VideoMiniPlayerProps {
   isOpen: boolean;
   onClose: () => void;
   videoSrc: string;
+  startTime?: number; // Start time in seconds
 }
 
-export function VideoMiniPlayer({ isOpen, onClose, videoSrc }: VideoMiniPlayerProps) {
+export function VideoMiniPlayer({ isOpen, onClose, videoSrc, startTime }: VideoMiniPlayerProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -24,6 +25,13 @@ export function VideoMiniPlayer({ isOpen, onClose, videoSrc }: VideoMiniPlayerPr
       setPosition({ x: 0, y: 0 });
     }
   }, [isOpen]);
+
+  // Set start time when video opens
+  useEffect(() => {
+    if (isOpen && videoRef.current && startTime !== undefined) {
+      videoRef.current.currentTime = startTime;
+    }
+  }, [isOpen, startTime]);
 
   // Pause video when minimizing or closing
   const handleClose = () => {
