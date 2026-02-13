@@ -7,6 +7,8 @@ import { MessageDots } from './MessageDots';
 import { calculateLayout, generateMockData } from '@/lib/freemind-layout';
 import { GraphNode, GraphEdge, LayoutConfig, Opinion, ChatRating, ChatRequest, GreenZoneSlot } from '@/types/graph';
 import { ActiveChat, MessageAnimationData } from '@/hooks/useTopicData';
+import { useFreeMindTheme } from '@/themes/ThemeContext';
+import { CityRenderer } from '@/themes/city/CityRenderer';
 
 interface OpinionGraphProps {
   opinions?: Opinion[];
@@ -129,6 +131,30 @@ export function OpinionGraph({
   const handleNodeHover = useCallback((node: GraphNode | null) => {
     setHighlightedNode(node?.id || null);
   }, []);
+
+  const theme = useFreeMindTheme();
+
+  if (theme === 'city') {
+    return (
+      <div className="relative">
+        <CityRenderer
+          nodes={graphData.nodes}
+          edges={graphData.edges}
+          config={config}
+          width={width}
+          height={height}
+          highlightedNode={highlightedNode || selectedNode?.id || null}
+          currentUserId={currentUserId || null}
+          currentUserOpinionId={currentUserOpinionId || null}
+          activeChats={activeChats}
+          messageAnimations={messageAnimations}
+          onNodeClick={handleNodeClick}
+          onNodeHover={handleNodeHover}
+          onEdgeClick={onEdgeClick}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="relative">

@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { TutorialProvider } from "@/contexts/TutorialContext";
 import { ChatTutorialProvider } from "@/contexts/ChatTutorialContext";
 import { useDynamicSiteTitle } from "@/hooks/useDynamicSiteTitle";
+import { FreeMindThemeProvider } from "@/themes/ThemeContext";
 import Splash from "./pages/Splash";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -51,11 +52,13 @@ function AppContent() {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <TutorialProvider>
-        <ChatTutorialProvider>
-          <AppContent />
-        </ChatTutorialProvider>
-      </TutorialProvider>
+      <FreeMindThemeProvider>
+        <TutorialProvider>
+          <ChatTutorialProvider>
+            <AppContent />
+          </ChatTutorialProvider>
+        </TutorialProvider>
+      </FreeMindThemeProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
