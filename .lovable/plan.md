@@ -1,289 +1,146 @@
 
-
-# Tutorial Triggers Redesign + Expandable Video Player
+# FreeMind City Metaphor Layer -- Implementation Plan
 
 ## Overview
-
-This plan removes all automatic tutorial triggers and replaces them with floating action buttons (FABs) on `/home` and `/chat`. The uploaded video tutorial will be hosted on Lovable Cloud Storage and played in an **expandable mini-player**.
-
----
-
-## Video Hosting: Lovable Cloud Storage
-
-The uploaded video `FreeMind_VideoTutorial_mit_UT.mp4` will be stored in a new Lovable Cloud Storage bucket.
-
-### Storage Setup
-
-**Create a public storage bucket:**
-
-```sql
-INSERT INTO storage.buckets (id, name, public)
-VALUES ('tutorials', 'tutorials', true);
-
--- RLS policy: Allow public read access
-CREATE POLICY "Public can view tutorial videos"
-ON storage.objects FOR SELECT
-USING (bucket_id = 'tutorials');
-```
-
-**Video file will be uploaded to:**
-`tutorials/freemind-video-tutorial.mp4`
-
-**Public URL format:**
-`https://jmkbkwhiucnksdygbomc.supabase.co/storage/v1/object/public/tutorials/freemind-video-tutorial.mp4`
+Add a city-metaphor visual layer to the existing FreeMind graph. When users visit via `freemind.city`, they see the city theme; via `freemind.chat`, they see the classic graph. Both share the same backend, layout engine, and data.
 
 ---
 
-## Implementation Plan
+## Architecture
 
-### Phase 1: Remove Automatic Tutorial Triggers
-
-**File: `src/pages/Auth.tsx`**
-- Remove lines 116-119 (auto-start tutorial after signup)
-- Keep navigation to `/home` after signup
-- Remove `startTutorial` and `hasCompletedTutorial` imports from TutorialContext
-
-**File: `src/pages/Chat.tsx`**
-- Remove lines 38-54 (auto-start chat tutorial on first open)
-- Remove `tutorialAttemptedRef` ref (line 16)
-- Remove `hasChatTutorialBeenSeen` import (line 8)
-
----
-
-### Phase 2: Create New Components
-
-#### 2.1 FloatingHelpButton Component
-
-**New file: `src/components/FloatingHelpButton.tsx`**
-
-Features:
-- Fixed position FAB in bottom-right corner
-- Expandable radial menu with smooth animations (Framer Motion)
-- Three buttons when expanded:
-  - **Tutorial** (GraduationCap icon)
-  - **Video** (Play icon)
-  - **Close** (X icon)
-- Semi-transparent with backdrop blur
-- Touch-friendly (larger targets on mobile)
+The implementation follows the three-layer separation from the spec, but within the existing single-app Vite codebase.
 
 ```text
-Collapsed state:     Expanded state:
-                     
-    ┌───┐               [Tutorial 🎓]
-    │ ? │      →        [Video ▶]
-    └───┘               ┌───┐
-                        │ ✕ │
-                        └───┘
-```
-
-**Props:**
-```typescript
-interface FloatingHelpButtonProps {
-  onStartTutorial: () => void;
-  onOpenVideo: () => void;
-  tutorialLabel?: string;
-  videoLabel?: string;
-}
-```
-
-#### 2.2 VideoMiniPlayer Component
-
-**New file: `src/components/VideoMiniPlayer.tsx`**
-
-Features:
-- **Two modes:** Mini (320×180px corner) and Expanded (80% viewport)
-- Draggable in mini mode
-- Toggle button to expand/collapse
-- Close button
-- Standard HTML5 video controls
-- Smooth scale/position animations
-
-```text
-Mini Mode:                    Expanded Mode:
-┌─────────────────────────┐   ┌─────────────────────────────────────┐
-│ ═══════════ [⬜][✕] │   │                                     │
-│                         │   │                                     │
-│      ▶ Video            │   │          ▶ Video (large)           │
-│      320×180            │   │             80% viewport            │
-│                         │   │                                     │
-└─────────────────────────┘   │                                     │
-                              │ ═════════════════════ [🔲][✕] │
-                              └─────────────────────────────────────┘
-```
-
-**Props:**
-```typescript
-interface VideoMiniPlayerProps {
-  isOpen: boolean;
-  onClose: () => void;
-  videoSrc: string;
-}
+src/
+  themes/
+    types.ts              -- Layer B: Semantic token interfaces
+    tokenizer.ts          -- Layer B: GraphNode/Edge -> SemanticToken mapper
+    ThemeContext.tsx       -- Theme provider (domain detection)
+    classic/
+      ClassicRenderer.tsx -- Wraps existing OpinionGraph (Layer C - classic)
+    city/
+      CityRenderer.tsx    -- Layer C: City theme entry point
+      CityZones.tsx       -- Concentric zone backgrounds (marketplace, quarters, periphery, meadow)
+      CityNode.tsx        -- House/tent SVG rendering per node token
+      CityEdge.tsx        -- Road rendering per edge token
+      CityEventMarker.tsx -- Light pulse animations for events
+      CityCluster.tsx     -- Soft cluster background fields
+      house-shapes.ts     -- Inline SVG house generators (pastel isometric style)
 ```
 
 ---
 
-### Phase 3: Integrate Components
+## Phase 1: Semantic Token Layer (Layer B)
 
-**File: `src/pages/TopicView.tsx` (which is `/home`)**
+Create a strict TypeScript interface that translates raw graph data into normalized tokens. This is a pure function layer with no visual decisions.
 
-- Import `FloatingHelpButton` and `VideoMiniPlayer`
-- Add state for video player: `const [videoOpen, setVideoOpen] = useState(false)`
-- Add FloatingHelpButton before the Tutorial component:
-  ```typescript
-  <FloatingHelpButton
-    onStartTutorial={() => tutorial.startTutorial()}
-    onOpenVideo={() => setVideoOpen(true)}
-  />
-  <VideoMiniPlayer
-    isOpen={videoOpen}
-    onClose={() => setVideoOpen(false)}
-    videoSrc="https://jmkbkwhiucnksdygbomc.supabase.co/storage/v1/object/public/tutorials/freemind-video-tutorial.mp4"
-  />
-  ```
+**New file: `src/themes/types.ts`**
+- `SemanticNodeToken`: zone, activityLevel, heightFactor, radius, bridgingScore, clusterId, nodeRole, isOnline, hasUnread, etc.
+- `SemanticEdgeToken`: respectLevel, length, edgeRole, isActive, isPending
+- `SemanticEventToken`: eventType (cluster-bridge, respect-threshold, zone-entry, rating-complete)
+- `ThemeRenderer` interface: renderZone, renderNode, renderEdge, renderEvent
 
-**File: `src/pages/Chat.tsx`**
-
-- Import `FloatingHelpButton` and `VideoMiniPlayer`
-- Add state for video player
-- Add FloatingHelpButton to non-read-only mode (after FloatingChat):
-  ```typescript
-  {!isReadOnly && (
-    <>
-      <FloatingHelpButton
-        onStartTutorial={() => chatTutorial.startTutorial()}
-        onOpenVideo={() => setVideoOpen(true)}
-      />
-      <VideoMiniPlayer
-        isOpen={videoOpen}
-        onClose={() => setVideoOpen(false)}
-        videoSrc="https://..."
-      />
-    </>
-  )}
-  ```
+**New file: `src/themes/tokenizer.ts`**
+- `tokenizeNode(node: GraphNode, config: LayoutConfig) -> SemanticNodeToken`
+- `tokenizeEdge(edge: GraphEdge, nodes: GraphNode[]) -> SemanticEdgeToken`
+- Pure functions, deterministic, read-only over graph data
 
 ---
 
-### Phase 4: Add Translations
+## Phase 2: Theme Context and Domain Detection
 
-**File: `src/i18n/locales/en.json`**
-```json
-{
-  "help": {
-    "startTutorial": "Start Tutorial",
-    "watchVideo": "Watch Video",
-    "closeHelp": "Close"
-  },
-  "videoPlayer": {
-    "close": "Close video",
-    "expand": "Expand",
-    "minimize": "Minimize"
-  }
-}
-```
+**New file: `src/themes/ThemeContext.tsx`**
+- Detects hostname at startup
+- `freemind.city` or `localhost` with `?theme=city` -> CityTheme
+- Everything else -> ClassicTheme
+- Exposes `useTheme()` hook returning current theme name
+- No runtime theme editing in production (per spec)
 
-**File: `src/i18n/locales/de.json`**
-```json
-{
-  "help": {
-    "startTutorial": "Tutorial starten",
-    "watchVideo": "Video ansehen",
-    "closeHelp": "Schließen"
-  },
-  "videoPlayer": {
-    "close": "Video schließen",
-    "expand": "Vergrößern",
-    "minimize": "Verkleinern"
-  }
-}
-```
+**Modified: `src/components/graph/OpinionGraph.tsx`** (or a new wrapper)
+- When theme is "city", render `CityRenderer` instead of existing SVG components
+- When theme is "classic", render existing components unchanged
+- All interaction handlers (click, hover) remain centralized in `OpinionGraph`
 
 ---
 
-## File Changes Summary
+## Phase 3: City Theme Renderer (Layer C)
 
-### New Files
+### 3a. Zone Rendering (`CityZones.tsx`)
+- Core/green zone -> Marketplace: pastel green fill, subtle grid pattern
+- Middle/yellow -> Quarters: warm pastel fill, faint block pattern
+- Outer/pink -> Periphery: muted red-pink, sparse texture
+- Beyond boundary -> Meadow: soft green gradient fading out
+- Concentric rings rendered as SVG circles with themed fills
 
-| File | Purpose |
-|------|---------|
-| `src/components/FloatingHelpButton.tsx` | Expandable FAB with tutorial/video options |
-| `src/components/VideoMiniPlayer.tsx` | Expandable draggable video player |
+### 3b. Node Rendering (`CityNode.tsx` + `house-shapes.ts`)
+- Each node token mapped to a house SVG:
+  - **Core zone**: Larger public buildings (wider base, taller, flag/detail on top)
+  - **Middle zone**: Medium residential houses (pitched roof, windows, chimney)
+  - **Outer zone**: Small fragmented houses (narrow, fewer details)
+  - **Inactive**: Small tent/triangle shape
+- Size driven by `activityLevel`, height by `heightFactor`
+- Color derived from cluster mapping (pastel palette)
+- Current user's house has a distinct accent (glow or banner)
+- Online indicator: small green lamp in window
+- Unread badge: small envelope icon above roof
+- Houses rendered above roads (z-index via SVG ordering)
 
-### Modified Files
+### 3c. Edge Rendering (`CityEdge.tsx`)
+- Chat connections rendered as roads (wider strokes, slight texture via stroke pattern)
+- Width: constant base width
+- Color/opacity derived from `respectLevel`
+- Pending roads: dashed/cobblestone pattern
+- Active roads: subtle warm glow
+- Rendered before nodes in SVG (beneath houses)
 
-| File | Changes |
-|------|---------|
-| `src/pages/Auth.tsx` | Remove auto-tutorial trigger (lines 116-119) |
-| `src/pages/Chat.tsx` | Remove auto-chat-tutorial trigger, add FloatingHelpButton + VideoMiniPlayer |
-| `src/pages/TopicView.tsx` | Add FloatingHelpButton + VideoMiniPlayer |
-| `src/i18n/locales/en.json` | Add help and videoPlayer translation keys |
-| `src/i18n/locales/de.json` | Add German translations |
+### 3d. Event Markers (`CityEventMarker.tsx`)
+- Small light orb that travels along a road once
+- Triggered by: first cluster connection, respect threshold, zone entry, rating completion
+- Duration: 1-2 seconds, then fade
+- Max 1-2 simultaneous per edge, overflow queued
+- No continuous or ambient animation
 
-### Database Migration
-
-Create storage bucket for video hosting:
-```sql
-INSERT INTO storage.buckets (id, name, public) VALUES ('tutorials', 'tutorials', true);
-
-CREATE POLICY "Public can view tutorial videos"
-ON storage.objects FOR SELECT
-USING (bucket_id = 'tutorials');
-```
-
----
-
-## UI Design Details
-
-### Floating Help Button
-
-| Property | Value |
-|----------|-------|
-| Position | Fixed, bottom: 24px, right: 24px |
-| Size (collapsed) | 56px diameter |
-| Size (expanded options) | 48px diameter each |
-| Background | `bg-primary` with ring glow |
-| Animation | Spring physics for expand/collapse |
-| Z-index | 40 (below modals) |
-
-### Video Mini Player
-
-| Property | Mini Mode | Expanded Mode |
-|----------|-----------|---------------|
-| Position | Bottom-right, draggable | Center, fixed |
-| Size | 320×180px (16:9) | 80vw × 45vw (max 1280×720) |
-| Background | Black with shadow | Black with backdrop overlay |
-| Controls | Native HTML5 | Native HTML5 |
-| Animation | Scale + opacity | Scale from mini position |
+### 3e. Cluster Visualization (`CityCluster.tsx`)
+- Soft pastel background fields behind groups of houses
+- Derived from polar angle grouping
+- Updates only on significant cluster changes
+- No hard borders, gradient edges
 
 ---
 
-## Technical Details
+## Phase 4: Interaction Handling
 
-### Video File Handling
+All click/hover logic stays centralized in `OpinionGraph.tsx` (or a shared handler). The city renderer dispatches the same semantic interaction events:
+- Node click -> opinion actions panel (same as classic)
+- Node hover -> highlight house + connected roads
+- Edge click -> chat view
+- Pointer priority: nodes over edges (SVG render order)
 
-The uploaded video file will be:
-1. Copied to the project temporarily
-2. Uploaded to Lovable Cloud Storage bucket via migration
-3. Referenced by public URL in the VideoMiniPlayer
-
-### Responsive Behavior
-
-- **Mobile:** FAB 56px, video expands to 95vw
-- **Desktop:** FAB 48px, video expands to 80vw max
-
-### Performance
-
-- Video uses `preload="metadata"` (don't load full video until play)
-- Player only mounts when `isOpen={true}`
-- Animations use `will-change` for GPU acceleration
+No inline business logic in CityNode or CityEdge components.
 
 ---
 
-## Next Steps After Implementation
+## Phase 5: Domain Setup
 
-1. Run database migration to create storage bucket
-2. Upload video file to storage bucket
-3. Test floating button on `/home` and `/chat`
-4. Test video player expand/collapse functionality
-5. Verify tutorials still work when triggered from FAB
+- Connect `freemind.city` as a custom domain in Lovable project settings (Settings -> Domains)
+- Both domains serve the same deployed app
+- Theme detection happens client-side via `window.location.hostname`
 
+---
+
+## What Does NOT Change
+- Layout algorithm (`freemind-layout.ts`) -- untouched
+- Data layer (all hooks, Supabase queries) -- untouched
+- Chat, ratings, moderation, admin -- untouched
+- Classic theme rendering -- untouched (just wrapped)
+- Backend/database -- no changes needed
+
+---
+
+## Technical Notes
+
+- All SVG house shapes are generated inline via TypeScript functions (no external asset files). They use simple geometric primitives (rect, polygon, circle) styled with pastel colors to match the Freepik reference aesthetic.
+- The semantic token layer uses `Readonly<>` TypeScript types to enforce immutability at compile time.
+- The `ThemeRenderer` interface ensures any future theme (minimal, abstract) can be added by implementing 4 render functions.
+- Performance: SVG-based like the current graph. Event-driven re-renders only. No polling loops in the theme layer.
+- The MiniGraph component in the chat view will also respect the active theme.
