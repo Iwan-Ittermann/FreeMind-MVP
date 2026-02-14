@@ -8,6 +8,7 @@ import { CityCluster } from './CityCluster';
 import { CityEdge } from './CityEdge';
 import { CityNode } from './CityNode';
 import { CityEventMarker } from './CityEventMarker';
+import { useAppSetting } from '@/hooks/useAppSettings';
 
 interface CityRendererProps {
   nodes: GraphNode[];
@@ -25,28 +26,31 @@ interface CityRendererProps {
   onEdgeClick?: (edge: GraphEdge) => void;
 }
 
+const ZONE_PRIORITY: Record<string, number> = { core: 0, middle: 1, outer: 2, inactive: 3 };
+
 export function CityRenderer({
-  nodes,
-  edges,
-  config,
-  width,
-  height,
-  highlightedNode,
-  currentUserId,
-  currentUserOpinionId,
-  activeChats,
-  messageAnimations,
-  onNodeClick,
-  onNodeHover,
-  onEdgeClick,
+  nodes, edges, config, width, height,
+  highlightedNode, currentUserId, currentUserOpinionId,
+  activeChats, messageAnimations,
+  onNodeClick, onNodeHover, onEdgeClick,
 }: CityRendererProps) {
   const nodeMap = useMemo(() => new Map(nodes.map(n => [n.id, n])), [nodes]);
 
-  // Tokenize
+  const { data: maxBubblesSetting } = useAppSetting('max_speech_bubbles');
+  const maxBubbles = parseInt(maxBubblesSetting?.value || '15', 10);
+
   const nodeTokens: readonly SemanticNodeToken[] = useMemo(
     () => tokenizeNodesWithCoreCap(nodes, config, edges, currentUserId, currentUserOpinionId),
     [nodes, config, edges, currentUserId, currentUserOpinionId],
   );
+
+  // Determine which nodes get speech bubbles (priority by zone)
+  const speechBubbleIds = useMemo(() => {
+    const sorted = [...nodeTokens].sort((a, b) => 
+      (ZONE_PRIORITY[a.zone] ?? 9) - (ZONE_PRIORITY[b.zone] ?? 9)
+    );
+    return new Set(sorted.slice(0, maxBubbles).map(n => n.id));
+  }, [nodeTokens, maxBubbles]);
 
   const edgeTokens: readonly SemanticEdgeToken[] = useMemo(
     () => edges.map(e => tokenizeEdge(e, nodeMap, activeChats)),
@@ -55,7 +59,6 @@ export function CityRenderer({
 
   const zoneTokens = useMemo(() => tokenizeZones(config), [config]);
 
-  // Convert message animations to event tokens
   const eventTokens: readonly SemanticEventToken[] = useMemo(() => {
     return messageAnimations.map(anim => {
       const source = nodeMap.get(anim.sourceOpinionId);
@@ -73,7 +76,6 @@ export function CityRenderer({
     });
   }, [messageAnimations, nodeMap]);
 
-  // Centralized interaction handlers — dispatch with original GraphNode/Edge
   const handleNodeClick = useCallback(
     (id: string) => {
       const node = nodeMap.get(id);
@@ -108,21 +110,10 @@ export function CityRenderer({
   );
 
   return (
-    <svg
-      width={width}
-      height={height}
-      className="overflow-visible"
-    >
-      {/* Transparent background — sits on dark page bg */}
+    <svg width={width} height={height} className="overflow-visible">
       <rect width={width} height={height} fill="transparent" />
-
-      {/* Zones (concentric) */}
       <CityZones zones={zoneTokens} config={config} />
-
-      {/* Cluster backgrounds */}
       <CityCluster nodes={nodeTokens} />
-
-      {/* Sandy paths (beneath houses) */}
       <g className="city-edges">
         {edgeTokens.map((et, i) => (
           <CityEdge
@@ -134,11 +125,7 @@ export function CityRenderer({
           />
         ))}
       </g>
-
-      {/* Event markers */}
       <CityEventMarker events={eventTokens} />
-
-      {/* Houses (above paths) */}
       <g className="city-nodes">
         {nodeTokens.map(nt => (
           <CityNode
@@ -146,6 +133,7 @@ export function CityRenderer({
             token={nt}
             isHighlighted={highlightedNode === nt.id}
             isDimmed={!!(highlightedNode && highlightedNode !== nt.id)}
+            showSpeechBubble={speechBubbleIds.has(nt.id)}
             onClick={() => handleNodeClick(nt.id)}
             onMouseEnter={() => handleNodeHover(nt.id)}
             onMouseLeave={() => handleNodeHover(null)}

@@ -1,24 +1,12 @@
 import React, { createContext, useContext, ReactNode } from 'react';
-import { useTutorial } from '@/hooks/useTutorial';
+import { useOnboardingTutorial } from '@/hooks/useOnboardingTutorial';
 
-interface TutorialContextType {
-  isActive: boolean;
-  currentStep: number;
-  currentStepData: ReturnType<typeof useTutorial>['currentStepData'];
-  totalSteps: number;
-  startTutorial: () => void;
-  endTutorial: () => void;
-  nextStep: () => void;
-  prevStep: () => void;
-  skipTutorial: () => void;
-  hasCompletedTutorial: () => boolean;
-  resetTutorialStatus: () => void;
-}
+type TutorialContextType = ReturnType<typeof useOnboardingTutorial>;
 
 const TutorialContext = createContext<TutorialContextType | null>(null);
 
 export function TutorialProvider({ children }: { children: ReactNode }) {
-  const tutorial = useTutorial();
+  const tutorial = useOnboardingTutorial();
 
   return (
     <TutorialContext.Provider value={tutorial}>

@@ -300,7 +300,19 @@
     "next": "Weiter",
     "finish": "Fertig",
     "startTutorial": "Tutorial starten",
-    "startChatTutorial": "Chat-Tutorial starten"
+    "startChatTutorial": "Chat-Tutorial starten",
+    "waitingForAction": "👆 Führe die Aktion oben aus!"
+  },
+  "unifiedTutorial": {
+    "welcome": { "title": "Willkommen!", "text": "Willkommen bei FreeMind! Wir zeigen dir die Grundlagen." },
+    "addOpinion": { "title": "Teile deine Meinung", "text": "Klicke auf 'Meinung hinzufügen' um deine Perspektive zum Thema zu teilen." },
+    "yourTent": { "title": "Dein Zelt", "text": "Das ist dein Zelt auf der Karte! Wenn du mit anderen chattest, wird es zu einem Haus." },
+    "exploreOpinions": { "title": "Entdecke Andere", "text": "Klicke auf 2 andere Häuser und lies ihre Meinungen." },
+    "requestChat": { "title": "Chat anfragen", "text": "Klicke jetzt auf 'Chat anfragen' bei einer Meinung, um ein Gespräch zu starten." },
+    "nowWeWait": { "title": "Jetzt warten wir!", "text": "Deine Anfrage wurde gesendet! Warte auf eine Antwort oder akzeptiere eine eingehende Anfrage." },
+    "chatStarted": { "title": "Dein erster Chat", "text": "Benutze die Bewertungsskalen um euren Chat zu bewerten. Deine Bewertungen beeinflussen deine Position im Graphen." },
+    "done": { "title": "Du bist bereit!", "text": "Glückwunsch! Du weißt alles, was du brauchst. Viel Spaß beim Brücken bauen!" }
+  },
   },
   "help": {
     "startTutorial": "Tutorial starten",

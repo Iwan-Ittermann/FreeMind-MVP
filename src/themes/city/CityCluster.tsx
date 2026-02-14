@@ -11,22 +11,33 @@ interface ClusterField {
   rx: number;
   ry: number;
   fill: string;
+  strokeColor: string;
+  avgZone: string;
 }
 
-const CLUSTER_BG_COLORS = [
-  'rgba(255,214,224,0.18)',
-  'rgba(212,231,255,0.18)',
-  'rgba(213,245,227,0.18)',
-  'rgba(255,243,205,0.18)',
-  'rgba(232,213,245,0.18)',
-  'rgba(255,229,204,0.18)',
-  'rgba(204,242,244,0.18)',
-  'rgba(245,213,213,0.18)',
-];
+// Zone-themed cluster colors
+function getClusterColor(avgZone: string, index: number): { fill: string; stroke: string } {
+  if (avgZone === 'core' || avgZone === 'middle') {
+    const greens = [
+      { fill: 'hsla(130, 45%, 40%, 0.18)', stroke: 'hsla(130, 45%, 40%, 0.3)' },
+      { fill: 'hsla(150, 40%, 38%, 0.18)', stroke: 'hsla(150, 40%, 38%, 0.3)' },
+      { fill: 'hsla(110, 35%, 42%, 0.18)', stroke: 'hsla(110, 35%, 42%, 0.3)' },
+      { fill: 'hsla(140, 50%, 35%, 0.18)', stroke: 'hsla(140, 50%, 35%, 0.3)' },
+    ];
+    return greens[index % greens.length];
+  }
+  // outer / inactive → warm sandy
+  const warms = [
+    { fill: 'hsla(35, 45%, 55%, 0.18)', stroke: 'hsla(35, 45%, 55%, 0.3)' },
+    { fill: 'hsla(25, 40%, 50%, 0.18)', stroke: 'hsla(25, 40%, 50%, 0.3)' },
+    { fill: 'hsla(45, 35%, 58%, 0.18)', stroke: 'hsla(45, 35%, 58%, 0.3)' },
+    { fill: 'hsla(30, 50%, 52%, 0.18)', stroke: 'hsla(30, 50%, 52%, 0.3)' },
+  ];
+  return warms[index % warms.length];
+}
 
 export const CityCluster = memo(function CityCluster({ nodes }: CityClusterProps) {
   const fields = useMemo<ClusterField[]>(() => {
-    // Group nodes by cluster
     const groups = new Map<number, SemanticNodeToken[]>();
     for (const n of nodes) {
       if (n.clusterId == null || n.zone === 'inactive') continue;
@@ -36,7 +47,8 @@ export const CityCluster = memo(function CityCluster({ nodes }: CityClusterProps
     }
 
     const result: ClusterField[] = [];
-    for (const [clusterId, members] of groups) {
+    let idx = 0;
+    for (const [, members] of groups) {
       if (members.length < 2) continue;
       const xs = members.map(m => m.x);
       const ys = members.map(m => m.y);
@@ -44,12 +56,22 @@ export const CityCluster = memo(function CityCluster({ nodes }: CityClusterProps
       const cy = ys.reduce((a, b) => a + b, 0) / ys.length;
       const maxDx = Math.max(...xs.map(x => Math.abs(x - cx))) + 20;
       const maxDy = Math.max(...ys.map(y => Math.abs(y - cy))) + 20;
+
+      // Determine dominant zone of cluster
+      const zoneCounts: Record<string, number> = {};
+      for (const m of members) {
+        zoneCounts[m.zone] = (zoneCounts[m.zone] || 0) + 1;
+      }
+      const avgZone = Object.entries(zoneCounts).sort((a, b) => b[1] - a[1])[0][0];
+
+      const colors = getClusterColor(avgZone, idx);
       result.push({
-        cx, cy,
-        rx: maxDx,
-        ry: maxDy,
-        fill: CLUSTER_BG_COLORS[Math.abs(clusterId) % CLUSTER_BG_COLORS.length],
+        cx, cy, rx: maxDx, ry: maxDy,
+        fill: colors.fill,
+        strokeColor: colors.stroke,
+        avgZone,
       });
+      idx++;
     }
     return result;
   }, [nodes]);
@@ -57,13 +79,21 @@ export const CityCluster = memo(function CityCluster({ nodes }: CityClusterProps
   return (
     <g className="city-clusters">
       {fields.map((f, i) => (
-        <ellipse
-          key={i}
-          cx={f.cx} cy={f.cy}
-          rx={f.rx} ry={f.ry}
-          fill={f.fill}
-          className="pointer-events-none"
-        />
+        <g key={i}>
+          <ellipse
+            cx={f.cx} cy={f.cy} rx={f.rx} ry={f.ry}
+            fill={f.fill}
+            className="pointer-events-none"
+          />
+          <ellipse
+            cx={f.cx} cy={f.cy} rx={f.rx} ry={f.ry}
+            fill="none"
+            stroke={f.strokeColor}
+            strokeWidth={0.8}
+            strokeDasharray="4 3"
+            className="pointer-events-none"
+          />
+        </g>
       ))}
     </g>
   );

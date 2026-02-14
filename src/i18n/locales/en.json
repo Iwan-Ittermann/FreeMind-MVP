@@ -300,7 +300,19 @@
     "next": "Next",
     "finish": "Finish",
     "startTutorial": "Start Tutorial",
-    "startChatTutorial": "Start Chat Tutorial"
+    "startChatTutorial": "Start Chat Tutorial",
+    "waitingForAction": "👆 Do the action above!"
+  },
+  "unifiedTutorial": {
+    "welcome": { "title": "Welcome!", "text": "Welcome to FreeMind! Let's walk you through the basics." },
+    "addOpinion": { "title": "Share Your Opinion", "text": "Click the 'Add Opinion' button to share your perspective on the topic." },
+    "yourTent": { "title": "Your Tent", "text": "This is your tent on the map! As you chat with others, it will grow into a house." },
+    "exploreOpinions": { "title": "Explore Others", "text": "Click on 2 other houses to read their opinions." },
+    "requestChat": { "title": "Request a Chat", "text": "Now click 'Request to Chat' on someone's opinion to start a conversation." },
+    "nowWeWait": { "title": "Now We Wait!", "text": "Your request has been sent! Wait for someone to accept, or accept an incoming request." },
+    "chatStarted": { "title": "Your First Chat", "text": "Use the rating scales to rate your conversation. Your ratings affect your position on the graph." },
+    "done": { "title": "You're Ready!", "text": "Congratulations! You know everything you need. Enjoy bridging the divide!" }
+  },
   },
   "help": {
     "startTutorial": "Start Tutorial",
