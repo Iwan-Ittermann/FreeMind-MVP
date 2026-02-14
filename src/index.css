@@ -172,6 +172,15 @@
     scroll-behavior: smooth;
   }
 
+  /* Gentle ring pulse for chat request indicators — no scale, just opacity */
+  @keyframes gentle-ring-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  .animate-gentle-ring-pulse {
+    animation: gentle-ring-pulse 2s ease-in-out infinite;
+  }
+
   /* Hide scrollbar on mobile but keep functionality */
   @media (max-width: 768px) {
     .hide-scrollbar {

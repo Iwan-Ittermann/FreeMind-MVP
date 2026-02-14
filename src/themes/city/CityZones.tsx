@@ -1,39 +1,60 @@
 /**
- * CityZones — renders concentric zone rings with texture masking.
- *
- * Each zone ring is an annulus (donut) shape defined by inner/outer radii.
- * A texture SVG is placed full-size and clipped to the ring via <clipPath>.
+ * CityZones — renders concentric zone rings with inline SVG gradients.
+ * No external texture files needed — renders instantly.
  */
 
 import { SemanticZoneToken } from '../types';
 import { LayoutConfig } from '@/types/graph';
-
-// Texture imports — Vite resolves to URL strings
-import texCore from '@/assets/city/textures/zone-core.svg';
-import texMiddle from '@/assets/city/textures/zone-middle.svg';
-import texOuter from '@/assets/city/textures/zone-outer.svg';
 
 interface CityZonesProps {
   zones: readonly SemanticZoneToken[];
   config: LayoutConfig;
 }
 
-// Map zone names to their texture asset URLs
-const ZONE_TEXTURES: Record<string, string> = {
-  core: texCore,
-  middle: texMiddle,
-  outer: texOuter,
+// Inline fill definitions per zone
+const ZONE_FILLS: Record<string, { type: 'gradient'; id: string }> = {
+  core: { type: 'gradient', id: 'zone-grad-core' },
+  middle: { type: 'gradient', id: 'zone-grad-middle' },
+  outer: { type: 'gradient', id: 'zone-grad-outer' },
 };
 
-// Fallback fills for zones without a texture (e.g. inactive)
 const ZONE_FALLBACK: Record<string, { fill: string; opacity: number }> = {
-  inactive: { fill: 'hsl(35, 20%, 92%)', opacity: 0.2 },
+  inactive: { fill: 'hsl(35, 20%, 92%)', opacity: 0.15 },
+};
+
+// Boundary line colors per zone
+const ZONE_BOUNDARY_COLOR: Record<string, string> = {
+  inactive: 'hsl(30, 40%, 55%)',  // dusty terracotta
 };
 
 export function CityZones({ zones, config }: CityZonesProps) {
+  const cx = config.centerX;
+  const cy = config.centerY;
+
   return (
     <g className="city-zones">
       <defs>
+        {/* Core zone: lush green radial gradient */}
+        <radialGradient id="zone-grad-core" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="hsl(130, 50%, 45%)" />
+          <stop offset="60%" stopColor="hsl(135, 45%, 38%)" />
+          <stop offset="100%" stopColor="hsl(140, 40%, 28%)" />
+        </radialGradient>
+
+        {/* Middle zone: light green land */}
+        <radialGradient id="zone-grad-middle" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="hsl(110, 35%, 55%)" />
+          <stop offset="50%" stopColor="hsl(100, 30%, 48%)" />
+          <stop offset="100%" stopColor="hsl(90, 25%, 42%)" />
+        </radialGradient>
+
+        {/* Outer zone: desert / savanna */}
+        <radialGradient id="zone-grad-outer" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="hsl(40, 45%, 60%)" />
+          <stop offset="50%" stopColor="hsl(35, 40%, 52%)" />
+          <stop offset="100%" stopColor="hsl(30, 35%, 44%)" />
+        </radialGradient>
+
         {/* Annulus clip paths for each zone ring */}
         {zones.map((z) => (
           <clipPath key={`clip-${z.zone}`} id={`zone-clip-${z.zone}`}>
@@ -56,25 +77,20 @@ export function CityZones({ zones, config }: CityZonesProps) {
 
       {/* Render zones outer-to-inner so inner paints on top */}
       {zones.map((z) => {
-        const texture = ZONE_TEXTURES[z.zone];
+        const gradientFill = ZONE_FILLS[z.zone];
         const fallback = ZONE_FALLBACK[z.zone];
-
-        // Size the texture image to cover the zone's bounding box
         const diameter = z.outerRadius * 2;
-        // Offset core texture slightly left and up for better alignment
-        const textureOffsetX = z.zone === 'core' ? -18 : 0;
-        const textureOffsetY = z.zone === 'core' ? -18 : 0;
+        const boundaryColor = ZONE_BOUNDARY_COLOR[z.zone] || 'hsl(30, 40%, 55%)';
 
         return (
           <g key={z.zone}>
-            {texture ? (
-              <image
-                href={texture}
-                x={z.centerX - z.outerRadius + textureOffsetX}
-                y={z.centerY - z.outerRadius + textureOffsetY}
+            {gradientFill ? (
+              <rect
+                x={z.centerX - z.outerRadius}
+                y={z.centerY - z.outerRadius}
                 width={diameter}
                 height={diameter}
-                preserveAspectRatio="xMidYMid slice"
+                fill={`url(#${gradientFill.id})`}
                 clipPath={`url(#zone-clip-${z.zone})`}
               />
             ) : fallback ? (
@@ -102,9 +118,9 @@ export function CityZones({ zones, config }: CityZonesProps) {
                 cy={z.centerY}
                 r={z.innerRadius}
                 fill="none"
-                stroke="hsl(0, 0%, 50%)"
+                stroke={boundaryColor}
                 strokeWidth={0.5}
-                strokeOpacity={0.15}
+                strokeOpacity={0.25}
                 strokeDasharray="4 4"
               />
             )}
@@ -112,15 +128,15 @@ export function CityZones({ zones, config }: CityZonesProps) {
         );
       })}
 
-      {/* Outer boundary */}
+      {/* Outer boundary — warm sand, visible on dark bg */}
       <circle
-        cx={config.centerX}
-        cy={config.centerY}
+        cx={cx}
+        cy={cy}
         r={config.outerRadius}
         fill="none"
-        stroke="hsl(0, 0%, 40%)"
+        stroke="hsl(35, 30%, 45%)"
         strokeWidth={1}
-        strokeOpacity={0.2}
+        strokeOpacity={0.3}
         strokeDasharray="6 4"
       />
     </g>
