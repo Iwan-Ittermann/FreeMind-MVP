@@ -1,31 +1,24 @@
 import { memo } from 'react';
 import { SemanticNodeToken } from '../types';
 
-// --- SVG asset imports (Vite resolves these to URL strings) ---
-
-// Middle zone houses
+// --- SVG asset imports ---
 import house1 from '@/assets/city/nodes/middle/house-1.svg';
 import house2 from '@/assets/city/nodes/middle/house-2.svg';
 import house3 from '@/assets/city/nodes/middle/house-3.svg';
 import house4 from '@/assets/city/nodes/middle/house-4.svg';
 import house5 from '@/assets/city/nodes/middle/house-5.svg';
 
-// Core zone buildings
-// TODO: building-1 and building-3 render as solid blocks at 48px (no margins).
-// Using building-2 for all core slots until properly-cropped assets are provided.
+import building1 from '@/assets/city/nodes/core/building-1.svg';
 import building2 from '@/assets/city/nodes/core/building-2.svg';
+import building3 from '@/assets/city/nodes/core/building-3.svg';
+import building4 from '@/assets/city/nodes/core/building-4.svg';
+import building5 from '@/assets/city/nodes/core/building-5.svg';
 
-// Outer zone
 import shack1 from '@/assets/city/nodes/outer/shack-1.svg';
 
 const MIDDLE_HOUSES = [house1, house2, house3, house4, house5] as const;
+const CORE_BUILDINGS = [building1, building2, building3, building4, building5] as const;
 
-// TODO: Replace with 5 unique core buildings when properly-cropped assets are uploaded.
-const CORE_BUILDINGS = [building2, building2, building2, building2, building2] as const;
-
-/**
- * Deterministic hash from node ID → index for asset selection.
- */
 function hashToIndex(id: string, count: number): number {
   let h = 0;
   for (let i = 0; i < id.length; i++) {
@@ -38,19 +31,15 @@ interface CityNodeProps {
   token: SemanticNodeToken;
   isHighlighted: boolean;
   isDimmed: boolean;
+  showSpeechBubble: boolean;
   onClick: () => void;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
 }
 
-// Uniform display size for all node assets
 const NODE_SIZE = 48;
 const HALF = NODE_SIZE / 2;
 
-/**
- * Returns the SVG asset URL for a given node based on its zone and ID.
- * Returns null for inactive/tent nodes — those use an inline SVG instead.
- */
 function getNodeAsset(zone: string, id: string, rank: number): string | null {
   switch (zone) {
     case 'core':
@@ -60,30 +49,15 @@ function getNodeAsset(zone: string, id: string, rank: number): string | null {
     case 'outer':
       return shack1;
     default:
-      return null; // inactive → inline tent SVG
+      return null;
   }
 }
 
-/**
- * Inline tent SVG for inactive/fringe nodes.
- * TODO: Replace with a properly-cropped tent.svg asset when available.
- */
 function InlineTent() {
   return (
     <g>
-      {/* Tent body — triangular shape */}
-      <polygon
-        points="0,-18 -16,10 16,10"
-        fill="hsl(30, 35%, 55%)"
-        stroke="hsl(25, 30%, 40%)"
-        strokeWidth={1}
-      />
-      {/* Tent opening */}
-      <polygon
-        points="0,10 -5,10 0,-4 5,10"
-        fill="hsl(25, 25%, 35%)"
-      />
-      {/* Tent pole */}
+      <polygon points="0,-18 -16,10 16,10" fill="hsl(30, 35%, 55%)" stroke="hsl(25, 30%, 40%)" strokeWidth={1} />
+      <polygon points="0,10 -5,10 0,-4 5,10" fill="hsl(25, 25%, 35%)" />
       <line x1={0} y1={-18} x2={0} y2={-22} stroke="hsl(25, 30%, 40%)" strokeWidth={1.5} />
     </g>
   );
@@ -93,14 +67,17 @@ export const CityNode = memo(function CityNode({
   token,
   isHighlighted,
   isDimmed,
+  showSpeechBubble,
   onClick,
   onMouseEnter,
   onMouseLeave,
 }: CityNodeProps) {
   const assetIndex = hashToIndex(token.id, 5);
   const assetUrl = getNodeAsset(token.zone, token.id, assetIndex);
-
   const opacity = isDimmed ? 0.4 : token.isHidden ? 0.3 : 1;
+  const bubbleText = token.opinionText
+    ? (token.opinionText.length > 10 ? token.opinionText.slice(0, 10) + '…' : token.opinionText)
+    : '';
 
   return (
     <g
@@ -110,30 +87,43 @@ export const CityNode = memo(function CityNode({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* Node shape — SVG image or inline tent */}
+      {/* Speech bubble */}
+      {showSpeechBubble && bubbleText && (
+        <g transform={`translate(0, ${-HALF - 14})`}>
+          <rect x={-32} y={-12} width={64} height={16} rx={4} fill="hsl(0, 0%, 100%)" fillOpacity={0.92} />
+          <polygon points="-3,4 3,4 0,8" fill="hsl(0, 0%, 100%)" fillOpacity={0.92} />
+          <text x={0} y={-3} textAnchor="middle" dominantBaseline="central" fill="hsl(0, 0%, 20%)" fontSize="5" fontFamily="sans-serif">
+            {bubbleText}
+          </text>
+        </g>
+      )}
+
+      {/* Node shape */}
       {assetUrl ? (
-        <image
-          href={assetUrl}
-          x={-HALF}
-          y={-HALF}
-          width={NODE_SIZE}
-          height={NODE_SIZE}
-        />
+        <image href={assetUrl} x={-HALF} y={-HALF} width={NODE_SIZE} height={NODE_SIZE} />
       ) : (
         <InlineTent />
       )}
 
-      {/* Online indicator — warm window glow */}
+      {/* "YOU" flag at bottom-center */}
+      {token.isCurrentUser && (
+        <g transform={`translate(0, ${HALF - 4})`}>
+          <rect x={-1} y={0} width={2} height={12} fill="hsl(0, 0%, 40%)" />
+          <rect x={1} y={0} width={16} height={9} rx={1} fill="hsl(0, 75%, 50%)" />
+          <text x={9} y={4.5} textAnchor="middle" dominantBaseline="central" fill="hsl(0, 0%, 100%)" fontSize="5" fontWeight="bold">
+            YOU
+          </text>
+        </g>
+      )}
+
+      {/* "Online" sign at left corner */}
       {token.isOnline && !token.isCurrentUser && (
-        <rect
-          x={3}
-          y={-10}
-          width={5}
-          height={4}
-          rx={0.5}
-          fill="hsl(48, 90%, 65%)"
-          className="animate-pulse"
-        />
+        <g transform={`translate(${-HALF + 2}, ${4})`}>
+          <rect x={-14} y={-6} width={28} height={12} rx={2} fill="hsl(140, 70%, 35%)" />
+          <text x={0} y={0} textAnchor="middle" dominantBaseline="central" fill="hsl(0, 0%, 100%)" fontSize="5" fontWeight="bold">
+            Online
+          </text>
+        </g>
       )}
 
       {/* Unread badge */}
@@ -148,7 +138,7 @@ export const CityNode = memo(function CityNode({
         </g>
       )}
 
-      {/* Incoming request pulse — gentle opacity pulse, no scale */}
+      {/* Incoming request pulse */}
       {token.hasIncomingRequest && !token.isCurrentUser && (
         <circle
           r={HALF * 0.9}
@@ -157,15 +147,6 @@ export const CityNode = memo(function CityNode({
           strokeWidth={2}
           className="animate-gentle-ring-pulse"
           style={{ transformOrigin: 'center' }}
-        />
-      )}
-
-      {/* Current user glow */}
-      {token.isCurrentUser && (
-        <circle
-          r={HALF * 0.8}
-          fill="hsla(48, 100%, 50%, 0.15)"
-          className="animate-pulse"
         />
       )}
     </g>

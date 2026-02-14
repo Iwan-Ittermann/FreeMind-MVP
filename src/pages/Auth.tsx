@@ -110,6 +110,7 @@ Do not share this passphrase with anyone.`;
             setError(signUpError.message);
           }
         } else {
+          localStorage.setItem('freemind_new_account', 'true');
           toast.success("Account created! Redirecting...");
           navigate("/");
         }

@@ -110,8 +110,8 @@ export function SubmitOpinionDialog({
             <Textarea
               placeholder={t('opinion.whatDoYouThink')}
               value={text}
-              onChange={(e) => setText(e.target.value)}
-              className="min-h-[120px] resize-none bg-background"
+              onChange={(e) => { setText(e.target.value); setError(null); }}
+              className={`min-h-[120px] resize-none bg-background ${error ? 'border-destructive' : ''}`}
               maxLength={500}
             />
             <span className="absolute bottom-2 right-2 text-xs text-muted-foreground">

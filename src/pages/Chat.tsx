@@ -193,14 +193,14 @@ export default function Chat() {
         averageBridgingScore={averageBridgingScore}
       />
 
-      {/* Floating Help Button - positioned near header to avoid rating scales */}
-      <FloatingHelpButton
+      {/* FloatingHelpButton commented out — tutorial is now unified and auto-starts */}
+      {/* <FloatingHelpButton
         onStartTutorial={() => chatTutorial.startTutorial()}
         onOpenVideo={() => setVideoOpen(true)}
         position="top-right"
-      />
+      /> */}
 
-      {/* Video Mini Player - starts at 00:39 for chat context */}
+      {/* Video Mini Player */}
       <VideoMiniPlayer
         isOpen={videoOpen}
         onClose={() => setVideoOpen(false)}
@@ -208,8 +208,8 @@ export default function Chat() {
         startTime={CHAT_VIDEO_START_TIME}
       />
 
-      {/* Chat Tutorial Overlay */}
-      <ChatTutorial
+      {/* Chat Tutorial commented out — merged into unified tutorial */}
+      {/* <ChatTutorial
         isActive={chatTutorial.isActive}
         currentStep={chatTutorial.currentStep}
         currentStepData={chatTutorial.currentStepData}
@@ -217,7 +217,7 @@ export default function Chat() {
         onNext={chatTutorial.nextStep}
         onPrev={chatTutorial.prevStep}
         onEnd={chatTutorial.endTutorial}
-      />
+      /> */}
     </>
   );
 }

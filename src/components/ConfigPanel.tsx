@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Settings, Download, Copy, Check, Info, LogIn, LogOut, GraduationCap, MessageCircle } from 'lucide-react';
+import { Settings, Download, Copy, Check, Info, LogIn, LogOut, GraduationCap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { emailToPassphrase } from '@/lib/passphrase';
@@ -8,7 +8,6 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { useTutorialContext } from '@/contexts/TutorialContext';
-import { useChatTutorialContext } from '@/contexts/ChatTutorialContext';
 import {
   Sheet,
   SheetContent,
@@ -24,12 +23,11 @@ interface ConfigPanelProps {
   firstChatOpinionId?: string | null;
 }
 
-export function ConfigPanel({ open, onOpenChange, hasActiveChats = false, firstChatOpinionId }: ConfigPanelProps) {
+export function ConfigPanel({ open, onOpenChange }: ConfigPanelProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const { startTutorial } = useTutorialContext();
-  const { startTutorial: startChatTutorial } = useChatTutorialContext();
+  const { startTutorial, resetTutorialStatus } = useTutorialContext();
   const [copied, setCopied] = useState(false);
 
   const passphrase = user?.email ? emailToPassphrase(user.email) : null;
@@ -46,7 +44,6 @@ export function ConfigPanel({ open, onOpenChange, hasActiveChats = false, firstC
 
   const handleCopy = async () => {
     if (!passphrase) return;
-    
     try {
       await navigator.clipboard.writeText(passphrase);
       setCopied(true);
@@ -59,7 +56,6 @@ export function ConfigPanel({ open, onOpenChange, hasActiveChats = false, firstC
 
   const handleDownload = () => {
     if (!passphrase) return;
-    
     const content = `${t('auth.downloadFileTitle')}\n========================\n\n${passphrase}\n\n${t('auth.downloadFileWarning')}`;
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
@@ -73,45 +69,34 @@ export function ConfigPanel({ open, onOpenChange, hasActiveChats = false, firstC
     toast.success(t('config.passphraseDownloaded'));
   };
 
-  const handleStartChatTutorial = () => {
+  const handleRestartTutorial = () => {
     onOpenChange(false);
-    // Navigate to a chat first, then start tutorial
-    if (firstChatOpinionId) {
-      navigate(`/chat?their=${firstChatOpinionId}`);
-      setTimeout(() => startChatTutorial(), 500);
-    }
+    resetTutorialStatus();
+    setTimeout(() => startTutorial(), 300);
   };
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="w-[280px] sm:w-[320px]">
-      
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <Settings className="w-5 h-5" />
             {t('config.settings')}
           </SheetTitle>
-          <SheetDescription>
-            {t('config.managePreferences')}
-          </SheetDescription>
+          <SheetDescription>{t('config.managePreferences')}</SheetDescription>
         </SheetHeader>
 
         <div className="mt-6 space-y-6">
-          {/* Language Section */}
           <div className="space-y-3">
-            <label className="text-sm font-medium text-foreground">
-              {t('common.language')}
-            </label>
+            <label className="text-sm font-medium text-foreground">{t('common.language')}</label>
             <LanguageSwitcher variant="full" />
           </div>
 
-          {/* Divider */}
           <div className="border-t border-border" />
 
-          {/* About Link */}
           <div className="space-y-3">
-            <Link 
-              to="/about" 
+            <Link
+              to="/about"
               onClick={() => onOpenChange(false)}
               className="flex items-center gap-2 w-full p-2 rounded-lg hover:bg-muted transition-colors"
             >
@@ -119,76 +104,40 @@ export function ConfigPanel({ open, onOpenChange, hasActiveChats = false, firstC
               <span className="text-sm">{t('about.title', 'About FreeMind')}</span>
             </Link>
             <button
-              onClick={() => {
-                onOpenChange(false);
-                setTimeout(() => startTutorial(), 300);
-              }}
+              onClick={handleRestartTutorial}
               className="flex items-center gap-2 w-full p-2 rounded-lg hover:bg-muted transition-colors text-left"
             >
               <GraduationCap className="w-4 h-4 text-muted-foreground" />
               <span className="text-sm">{t('tutorial.startTutorial', 'Start Tutorial')}</span>
             </button>
-            {hasActiveChats && (
-              <button
-                onClick={handleStartChatTutorial}
-                className="flex items-center gap-2 w-full p-2 rounded-lg hover:bg-muted transition-colors text-left"
-              >
-                <MessageCircle className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm">{t('tutorial.startChatTutorial', 'Start Chat Tutorial')}</span>
-              </button>
-            )}
           </div>
 
-          {/* Divider */}
           <div className="border-t border-border" />
 
-          {/* Passphrase Section */}
           {user && passphrase && (
             <div className="space-y-3">
-              <label className="text-sm font-medium text-foreground">
-                {t('config.yourPassphrase')}
-              </label>
+              <label className="text-sm font-medium text-foreground">{t('config.yourPassphrase')}</label>
               <div className="flex items-center gap-2">
                 <div className="flex-1 px-3 py-2 rounded-lg bg-muted font-mono text-sm text-foreground truncate">
                   {passphrase}
                 </div>
-                <Button
-                  size="icon"
-                  variant="outline"
-                  onClick={handleCopy}
-                  className="h-9 w-9 shrink-0"
-                >
-                  {copied ? (
-                    <Check className="h-4 w-4 text-green-500" />
-                  ) : (
-                    <Copy className="h-4 w-4" />
-                  )}
+                <Button size="icon" variant="outline" onClick={handleCopy} className="h-9 w-9 shrink-0">
+                  {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
                 </Button>
-                <Button
-                  size="icon"
-                  variant="outline"
-                  onClick={handleDownload}
-                  className="h-9 w-9 shrink-0"
-                >
+                <Button size="icon" variant="outline" onClick={handleDownload} className="h-9 w-9 shrink-0">
                   <Download className="h-4 w-4" />
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground">
-                {t('config.savePassphraseNote')}
-              </p>
+              <p className="text-xs text-muted-foreground">{t('config.savePassphraseNote')}</p>
             </div>
           )}
 
           {!user && (
-            <p className="text-sm text-muted-foreground">
-              {t('config.signInToViewSettings')}
-            </p>
+            <p className="text-sm text-muted-foreground">{t('config.signInToViewSettings')}</p>
           )}
 
-          {/* Divider */}
           <div className="border-t border-border" />
 
-          {/* Auth Section */}
           <div className="space-y-3">
             {user ? (
               <Button

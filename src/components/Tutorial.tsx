@@ -3,13 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { X, ChevronLeft, ChevronRight, GraduationCap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { TutorialStep } from '@/hooks/useTutorial';
+import { UnifiedTutorialStep } from '@/hooks/useOnboardingTutorial';
 import { useTutorialSettings } from '@/hooks/useTutorialSettings';
 
 interface TutorialProps {
   isActive: boolean;
   currentStep: number;
-  currentStepData: TutorialStep;
+  currentStepData: UnifiedTutorialStep | null;
   totalSteps: number;
   onNext: () => void;
   onPrev: () => void;
@@ -38,7 +38,6 @@ export function Tutorial({
   const [tooltipPosition, setTooltipPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
   const tooltipRef = useRef<HTMLDivElement>(null);
 
-  // Get custom or default title/text
   const currentLanguage = i18n.language.startsWith('de') ? 'de' : 'en';
   const customTitle = currentStepData ? getCustomTitle('onboarding', currentStepData.id, currentLanguage) : null;
   const customText = currentStepData ? getCustomText('onboarding', currentStepData.id, currentLanguage) : null;
@@ -48,7 +47,6 @@ export function Tutorial({
   useEffect(() => {
     if (!isActive || !currentStepData || !currentStepData.targetSelector) {
       setHighlightPosition(null);
-      // Center the tooltip for final step
       setTooltipPosition({
         top: window.innerHeight / 2 - 100,
         left: window.innerWidth / 2 - 160,
@@ -69,7 +67,6 @@ export function Tutorial({
           height: rect.height + padding * 2,
         });
 
-        // Calculate tooltip position - prefer below element, but adjust if needed
         const tooltipWidth = 320;
         const tooltipHeight = 180;
         const margin = 16;
@@ -77,13 +74,10 @@ export function Tutorial({
         let tooltipTop = rect.bottom + margin;
         let tooltipLeft = rect.left + rect.width / 2 - tooltipWidth / 2;
 
-        // Adjust if tooltip goes off screen
         if (tooltipTop + tooltipHeight > window.innerHeight) {
           tooltipTop = rect.top - tooltipHeight - margin;
         }
-        if (tooltipLeft < margin) {
-          tooltipLeft = margin;
-        }
+        if (tooltipLeft < margin) tooltipLeft = margin;
         if (tooltipLeft + tooltipWidth > window.innerWidth - margin) {
           tooltipLeft = window.innerWidth - tooltipWidth - margin;
         }
@@ -95,7 +89,6 @@ export function Tutorial({
     updatePosition();
     window.addEventListener('resize', updatePosition);
     window.addEventListener('scroll', updatePosition);
-
     return () => {
       window.removeEventListener('resize', updatePosition);
       window.removeEventListener('scroll', updatePosition);
@@ -106,11 +99,11 @@ export function Tutorial({
 
   const isLastStep = currentStep === totalSteps - 1;
   const isFirstStep = currentStep === 0;
+  const isEventDriven = currentStepData.waitForEvent;
 
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-[100] pointer-events-none">
-        {/* Highlight ring around target element */}
         {highlightPosition && (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -130,7 +123,6 @@ export function Tutorial({
           </motion.div>
         )}
 
-        {/* Tooltip */}
         <motion.div
           ref={tooltipRef}
           initial={{ opacity: 0, y: 10 }}
@@ -138,12 +130,8 @@ export function Tutorial({
           exit={{ opacity: 0, y: 10 }}
           transition={{ duration: 0.3, delay: 0.1 }}
           className="absolute pointer-events-auto bg-card border border-border rounded-xl shadow-2xl p-4 w-80 max-w-[calc(100vw-32px)]"
-          style={{
-            top: tooltipPosition.top,
-            left: tooltipPosition.left,
-          }}
+          style={{ top: tooltipPosition.top, left: tooltipPosition.left }}
         >
-          {/* Header with icon and close button */}
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center">
@@ -163,17 +151,9 @@ export function Tutorial({
             </Button>
           </div>
 
-          {/* Title */}
-          <h3 className="font-semibold text-foreground text-base mb-2">
-            {displayTitle}
-          </h3>
+          <h3 className="font-semibold text-foreground text-base mb-2">{displayTitle}</h3>
+          <p className="text-sm text-muted-foreground mb-4">{displayText}</p>
 
-          {/* Description */}
-          <p className="text-sm text-muted-foreground mb-4">
-            {displayText}
-          </p>
-
-          {/* Navigation buttons */}
           <div className="flex items-center justify-end gap-2">
             {!isFirstStep && (
               <Button
@@ -186,14 +166,21 @@ export function Tutorial({
                 {t('tutorial.previous', 'Back')}
               </Button>
             )}
-            <Button
-              size="sm"
-              onClick={onNext}
-              className="gap-1 bg-accent text-accent-foreground hover:bg-accent/90"
-            >
-              {isLastStep ? t('tutorial.finish', 'Finish') : t('tutorial.next', 'Next')}
-              {!isLastStep && <ChevronRight className="h-4 w-4" />}
-            </Button>
+            {!isEventDriven && (
+              <Button
+                size="sm"
+                onClick={onNext}
+                className="gap-1 bg-accent text-accent-foreground hover:bg-accent/90"
+              >
+                {isLastStep ? t('tutorial.finish', 'Finish') : t('tutorial.next', 'Next')}
+                {!isLastStep && <ChevronRight className="h-4 w-4" />}
+              </Button>
+            )}
+            {isEventDriven && (
+              <span className="text-xs text-accent italic">
+                {t('tutorial.waitingForAction', '👆 Do the action above!')}
+              </span>
+            )}
           </div>
         </motion.div>
       </div>
