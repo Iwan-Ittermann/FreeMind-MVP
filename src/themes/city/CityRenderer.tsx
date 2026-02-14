@@ -113,8 +113,8 @@ export function CityRenderer({
       height={height}
       className="overflow-visible"
     >
-      {/* Light sandy background */}
-      <rect width={width} height={height} fill="hsl(40, 25%, 94%)" />
+      {/* Transparent background — sits on dark page bg */}
+      <rect width={width} height={height} fill="transparent" />
 
       {/* Zones (concentric) */}
       <CityZones zones={zoneTokens} config={config} />

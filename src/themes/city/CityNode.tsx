@@ -10,24 +10,18 @@ import house3 from '@/assets/city/nodes/middle/house-3.svg';
 import house4 from '@/assets/city/nodes/middle/house-4.svg';
 import house5 from '@/assets/city/nodes/middle/house-5.svg';
 
-// Core zone buildings (3 unique assets)
-// TODO: Only 3 unique core buildings exist. Slots 4 & 5 double up buildings 1 & 2.
-// Replace with 5 unique assets when available.
-import building1 from '@/assets/city/nodes/core/building-1.svg';
+// Core zone buildings
+// TODO: building-1 and building-3 render as solid blocks at 48px (no margins).
+// Using building-2 for all core slots until properly-cropped assets are provided.
 import building2 from '@/assets/city/nodes/core/building-2.svg';
-import building3 from '@/assets/city/nodes/core/building-3.svg';
-
-// Inactive/tent node
-import tent from '@/assets/city/nodes/inactive/tent.svg';
 
 // Outer zone
 import shack1 from '@/assets/city/nodes/outer/shack-1.svg';
 
 const MIDDLE_HOUSES = [house1, house2, house3, house4, house5] as const;
 
-// TODO: Replace with 5 unique core buildings when assets are uploaded.
-// Currently 3 buildings doubled to fill 5 slots.
-const CORE_BUILDINGS = [building1, building2, building3, building1, building2] as const;
+// TODO: Replace with 5 unique core buildings when properly-cropped assets are uploaded.
+const CORE_BUILDINGS = [building2, building2, building2, building2, building2] as const;
 
 /**
  * Deterministic hash from node ID → index for asset selection.
@@ -55,8 +49,9 @@ const HALF = NODE_SIZE / 2;
 
 /**
  * Returns the SVG asset URL for a given node based on its zone and ID.
+ * Returns null for inactive/tent nodes — those use an inline SVG instead.
  */
-function getNodeAsset(zone: string, id: string, rank: number): string {
+function getNodeAsset(zone: string, id: string, rank: number): string | null {
   switch (zone) {
     case 'core':
       return CORE_BUILDINGS[rank % CORE_BUILDINGS.length];
@@ -65,10 +60,34 @@ function getNodeAsset(zone: string, id: string, rank: number): string {
     case 'outer':
       return shack1;
     default:
-      return tent;
+      return null; // inactive → inline tent SVG
   }
 }
 
+/**
+ * Inline tent SVG for inactive/fringe nodes.
+ * TODO: Replace with a properly-cropped tent.svg asset when available.
+ */
+function InlineTent() {
+  return (
+    <g>
+      {/* Tent body — triangular shape */}
+      <polygon
+        points="0,-18 -16,10 16,10"
+        fill="hsl(30, 35%, 55%)"
+        stroke="hsl(25, 30%, 40%)"
+        strokeWidth={1}
+      />
+      {/* Tent opening */}
+      <polygon
+        points="0,10 -5,10 0,-4 5,10"
+        fill="hsl(25, 25%, 35%)"
+      />
+      {/* Tent pole */}
+      <line x1={0} y1={-18} x2={0} y2={-22} stroke="hsl(25, 30%, 40%)" strokeWidth={1.5} />
+    </g>
+  );
+}
 
 export const CityNode = memo(function CityNode({
   token,
@@ -91,14 +110,18 @@ export const CityNode = memo(function CityNode({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* Node shape — SVG image */}
-      <image
-        href={assetUrl}
-        x={-HALF}
-        y={-HALF}
-        width={NODE_SIZE}
-        height={NODE_SIZE}
-      />
+      {/* Node shape — SVG image or inline tent */}
+      {assetUrl ? (
+        <image
+          href={assetUrl}
+          x={-HALF}
+          y={-HALF}
+          width={NODE_SIZE}
+          height={NODE_SIZE}
+        />
+      ) : (
+        <InlineTent />
+      )}
 
       {/* Online indicator — warm window glow */}
       {token.isOnline && !token.isCurrentUser && (
@@ -125,14 +148,14 @@ export const CityNode = memo(function CityNode({
         </g>
       )}
 
-      {/* Incoming request pulse */}
+      {/* Incoming request pulse — gentle opacity pulse, no scale */}
       {token.hasIncomingRequest && !token.isCurrentUser && (
         <circle
           r={HALF * 0.9}
           fill="none"
           stroke="hsl(45, 100%, 55%)"
           strokeWidth={2}
-          className="animate-ping"
+          className="animate-gentle-ring-pulse"
           style={{ transformOrigin: 'center' }}
         />
       )}

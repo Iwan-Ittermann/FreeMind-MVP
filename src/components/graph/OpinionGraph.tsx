@@ -65,10 +65,13 @@ export function OpinionGraph({
     };
   }, [width, height]);
 
-  // Use provided data or generate mock data
+  // Use provided data or generate mock data (only when explicitly requested)
   const { opinions, ratings } = useMemo(() => {
-    if (useMockData || !externalOpinions || externalOpinions.length === 0) {
+    if (useMockData) {
       return generateMockData(100);
+    }
+    if (!externalOpinions || externalOpinions.length === 0) {
+      return { opinions: [], ratings: [] };
     }
     return { 
       opinions: externalOpinions, 
