@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useRef } from 'react';
 import { GraphNode, GraphEdge, LayoutConfig } from '@/types/graph';
 import { ActiveChat, MessageAnimationData } from '@/hooks/useTopicData';
 import { tokenizeNodesWithCoreCap, tokenizeEdge, tokenizeZones } from '../tokenizer';
@@ -82,9 +82,15 @@ export function CityRenderer({
     [nodeMap, onNodeClick],
   );
 
+  const hoverTimeout = useRef<ReturnType<typeof setTimeout>>();
   const handleNodeHover = useCallback(
     (id: string | null) => {
-      onNodeHover(id ? nodeMap.get(id) ?? null : null);
+      clearTimeout(hoverTimeout.current);
+      if (id === null) {
+        hoverTimeout.current = setTimeout(() => onNodeHover(null), 80);
+      } else {
+        onNodeHover(nodeMap.get(id) ?? null);
+      }
     },
     [nodeMap, onNodeHover],
   );

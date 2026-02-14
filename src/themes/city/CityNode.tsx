@@ -1,5 +1,4 @@
 import { memo } from 'react';
-import { motion } from 'framer-motion';
 import { SemanticNodeToken } from '../types';
 
 // --- SVG asset imports (Vite resolves these to URL strings) ---
@@ -82,22 +81,12 @@ export const CityNode = memo(function CityNode({
   const assetIndex = hashToIndex(token.id, 5);
   const assetUrl = getNodeAsset(token.zone, token.id, assetIndex);
 
+  const opacity = isDimmed ? 0.4 : token.isHidden ? 0.3 : 1;
+
   return (
-    <motion.g
-      initial={{ opacity: 0, scale: 0 }}
-      animate={{
-        opacity: isDimmed ? 0.4 : token.isHidden ? 0.3 : 1,
-        scale: 1,
-        x: token.x,
-        y: token.y,
-      }}
-      transition={{
-        opacity: { duration: 0.3 },
-        scale: { type: 'spring', stiffness: 100, damping: 15 },
-        x: { type: 'spring', stiffness: 50, damping: 20 },
-        y: { type: 'spring', stiffness: 50, damping: 20 },
-      }}
-      style={{ cursor: 'pointer' }}
+    <g
+      transform={`translate(${token.x}, ${token.y})`}
+      style={{ cursor: 'pointer', opacity }}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
@@ -109,21 +98,18 @@ export const CityNode = memo(function CityNode({
         y={-HALF}
         width={NODE_SIZE}
         height={NODE_SIZE}
-        style={{ mixBlendMode: 'multiply' }}
       />
 
       {/* Online indicator — warm window glow */}
       {token.isOnline && !token.isCurrentUser && (
-        <motion.rect
+        <rect
           x={3}
           y={-10}
           width={5}
           height={4}
           rx={0.5}
           fill="hsl(48, 90%, 65%)"
-          initial={{ opacity: 0.4 }}
-          animate={{ opacity: [0.4, 0.9, 0.4] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
+          className="animate-pulse"
         />
       )}
 
@@ -141,26 +127,24 @@ export const CityNode = memo(function CityNode({
 
       {/* Incoming request pulse */}
       {token.hasIncomingRequest && !token.isCurrentUser && (
-        <motion.circle
+        <circle
           r={HALF * 0.9}
           fill="none"
           stroke="hsl(45, 100%, 55%)"
           strokeWidth={2}
-          initial={{ opacity: 0.3 }}
-          animate={{ opacity: [0.3, 0.8, 0.3], scale: [0.9, 1.1, 0.9] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
+          className="animate-ping"
+          style={{ transformOrigin: 'center' }}
         />
       )}
 
       {/* Current user glow */}
       {token.isCurrentUser && (
-        <motion.circle
+        <circle
           r={HALF * 0.8}
           fill="hsla(48, 100%, 50%, 0.15)"
-          animate={{ opacity: [0.1, 0.25, 0.1] }}
-          transition={{ duration: 2, repeat: Infinity }}
+          className="animate-pulse"
         />
       )}
-    </motion.g>
+    </g>
   );
 });

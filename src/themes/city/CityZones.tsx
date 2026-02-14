@@ -61,14 +61,17 @@ export function CityZones({ zones, config }: CityZonesProps) {
 
         // Size the texture image to cover the zone's bounding box
         const diameter = z.outerRadius * 2;
+        // Offset core texture slightly left and up for better alignment
+        const textureOffsetX = z.zone === 'core' ? -18 : 0;
+        const textureOffsetY = z.zone === 'core' ? -18 : 0;
 
         return (
           <g key={z.zone}>
             {texture ? (
               <image
                 href={texture}
-                x={z.centerX - z.outerRadius}
-                y={z.centerY - z.outerRadius}
+                x={z.centerX - z.outerRadius + textureOffsetX}
+                y={z.centerY - z.outerRadius + textureOffsetY}
                 width={diameter}
                 height={diameter}
                 preserveAspectRatio="xMidYMid slice"
