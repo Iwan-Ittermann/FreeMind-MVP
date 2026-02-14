@@ -80,18 +80,8 @@ export const CityEdge = memo(function CityEdge({
     ? '#C4956A'   // warm terracotta for active paths
     : '#D4B896';  // sandy beige for normal paths
 
-  const filterId = `sand-grain-${seed.replace(/[^a-zA-Z0-9]/g, '')}`;
-
   return (
     <g>
-      {/* SVG filter for sandy grain texture */}
-      <defs>
-        <filter id={filterId} x="-5%" y="-5%" width="110%" height="110%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" seed={seed.length} result="noise" />
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5" />
-        </filter>
-      </defs>
-
       {/* Active glow — wider, softer shadow path */}
       {token.isActive && (
         <path
@@ -123,7 +113,6 @@ export const CityEdge = memo(function CityEdge({
         strokeDasharray={token.isPending ? '8 5' : 'none'}
         strokeLinecap="round"
         fill="none"
-        filter={`url(#${filterId})`}
         className="cursor-pointer"
         onClick={onClick}
       />
