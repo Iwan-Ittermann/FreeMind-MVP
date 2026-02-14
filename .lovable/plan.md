@@ -1,79 +1,75 @@
 
+# Fix City Theme: Backgrounds, Performance, and Texture Alignment
 
-# Integrate Uploaded SVG Assets into City Theme
+## Problem Analysis
 
-## Overview
-Place all uploaded SVG assets into the project and update CityNode and CityZones to render them instead of placeholder shapes. Core buildings and tent assets are coming later -- code will be marked with TODO comments for easy update.
+### 1. Black/Inverted Backgrounds on Core Buildings and Tent
+The core building and tent SVGs (from EPS conversion) use a **stencil pattern**: a single `<path>` element with `fill="#000000"` where the first sub-path fills the entire canvas as a black rectangle, and subsequent sub-paths cut out the building shape via winding direction. The result: black canvas with the building as a transparent cutout -- appearing "inverted."
 
-## Asset Inventory
+The middle houses have a different, simpler format: a separate first `<path fill="#FEFEFE">` draws the white background, followed by colored paths for the actual house. The `mixBlendMode: 'multiply'` trick makes the white mostly transparent but fails for the black-background stencil SVGs.
 
-**Available now (10 files):**
-- `texture_core.svg` (5000x3967) -- core zone texture
-- `texture_middle.svg` (4724x4724) -- middle zone texture  
-- `texture_fringe.svg` (4724x4724) -- outer/fringe zone texture
-- `middle_zone_node_1.svg` through `middle_zone_node_5.svg` (1920x1920) -- 5 middle zone houses
-- `fringe_zone_node_1.svg` (1920x1920) -- outer zone shack
-- `flower.svg` (1920x1920) -- saved for later use
+### 2. Slow Loading and Hover Performance
+Three causes identified:
+- **Per-edge SVG filters**: Each `CityEdge` creates its own `<filter>` with `feTurbulence` + `feDisplacementMap` -- these are computationally expensive and multiply with every edge
+- **Framer Motion spring animations on every node**: Each node has 4 separate spring transitions (opacity, scale, x, y) recalculating on every render
+- **Hover triggers re-render cascade**: `onMouseEnter/onMouseLeave` on every node triggers state changes that re-evaluate `isHighlighted`/`isDimmed` for ALL nodes and edges
 
-**Coming later:**
-- 3 core zone buildings (will double up 2 of them to fill 5 slots -- marked with TODO)
-- Tent/inactive node SVG
+### 3. Core Texture Misaligned
+The core zone texture image is positioned at `(centerX - outerRadius, centerY - outerRadius)` -- needs a leftward and upward offset.
 
-## Technical Concern: White Backgrounds
-All uploaded SVGs have a white rectangle as their first `<path>` element (full canvas fill). When rendered as `<image>` in the graph SVG, this white box will obscure the zone textures behind them. 
+## Solution
 
-**Solution**: Before copying, strip the first white-fill path from each node SVG. The textures can keep theirs since they'll be clipped to rings anyway.
+### No API needed for background removal
+Since we have full access to the SVG source files, we can edit them directly. No external background-removal API is necessary.
 
-If stripping isn't possible at copy time, an alternative is to render the node images with CSS `mix-blend-mode: multiply` which will make white areas transparent, but this may affect other colors. The cleanest approach is to edit the SVGs to remove the background path.
+### Step 1: Fix SVG Backgrounds (edit 12 SVG files)
 
-## Steps
+**Middle houses (house-1 through house-5) + shack + flower (7 files):**
+- Delete the first `<path>` element (the one with `fill="#FEFEFE"` that draws a full-canvas white rectangle)
+- All remaining paths have their own colors and will render on transparent background
 
-### Step 1: Copy Assets to Project
-Copy all files to `src/assets/city/` following the planned directory structure:
-- `src/assets/city/textures/zone-core.svg`
-- `src/assets/city/textures/zone-middle.svg`
-- `src/assets/city/textures/zone-outer.svg`
-- `src/assets/city/nodes/middle/house-1.svg` through `house-5.svg`
-- `src/assets/city/nodes/outer/shack-1.svg`
-- `src/assets/city/nodes/core/building-1.svg` through `building-3.svg` (placeholder: reuse middle houses until real assets arrive)
-- `src/assets/city/flowers/flower.svg`
+**Core buildings (building-1, building-2, building-3) + tent (4 files):**
+- These have a single compound `<path fill="#000000">` where the background rectangle is the first sub-path
+- Remove the background rectangle sub-path from the path data (the `M0 ... z` prefix)
+- Convert subsequent relative `m` commands to absolute `M` commands to maintain correct positioning
+- Change `fill="#000000"` to a warm brown like `fill="#4E342E"` so buildings look natural against the sandy textures
+- The remaining sub-paths will render as the building silhouette on transparent background
 
-### Step 2: Update CityNode.tsx
-- Import all node SVGs via Vite asset imports (`import house1 from '@/assets/city/nodes/middle/house-1.svg'`)
-- Replace placeholder render functions with `<image href={...}>` elements
-- Zone-to-asset mapping:
-  - **Core**: Use the 3 uploaded core buildings, doubling 2 to fill 5 slots (marked with `// TODO: replace with unique core buildings when uploaded`)
-  - **Middle**: 5 houses, selected by `hashToIndex(nodeId, 5)`
-  - **Outer**: Single shack SVG
-  - **Inactive**: Keep current tent placeholder until tent SVG arrives (marked with TODO)
-- Render at uniform 48x48px (downscaled from 1920x1920 source)
-- Keep all existing overlays: online glow, unread badge, incoming request pulse, current user glow
+### Step 2: Remove mixBlendMode
+Once backgrounds are truly removed from the SVGs, the `mixBlendMode: 'multiply'` workaround in `CityNode.tsx` is no longer needed and can be removed. This also improves rendering performance since blend modes are GPU-intensive.
 
-### Step 3: Update CityZones.tsx
-- Import the 3 texture SVGs
-- Replace solid-color fills with `<image>` elements clipped by annulus ring `<clipPath>` definitions
-- Each texture image is placed at full size, centered on the graph, and clipped to its corresponding zone ring using SVG `clip-path` with `evenodd` fill rule
-- Remove the center plaza marker (green dot) -- the texture itself provides visual identity
+### Step 3: Performance Fixes
 
-### Step 4: Verify CityRenderer Integration
-- No changes expected -- CityRenderer already passes all needed props
-- Confirm the new `<image>` elements render correctly within the motion groups
+**CityEdge.tsx -- Remove per-edge SVG filters:**
+- Delete the `<defs><filter>` block with `feTurbulence` and `feDisplacementMap` from each edge
+- Remove `filter={...}` from the path element
+- The sandy appearance is already conveyed by the color and stroke style; the grain filter adds negligible visual value at huge performance cost
+
+**CityNode.tsx -- Simplify animations:**
+- Replace framer-motion spring transitions with simpler `duration`-based transitions (or CSS transitions)
+- Remove the `initial={{ scale: 0 }}` entrance animation that fires on every mount
+- Keep the animated overlays (online glow, unread pulse) but use CSS keyframes instead of framer-motion `animate` arrays
+
+**CityRenderer.tsx -- Debounce hover:**
+- Wrap `handleNodeHover` in a lightweight debounce (50-100ms) to prevent rapid re-renders when the mouse moves across multiple nodes quickly
+
+### Step 4: Adjust Core Texture Position
+In `CityZones.tsx`, offset the core zone texture image:
+- Shift the `x` attribute leftward by ~15-20px
+- Shift the `y` attribute upward by ~15-20px
+- Only applies to the `core` zone; middle and outer zones stay centered
 
 ## Technical Details
 
-**Files to modify:**
-- `src/themes/city/CityNode.tsx` -- swap placeholders for `<image>` elements
-- `src/themes/city/CityZones.tsx` -- add texture `<image>` with clip paths
-
-**New files (asset copies):**
-- `src/assets/city/textures/zone-core.svg`
-- `src/assets/city/textures/zone-middle.svg`
-- `src/assets/city/textures/zone-outer.svg`
-- `src/assets/city/nodes/middle/house-1.svg` through `house-5.svg`
-- `src/assets/city/nodes/outer/shack-1.svg`
-- `src/assets/city/nodes/core/building-1.svg` through `building-3.svg`
-- `src/assets/city/flowers/flower.svg`
-
-**White background handling:**
-Since we cannot programmatically strip SVG paths during copy, I will use a CSS approach: set `style={{ mixBlendMode: 'multiply' }}` on node `<image>` elements. This makes white areas transparent while preserving colored content. For textures this is not needed since they fill their entire ring.
-
+**Files to edit:**
+- `src/assets/city/nodes/core/building-1.svg` -- remove background sub-path, change fill color
+- `src/assets/city/nodes/core/building-2.svg` -- same
+- `src/assets/city/nodes/core/building-3.svg` -- same
+- `src/assets/city/nodes/inactive/tent.svg` -- same
+- `src/assets/city/nodes/middle/house-1.svg` through `house-5.svg` -- delete first path element
+- `src/assets/city/nodes/outer/shack-1.svg` -- delete first path element
+- `src/assets/city/flowers/flower.svg` -- delete first path element
+- `src/themes/city/CityNode.tsx` -- remove mixBlendMode, simplify animations
+- `src/themes/city/CityEdge.tsx` -- remove SVG filters
+- `src/themes/city/CityZones.tsx` -- offset core texture position
+- `src/themes/city/CityRenderer.tsx` -- add hover debounce
