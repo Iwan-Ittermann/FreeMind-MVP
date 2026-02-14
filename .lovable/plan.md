@@ -1,75 +1,61 @@
 
-# Fix City Theme: Backgrounds, Performance, and Texture Alignment
 
-## Problem Analysis
+# Fix City Theme: Black Nodes, Glitches, Performance, and Zone Textures
 
-### 1. Black/Inverted Backgrounds on Core Buildings and Tent
-The core building and tent SVGs (from EPS conversion) use a **stencil pattern**: a single `<path>` element with `fill="#000000"` where the first sub-path fills the entire canvas as a black rectangle, and subsequent sub-paths cut out the building shape via winding direction. The result: black canvas with the building as a transparent cutout -- appearing "inverted."
+## Issues Found
 
-The middle houses have a different, simpler format: a separate first `<path fill="#FEFEFE">` draws the white background, followed by colored paths for the actual house. The `mixBlendMode: 'multiply'` trick makes the white mostly transparent but fails for the black-background stencil SVGs.
+### 1. Black Core Buildings and Tent
+Buildings 1, 3, and the tent SVGs have their artwork filling the entire canvas with no margins. At 48x48px, they render as solid dark brown (#4E342E) blocks -- appearing "completely black." Building-2 works because its content is centered with transparent margins around it.
 
-### 2. Slow Loading and Hover Performance
-Three causes identified:
-- **Per-edge SVG filters**: Each `CityEdge` creates its own `<filter>` with `feTurbulence` + `feDisplacementMap` -- these are computationally expensive and multiply with every edge
-- **Framer Motion spring animations on every node**: Each node has 4 separate spring transitions (opacity, scale, x, y) recalculating on every render
-- **Hover triggers re-render cascade**: `onMouseEnter/onMouseLeave` on every node triggers state changes that re-evaluate `isHighlighted`/`isDimmed` for ALL nodes and edges
+**Fix:** Temporarily use building-2 for all core building slots (it renders correctly at 48px). For the tent, create a simple inline SVG tent shape directly in CityNode.tsx. Mark both with TODO for when properly-cropped SVG assets are provided.
 
-### 3. Core Texture Misaligned
-The core zone texture image is positioned at `(centerX - outerRadius, centerY - outerRadius)` -- needs a leftward and upward offset.
+### 2. Yellow Ring Glitch (Chat Request Indicators)
+The `animate-ping` CSS class creates an infinite scale+fade animation that pulses aggressively every frame. Combined with the mock data flash (below), this creates a "flying out" effect.
 
-## Solution
+**Fix:** Replace `animate-ping` with a custom CSS keyframe animation: a gentle opacity pulse at a slower interval (2s), no scale transform.
 
-### No API needed for background removal
-Since we have full access to the SVG source files, we can edit them directly. No external background-removal API is necessary.
+### 3. Mock Data Flash on Load
+In `OpinionGraph.tsx` (line 70), when `externalOpinions` is empty during initial load, the component falls back to `generateMockData(100)` -- rendering 100 mock nodes momentarily. Once real data arrives, it re-renders with actual nodes. This causes a visible flash and wastes rendering time.
 
-### Step 1: Fix SVG Backgrounds (edit 12 SVG files)
+**Fix:** When `externalOpinions` is not yet loaded (undefined/empty and not explicitly `useMockData`), render nothing or a minimal loading skeleton instead of 100 mock nodes.
 
-**Middle houses (house-1 through house-5) + shack + flower (7 files):**
-- Delete the first `<path>` element (the one with `fill="#FEFEFE"` that draws a full-canvas white rectangle)
-- All remaining paths have their own colors and will render on transparent background
+### 4. Zone Textures Load Slowly
+The three zone texture SVGs are large external files (up to 5000px) loaded via `<image href=...>`. They're the last things to appear.
 
-**Core buildings (building-1, building-2, building-3) + tent (4 files):**
-- These have a single compound `<path fill="#000000">` where the background rectangle is the first sub-path
-- Remove the background rectangle sub-path from the path data (the `M0 ... z` prefix)
-- Convert subsequent relative `m` commands to absolute `M` commands to maintain correct positioning
-- Change `fill="#000000"` to a warm brown like `fill="#4E342E"` so buildings look natural against the sandy textures
-- The remaining sub-paths will render as the building silhouette on transparent background
+**Fix:** Replace all three texture SVG imports with inline SVG elements (radial gradients + simple patterns):
+- **Core zone**: Lush green radial gradient (darker at edges, lighter center)
+- **Middle zone**: Light green land fill with subtle noise pattern
+- **Outer/Fringe zone**: Desert/savanna warm sandy gradient
+- **Inactive zone**: Keep current light fill
 
-### Step 2: Remove mixBlendMode
-Once backgrounds are truly removed from the SVGs, the `mixBlendMode: 'multiply'` workaround in `CityNode.tsx` is no longer needed and can be removed. This also improves rendering performance since blend modes are GPU-intensive.
+This eliminates 3 network requests and renders instantly.
 
-### Step 3: Performance Fixes
+### 5. White Background Rectangle
+`CityRenderer.tsx` line 117: `<rect fill="hsl(40, 25%, 94%)" />` draws a light sandy background that doesn't match the site's dark background.
 
-**CityEdge.tsx -- Remove per-edge SVG filters:**
-- Delete the `<defs><filter>` block with `feTurbulence` and `feDisplacementMap` from each edge
-- Remove `filter={...}` from the path element
-- The sandy appearance is already conveyed by the color and stroke style; the grain filter adds negligible visual value at huge performance cost
+**Fix:** Change to `fill="transparent"` so the graph sits cleanly on the dark page background.
 
-**CityNode.tsx -- Simplify animations:**
-- Replace framer-motion spring transitions with simpler `duration`-based transitions (or CSS transitions)
-- Remove the `initial={{ scale: 0 }}` entrance animation that fires on every mount
-- Keep the animated overlays (online glow, unread pulse) but use CSS keyframes instead of framer-motion `animate` arrays
+### 6. Inactive Zone Boundary Line Color
+Currently uses grey (`hsl(0, 0%, 50%)`). 
 
-**CityRenderer.tsx -- Debounce hover:**
-- Wrap `handleNodeHover` in a lightweight debounce (50-100ms) to prevent rapid re-renders when the mouse moves across multiple nodes quickly
+**Fix:** Change to a dusty terracotta/sand color like `hsl(30, 40%, 55%)` with slightly higher opacity -- suggesting a faded desert boundary that fits the savanna-to-wasteland transition.
 
-### Step 4: Adjust Core Texture Position
-In `CityZones.tsx`, offset the core zone texture image:
-- Shift the `x` attribute leftward by ~15-20px
-- Shift the `y` attribute upward by ~15-20px
-- Only applies to the `core` zone; middle and outer zones stay centered
+### 7. Outer Boundary Circle
+The dashed circle around the entire graph uses grey on a dark background and won't be visible.
+
+**Fix:** Change to a subtle warm sand color (`hsl(35, 30%, 45%)`) so it's visible against the dark site background.
 
 ## Technical Details
 
-**Files to edit:**
-- `src/assets/city/nodes/core/building-1.svg` -- remove background sub-path, change fill color
-- `src/assets/city/nodes/core/building-2.svg` -- same
-- `src/assets/city/nodes/core/building-3.svg` -- same
-- `src/assets/city/nodes/inactive/tent.svg` -- same
-- `src/assets/city/nodes/middle/house-1.svg` through `house-5.svg` -- delete first path element
-- `src/assets/city/nodes/outer/shack-1.svg` -- delete first path element
-- `src/assets/city/flowers/flower.svg` -- delete first path element
-- `src/themes/city/CityNode.tsx` -- remove mixBlendMode, simplify animations
-- `src/themes/city/CityEdge.tsx` -- remove SVG filters
-- `src/themes/city/CityZones.tsx` -- offset core texture position
-- `src/themes/city/CityRenderer.tsx` -- add hover debounce
+**Files to modify:**
+- `src/themes/city/CityNode.tsx` -- swap building-1/3 to building-2, add inline tent SVG, replace animate-ping with custom pulse, add custom CSS keyframe
+- `src/themes/city/CityZones.tsx` -- replace texture image imports with inline SVG gradients/patterns, update boundary line colors
+- `src/themes/city/CityRenderer.tsx` -- change background rect to transparent
+- `src/components/graph/OpinionGraph.tsx` -- prevent mock data flash during loading
+- `src/index.css` -- add custom keyframe for gentle ring pulse
+
+**Files no longer needed (can keep but won't be imported):**
+- `src/assets/city/textures/zone-core.svg`
+- `src/assets/city/textures/zone-middle.svg`
+- `src/assets/city/textures/zone-outer.svg`
+
