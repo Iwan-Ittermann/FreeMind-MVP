@@ -2,6 +2,33 @@ import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { SemanticNodeToken } from '../types';
 
+// --- SVG asset imports (Vite resolves these to URL strings) ---
+
+// Middle zone houses
+import house1 from '@/assets/city/nodes/middle/house-1.svg';
+import house2 from '@/assets/city/nodes/middle/house-2.svg';
+import house3 from '@/assets/city/nodes/middle/house-3.svg';
+import house4 from '@/assets/city/nodes/middle/house-4.svg';
+import house5 from '@/assets/city/nodes/middle/house-5.svg';
+
+// Core zone buildings
+// TODO: Replace with unique core building assets when uploaded.
+// Currently reusing middle-zone houses as placeholders.
+// building-1 = house-1, building-2 = house-2, building-3 = house-3
+// Slots 4 & 5 double up building-1 and building-2.
+import building1 from '@/assets/city/nodes/core/building-1.svg';
+import building2 from '@/assets/city/nodes/core/building-2.svg';
+import building3 from '@/assets/city/nodes/core/building-3.svg';
+
+// Outer zone
+import shack1 from '@/assets/city/nodes/outer/shack-1.svg';
+
+const MIDDLE_HOUSES = [house1, house2, house3, house4, house5] as const;
+
+// TODO: Replace with 5 unique core buildings when assets are uploaded.
+// Currently 3 buildings doubled to fill 5 slots.
+const CORE_BUILDINGS = [building1, building2, building3, building1, building2] as const;
+
 /**
  * Deterministic hash from node ID → index for asset selection.
  */
@@ -27,55 +54,26 @@ const NODE_SIZE = 48;
 const HALF = NODE_SIZE / 2;
 
 /**
- * Zone-specific placeholder shapes.
- * These will be replaced by <image> elements once SVG assets are uploaded.
+ * Returns the SVG asset URL for a given node based on its zone and ID.
  */
-function renderCorePlaceholder(rank: number) {
-  // Tall building shape
-  const colors = ['hsl(210, 50%, 55%)', 'hsl(200, 45%, 50%)', 'hsl(220, 55%, 60%)', 'hsl(190, 40%, 52%)', 'hsl(230, 50%, 58%)'];
-  const color = colors[rank % colors.length];
-  const bh = 30 + rank * 3;
-  return (
-    <g>
-      <rect x={-10} y={-bh} width={20} height={bh} fill={color} rx={2} />
-      <rect x={-12} y={-bh} width={24} height={4} fill={color} rx={1} opacity={0.7} />
-      {/* Windows */}
-      {Array.from({ length: Math.min(4, Math.floor(bh / 8)) }).map((_, i) => (
-        <rect key={i} x={-5} y={-bh + 6 + i * 8} width={4} height={3} fill="hsl(48, 80%, 75%)" rx={0.5} />
-      ))}
-    </g>
-  );
+function getNodeAsset(zone: string, id: string, rank: number): string | null {
+  switch (zone) {
+    case 'core':
+      return CORE_BUILDINGS[rank % CORE_BUILDINGS.length];
+    case 'middle':
+      return MIDDLE_HOUSES[hashToIndex(id, MIDDLE_HOUSES.length)];
+    case 'outer':
+      return shack1;
+    default:
+      // TODO: Replace with tent SVG when uploaded
+      return null;
+  }
 }
 
-function renderMiddlePlaceholder(index: number) {
-  // Residential house shape
-  const roofColors = ['hsl(15, 60%, 50%)', 'hsl(25, 55%, 55%)', 'hsl(35, 50%, 50%)', 'hsl(10, 65%, 48%)', 'hsl(30, 45%, 52%)'];
-  const wallColors = ['hsl(40, 30%, 85%)', 'hsl(35, 25%, 80%)', 'hsl(45, 20%, 82%)', 'hsl(30, 35%, 78%)', 'hsl(38, 28%, 83%)'];
-  return (
-    <g>
-      {/* Walls */}
-      <rect x={-12} y={-14} width={24} height={18} fill={wallColors[index % wallColors.length]} rx={1} />
-      {/* Roof */}
-      <polygon points="-15,-14 0,-26 15,-14" fill={roofColors[index % roofColors.length]} />
-      {/* Door */}
-      <rect x={-3} y={-4} width={6} height={8} fill="hsl(25, 40%, 35%)" rx={1} />
-      {/* Window */}
-      <rect x={-10} y={-10} width={5} height={4} fill="hsl(200, 30%, 75%)" rx={0.5} />
-    </g>
-  );
-}
-
-function renderOuterPlaceholder() {
-  // Basic shack
-  return (
-    <g>
-      <rect x={-10} y={-10} width={20} height={14} fill="hsl(30, 25%, 65%)" rx={1} />
-      <polygon points="-12,-10 0,-18 12,-10" fill="hsl(20, 30%, 50%)" />
-      <rect x={-3} y={-2} width={6} height={6} fill="hsl(25, 35%, 40%)" rx={0.5} />
-    </g>
-  );
-}
-
+/**
+ * Inline tent placeholder — used until a tent SVG asset is provided.
+ * TODO: Replace with <image> element when tent.svg is uploaded.
+ */
 function renderTentPlaceholder() {
   return (
     <g>
@@ -93,16 +91,8 @@ export const CityNode = memo(function CityNode({
   onMouseEnter,
   onMouseLeave,
 }: CityNodeProps) {
-  // Pick shape based on zone
   const assetIndex = hashToIndex(token.id, 5);
-  const shape = (() => {
-    switch (token.zone) {
-      case 'core': return renderCorePlaceholder(assetIndex);
-      case 'middle': return renderMiddlePlaceholder(assetIndex);
-      case 'outer': return renderOuterPlaceholder();
-      default: return renderTentPlaceholder();
-    }
-  })();
+  const assetUrl = getNodeAsset(token.zone, token.id, assetIndex);
 
   return (
     <motion.g
@@ -124,8 +114,19 @@ export const CityNode = memo(function CityNode({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* Node shape */}
-      {shape}
+      {/* Node shape — SVG image or tent placeholder */}
+      {assetUrl ? (
+        <image
+          href={assetUrl}
+          x={-HALF}
+          y={-HALF}
+          width={NODE_SIZE}
+          height={NODE_SIZE}
+          style={{ mixBlendMode: 'multiply' }}
+        />
+      ) : (
+        renderTentPlaceholder()
+      )}
 
       {/* Online indicator — warm window glow */}
       {token.isOnline && !token.isCurrentUser && (
