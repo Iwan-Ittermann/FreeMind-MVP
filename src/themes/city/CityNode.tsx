@@ -11,14 +11,15 @@ import house3 from '@/assets/city/nodes/middle/house-3.svg';
 import house4 from '@/assets/city/nodes/middle/house-4.svg';
 import house5 from '@/assets/city/nodes/middle/house-5.svg';
 
-// Core zone buildings
-// TODO: Replace with unique core building assets when uploaded.
-// Currently reusing middle-zone houses as placeholders.
-// building-1 = house-1, building-2 = house-2, building-3 = house-3
-// Slots 4 & 5 double up building-1 and building-2.
+// Core zone buildings (3 unique assets)
+// TODO: Only 3 unique core buildings exist. Slots 4 & 5 double up buildings 1 & 2.
+// Replace with 5 unique assets when available.
 import building1 from '@/assets/city/nodes/core/building-1.svg';
 import building2 from '@/assets/city/nodes/core/building-2.svg';
 import building3 from '@/assets/city/nodes/core/building-3.svg';
+
+// Inactive/tent node
+import tent from '@/assets/city/nodes/inactive/tent.svg';
 
 // Outer zone
 import shack1 from '@/assets/city/nodes/outer/shack-1.svg';
@@ -56,7 +57,7 @@ const HALF = NODE_SIZE / 2;
 /**
  * Returns the SVG asset URL for a given node based on its zone and ID.
  */
-function getNodeAsset(zone: string, id: string, rank: number): string | null {
+function getNodeAsset(zone: string, id: string, rank: number): string {
   switch (zone) {
     case 'core':
       return CORE_BUILDINGS[rank % CORE_BUILDINGS.length];
@@ -65,23 +66,10 @@ function getNodeAsset(zone: string, id: string, rank: number): string | null {
     case 'outer':
       return shack1;
     default:
-      // TODO: Replace with tent SVG when uploaded
-      return null;
+      return tent;
   }
 }
 
-/**
- * Inline tent placeholder — used until a tent SVG asset is provided.
- * TODO: Replace with <image> element when tent.svg is uploaded.
- */
-function renderTentPlaceholder() {
-  return (
-    <g>
-      <polygon points="-12,4 0,-14 12,4" fill="hsl(35, 45%, 70%)" stroke="hsl(30, 30%, 50%)" strokeWidth={0.5} />
-      <line x1={0} y1={-14} x2={0} y2={4} stroke="hsl(30, 25%, 45%)" strokeWidth={0.8} />
-    </g>
-  );
-}
 
 export const CityNode = memo(function CityNode({
   token,
@@ -114,19 +102,15 @@ export const CityNode = memo(function CityNode({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* Node shape — SVG image or tent placeholder */}
-      {assetUrl ? (
-        <image
-          href={assetUrl}
-          x={-HALF}
-          y={-HALF}
-          width={NODE_SIZE}
-          height={NODE_SIZE}
-          style={{ mixBlendMode: 'multiply' }}
-        />
-      ) : (
-        renderTentPlaceholder()
-      )}
+      {/* Node shape — SVG image */}
+      <image
+        href={assetUrl}
+        x={-HALF}
+        y={-HALF}
+        width={NODE_SIZE}
+        height={NODE_SIZE}
+        style={{ mixBlendMode: 'multiply' }}
+      />
 
       {/* Online indicator — warm window glow */}
       {token.isOnline && !token.isCurrentUser && (
