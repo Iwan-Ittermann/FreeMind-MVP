@@ -313,7 +313,6 @@
     "chatStarted": { "title": "Your First Chat", "text": "Use the rating scales to rate your conversation. Your ratings affect your position on the graph." },
     "done": { "title": "You're Ready!", "text": "Congratulations! You know everything you need. Enjoy bridging the divide!" }
   },
-  },
   "help": {
     "startTutorial": "Start Tutorial",
     "watchVideo": "Watch Video",

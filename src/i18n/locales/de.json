@@ -313,7 +313,6 @@
     "chatStarted": { "title": "Dein erster Chat", "text": "Benutze die Bewertungsskalen um euren Chat zu bewerten. Deine Bewertungen beeinflussen deine Position im Graphen." },
     "done": { "title": "Du bist bereit!", "text": "Glückwunsch! Du weißt alles, was du brauchst. Viel Spaß beim Brücken bauen!" }
   },
-  },
   "help": {
     "startTutorial": "Tutorial starten",
     "watchVideo": "Video ansehen",
