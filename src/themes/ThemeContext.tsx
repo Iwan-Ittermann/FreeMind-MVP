@@ -1,4 +1,7 @@
-import { createContext, useContext, useMemo, type ReactNode } from 'react';
+import { createContext, useContext, useMemo, useEffect, useState, type ReactNode } from 'react';
+import { useAppSetting } from '@/hooks/useAppSettings';
+import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ThemeName } from './types';
 
 interface ThemeContextValue {
@@ -7,19 +10,29 @@ interface ThemeContextValue {
 
 const ThemeContext = createContext<ThemeContextValue>({ theme: 'classic' });
 
-function detectTheme(): ThemeName {
-  if (typeof window === 'undefined') return 'classic';
-  const hostname = window.location.hostname;
-  // freemind.city or *.freemind.city → city theme
-  if (hostname === 'freemind.city' || hostname.endsWith('.freemind.city')) return 'city';
-  // Dev override via query param
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('theme') === 'city') return 'city';
-  return 'classic';
-}
-
 export function FreeMindThemeProvider({ children }: { children: ReactNode }) {
-  const value = useMemo<ThemeContextValue>(() => ({ theme: detectTheme() }), []);
+  const { data: setting } = useAppSetting('active_theme');
+  const queryClient = useQueryClient();
+
+  // Subscribe to realtime changes on app_settings
+  useEffect(() => {
+    const channel = supabase
+      .channel(`theme-sync-${Date.now()}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'app_settings' },
+        () => {
+          queryClient.refetchQueries({ queryKey: ['appSetting', 'active_theme'] });
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [queryClient]);
+
+  const theme: ThemeName = (setting?.value === 'city') ? 'city' : 'classic';
+
+  const value = useMemo<ThemeContextValue>(() => ({ theme }), [theme]);
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
