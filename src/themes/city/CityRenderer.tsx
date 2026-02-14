@@ -1,7 +1,7 @@
 import { useMemo, useCallback } from 'react';
 import { GraphNode, GraphEdge, LayoutConfig } from '@/types/graph';
 import { ActiveChat, MessageAnimationData } from '@/hooks/useTopicData';
-import { tokenizeNode, tokenizeEdge, tokenizeZones } from '../tokenizer';
+import { tokenizeNodesWithCoreCap, tokenizeEdge, tokenizeZones } from '../tokenizer';
 import { SemanticNodeToken, SemanticEdgeToken, SemanticEventToken } from '../types';
 import { CityZones } from './CityZones';
 import { CityCluster } from './CityCluster';
@@ -44,7 +44,7 @@ export function CityRenderer({
 
   // Tokenize
   const nodeTokens: readonly SemanticNodeToken[] = useMemo(
-    () => nodes.map(n => tokenizeNode(n, config, edges, currentUserId, currentUserOpinionId)),
+    () => tokenizeNodesWithCoreCap(nodes, config, edges, currentUserId, currentUserOpinionId),
     [nodes, config, edges, currentUserId, currentUserOpinionId],
   );
 
@@ -73,7 +73,7 @@ export function CityRenderer({
     });
   }, [messageAnimations, nodeMap]);
 
-  // Interaction handlers — dispatch to centralized handler with original GraphNode
+  // Centralized interaction handlers — dispatch with original GraphNode/Edge
   const handleNodeClick = useCallback(
     (id: string) => {
       const node = nodeMap.get(id);
@@ -107,7 +107,8 @@ export function CityRenderer({
       height={height}
       className="overflow-visible"
     >
-      <rect width={width} height={height} fill="#F1F8E9" />
+      {/* Light sandy background */}
+      <rect width={width} height={height} fill="hsl(40, 25%, 94%)" />
 
       {/* Zones (concentric) */}
       <CityZones zones={zoneTokens} config={config} />
@@ -115,7 +116,7 @@ export function CityRenderer({
       {/* Cluster backgrounds */}
       <CityCluster nodes={nodeTokens} />
 
-      {/* Roads (beneath houses) */}
+      {/* Sandy paths (beneath houses) */}
       <g className="city-edges">
         {edgeTokens.map((et, i) => (
           <CityEdge
@@ -131,7 +132,7 @@ export function CityRenderer({
       {/* Event markers */}
       <CityEventMarker events={eventTokens} />
 
-      {/* Houses (above roads) */}
+      {/* Houses (above paths) */}
       <g className="city-nodes">
         {nodeTokens.map(nt => (
           <CityNode
