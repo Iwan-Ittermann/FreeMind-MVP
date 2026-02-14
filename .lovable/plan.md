@@ -1,115 +1,79 @@
 
 
-# City Theme v2 — Complete Overhaul
+# Integrate Uploaded SVG Assets into City Theme
 
-## What to Keep vs Discard
+## Overview
+Place all uploaded SVG assets into the project and update CityNode and CityZones to render them instead of placeholder shapes. Core buildings and tent assets are coming later -- code will be marked with TODO comments for easy update.
 
-### KEEP (solid architecture)
-- **Layer B (Semantic Token Layer)**: `src/themes/types.ts` and `src/themes/tokenizer.ts` — untouched, these are pure data transformers
-- **CityRenderer.tsx** — the orchestrator structure stays, but will be updated to use the new components
-- **CityEventMarker.tsx** — message animation dots, fine as-is
-- **CityCluster.tsx** — cluster background ellipses, keep for now
-- **ThemeContext.tsx** — DB-driven theme switching, keep and enhance
+## Asset Inventory
 
-### DISCARD / REWRITE
-- **CityZones.tsx** — remove entirely; replace with SVG texture ring masking using your uploaded texture images
-- **CityNode.tsx** — rewrite to render `<image>` elements (your SVG house assets) instead of inline rects/polygons
-- **CityEdge.tsx** — rewrite to render a sandy path texture instead of plain lines
-- **house-shapes.ts** — delete entirely; replaced by SVG asset files
+**Available now (10 files):**
+- `texture_core.svg` (5000x3967) -- core zone texture
+- `texture_middle.svg` (4724x4724) -- middle zone texture  
+- `texture_fringe.svg` (4724x4724) -- outer/fringe zone texture
+- `middle_zone_node_1.svg` through `middle_zone_node_5.svg` (1920x1920) -- 5 middle zone houses
+- `fringe_zone_node_1.svg` (1920x1920) -- outer zone shack
+- `flower.svg` (1920x1920) -- saved for later use
 
-## Plan
+**Coming later:**
+- 3 core zone buildings (will double up 2 of them to fill 5 slots -- marked with TODO)
+- Tent/inactive node SVG
 
-### Phase 0: Asset Preparation (you do this)
-- Extract both ZIPs
-- Convert all EPS files to SVG
-- Re-upload individual SVG files. I'll place them in `src/assets/city/`:
-  - `src/assets/city/textures/zone-core.svg`
-  - `src/assets/city/textures/zone-middle.svg`
-  - `src/assets/city/textures/zone-outer.svg`
-  - `src/assets/city/nodes/core/building-1.svg` through `building-5.svg`
-  - `src/assets/city/nodes/middle/house-1.svg` through `house-5.svg`
-  - `src/assets/city/nodes/outer/shack-1.svg` (basic housing)
-  - `src/assets/city/nodes/inactive/tent.svg`
-  - `src/assets/city/flowers/good.svg` and `bad.svg` (saved for later)
+## Technical Concern: White Backgrounds
+All uploaded SVGs have a white rectangle as their first `<path>` element (full canvas fill). When rendered as `<image>` in the graph SVG, this white box will obscure the zone textures behind them. 
 
-### Phase 1: Admin Theme Dropdown
-- Replace the toggle in `ThemePanel.tsx` with a `<Select>` dropdown (currently only "Classic" / "City" but extensible for future themes)
-- Uses the existing `useUpdateAppSetting` hook
+**Solution**: Before copying, strip the first white-fill path from each node SVG. The textures can keep theirs since they'll be clipped to rings anyway.
 
-### Phase 2: Zone Textures via Ring Masking
-- Rewrite `CityZones.tsx`:
-  - Define SVG `<clipPath>` rings (annulus shapes using two concentric circles and `clip-rule="evenodd"`)
-  - Place each texture as a full `<image>` element clipped to its corresponding ring
-  - Remove the green pastel overlay, gradients, and grid patterns entirely
+If stripping isn't possible at copy time, an alternative is to render the node images with CSS `mix-blend-mode: multiply` which will make white areas transparent, but this may affect other colors. The cleanest approach is to edit the SVGs to remove the background path.
 
-### Phase 3: Node Rendering with SVG Assets
-- Delete `house-shapes.ts`
-- Rewrite `CityNode.tsx`:
-  - Import all house SVGs as URL paths (via Vite asset imports)
-  - Render `<image href={...}>` within the motion group
-  - Zone-to-asset mapping:
-    - **Core**: Each of the 5 buildings used exactly once (deterministic assignment by sorted bridging score rank)
-    - **Middle**: Random selection from 5 houses (seeded by node ID for determinism)
-    - **Outer**: Basic shack SVG
-    - **Inactive**: Tent SVG
-  - All images rendered at a uniform size (e.g., 48x48px, configurable)
-  - **Online indicator**: SVG overlay — a small yellow/warm glow rectangle positioned at a "window" location on the house, toggled by `token.isOnline`
-  - **Unread badge**: Kept as SVG overlay (envelope + count), same as current
-  - **Current user glow**: Kept as animated circle
+## Steps
 
-### Phase 4: Core Zone — Top 5 Enforcement
-- In `tokenizer.ts`, add logic:
-  - Sort all nodes eligible for `core` zone by bridging score descending
-  - Only the top 5 get `zone: 'core'`
-  - Remaining nodes that would qualify get placed at `zone: 'middle'` with their radial distance set to just outside `greenRadius` (core border)
-- This preserves the existing top-5 leaderboard concept
+### Step 1: Copy Assets to Project
+Copy all files to `src/assets/city/` following the planned directory structure:
+- `src/assets/city/textures/zone-core.svg`
+- `src/assets/city/textures/zone-middle.svg`
+- `src/assets/city/textures/zone-outer.svg`
+- `src/assets/city/nodes/middle/house-1.svg` through `house-5.svg`
+- `src/assets/city/nodes/outer/shack-1.svg`
+- `src/assets/city/nodes/core/building-1.svg` through `building-3.svg` (placeholder: reuse middle houses until real assets arrive)
+- `src/assets/city/flowers/flower.svg`
 
-### Phase 5: Sandy Path Edges
-- Rewrite `CityEdge.tsx`:
-  - Generate an SVG `<path>` with slight random curves (seeded by source+target IDs) for a natural look
-  - Apply a sandy color (`#D4B896`) with a thick stroke and rough edges (using `stroke-dasharray` with irregular spacing or an SVG filter for grain)
-  - Active paths get a warmer, brighter color
-  - Pending paths remain dashed
-- No external texture needed — pure SVG procedural generation
+### Step 2: Update CityNode.tsx
+- Import all node SVGs via Vite asset imports (`import house1 from '@/assets/city/nodes/middle/house-1.svg'`)
+- Replace placeholder render functions with `<image href={...}>` elements
+- Zone-to-asset mapping:
+  - **Core**: Use the 3 uploaded core buildings, doubling 2 to fill 5 slots (marked with `// TODO: replace with unique core buildings when uploaded`)
+  - **Middle**: 5 houses, selected by `hashToIndex(nodeId, 5)`
+  - **Outer**: Single shack SVG
+  - **Inactive**: Keep current tent placeholder until tent SVG arrives (marked with TODO)
+- Render at uniform 48x48px (downscaled from 1920x1920 source)
+- Keep all existing overlays: online glow, unread badge, incoming request pulse, current user glow
 
-### Phase 6: Centralized Interaction Handler
-- Verify and enforce: `CityNode` and `CityEdge` components only receive callback props (`onClick`, `onMouseEnter`, `onMouseLeave`) and dispatch them with semantic data (node ID, edge source/target)
-- No business logic (navigation, state mutation, data fetching) inside these components
-- All interaction logic lives in `CityRenderer.tsx` which maps semantic events to the centralized handlers from `OpinionGraph.tsx`
-- This is already mostly the case; I'll audit and clean up any violations
+### Step 3: Update CityZones.tsx
+- Import the 3 texture SVGs
+- Replace solid-color fills with `<image>` elements clipped by annulus ring `<clipPath>` definitions
+- Each texture image is placed at full size, centered on the graph, and clipped to its corresponding zone ring using SVG `clip-path` with `evenodd` fill rule
+- Remove the center plaza marker (green dot) -- the texture itself provides visual identity
 
-### Phase 7: Future Considerations (NOT implemented now)
-- **Flowers at edges**: Good/bad flower SVGs placed at edge endpoints based on bridging score — deferred
-- **House variations for chat quality**: Instead of swapping entire houses, we can layer small detail overlays (e.g., garden state, window decorations) on top of the base house SVG. This avoids a huge asset library and heavy reloading. A practical approach:
-  - 2-3 overlay layers (garden, window style, roof decoration) controlled by score ranges
-  - Overlays are small SVGs composited on top of the base house
-  - Changes animate smoothly with CSS transitions rather than full image swaps
+### Step 4: Verify CityRenderer Integration
+- No changes expected -- CityRenderer already passes all needed props
+- Confirm the new `<image>` elements render correctly within the motion groups
 
 ## Technical Details
 
-**Files to delete:**
-- `src/themes/city/house-shapes.ts`
-
-**Files to rewrite:**
-- `src/themes/city/CityZones.tsx` — texture ring masking
-- `src/themes/city/CityNode.tsx` — SVG asset rendering
-- `src/themes/city/CityEdge.tsx` — sandy path rendering
-- `src/components/admin/ThemePanel.tsx` — dropdown instead of toggle
-
 **Files to modify:**
-- `src/themes/tokenizer.ts` — top-5 core zone enforcement
-- `src/themes/city/CityRenderer.tsx` — minor updates to pass new props
+- `src/themes/city/CityNode.tsx` -- swap placeholders for `<image>` elements
+- `src/themes/city/CityZones.tsx` -- add texture `<image>` with clip paths
 
-**Files unchanged:**
-- `src/themes/types.ts`
-- `src/themes/city/CityCluster.tsx`
-- `src/themes/city/CityEventMarker.tsx`
-- `src/themes/ThemeContext.tsx`
-- `src/components/graph/OpinionGraph.tsx`
+**New files (asset copies):**
+- `src/assets/city/textures/zone-core.svg`
+- `src/assets/city/textures/zone-middle.svg`
+- `src/assets/city/textures/zone-outer.svg`
+- `src/assets/city/nodes/middle/house-1.svg` through `house-5.svg`
+- `src/assets/city/nodes/outer/shack-1.svg`
+- `src/assets/city/nodes/core/building-1.svg` through `building-3.svg`
+- `src/assets/city/flowers/flower.svg`
 
-**New files:**
-- `src/assets/city/` — all your SVG assets (placed after you upload them)
-
-## Next Step
-Upload the converted SVG files and I'll implement all phases.
+**White background handling:**
+Since we cannot programmatically strip SVG paths during copy, I will use a CSS approach: set `style={{ mixBlendMode: 'multiply' }}` on node `<image>` elements. This makes white areas transparent while preserving colored content. For textures this is not needed since they fill their entire ring.
 
