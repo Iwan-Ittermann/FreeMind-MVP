@@ -1,21 +1,31 @@
 import { Palette } from 'lucide-react';
-import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useAppSetting, useUpdateAppSetting } from '@/hooks/useAppSettings';
 import { toast } from 'sonner';
+
+const THEMES = [
+  { value: 'classic', label: '🔵 Classic' },
+  { value: 'city', label: '🏙️ City' },
+] as const;
 
 export function ThemePanel() {
   const { data: setting, isLoading } = useAppSetting('active_theme');
   const updateSetting = useUpdateAppSetting();
 
-  const isCity = setting?.value === 'city';
+  const currentTheme = setting?.value ?? 'classic';
 
-  const handleToggle = (checked: boolean) => {
-    const newTheme = checked ? 'city' : 'classic';
+  const handleChange = (value: string) => {
     updateSetting.mutate(
-      { key: 'active_theme', value: newTheme },
+      { key: 'active_theme', value },
       {
-        onSuccess: () => toast.success(`Theme switched to "${newTheme}"`),
+        onSuccess: () => toast.success(`Theme switched to "${value}"`),
         onError: () => toast.error('Failed to update theme'),
       }
     );
@@ -31,21 +41,31 @@ export function ThemePanel() {
           <div>
             <h3 className="font-semibold text-foreground">Global Theme</h3>
             <p className="text-sm text-muted-foreground">
-              Switch between Classic and City theme for all users
+              Choose the visual theme for all users
             </p>
           </div>
         </div>
 
         <div className="flex items-center justify-between">
-          <Label htmlFor="theme-toggle" className="text-sm font-medium">
-            {isCity ? '🏙️ City Theme' : '🔵 Classic Theme'}
+          <Label htmlFor="theme-select" className="text-sm font-medium">
+            Active Theme
           </Label>
-          <Switch
-            id="theme-toggle"
-            checked={isCity}
-            onCheckedChange={handleToggle}
+          <Select
+            value={currentTheme}
+            onValueChange={handleChange}
             disabled={isLoading || updateSetting.isPending}
-          />
+          >
+            <SelectTrigger id="theme-select" className="w-[160px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {THEMES.map((t) => (
+                <SelectItem key={t.value} value={t.value}>
+                  {t.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
     </div>

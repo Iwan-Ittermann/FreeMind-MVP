@@ -1,3 +1,11 @@
+/**
+ * CityZones — renders concentric zone rings with texture masking.
+ *
+ * Currently uses solid fills as placeholders until SVG texture assets
+ * are uploaded. Once assets are in src/assets/city/textures/, replace
+ * the <circle> fills with <image> elements clipped by the ring paths.
+ */
+
 import { SemanticZoneToken } from '../types';
 import { LayoutConfig } from '@/types/graph';
 
@@ -6,83 +14,90 @@ interface CityZonesProps {
   config: LayoutConfig;
 }
 
-const ZONE_FILLS: Record<string, { fill: string; opacity: number; pattern?: string }> = {
-  core:     { fill: '#C8E6C9', opacity: 0.85 },   // Marketplace — pastel green
-  middle:   { fill: '#FFF9C4', opacity: 0.75 },   // Quarters — warm pastel yellow
-  outer:    { fill: '#FFCDD2', opacity: 0.65 },   // Periphery — muted pink-red
-  inactive: { fill: '#E8F5E9', opacity: 0.3 },    // Meadow — soft green
+// Placeholder zone colors — will be replaced by texture images
+const ZONE_STYLES: Record<string, { fill: string; opacity: number }> = {
+  core:     { fill: 'hsl(120, 30%, 85%)', opacity: 0.6 },
+  middle:   { fill: 'hsl(45, 40%, 88%)', opacity: 0.5 },
+  outer:    { fill: 'hsl(20, 30%, 85%)', opacity: 0.45 },
+  inactive: { fill: 'hsl(35, 20%, 92%)', opacity: 0.2 },
 };
 
 export function CityZones({ zones, config }: CityZonesProps) {
   return (
     <g className="city-zones">
-      {/* Meadow gradient beyond boundary */}
       <defs>
-        <radialGradient id="meadow-grad" cx="50%" cy="50%" r="50%">
-          <stop offset="85%" stopColor="#E8F5E9" stopOpacity={0.3} />
-          <stop offset="100%" stopColor="#E8F5E9" stopOpacity={0} />
-        </radialGradient>
-        {/* Subtle grid pattern for marketplace */}
-        <pattern id="market-grid" x="0" y="0" width="12" height="12" patternUnits="userSpaceOnUse">
-          <path d="M 12 0 L 0 0 0 12" fill="none" stroke="rgba(0,0,0,0.04)" strokeWidth="0.5" />
-        </pattern>
-        {/* Block pattern for quarters */}
-        <pattern id="quarter-blocks" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-          <rect x="1" y="1" width="18" height="18" fill="none" stroke="rgba(0,0,0,0.03)" strokeWidth="0.3" rx="2" />
-        </pattern>
+        {/* Clip paths for each zone ring (annulus) */}
+        {zones.map((z) => (
+          <clipPath key={`clip-${z.zone}`} id={`zone-clip-${z.zone}`}>
+            {/* Outer circle */}
+            <circle cx={z.centerX} cy={z.centerY} r={z.outerRadius} />
+            {/* Inner circle subtracted via evenodd */}
+          </clipPath>
+        ))}
       </defs>
 
-      {/* Background meadow circle */}
-      <circle
-        cx={config.centerX}
-        cy={config.centerY}
-        r={config.outerRadius * 1.15}
-        fill="url(#meadow-grad)"
-      />
+      {/* Render zones outer-to-inner so inner paints on top */}
+      {zones.map((z) => {
+        const style = ZONE_STYLES[z.zone] || ZONE_STYLES.inactive;
+        return (
+          <g key={z.zone}>
+            {/*
+              Annulus ring: a path with two concentric circles and evenodd fill rule.
+              This creates a donut shape that can clip a texture image.
+            */}
+            <path
+              d={`
+                M ${z.centerX - z.outerRadius} ${z.centerY}
+                a ${z.outerRadius} ${z.outerRadius} 0 1 0 ${z.outerRadius * 2} 0
+                a ${z.outerRadius} ${z.outerRadius} 0 1 0 ${-z.outerRadius * 2} 0
+                Z
+                M ${z.centerX - z.innerRadius} ${z.centerY}
+                a ${z.innerRadius} ${z.innerRadius} 0 1 0 ${z.innerRadius * 2} 0
+                a ${z.innerRadius} ${z.innerRadius} 0 1 0 ${-z.innerRadius * 2} 0
+                Z
+              `}
+              fillRule="evenodd"
+              fill={style.fill}
+              opacity={style.opacity}
+            />
 
-      {/* Outer dotted boundary */}
+            {/* Subtle zone boundary line */}
+            {z.innerRadius > 0 && (
+              <circle
+                cx={z.centerX}
+                cy={z.centerY}
+                r={z.innerRadius}
+                fill="none"
+                stroke="hsl(0, 0%, 50%)"
+                strokeWidth={0.5}
+                strokeOpacity={0.15}
+                strokeDasharray="4 4"
+              />
+            )}
+          </g>
+        );
+      })}
+
+      {/* Outer boundary */}
       <circle
         cx={config.centerX}
         cy={config.centerY}
         r={config.outerRadius}
         fill="none"
-        stroke="rgba(0,0,0,0.15)"
-        strokeWidth={1.5}
-        strokeDasharray="4 4"
+        stroke="hsl(0, 0%, 40%)"
+        strokeWidth={1}
+        strokeOpacity={0.2}
+        strokeDasharray="6 4"
       />
 
-      {/* Zone rings rendered outer-to-inner */}
-      {zones.map((z) => {
-        const style = ZONE_FILLS[z.zone] || ZONE_FILLS.inactive;
-        return (
-          <circle
-            key={z.zone}
-            cx={z.centerX}
-            cy={z.centerY}
-            r={z.outerRadius}
-            fill={style.fill}
-            opacity={style.opacity}
-          />
-        );
-      })}
-
-      {/* Overlay patterns */}
+      {/* Center plaza marker */}
       <circle
         cx={config.centerX}
         cy={config.centerY}
-        r={config.greenRadius}
-        fill="url(#market-grid)"
+        r={config.greenRadius * 0.08}
+        fill="hsl(120, 25%, 65%)"
+        opacity={0.5}
       />
-      <circle
-        cx={config.centerX}
-        cy={config.centerY}
-        r={config.yellowRadius}
-        fill="url(#quarter-blocks)"
-      />
-
-      {/* Center marker — small fountain/plaza */}
-      <circle cx={config.centerX} cy={config.centerY} r={config.greenRadius * 0.12} fill="#A5D6A7" opacity={0.7} />
-      <circle cx={config.centerX} cy={config.centerY} r={config.greenRadius * 0.06} fill="#66BB6A" opacity={0.5} />
     </g>
   );
 }
