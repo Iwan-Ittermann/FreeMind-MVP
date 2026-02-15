@@ -1,9 +1,13 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check, Linkedin } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { toast } from "sonner";
 import {
   Accordion,
   AccordionContent,
@@ -83,6 +87,53 @@ function DiscourseGraph({ className = "" }: { className?: string }) {
         <circle key={i} cx={n.cx} cy={n.cy} r={n.r} fill={zoneColors[n.zone]} opacity="0.8" />
       ))}
     </svg>
+  );
+}
+
+function ContactForm() {
+  const { t } = useTranslation();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // For now, open mailto as fallback
+    const subject = encodeURIComponent(`FreeMind.city Kontakt: ${name}`);
+    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
+    window.location.href = `mailto:contact@freemind.city?subject=${subject}&body=${body}`;
+    toast.success(t("landing.contact.success"));
+    setName("");
+    setEmail("");
+    setMessage("");
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto">
+      <Input
+        placeholder={t("landing.contact.name")}
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        required
+      />
+      <Input
+        type="email"
+        placeholder={t("landing.contact.email")}
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+      />
+      <Textarea
+        placeholder={t("landing.contact.message")}
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        required
+        className="min-h-[120px]"
+      />
+      <Button type="submit" className="w-full">
+        {t("landing.contact.send")}
+      </Button>
+    </form>
   );
 }
 
@@ -325,8 +376,38 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* SECTION 8 — Final CTA */}
-      <section className="py-20 md:py-28 bg-muted/50">
+      {/* SECTION 8 — Contact */}
+      <section id="contact" className="py-20 md:py-28 bg-muted/50">
+        <div className="container mx-auto px-6 max-w-3xl">
+          <motion.div {...fadeInUp}>
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-medium text-center mb-4">
+              {t("landing.contact.headline")}
+            </h2>
+            <p className="text-center text-muted-foreground mb-2">
+              {t("landing.contact.intro")}
+            </p>
+            <p className="text-center text-sm font-medium mb-1">
+              {t("landing.contact.founder")}
+            </p>
+            <p className="text-center mb-8">
+              <a
+                href="https://linkedin.com/in/iwanittermann"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <Linkedin className="h-4 w-4" />
+                {t("landing.contact.linkedin")}
+              </a>
+            </p>
+
+            <ContactForm />
+          </motion.div>
+        </div>
+      </section>
+
+      {/* SECTION 9 — Final CTA */}
+      <section className="py-20 md:py-28">
         <div className="container mx-auto px-6 max-w-3xl text-center">
           <motion.div {...fadeInUp}>
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-medium mb-8">
@@ -357,7 +438,7 @@ export default function Landing() {
               <Link to="/legal" className="hover:text-foreground transition-colors">
                 {t("landing.footer.imprint")}
               </Link>
-              <a href="mailto:contact@freemind.city" className="hover:text-foreground transition-colors">
+              <a href="#contact" className="hover:text-foreground transition-colors">
                 {t("landing.footer.contact")}
               </a>
             </div>
