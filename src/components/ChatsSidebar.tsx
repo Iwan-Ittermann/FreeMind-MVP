@@ -20,6 +20,7 @@ interface ChatsSidebarProps {
   onOpenChange: (open: boolean) => void;
   topicId: string;
   onChatOpen?: (theirOpinionId: string) => void;
+  unreadMessageCounts?: Map<string, number>;
 }
 
 interface ChatItem {
@@ -32,7 +33,7 @@ interface ChatItem {
   last_message_at?: string;
 }
 
-export function ChatsSidebar({ open, onOpenChange, topicId, onChatOpen }: ChatsSidebarProps) {
+export function ChatsSidebar({ open, onOpenChange, topicId, onChatOpen, unreadMessageCounts }: ChatsSidebarProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -144,6 +145,12 @@ export function ChatsSidebar({ open, onOpenChange, topicId, onChatOpen }: ChatsS
     onOpenChange(false);
   };
 
+  const getUnreadForChat = (chat: ChatItem): number => {
+    if (!unreadMessageCounts) return 0;
+    const theirOpinionId = chat.opinion_a_id === myOpinion?.id ? chat.opinion_b_id : chat.opinion_a_id;
+    return unreadMessageCounts.get(theirOpinionId) || 0;
+  };
+
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -212,29 +219,39 @@ export function ChatsSidebar({ open, onOpenChange, topicId, onChatOpen }: ChatsS
                 </div>
               ) : (
                 <div className="space-y-2 pb-4">
-                  {filteredChats.map((chat) => (
-                    <button
-                      key={chat.id}
-                      onClick={() => handleChatClick(chat)}
-                      className="w-full text-left p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
-                    >
-                      <div className="flex justify-between items-start gap-2">
-                        <p className="text-sm text-foreground line-clamp-2 flex-1">
-                          "{chat.other_opinion_text}"
-                        </p>
-                        {chat.last_message_at && (
-                          <span className="text-xs text-muted-foreground whitespace-nowrap">
-                            {formatTime(chat.last_message_at)}
-                          </span>
+                  {filteredChats.map((chat) => {
+                    const unread = getUnreadForChat(chat);
+                    return (
+                      <button
+                        key={chat.id}
+                        onClick={() => handleChatClick(chat)}
+                        className="w-full text-left p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors relative"
+                      >
+                        <div className="flex justify-between items-start gap-2">
+                          <p className="text-sm text-foreground line-clamp-2 flex-1">
+                            "{chat.other_opinion_text}"
+                          </p>
+                          <div className="flex items-center gap-2">
+                            {unread > 0 && (
+                              <span className="min-w-[20px] h-[20px] rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center px-1">
+                                {unread > 99 ? '99+' : unread}
+                              </span>
+                            )}
+                            {chat.last_message_at && (
+                              <span className="text-xs text-muted-foreground whitespace-nowrap">
+                                {formatTime(chat.last_message_at)}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        {chat.last_message && (
+                          <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
+                            {chat.last_message}
+                          </p>
                         )}
-                      </div>
-                      {chat.last_message && (
-                        <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
-                          {chat.last_message}
-                        </p>
-                      )}
-                    </button>
-                  ))}
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </ScrollArea>

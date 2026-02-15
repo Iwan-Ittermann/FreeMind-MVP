@@ -18,9 +18,12 @@ interface FloatingChatWindowProps {
   onMinimize: () => void;
   onClose: () => void;
   style?: React.CSSProperties;
+  readOnly?: boolean;
+  readOnlySourceId?: string;
+  readOnlyTargetId?: string;
 }
 
-export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style }: FloatingChatWindowProps) {
+export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style, readOnly, readOnlySourceId, readOnlyTargetId }: FloatingChatWindowProps) {
   const { t } = useTranslation();
   const {
     chatId, myOpinion, theirOpinion, theirUserId,
@@ -276,41 +279,48 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style 
         </AnimatePresence>
       </div>
 
-      {/* Footer — input + Rate! button */}
-      <div className="border-t border-border p-2 shrink-0 bg-muted/30">
-        {isBlocked || isBlockedByOther ? (
-          <p className="text-xs text-muted-foreground text-center py-1">
-            {isBlocked ? t('floatingChat.blockedByYou') : t('floatingChat.blockedByThem')}
-          </p>
-        ) : (
-          <div className="flex items-center gap-1.5">
-            <Button
-              variant={isRatingOpen ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setIsRatingOpen(!isRatingOpen)}
-              className={`shrink-0 text-xs h-8 px-2.5 border-foreground/30 text-foreground ${hasNeverRated && !isRatingOpen ? 'animate-pulse' : ''}`}
-            >
-              {t('floatingChat.rate')}
-            </Button>
-            <Input
-              value={inputValue}
-              onChange={(e) => handleInputChange(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-              placeholder={t('floatingChat.typeMessage')}
-              className="h-8 text-xs bg-background text-foreground border-border"
-              disabled={isSending || isRatingOpen}
-            />
-            <Button
-              onClick={handleSend}
-              disabled={!inputValue.trim() || isSending || isRatingOpen}
-              size="icon"
-              className="h-8 w-8 shrink-0"
-            >
-              <Send className="h-3.5 w-3.5" />
-            </Button>
-          </div>
-        )}
-      </div>
+      {/* Footer — input + Rate! button (hidden in read-only mode) */}
+      {!readOnly && (
+        <div className="border-t border-border p-2 shrink-0 bg-muted/30">
+          {isBlocked || isBlockedByOther ? (
+            <p className="text-xs text-muted-foreground text-center py-1">
+              {isBlocked ? t('floatingChat.blockedByYou') : t('floatingChat.blockedByThem')}
+            </p>
+          ) : (
+            <div className="flex items-center gap-1.5">
+              <Button
+                variant={isRatingOpen ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setIsRatingOpen(!isRatingOpen)}
+                className={`shrink-0 text-xs h-8 px-2.5 border-foreground/30 text-foreground ${hasNeverRated && !isRatingOpen ? 'animate-pulse' : ''}`}
+              >
+                {t('floatingChat.rate')}
+              </Button>
+              <Input
+                value={inputValue}
+                onChange={(e) => handleInputChange(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
+                placeholder={t('floatingChat.typeMessage')}
+                className="h-8 text-xs bg-background text-foreground border-border"
+                disabled={isSending || isRatingOpen}
+              />
+              <Button
+                onClick={handleSend}
+                disabled={!inputValue.trim() || isSending || isRatingOpen}
+                size="icon"
+                className="h-8 w-8 shrink-0"
+              >
+                <Send className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+      {readOnly && (
+        <div className="border-t border-border p-2 shrink-0 bg-muted/30">
+          <p className="text-xs text-muted-foreground text-center py-1">{t('floatingChat.readOnly', 'Read-only view')}</p>
+        </div>
+      )}
     </motion.div>
   );
 }

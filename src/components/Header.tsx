@@ -19,9 +19,10 @@ interface HeaderProps {
   myOpinionId?: string;
   onChatOpen?: (theirOpinionId: string) => void;
   totalUnread?: number;
+  unreadMessageCounts?: Map<string, number>;
 }
 
-export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted, myOpinionId, onChatOpen, totalUnread = 0 }: HeaderProps) {
+export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted, myOpinionId, onChatOpen, totalUnread = 0, unreadMessageCounts }: HeaderProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -161,7 +162,7 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
       )}
 
       {topicId && (
-        <ChatsSidebar open={chatsOpen} onOpenChange={setChatsOpen} topicId={topicId} onChatOpen={onChatOpen} />
+        <ChatsSidebar open={chatsOpen} onOpenChange={setChatsOpen} topicId={topicId} onChatOpen={onChatOpen} unreadMessageCounts={unreadMessageCounts} />
       )}
     </>
   );
