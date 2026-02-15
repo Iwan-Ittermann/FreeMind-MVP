@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { TutorialProvider } from "@/contexts/TutorialContext";
 import { ChatTutorialProvider } from "@/contexts/ChatTutorialContext";
 import { useDynamicSiteTitle } from "@/hooks/useDynamicSiteTitle";
+import { useGlobalPresence } from "@/hooks/useGlobalPresence";
 import { FreeMindThemeProvider } from "@/themes/ThemeContext";
 import Splash from "./pages/Splash";
 import Index from "./pages/Index";
@@ -22,7 +23,6 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 function AppContent() {
-  // Apply dynamic site title from database
   useDynamicSiteTitle();
 
   return (
@@ -30,22 +30,30 @@ function AppContent() {
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/eching" element={<Splash />} />
-          <Route path="/" element={<Landing />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/home" element={<Index />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/chat" element={<Chat />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/legal" element={<Legal />} />
-          <Route path="/t/:slug" element={<TopicJoin />} />
-          <Route path="/topic/:topicId" element={<TopicView />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AppRoutes />
       </BrowserRouter>
     </>
+  );
+}
+
+function AppRoutes() {
+  useGlobalPresence();
+
+  return (
+    <Routes>
+      <Route path="/eching" element={<Splash />} />
+      <Route path="/" element={<Landing />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/home" element={<Index />} />
+      <Route path="/auth" element={<Auth />} />
+      <Route path="/chat" element={<Chat />} />
+      <Route path="/admin" element={<Admin />} />
+      <Route path="/legal" element={<Legal />} />
+      <Route path="/t/:slug" element={<TopicJoin />} />
+      <Route path="/topic/:topicId" element={<TopicView />} />
+      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 }
 
