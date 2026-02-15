@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, ThumbsUp, ThumbsDown, Sparkles, Flame, Quote, Flag, AlertTriangle } from 'lucide-react';
+import { Quote, Flag, AlertTriangle } from 'lucide-react';
 import { ReportDialog } from '@/components/moderation/ReportDialog';
 
 interface ChatBubbleProps {
@@ -15,26 +15,16 @@ interface ChatBubbleProps {
   noticeText?: string;
 }
 
-const reactionEmojis = [
-  { icon: Heart, label: 'love', color: 'text-rose-400' },
-  { icon: ThumbsUp, label: 'agree', color: 'text-green-400' },
-  { icon: ThumbsDown, label: 'disagree', color: 'text-orange-400' },
-  { icon: Sparkles, label: 'insightful', color: 'text-yellow-400' },
-  { icon: Flame, label: 'hot-take', color: 'text-red-400' },
-];
-
 export function ChatBubble({ 
   id, 
   content, 
   isOwn, 
   timestamp, 
-  reactions = [],
   isOpinion = false,
-  onReact,
   visible = true,
   noticeText,
 }: ChatBubbleProps) {
-  const [showReactions, setShowReactions] = useState(false);
+  const [showReport, setShowReport] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
 
   // Show notice for hidden content
@@ -67,8 +57,8 @@ export function ChatBubble({
           damping: 30
         }}
         className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
-        onMouseEnter={() => setShowReactions(true)}
-        onMouseLeave={() => setShowReactions(false)}
+        onMouseEnter={() => setShowReport(true)}
+        onMouseLeave={() => setShowReport(false)}
       >
         <div className={`relative max-w-[85%] group`}>
           {/* Opinion label */}
@@ -106,46 +96,21 @@ export function ChatBubble({
             {timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </p>
 
-          {/* Reactions display */}
-          {reactions.length > 0 && (
-            <div className={`flex gap-1 mt-1 ${isOwn ? 'justify-end' : 'justify-start'}`}>
-              {reactions.map((r, i) => {
-                const emoji = reactionEmojis.find(e => e.label === r);
-                if (!emoji) return null;
-                return (
-                  <span key={i} className={`text-xs ${emoji.color}`}>
-                    <emoji.icon size={14} />
-                  </span>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Reaction picker with report button */}
-          {showReactions && !isOpinion && (
+          {/* Report button on hover */}
+          {showReport && !isOpinion && (
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              className={`absolute -top-10 flex gap-1 p-1.5 bg-black/90 backdrop-blur-sm rounded-full border border-white/10 shadow-lg ${
+              className={`absolute -top-8 flex p-1 bg-black/90 backdrop-blur-sm rounded-full border border-white/10 shadow-lg ${
                 isOwn ? 'right-0' : 'left-0'
               }`}
             >
-              {reactionEmojis.map((emoji) => (
-                <button
-                  key={emoji.label}
-                  onClick={() => onReact?.(emoji.label)}
-                  className={`p-1.5 rounded-full hover:bg-white/10 transition-colors ${emoji.color}`}
-                >
-                  <emoji.icon size={16} />
-                </button>
-              ))}
-              {/* Report button */}
               <button
                 onClick={() => setReportDialogOpen(true)}
                 className="p-1.5 rounded-full hover:bg-destructive/20 transition-colors text-white/40 hover:text-destructive"
-                title="Inhalt melden"
+                title="Report"
               >
-                <Flag size={16} />
+                <Flag size={14} />
               </button>
             </motion.div>
           )}

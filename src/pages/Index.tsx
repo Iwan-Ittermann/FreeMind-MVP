@@ -165,7 +165,11 @@ const Index = () => {
   };
 
   const handleEdgeClick = (edge: GraphEdge) => {
-    navigate(`/chat?their=${edge.target}&source=${edge.source}&readonly=true`);
+    if (isMobile) {
+      navigate(`/chat?their=${edge.target}&source=${edge.source}&readonly=true`);
+    } else {
+      chatManagerRef.current?.openReadOnlyChat(edge.source, edge.target);
+    }
   };
 
   const getNodeActionState = () => {
@@ -197,6 +201,7 @@ const Index = () => {
         myOpinionId={myOpinion?.id}
         onChatOpen={handleFloatingChatOpen}
         totalUnread={totalUnreadCount}
+        unreadMessageCounts={unreadMessageCounts}
       />
 
       <div className="flex-1 container mx-auto px-4 py-6 md:py-8">

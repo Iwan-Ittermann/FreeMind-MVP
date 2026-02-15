@@ -9,6 +9,9 @@ import { useAuth } from '@/hooks/useAuth';
 interface OpenChat {
   theirOpinionId: string;
   isMinimized: boolean;
+  readOnly?: boolean;
+  sourceOpinionId?: string;
+  targetOpinionId?: string;
 }
 
 const STORAGE_KEY = 'freemind_floating_chats';
@@ -29,6 +32,7 @@ function saveChats(chats: OpenChat[]) {
 
 export interface FloatingChatManagerHandle {
   openChat: (theirOpinionId: string) => void;
+  openReadOnlyChat: (sourceOpinionId: string, targetOpinionId: string) => void;
 }
 
 interface FloatingChatManagerProps {
@@ -62,12 +66,29 @@ export const FloatingChatManager = forwardRef<FloatingChatManagerHandle, Floatin
 
     const openChat = useCallback((theirOpinionId: string) => {
       setOpenChats(prev => {
-        const exists = prev.find(c => c.theirOpinionId === theirOpinionId);
+        const exists = prev.find(c => c.theirOpinionId === theirOpinionId && !c.readOnly);
         if (exists) {
-          return prev.map(c => c.theirOpinionId === theirOpinionId ? { ...c, isMinimized: false } : c);
+          return prev.map(c => c.theirOpinionId === theirOpinionId && !c.readOnly ? { ...c, isMinimized: false } : c);
         }
         const expanded = prev.filter(c => !c.isMinimized);
         let next = [...prev, { theirOpinionId, isMinimized: false }];
+        if (expanded.length >= MAX_EXPANDED) {
+          const oldest = expanded[0];
+          next = next.map(c => c.theirOpinionId === oldest.theirOpinionId ? { ...c, isMinimized: true } : c);
+        }
+        return next;
+      });
+    }, []);
+
+    const openReadOnlyChat = useCallback((sourceOpinionId: string, targetOpinionId: string) => {
+      const key = `ro-${sourceOpinionId}-${targetOpinionId}`;
+      setOpenChats(prev => {
+        const exists = prev.find(c => c.theirOpinionId === key);
+        if (exists) {
+          return prev.map(c => c.theirOpinionId === key ? { ...c, isMinimized: false } : c);
+        }
+        const expanded = prev.filter(c => !c.isMinimized);
+        let next = [...prev, { theirOpinionId: key, isMinimized: false, readOnly: true, sourceOpinionId, targetOpinionId }];
         if (expanded.length >= MAX_EXPANDED) {
           const oldest = expanded[0];
           next = next.map(c => c.theirOpinionId === oldest.theirOpinionId ? { ...c, isMinimized: true } : c);
@@ -96,7 +117,7 @@ export const FloatingChatManager = forwardRef<FloatingChatManagerHandle, Floatin
       setOpenChats(prev => prev.filter(c => c.theirOpinionId !== theirOpinionId));
     }, []);
 
-    useImperativeHandle(ref, () => ({ openChat }), [openChat]);
+    useImperativeHandle(ref, () => ({ openChat, openReadOnlyChat }), [openChat, openReadOnlyChat]);
 
     if (!user) return null;
 
@@ -133,6 +154,20 @@ export const FloatingChatManager = forwardRef<FloatingChatManagerHandle, Floatin
         <AnimatePresence>
           {expandedChats.map((chat, index) => {
             const rightOffset = bubbleColumnWidth + (expandedChats.length - 1 - index) * (WINDOW_WIDTH + WINDOW_GAP);
+            if (chat.readOnly && chat.sourceOpinionId && chat.targetOpinionId) {
+              return (
+                <FloatingChatWindow
+                  key={chat.theirOpinionId}
+                  theirOpinionId={chat.targetOpinionId}
+                  readOnly
+                  readOnlySourceId={chat.sourceOpinionId}
+                  readOnlyTargetId={chat.targetOpinionId}
+                  onMinimize={() => minimizeChat(chat.theirOpinionId)}
+                  onClose={() => closeChat(chat.theirOpinionId)}
+                  style={{ right: rightOffset }}
+                />
+              );
+            }
             return (
               <FloatingChatWindow
                 key={chat.theirOpinionId}
