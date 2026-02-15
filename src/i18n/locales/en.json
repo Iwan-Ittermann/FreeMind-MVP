@@ -152,6 +152,8 @@
     "saveRating": "Save Rating",
     "saving": "Saving...",
     "saved": "Saved!",
+    "rate": "Rate!",
+    "saveAndClose": "Save & Close",
     "typeMessage": "Type a message...",
     "readOnlyBlocked": "Read-only mode — messaging disabled",
     "blockedByYou": "You have blocked this user",

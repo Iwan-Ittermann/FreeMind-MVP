@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, X, Send, Check, Flag, Settings } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { FloatingChatManager, FloatingChatManagerHandle } from '@/components/chat/FloatingChatManager';
 import { OpinionGraph } from '@/components/graph/OpinionGraph';
 import { InfoPanel } from '@/components/InfoPanel';
 import { Footer } from '@/components/Footer';
@@ -29,6 +31,8 @@ const DEFAULT_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
 const Index = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const isMobile = useIsMobile();
+  const chatManagerRef = useRef<FloatingChatManagerHandle>(null);
   const tutorial = useTutorialContext();
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [graphSize, setGraphSize] = useState({ width: 600, height: 600 });
@@ -134,7 +138,20 @@ const Index = () => {
   };
 
   const handleOpenChat = () => {
-    if (selectedNode) navigate(`/chat?their=${selectedNode.id}`);
+    if (!selectedNode) return;
+    if (isMobile) {
+      navigate(`/chat?their=${selectedNode.id}`);
+    } else {
+      chatManagerRef.current?.openChat(selectedNode.id);
+    }
+  };
+
+  const handleFloatingChatOpen = (theirOpinionId: string) => {
+    if (isMobile) {
+      navigate(`/chat?their=${theirOpinionId}`);
+    } else {
+      chatManagerRef.current?.openChat(theirOpinionId);
+    }
   };
 
   const handleEdgeClick = (edge: GraphEdge) => {
@@ -168,6 +185,7 @@ const Index = () => {
         hasExistingOpinion={!!myOpinion}
         onOpinionSubmitted={handleOpinionSubmitted}
         myOpinionId={myOpinion?.id}
+        onChatOpen={handleFloatingChatOpen}
       />
 
       <div className="flex-1 container mx-auto px-4 py-6 md:py-8">
@@ -300,14 +318,24 @@ const Index = () => {
 
       <Footer />
 
-      {/* Floating Settings Button (lower-right, replaces FAB) */}
+      {/* Floating Settings Button (lower-left) */}
       <button
         onClick={() => setConfigOpen(true)}
-        className="fixed bottom-6 right-6 z-40 h-10 w-10 rounded-full bg-muted/80 backdrop-blur-sm border border-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shadow-lg"
+        className="fixed bottom-6 left-6 z-40 h-10 w-10 rounded-full bg-muted/80 backdrop-blur-sm border border-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shadow-lg"
         data-tutorial="settings-button"
       >
         <Settings className="h-4 w-4" />
       </button>
+
+      {/* Floating Chat Manager (desktop only) */}
+      {!isMobile && (
+        <FloatingChatManager
+          ref={chatManagerRef}
+          topicId={DEFAULT_TOPIC_ID}
+          myOpinionId={myOpinion?.id}
+          unreadMessageCounts={unreadMessageCounts}
+        />
+      )}
 
       {/* Config Panel for floating settings */}
       <ConfigPanel

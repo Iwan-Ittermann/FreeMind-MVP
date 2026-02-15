@@ -17,9 +17,10 @@ interface HeaderProps {
   hasExistingOpinion?: boolean;
   onOpinionSubmitted?: () => void;
   myOpinionId?: string;
+  onChatOpen?: (theirOpinionId: string) => void;
 }
 
-export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted, myOpinionId }: HeaderProps) {
+export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted, myOpinionId, onChatOpen }: HeaderProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -152,7 +153,7 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
       )}
 
       {topicId && (
-        <ChatsSidebar open={chatsOpen} onOpenChange={setChatsOpen} topicId={topicId} />
+        <ChatsSidebar open={chatsOpen} onOpenChange={setChatsOpen} topicId={topicId} onChatOpen={onChatOpen} />
       )}
     </>
   );

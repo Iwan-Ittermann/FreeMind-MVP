@@ -19,6 +19,7 @@ interface ChatsSidebarProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   topicId: string;
+  onChatOpen?: (theirOpinionId: string) => void;
 }
 
 interface ChatItem {
@@ -31,7 +32,7 @@ interface ChatItem {
   last_message_at?: string;
 }
 
-export function ChatsSidebar({ open, onOpenChange, topicId }: ChatsSidebarProps) {
+export function ChatsSidebar({ open, onOpenChange, topicId, onChatOpen }: ChatsSidebarProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -134,9 +135,12 @@ export function ChatsSidebar({ open, onOpenChange, topicId }: ChatsSidebarProps)
   }, [chats, search]);
 
   const handleChatClick = (chat: ChatItem) => {
-    // Navigate to the chat with the other person's opinion
     const theirOpinionId = chat.opinion_a_id === myOpinion?.id ? chat.opinion_b_id : chat.opinion_a_id;
-    navigate(`/chat?their=${theirOpinionId}`);
+    if (onChatOpen) {
+      onChatOpen(theirOpinionId);
+    } else {
+      navigate(`/chat?their=${theirOpinionId}`);
+    }
     onOpenChange(false);
   };
 
