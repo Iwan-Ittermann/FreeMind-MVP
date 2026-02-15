@@ -346,5 +346,62 @@
       "title": "Du bist bereit",
       "text": "Viel Spaß mit deinem ersten Chat!"
     }
+  },
+  "landing": {
+    "trustLine": "Anonyme Teilnahme • Innovativer Diskussions-Graph • Rechtssicher moderiert",
+    "hero": {
+      "headline": "Wo Gegensätze sich ehrlich und respektvoll austauschen.",
+      "subheadline": "FreeMind.city ist eine kommunale Plattform für konstruktive Auseinandersetzung. Hier werden Meinungsunterschiede erfahrbar – und respektvoll ausgehandelt.",
+      "cta": "Direkt starten",
+      "reassurance": "Keine öffentlichen Profile. Keine Klarnamen. DSGVO-konform."
+    },
+    "problem": {
+      "headline": "Öffentliche Diskussion funktioniert nicht mehr.",
+      "polarization": { "title": "Polarisierung", "desc": "Debatten driften in Extreme – produktiver Austausch findet kaum statt." },
+      "volume": { "title": "Lautstärke statt Qualität", "desc": "Die sichtbarsten Stimmen sind nicht die konstruktivsten." },
+      "structure": { "title": "Fehlende Struktur", "desc": "Es fehlt ein Raum, in dem Gegensätze geordnet aufeinandertreffen." }
+    },
+    "approach": {
+      "headline": "Wie FreeMind.city das löst",
+      "discourse": { "title": "Strukturierter Diskursraum", "desc": "Jede Meinung bekommt einen klaren Platz im öffentlichen Graphen." },
+      "respect": { "title": "Respekt × Gegensätzlichkeit", "desc": "Nur wer respektvoll mit echten Gegensätzen spricht, bewegt sich ins Zentrum." },
+      "quality": { "title": "Sichtbare Qualität", "desc": "Konstruktive Auseinandersetzungen werden messbar – nicht Lautstärke." }
+    },
+    "useCases": {
+      "headline": "Geeignet für",
+      "municipalities": "Kommunale Bürgerdialoge",
+      "infrastructure": "Kontroverse Infrastrukturprojekte",
+      "education": "Schul- & Hochschuldiskurse",
+      "youth": "Jugendbeteiligung & Bürgerhaushalte",
+      "note": "FreeMind.city ist kein soziales Netzwerk. Es ist ein strukturierter öffentlicher Diskursraum."
+    },
+    "steps": {
+      "headline": "Wie es funktioniert",
+      "publish": { "title": "Meinung veröffentlichen", "desc": "Anonym mit Passkey registrieren und Position zu einem Thema einbringen." },
+      "choose": { "title": "Gegensätzliche Stimme wählen", "desc": "Bewusst eine andere Perspektive auswählen und einen 1-zu-1-Dialog starten." },
+      "rate": { "title": "Austausch bewerten", "desc": "Respekt und Gegensätzlichkeit werden sichtbar – der Diskurs ordnet sich neu." }
+    },
+    "benefits": {
+      "passkey": "Anonyme Teilnahme mit Passkey",
+      "graph": "Visualisierung durch Diskurs-Graph",
+      "moderation": "Rechtssichere Moderations- & Reportingstruktur",
+      "rating": "Transparente Bewertungsmechanik",
+      "bold": "Demokratie LEBT von Gegensätzen."
+    },
+    "faq": {
+      "social": { "q": "Ist FreeMind.city ein soziales Netzwerk?", "a": "Nein. Es ist ein strukturierter Diskursraum mit klarer Mechanik." },
+      "abuse": { "q": "Wie wird Missbrauch verhindert?", "a": "Durch topic-spezifisches IP-Logging, rechtssichere Meldeverfahren und transparente Löschlogik nach deutschem Recht." },
+      "public": { "q": "Sind die Diskussionen öffentlich?", "a": "Die Meinungen sind sichtbar, Identitäten bleiben anonym." }
+    },
+    "cta": {
+      "headline": "Bereit für eine neue Form öffentlicher Auseinandersetzung?",
+      "button": "Test starten!",
+      "reassurance": "100% Anonym. Trotzdem immer konstruktiv."
+    },
+    "footer": {
+      "privacy": "Datenschutz",
+      "imprint": "Impressum",
+      "contact": "Kontakt"
+    }
   }
 }

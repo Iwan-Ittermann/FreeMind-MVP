@@ -18,6 +18,7 @@ import TopicView from "./pages/TopicView";
 import About from "./pages/About";
 import Legal from "./pages/Legal";
 import Landing from "./pages/Landing";
+import OldLanding from "./pages/OldLanding";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +43,7 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/eching" element={<Splash />} />
+      <Route path="/old-lp" element={<OldLanding />} />
       <Route path="/" element={<Landing />} />
       <Route path="/about" element={<About />} />
       <Route path="/home" element={<Index />} />

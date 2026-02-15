@@ -346,5 +346,62 @@
       "title": "You Are Ready",
       "text": "Have fun with your first chat!"
     }
+  },
+  "landing": {
+    "trustLine": "Anonymous Participation • Innovative Discourse Graph • Legally Moderated",
+    "hero": {
+      "headline": "Where opposites engage honestly and respectfully.",
+      "subheadline": "FreeMind.city is a civic platform for constructive discourse. Differences of opinion become tangible – and are negotiated with respect.",
+      "cta": "Get Started",
+      "reassurance": "No public profiles. No real names. GDPR-compliant."
+    },
+    "problem": {
+      "headline": "Public discourse is broken.",
+      "polarization": { "title": "Polarization", "desc": "Debates drift to extremes – productive exchange barely happens." },
+      "volume": { "title": "Volume Over Quality", "desc": "The most visible voices are not the most constructive." },
+      "structure": { "title": "Missing Structure", "desc": "There is no space where opposing views can meet in an orderly way." }
+    },
+    "approach": {
+      "headline": "How FreeMind.city solves this",
+      "discourse": { "title": "Structured Discourse Space", "desc": "Every opinion gets a clear place on the public graph." },
+      "respect": { "title": "Respect × Opposition", "desc": "Only those who engage respectfully with real opposites move to the center." },
+      "quality": { "title": "Visible Quality", "desc": "Constructive exchanges become measurable – not volume." }
+    },
+    "useCases": {
+      "headline": "Designed for",
+      "municipalities": "Municipal Citizen Dialogues",
+      "infrastructure": "Controversial Infrastructure Projects",
+      "education": "School & University Discourses",
+      "youth": "Youth Participation & Civic Budgets",
+      "note": "FreeMind.city is not a social network. It is a structured public discourse space."
+    },
+    "steps": {
+      "headline": "How It Works",
+      "publish": { "title": "Publish Your Opinion", "desc": "Register anonymously with a passkey and share your position on a topic." },
+      "choose": { "title": "Choose an Opposing Voice", "desc": "Deliberately select a different perspective and start a 1-on-1 dialogue." },
+      "rate": { "title": "Rate the Exchange", "desc": "Respect and opposition become visible – the discourse reorganizes itself." }
+    },
+    "benefits": {
+      "passkey": "Anonymous participation with passkey",
+      "graph": "Visualization through discourse graph",
+      "moderation": "Legally compliant moderation & reporting structure",
+      "rating": "Transparent rating mechanics",
+      "bold": "Democracy THRIVES on opposing views."
+    },
+    "faq": {
+      "social": { "q": "Is FreeMind.city a social network?", "a": "No. It is a structured discourse space with clear mechanics." },
+      "abuse": { "q": "How is abuse prevented?", "a": "Through topic-specific IP logging, legally compliant reporting procedures, and transparent deletion logic under German law." },
+      "public": { "q": "Are the discussions public?", "a": "Opinions are visible, identities remain anonymous." }
+    },
+    "cta": {
+      "headline": "Ready for a new form of public discourse?",
+      "button": "Start Testing!",
+      "reassurance": "100% Anonymous. Always constructive."
+    },
+    "footer": {
+      "privacy": "Privacy Policy",
+      "imprint": "Legal Notice",
+      "contact": "Contact"
+    }
   }
 }
