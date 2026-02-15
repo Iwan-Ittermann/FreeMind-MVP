@@ -18,9 +18,10 @@ interface HeaderProps {
   onOpinionSubmitted?: () => void;
   myOpinionId?: string;
   onChatOpen?: (theirOpinionId: string) => void;
+  totalUnread?: number;
 }
 
-export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted, myOpinionId, onChatOpen }: HeaderProps) {
+export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted, myOpinionId, onChatOpen, totalUnread = 0 }: HeaderProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -120,16 +121,23 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
             )}
 
             {topicId && user && (
-              <Button
-                onClick={() => { setChatsOpen(true); setOpinionsOpen(false); }}
-                size="icon"
-                variant="ghost"
-                className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted"
-                title={t('sidebar.myChats', 'My Chats')}
-                data-tutorial="chats-button"
-              >
-                <MessagesSquare className="h-4 w-4" />
-              </Button>
+              <div className="relative">
+                <Button
+                  onClick={() => { setChatsOpen(true); setOpinionsOpen(false); }}
+                  size="icon"
+                  variant="ghost"
+                  className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted"
+                  title={t('sidebar.myChats', 'My Chats')}
+                  data-tutorial="chats-button"
+                >
+                  <MessagesSquare className="h-4 w-4" />
+                </Button>
+                {totalUnread > 0 && (
+                  <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center px-1">
+                    {totalUnread > 99 ? '99+' : totalUnread}
+                  </span>
+                )}
+              </div>
             )}
 
             {/* Settings button removed from header — now floating on /home */}

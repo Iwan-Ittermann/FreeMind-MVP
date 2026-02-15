@@ -97,6 +97,15 @@ const Index = () => {
     tutorial.onNodeClicked();
   };
 
+  // Close opinion box when clicking outside
+  const handleBackgroundClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    // Only close if clicking on the main container background, not on interactive elements
+    if (selectedNode && !target.closest('[data-opinion-panel]') && !target.closest('svg') && !target.closest('button')) {
+      setSelectedNode(null);
+    }
+  };
+
   const handleRequestChat = async () => {
     if (!selectedNode || !myOpinion) return;
     try {
@@ -143,6 +152,7 @@ const Index = () => {
       navigate(`/chat?their=${selectedNode.id}`);
     } else {
       chatManagerRef.current?.openChat(selectedNode.id);
+      setSelectedNode(null); // Close opinion box when opening floating chat
     }
   };
 
@@ -178,7 +188,7 @@ const Index = () => {
   const hasActiveChats = userChats.length > 0;
 
   return (
-    <div className="min-h-screen bg-black text-white overflow-x-hidden flex flex-col">
+    <div className="min-h-screen bg-black text-white overflow-x-hidden flex flex-col" onClick={handleBackgroundClick}>
       <Header
         title={topicData?.title || "How to fix Climate Change?"}
         topicId={DEFAULT_TOPIC_ID}
@@ -186,6 +196,7 @@ const Index = () => {
         onOpinionSubmitted={handleOpinionSubmitted}
         myOpinionId={myOpinion?.id}
         onChatOpen={handleFloatingChatOpen}
+        totalUnread={totalUnreadCount}
       />
 
       <div className="flex-1 container mx-auto px-4 py-6 md:py-8">
@@ -237,6 +248,7 @@ const Index = () => {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 20, scale: 0.9 }}
                   className="fixed md:absolute bottom-4 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-[calc(100%-2rem)] md:max-w-sm bg-black/95 backdrop-blur-sm border border-white/20 rounded-xl p-4 shadow-2xl z-50"
+                  data-opinion-panel
                 >
                   <button
                     onClick={() => setSelectedNode(null)}

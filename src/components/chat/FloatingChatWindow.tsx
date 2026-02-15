@@ -144,10 +144,10 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style 
           {theirOpinion ? `"${theirOpinion.text.slice(0, 30)}${theirOpinion.text.length > 30 ? '…' : ''}"` : t('common.loading')}
         </p>
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onMinimize}>
+          <Button variant="ghost" size="icon" className="h-7 w-7 text-foreground" onClick={onMinimize}>
             <Minus className="h-3.5 w-3.5" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onClose}>
+          <Button variant="ghost" size="icon" className="h-7 w-7 text-foreground" onClick={onClose}>
             <X className="h-3.5 w-3.5" />
           </Button>
         </div>
@@ -288,7 +288,7 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style 
               variant={isRatingOpen ? 'default' : 'outline'}
               size="sm"
               onClick={() => setIsRatingOpen(!isRatingOpen)}
-              className={`shrink-0 text-xs h-8 px-2.5 ${hasNeverRated && !isRatingOpen ? 'animate-pulse' : ''}`}
+              className={`shrink-0 text-xs h-8 px-2.5 border-foreground/30 text-foreground ${hasNeverRated && !isRatingOpen ? 'animate-pulse' : ''}`}
             >
               {t('floatingChat.rate')}
             </Button>
@@ -297,7 +297,7 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style 
               onChange={(e) => handleInputChange(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
               placeholder={t('floatingChat.typeMessage')}
-              className="h-8 text-xs bg-background"
+              className="h-8 text-xs bg-background text-foreground border-border"
               disabled={isSending || isRatingOpen}
             />
             <Button
