@@ -8,12 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { toast } from "sonner";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
@@ -55,8 +50,18 @@ function DiscourseGraph({ className = "" }: { className?: string }) {
   ];
 
   const edges = [
-    [0, 1], [0, 2], [1, 3], [2, 4], [0, 7], [0, 8],
-    [3, 5], [4, 6], [5, 9], [6, 10], [7, 14], [8, 13],
+    [0, 1],
+    [0, 2],
+    [1, 3],
+    [2, 4],
+    [0, 7],
+    [0, 8],
+    [3, 5],
+    [4, 6],
+    [5, 9],
+    [6, 10],
+    [7, 14],
+    [8, 13],
   ];
 
   const zoneColors: Record<string, string> = {
@@ -71,14 +76,18 @@ function DiscourseGraph({ className = "" }: { className?: string }) {
       <circle cx="50" cy="50" r="45" fill="none" stroke="hsl(0,0%,85%)" strokeWidth="0.3" strokeDasharray="2 2" />
       <circle cx="50" cy="50" r="30" fill="none" stroke="hsl(0,0%,85%)" strokeWidth="0.3" strokeDasharray="2 2" />
       <circle cx="50" cy="50" r="15" fill="none" stroke="hsl(153,96%,43%)" strokeWidth="0.4" opacity="0.4" />
-      
+
       {/* Edges */}
       {edges.map(([a, b], i) => (
         <line
           key={i}
-          x1={nodes[a].cx} y1={nodes[a].cy}
-          x2={nodes[b].cx} y2={nodes[b].cy}
-          stroke="hsl(0,0%,75%)" strokeWidth="0.4" opacity="0.5"
+          x1={nodes[a].cx}
+          y1={nodes[a].cy}
+          x2={nodes[b].cx}
+          y2={nodes[b].cy}
+          stroke="hsl(0,0%,75%)"
+          strokeWidth="0.4"
+          opacity="0.5"
         />
       ))}
 
@@ -110,12 +119,7 @@ function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto">
-      <Input
-        placeholder={t("landing.contact.name")}
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        required
-      />
+      <Input placeholder={t("landing.contact.name")} value={name} onChange={(e) => setName(e.target.value)} required />
       <Input
         type="email"
         placeholder={t("landing.contact.email")}
@@ -147,9 +151,7 @@ export default function Landing() {
         <div className="container mx-auto px-6 h-14 flex items-center justify-between">
           <span className="text-lg font-semibold tracking-tight">FreeMind.city</span>
           <div className="flex items-center gap-3">
-            <span className="hidden md:block text-xs text-muted-foreground">
-              {t("landing.trustLine")}
-            </span>
+            <span className="hidden md:block text-xs text-muted-foreground">{t("landing.trustLine")}</span>
             <LanguageSwitcher />
           </div>
         </div>
@@ -159,11 +161,7 @@ export default function Landing() {
       <section className="pt-28 pb-20 md:pt-36 md:pb-28">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7 }}
-            >
+            <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-medium leading-[1.15] tracking-tight mb-5">
                 {t("landing.hero.headline")}
               </h1>
@@ -185,9 +183,7 @@ export default function Landing() {
                 </Link>
               </div>
 
-              <p className="text-xs text-muted-foreground">
-                {t("landing.hero.reassurance")}
-              </p>
+              <p className="text-xs text-muted-foreground">{t("landing.hero.reassurance")}</p>
             </motion.div>
 
             <motion.div
@@ -223,9 +219,7 @@ export default function Landing() {
                 variants={staggerItem}
               >
                 <h3 className="text-lg font-medium mb-2">{t(`landing.problem.${key}.title`)}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {t(`landing.problem.${key}.desc`)}
-                </p>
+                <p className="text-sm text-muted-foreground leading-relaxed">{t(`landing.problem.${key}.desc`)}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -253,9 +247,7 @@ export default function Landing() {
                 variants={staggerItem}
               >
                 <h3 className="text-lg font-medium mb-2">{t(`landing.approach.${key}.title`)}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {t(`landing.approach.${key}.desc`)}
-                </p>
+                <p className="text-sm text-muted-foreground leading-relaxed">{t(`landing.approach.${key}.desc`)}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -317,9 +309,7 @@ export default function Landing() {
                 )}
                 <div className="text-3xl font-medium text-muted-foreground/20 mb-3">{i + 1}</div>
                 <h3 className="text-lg font-medium mb-2">{t(`landing.steps.${key}.title`)}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {t(`landing.steps.${key}.desc`)}
-                </p>
+                <p className="text-sm text-muted-foreground leading-relaxed">{t(`landing.steps.${key}.desc`)}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -383,15 +373,11 @@ export default function Landing() {
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-medium text-center mb-4">
               {t("landing.contact.headline")}
             </h2>
-            <p className="text-center text-muted-foreground mb-2">
-              {t("landing.contact.intro")}
-            </p>
-            <p className="text-center text-sm font-medium mb-1">
-              {t("landing.contact.founder")}
-            </p>
+            <p className="text-center text-muted-foreground mb-2">{t("landing.contact.intro")}</p>
+            <p className="text-center text-sm font-medium mb-1">{t("landing.contact.founder")}</p>
             <p className="text-center mb-8">
               <a
-                href="https://linkedin.com/in/iwanittermann"
+                href="https://linkedin.com/in/iwan-ittermann"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -410,18 +396,14 @@ export default function Landing() {
       <section className="py-20 md:py-28">
         <div className="container mx-auto px-6 max-w-3xl text-center">
           <motion.div {...fadeInUp}>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-medium mb-8">
-              {t("landing.cta.headline")}
-            </h2>
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-medium mb-8">{t("landing.cta.headline")}</h2>
             <Link to="/auth">
               <Button size="lg" className="px-10 py-6 text-base font-medium">
                 {t("landing.cta.button")}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
-            <p className="mt-4 text-xs text-muted-foreground">
-              {t("landing.cta.reassurance")}
-            </p>
+            <p className="mt-4 text-xs text-muted-foreground">{t("landing.cta.reassurance")}</p>
           </motion.div>
         </div>
       </section>
