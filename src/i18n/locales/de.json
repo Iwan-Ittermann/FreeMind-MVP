@@ -398,6 +398,17 @@
       "button": "Test starten!",
       "reassurance": "100% Anonym. Trotzdem immer konstruktiv."
     },
+    "contact": {
+      "headline": "Kontakt",
+      "intro": "Ich freue mich, von Ihnen zu hören!",
+      "founder": "Iwan Ittermann, Gründer",
+      "name": "Ihr Name",
+      "email": "Ihre E-Mail-Adresse",
+      "message": "Ihre Nachricht",
+      "send": "Nachricht senden",
+      "success": "Vielen Dank! Ihre Nachricht wurde gesendet.",
+      "linkedin": "LinkedIn-Profil"
+    },
     "footer": {
       "privacy": "Datenschutz",
       "imprint": "Impressum",
