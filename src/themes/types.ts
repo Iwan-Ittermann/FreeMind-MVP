@@ -93,4 +93,4 @@ export interface ThemeRenderer {
 }
 
 // --- Theme Name ---
-export type ThemeName = 'classic' | 'city';
+export type ThemeName = 'classic' | 'city' | 'arcane';
