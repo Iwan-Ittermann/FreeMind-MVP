@@ -1,117 +1,88 @@
 
-
-# Landing Page Redesign for FreeMind.city
+# Arcane Theme — Sprite Sheet Integration
 
 ## Overview
 
-Replace the current dark-mode landing page at `/` with a new light, minimal, professional landing page targeting municipalities, educational institutions, and democratic initiatives. The old landing page moves to `/old-lp`. Full bilingual support (DE + EN) via i18n.
+Add a new "Arcane" theme that uses the uploaded SVG sprite sheets (9 buildings per file, 3x3 grid on 1024x1024 canvas). Instead of extracting individual SVGs, we render each building by referencing the sprite sheet with SVG `viewBox` cropping. The circle texture file will be assessed for performance and either used directly or replaced with a CSS/SVG gradient approximation.
 
-## Design Direction
+## Sprite Sheet Approach
 
-- **Light mode**: White background, dark gray text, subtle green/blue accents for the graph center
-- **Typography-first**: Clean, spacious, no playful icons
-- **Tone**: Reflective, precise, intellectually accessible -- no marketing buzzwords
-- **Mobile-first** with responsive desktop layout
-- **Subtle hover effects**, no gamification aesthetics
+Each uploaded file is a 1024x1024 SVG with 9 buildings arranged in a 3x3 grid. Each cell is approximately 341x341 pixels. To render a single building, we use an `<image>` tag with a clip/viewBox trick:
 
-## Routing Changes
+- Building 1 (top-left): crop to `(0, 0, 341, 341)`
+- Building 2 (top-center): crop to `(341, 0, 341, 341)`
+- Building 3 (top-right): crop to `(682, 0, 341, 341)`
+- ...and so on for all 9 positions
 
-In `App.tsx`:
-- Add a new route `/old-lp` pointing to the current `Landing` component (renamed import to `OldLanding`)
-- The `/` route will point to the new `Landing` component (`src/pages/Landing.tsx` -- overwritten)
+This is implemented by wrapping each `<image>` in a `<svg>` element with the appropriate `viewBox` offset, keeping the sprite sheet as a single imported asset.
 
-## New Landing Page Structure (`src/pages/Landing.tsx`)
+## File Size Analysis
 
-### Section 1 -- Hero (split layout)
+| File | Lines | Estimated Size |
+|------|-------|---------------|
+| Core zone nodes | 6,941 | ~250KB |
+| Middle zone nodes | 8,065 | ~300KB |
+| Outer zone nodes | 8,792 | ~330KB |
+| Inactive nodes | 6,558 | ~240KB |
+| Circle texture | 6,028 | ~220KB |
 
-```text
-[Logo: FreeMind.city]                    [Trust line top-right]
+Total: ~1.3MB for all assets. Since only one theme is active at a time and Vite handles lazy imports, this is acceptable. The texture file (circle_texture.svg) is the largest concern -- if it's used as a repeating background, we'll create a simplified CSS radial gradient that mimics its appearance instead of loading the full 220KB SVG.
 
-BIG HEADLINE                             [Abstract graph/city
-Subheadline                               visualization -- SVG
-                                          or CSS-based concentric
-[Direkt starten] [Einloggen]              circles with dots]
-
-Reassurance line
-```
-
-- **Left side**: Headline, subheadline, two buttons (fake passkey CTA links to `/auth`, "Einloggen" links to `/auth` with login mode selected via `?mode=login`), reassurance text
-- **Right side**: Abstract graph visualization built with CSS/SVG (concentric circles with scattered dots representing the discourse graph -- no screenshot, purely decorative)
-- Trust line top-right: small text "Anonyme Teilnahme . Innovativer Diskussions-Graph . Rechtssicher moderiert"
-
-### Section 2 -- Das Problem
-
-Heading + 3 cards in a row:
-1. Polarisierung
-2. Lautstärke statt Qualität  
-3. Fehlende Struktur
-
-Each card: icon-free, just a title and short description in a bordered box.
-
-### Section 3 -- Unser Ansatz
-
-Heading + 3 feature/benefit cards:
-1. Strukturierter Diskursraum
-2. Respekt x Gegensätzlichkeit
-3. Sichtbare Qualität
-
-### Section 4 -- Geeignet für
-
-Heading + 4 use-case items displayed as clean text blocks (no logos):
-- Kommunale Bürgerdialoge
-- Kontroverse Infrastrukturprojekte
-- Schul- & Hochschuldiskurse
-- Jugendbeteiligung & Bürgerhaushalte
-
-Followed by a small explanatory note.
-
-### Section 5 -- Wie es funktioniert
-
-3 steps with arrow connectors:
-1. Meinung veröffentlichen
-2. Gegensätzliche Stimme wählen
-3. Austausch bewerten
-
-### Section 6 -- Produkt + Key Benefits
-
-Split layout:
-- **Left**: Abstract product visualization (CSS concentric circles with movement indicators)
-- **Right**: Bullet list with checkmarks, last item bold
-
-### Section 7 -- FAQ
-
-3 collapsible accordion items using the existing shadcn Accordion component.
-
-### Section 8 -- Final CTA
-
-Centered heading + button + reassurance text.
-
-### Footer
-
-FreeMind.city | Datenschutz | Impressum | Kontakt (mailto link)
-
-## i18n
-
-Add a new `landing` key to both `de.json` and `en.json` with all section content translated. The page will use `useTranslation()` throughout.
-
-## Files Changed
+## Files to Create/Modify
 
 | File | Action |
 |------|--------|
-| `src/pages/Landing.tsx` | **Rewrite** with new landing page |
-| `src/pages/OldLanding.tsx` | **Create** -- copy of current Landing.tsx |
-| `src/App.tsx` | Add `/old-lp` route |
-| `src/i18n/locales/de.json` | Add `landing` section |
-| `src/i18n/locales/en.json` | Add `landing` section |
+| `src/assets/arcane/nodes/core.svg` | Copy from upload (sprite sheet) |
+| `src/assets/arcane/nodes/middle.svg` | Copy from upload (sprite sheet) |
+| `src/assets/arcane/nodes/outer.svg` | Copy from upload (sprite sheet) |
+| `src/assets/arcane/nodes/inactive.svg` | Copy from upload (sprite sheet) |
+| `src/assets/arcane/textures/circle-texture.svg` | Copy from upload (for reference), but use CSS gradient |
+| `src/themes/arcane/ArcaneNode.tsx` | New -- renders nodes via sprite sheet cropping |
+| `src/themes/arcane/ArcaneZones.tsx` | New -- zone rings styled in arcane palette |
+| `src/themes/arcane/ArcaneEdge.tsx` | New -- edge renderer |
+| `src/themes/arcane/ArcaneRenderer.tsx` | New -- main renderer (mirrors CityRenderer) |
+| `src/themes/arcane/ArcaneEventMarker.tsx` | New -- event marker |
+| `src/themes/types.ts` | Add `'arcane'` to `ThemeName` |
+| `src/themes/ThemeContext.tsx` | Handle `'arcane'` value |
+| `src/components/admin/ThemePanel.tsx` | Add Arcane option to dropdown |
+| `src/components/graph/OpinionGraph.tsx` | Add arcane renderer branch |
 
-## Technical Notes
+## Technical Details
 
-- The abstract graph visualization in Hero and Section 6 will be built with pure CSS/SVG (concentric circles + scattered dots with subtle animation), not a screenshot
-- Framer Motion used for scroll-triggered fade-in animations (consistent with existing codebase)
-- The "Direkt starten" button links to `/auth` (signup mode)
-- The "Einloggen" button links to `/auth?mode=login`
-- Auth page will need a minor update to read the `mode` query param and pre-select the login tab
-- FAQ uses the existing `@radix-ui/react-accordion` component
-- Language switcher will be included in the header/nav area
-- All content is fully bilingual
+### ArcaneNode Component
 
+The key innovation: instead of importing 9 individual SVGs, we import one sprite sheet per zone and use SVG viewBox cropping:
+
+```text
+// Pseudo-code for sprite rendering
+const GRID_SIZE = 341; // 1024 / 3
+const col = index % 3;
+const row = Math.floor(index / 3);
+
+<svg viewBox={`${col * GRID_SIZE} ${row * GRID_SIZE} ${GRID_SIZE} ${GRID_SIZE}`}
+     width={NODE_SIZE} height={NODE_SIZE}>
+  <image href={spriteSheet} width={1024} height={1024} />
+</svg>
+```
+
+Each node gets a building index (0-8) based on a hash of its ID, then renders the corresponding grid cell from the appropriate zone's sprite sheet.
+
+### ArcaneZones Component
+
+Instead of loading the large circle texture SVG (~220KB), create an arcane-themed zone gradient inline:
+- Colors sampled from the texture file (olive/khaki tones: `#777558` base)
+- Radial gradients with grain-like noise via SVG `<feTurbulence>` (lightweight, no external asset)
+
+### Theme Registration
+
+- Add `'arcane'` to the `ThemeName` union type
+- Add detection in `ThemeContext.tsx` for the `'arcane'` value
+- Add `{ value: 'arcane', label: 'Arcane' }` to the admin ThemePanel dropdown
+- Add conditional branch in `OpinionGraph.tsx` similar to the existing city theme branch
+
+## Performance Considerations
+
+- Sprite sheets are imported once and reused across all nodes in that zone
+- No individual file extraction = fewer HTTP requests
+- The texture background uses inline SVG gradients (same pattern as the existing city theme) instead of loading the large SVG file
+- Vite will bundle only the active theme's assets
