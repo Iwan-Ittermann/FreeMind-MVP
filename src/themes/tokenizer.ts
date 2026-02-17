@@ -23,8 +23,7 @@ function resolveZone(node: GraphNode, config: LayoutConfig): SemanticZone {
 
   const dist = node.distanceToCenter ?? config.outerRadius;
   if (dist <= config.yellowRadius) return 'middle';
-  if (dist <= config.pinkRadius) return 'outer';
-  return 'inactive';
+  return 'outer';
 }
 
 /**
