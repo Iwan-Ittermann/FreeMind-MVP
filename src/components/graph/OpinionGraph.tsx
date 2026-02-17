@@ -9,6 +9,7 @@ import { GraphNode, GraphEdge, LayoutConfig, Opinion, ChatRating, ChatRequest, G
 import { ActiveChat, MessageAnimationData } from '@/hooks/useTopicData';
 import { useFreeMindTheme } from '@/themes/ThemeContext';
 import { CityRenderer } from '@/themes/city/CityRenderer';
+import { ArcaneRenderer } from '@/themes/arcane/ArcaneRenderer';
 
 interface OpinionGraphProps {
   opinions?: Opinion[];
@@ -137,10 +138,11 @@ export function OpinionGraph({
 
   const theme = useFreeMindTheme();
 
-  if (theme === 'city') {
+  if (theme === 'city' || theme === 'arcane') {
+    const Renderer = theme === 'arcane' ? ArcaneRenderer : CityRenderer;
     return (
       <div className="relative">
-        <CityRenderer
+        <Renderer
           nodes={graphData.nodes}
           edges={graphData.edges}
           config={config}

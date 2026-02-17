@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 const THEMES = [
   { value: 'classic', label: '🔵 Classic' },
   { value: 'city', label: '🏙️ City' },
+  { value: 'arcane', label: '🏰 Arcane' },
 ] as const;
 
 export function ThemePanel() {
