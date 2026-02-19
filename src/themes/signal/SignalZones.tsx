@@ -28,12 +28,11 @@ export function SignalZones({ zones, config }: SignalZonesProps) {
             borderRadius: '50%',
             backgroundColor: '#121826',
             backgroundImage: `
-              
-              radial-gradient(circle, transparent ${midP - 0.5}%, #2A3347 ${midP}%, transparent ${midP + 0.5}%),
-              radial-gradient(circle, transparent ${outP - 0.5}%, #2A3347 ${outP}%, transparent ${outP + 0.5}%),
-              radial-gradient(circle, transparent ${outP + 4.5}%, #32394E ${outP + 5}%, transparent ${outP + 5.5}%),
+              radial-gradient(circle closest-side, transparent ${midP - 0.5}%, #2A3347 ${midP}%, transparent ${midP + 0.5}%),
+              radial-gradient(circle closest-side, transparent ${outP - 0.5}%, #2A3347 ${outP}%, transparent ${outP + 0.5}%),
+              radial-gradient(circle closest-side, transparent ${outP + 4.5}%, #32394E ${outP + 5}%, transparent ${outP + 5.5}%),
               radial-gradient(
-                circle,
+                circle closest-side,
                 rgba(255, 255, 255, 0.08) 0%,
                 rgba(255, 255, 255, 0.08) ${coreP}%,
                 rgba(0, 229, 255, 0.04) ${coreP}%,
@@ -69,8 +68,7 @@ export function SignalZones({ zones, config }: SignalZonesProps) {
         <text x={cx + r4 + 4} y={cy - 2} fill="#00D4FF" fillOpacity={0.25} fontSize="8" fontFamily="monospace">4</text>
       ); })()}
 
-      {/* Line 5: Outer border */}
-      <circle cx={cx} cy={cy} r={r} fill="none" stroke="#1E2A44" strokeWidth={1} strokeOpacity={0.5} />
+      {/* Line 5: Outer border (rendered by CSS border, just add number) */}
       <text x={cx + r + 4} y={cy - 2} fill="#00D4FF" fillOpacity={0.25} fontSize="8" fontFamily="monospace">5</text>
     </g>
   );
