@@ -14,6 +14,7 @@ const THEMES = [
   { value: 'classic', label: '🔵 Classic' },
   { value: 'city', label: '🏙️ City' },
   { value: 'arcane', label: '🏰 Arcane' },
+  { value: 'signal', label: '📡 Signal & Noise' },
 ] as const;
 
 export function ThemePanel() {
