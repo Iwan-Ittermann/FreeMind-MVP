@@ -1,72 +1,105 @@
+# UI Fixes Round 3
 
-# UI Fixes Round 2
+## 1. Chat Counter Should Count Accepted Chats
 
-## 1. Header Button Icons Too Small
+The stats bar currently shows `activeChats?.length` which only counts chats with message activity in the last 3 seconds. Change it to use `chatRequests.filter(r => r.status === 'accepted').length` -- the number of accepted chats for the whole topic.
 
-The buttons in `Header.tsx` are `h-12 w-12 md:h-14 md:w-14` but the icons inside are only `h-5 w-5 md:h-6 md:w-6`. On desktop the 14x14 button with a 6x6 icon still looks small.
+**File:** `src/pages/Index.tsx`
 
-**Fix** (`src/components/Header.tsx`):
-- Desktop icons: increase to `h-7 w-7` (from `h-6 w-6`) on `md:` breakpoint
-- Mobile icons: keep `h-5 w-5`
-- Apply to both the Opinions list button (line 121) and Chats button (line 135)
+- Pass `userChats.length` (already computed at line 195) or compute a topic-wide accepted chat count
+- Note: `userChats` only counts the current user's accepted chats. For a global count, we need to count the `edges` from `topicData.ratings` or use a separate query. The simplest approach: count `topicData.ratings.length` as each rating pair represents an accepted chat edge. Or pass the count from the graph data edges that aren't pending.
 
-## 2. Inactive Zone Color Distinction
+Actually, looking more closely: `chatRequests` from `useChatRequests` only returns the current user's requests. For a global count we should count all accepted chat pairs visible in the graph. The graph edges with non-pending status represent accepted chats. We can count `topicData.ratings.length` since each rating entry corresponds to an accepted chat pair.
 
-The inactive zone (between `pinkRadius` and `outerRadius`) blends with the outer/red zone. The gradient in `SignalZones.tsx` needs a distinct grayish fill in that band.
+**Fix:** Replace `activeChats?.length ?? 0` with `topicData?.ratings?.length ?? 0` in the stats bar.
+
+## 2. Stats Bar Below the Graph with Padding
+
+The stats bar is currently `absolute bottom-6` inside the graph wrapper, which overlaps the circle. Move it outside/below the graph entirely.
+
+**File:** `src/pages/Index.tsx`
+
+- Remove the stats bar from inside the `motion.div` (absolute positioned over the graph)
+- Place it as a separate `div` below the graph wrapper with `mt-3` margin
+
+## 3. Speech Bubbles Closer to Nodes
+
+The speech bubble offset in `SignalNode.tsx` is `-HALF - 22` = -42px above center. Reduce this to bring bubbles closer.
+
+**File:** `src/themes/signal/SignalNode.tsx`
+
+- Change `translate(0, ${-HALF - 22})` to `translate(0, ${-HALF - 10})` -- 10px gap instead of 22px
+
+## 4. Inactive Zone: Black Background with Grayish Border Ring
+
+The user wants the inactive zone (between `pinkRadius` and `outerRadius`) to be black (matching the page background), not grayish, so inactive nodes (which are grayish `#32394E`) remain visible. Keep the grayish outer ring line.
+
+**File:** `src/themes/signal/SignalZones.tsx`
+
+- Change the inactive band in the radial gradient from `rgba(40, 45, 60, 0.35)` to `rgba(0, 0, 0, 0.6)` -- near-black, clearly distinct from the reddish outer zone
+- Keep the `#32394E` ring line at the `outP + 5%` position
+
+## SKIP THIS STEP (5.) AND SAVE IT FOR LATER. CONTINUE WITH STEP 6  
+5. Core Zone Gradient Mismatch
+
+The core zone's white/violet tint (`rgba(255, 255, 255, 0.08)`) extends from 0% to `coreP%` (25%), but the dotted boundary ring is also at `greenRadius` (25%). The issue: the gradient band and boundary line are at the same radius, but visually the gradient may appear to extend slightly beyond due to antialiasing. The real problem is the violet/white tint -- it's too visible and creates a large bright area.
 
 **Fix** (`src/themes/signal/SignalZones.tsx`):
-- Change the inactive zone band (`outP%` to `100%`) in the bottom radial gradient from `rgba(50, 57, 78, 0.15)` to a more visible grayish tone like `rgba(40, 45, 60, 0.35)` -- darker and more opaque, clearly distinct from the reddish outer zone
-- Also add a visible ring line between outer and inactive at `outP%` radius (dashed circle in the zone boundaries section)
-- Ensure inactive node shapes (`#32394E` strokes) still contrast against this background
 
-## 3. Core (Green) Zone Back to 25%
+- Reduce core zone tint from `rgba(255, 255, 255, 0.08)` to `rgba(255, 255, 255, 0.04)` so it's subtler and the boundary feels accurate
+- The dotted lines and gradient stops both use `coreP` from config, so they should match. If there's still a visual mismatch, it may be due to the gradient ring lines (the thin solid rings at zone boundaries). Ensure the ring at `coreP%` matches the dotted circle at `greenRadius`.
 
-The `greenRadius` in `OpinionGraph.tsx` is currently `outerRadius * 0.35`. Set it back to `outerRadius * 0.25`.
+## 6. Mobile Title Below Header
 
-**Fix** (`src/components/graph/OpinionGraph.tsx`, line 66):
-- Change `greenRadius: outerRadius * 0.35` to `greenRadius: outerRadius * 0.25`
-- The dotted boundary rings in `SignalZones.tsx` already use `zones[].innerRadius` which comes from the config, so they will automatically align with the new 25% value
+The title is currently inside the flex-1 area with `mb-2`. It should sit directly below the sticky header.
 
-## 4. Node Hover Hit Area (Flickering on Desktop)
+**File:** `src/pages/Index.tsx`
 
-The middle node shape has a ring (`r=12`) and a dot (`r=6`) with empty space between them. When the cursor enters that gap, `onMouseLeave` fires, causing flickering.
+- Move the mobile title outside the `flex-1` container, placing it right after the `<Header>` component as a fixed-height bar
 
-**Fix** (`src/themes/signal/SignalNode.tsx`):
-- Add an invisible hit-area circle (`r=20`, `fill="transparent"`) as the first element inside the `<svg>` viewBox, before the Shape component. This ensures the entire 40x40 area is hoverable, eliminating gaps between visual elements.
+## 7. Header Buttons with Visible Outlines
 
-## 5. Floating Chat Window Colors -- Bolder Bubbles
+The opinion list and chat list buttons use `variant="ghost"` which has no border.
 
-The chat bubbles in `ChatBubble.tsx` use pastel/light colors: `bg-primary/20`, `bg-secondary/20`, `bg-white/10`.
+**File:** `src/components/Header.tsx`
 
-**Fix** (`src/components/chat/ChatBubble.tsx`):
-- Own opinion bubble: change `bg-primary/20 border border-primary/30` to `bg-primary/40 border border-primary/50`
-- Their opinion bubble: change `bg-secondary/20 border border-secondary/30` to `bg-secondary/40 border border-secondary/50`
-- Their regular message: change `bg-white/10` to `bg-white/20`
-- Own regular message: keep `bg-primary` (already solid)
+- Change `variant="ghost"` to `variant="outline"` for both buttons, or add `border border-white/20` to their className
 
-## 6. Stats Bar Padding and Chat Count
+## 8. Message Animation Not Working
 
-The opinion count pill sits too close to the circle edge. Also, chat count is missing.
+The `SignalEventMarker` receives events from `messageAnimations` state in `useTopicData`. The flow is:
 
-**Fix** (`src/pages/Index.tsx`):
-- Change `bottom-2` to `bottom-6` (or `bottom-8`) on the stats bar div to add padding between it and the circle
-- The chat count display already exists (lines 258-262) but only shows when `activeChats?.length > 0`. It should always show (even when 0 chats). Change to always render: `{topicData ? ... : null}` showing "0 Chats" when none exist
+1. Realtime subscription on `chat_messages` INSERT fires
+2. It looks up the chat, then the sender's opinion
+3. Adds to `messageAnimations` state
+4. Cleared after 1 second
 
-## 7. Mobile Title Not Visible
+Potential issues:
 
-The mobile title (line 220-223) uses `text-foreground` which on the dark background may not be visible. Also verify it renders.
+- The `opinions_public` query (line 192-197 of useTopicData) might fail if the sender's opinion has `visible=false` or if RLS blocks it
+- The `events.slice(0, 2)` in `SignalEventMarker` limits to 2 simultaneous animations
+- The 1-second cleanup might race with the 1.5-second animation duration
 
-**Fix** (`src/pages/Index.tsx`):
-- Change `text-foreground` to `text-white` to ensure visibility on the black background
-- Also increase from `text-sm` to `text-base` for better readability
+**Fix** (`src/themes/signal/SignalEventMarker.tsx`):
+
+- Increase slice limit from 2 to 5
+- The cleanup interval is 1s but animation duration is 1.5s -- increase cleanup threshold from 1000ms to 2000ms
+
+**Fix** (`src/hooks/useTopicData.ts`):
+
+- Change `prev.filter(anim => now - anim.timestamp < 1000)` to `< 2000` to match the animation duration
+
+9. NEW TASK:  Numbering all lines in the circle.   
+The user wants to clearly reference the lines in the circle. Put a small non-intrusive number on each line in the circle. start from the center. 
 
 ## Summary of File Changes
 
-| File | Changes |
-|------|---------|
-| `src/components/Header.tsx` | Increase icon sizes to `md:h-7 md:w-7` |
-| `src/themes/signal/SignalZones.tsx` | Stronger grayish inactive zone fill |
-| `src/components/graph/OpinionGraph.tsx` | `greenRadius` back to `0.25` |
-| `src/themes/signal/SignalNode.tsx` | Add transparent hit-area circle for hover |
-| `src/components/chat/ChatBubble.tsx` | Bolder bubble colors |
-| `src/pages/Index.tsx` | Stats bar padding, always show chat count, fix mobile title color |
+
+| File                                      | Changes                                                                                  |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `src/pages/Index.tsx`                     | Chat counter uses accepted chats count, stats bar below graph, mobile title repositioned |
+| `src/themes/signal/SignalNode.tsx`        | Reduce speech bubble Y offset from -22 to -10                                            |
+| `src/themes/signal/SignalZones.tsx`       | Inactive zone to black, reduce core zone tint                                            |
+| `src/components/Header.tsx`               | Add visible outlines to buttons                                                          |
+| `src/themes/signal/SignalEventMarker.tsx` | Increase event limit and match animation timing                                          |
+| `src/hooks/useTopicData.ts`               | Increase animation cleanup threshold to 2000ms                                           |
