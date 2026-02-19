@@ -83,7 +83,7 @@ export const SignalNode = memo(function SignalNode({
     >
       {/* Speech bubble */}
       {showSpeechBubble && bubbleText && (
-        <g transform={`translate(0, ${-HALF - 22})`} opacity={token.zone === 'core' || token.zone === 'middle' ? 0.5 : 0.92}>
+        <g transform={`translate(0, ${-HALF - 10})`} opacity={token.zone === 'core' || token.zone === 'middle' ? 0.5 : 0.92}>
           <rect x={-48} y={-16} width={96} height={22} rx={5} fill="#0B0E1A" fillOpacity={0.92} stroke="#00D4FF" strokeWidth={0.5} strokeOpacity={0.4} />
           <polygon points="-4,6 4,6 0,12" fill="#0B0E1A" fillOpacity={0.92} />
           <text x={0} y={-4} textAnchor="middle" dominantBaseline="central" fill="#E0FFFF" fontSize="8" fontFamily="monospace">

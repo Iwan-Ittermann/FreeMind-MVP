@@ -113,8 +113,8 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
               <Button
                 onClick={() => { setOpinionsOpen(true); setChatsOpen(false); }}
                 size="icon"
-                variant="ghost"
-                className="h-12 w-12 md:h-14 md:w-14 text-muted-foreground hover:text-foreground hover:bg-muted"
+                variant="outline"
+                className="h-12 w-12 md:h-14 md:w-14 border-white/20 text-muted-foreground hover:text-foreground hover:bg-muted"
                 title={t('sidebar.allOpinions', 'All Opinions')}
                 data-tutorial="opinions-button"
               >
@@ -127,8 +127,8 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
                 <Button
                   onClick={() => { setChatsOpen(true); setOpinionsOpen(false); }}
                   size="icon"
-                  variant="ghost"
-                  className="h-12 w-12 md:h-14 md:w-14 text-muted-foreground hover:text-foreground hover:bg-muted"
+                  variant="outline"
+                  className="h-12 w-12 md:h-14 md:w-14 border-white/20 text-muted-foreground hover:text-foreground hover:bg-muted"
                   title={t('sidebar.myChats', 'My Chats')}
                   data-tutorial="chats-button"
                 >
