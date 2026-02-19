@@ -1,58 +1,95 @@
 
-# Sharpen Graph Layout + Remove Top-5 Cap + Comment Out "Suitable For"
+# UI Improvements Plan
 
-## 1. Remove the Top-5 Green Zone Cap
+## 1. Fix Signal Theme Node Selection Jump
 
-Currently, only 5 nodes with the highest bridging scores are placed in the green/core zone using fixed pentagon positions. This will be removed so that **any node with a qualifying score (> 2500) is placed in the core zone** using the same linear radius mapping as other nodes.
+**Problem**: In `SignalNode.tsx`, the `<g>` element uses `transform="translate(x,y) scale(s)"` with `transformOrigin` set to the node's absolute coordinates. SVG `transform` attributes don't respect CSS `transformOrigin` properly, so the `scale(1.25)` scales around the wrong point, causing the node to visually "jump".
 
-### Changes in `src/lib/freemind-layout.ts`:
-- Remove `MAX_GREEN_ZONE_NODES` constant
-- Remove `calculateGreenZoneSlotPositions()` function
-- Remove the `bridgeNodes` top-5 selection logic (lines 472-491)
-- Remove the `top5NodeIds` set and the `isTop5` branch in node positioning (lines 529-539)
-- All qualifying nodes now go through `scoreToRadius()` + angle-based positioning like every other active node
-- Mark nodes with `zone: 'green'` based on `isBridgeNode(score)` instead of `isTop5`
-- `greenZoneSlots` array will be returned empty (to keep the interface stable)
-
-### Changes in `src/themes/tokenizer.ts`:
-- Remove the `tokenizeNodesWithCoreCap()` function entirely
-- Update any callers to use the regular `tokenizeNode()` for all nodes (no more core-cap override)
-
-### Changes in renderers that call `tokenizeNodesWithCoreCap`:
-- `CityRenderer.tsx`, `ArcaneRenderer.tsx`, `SignalRenderer.tsx` -- switch to mapping all nodes through `tokenizeNode()` directly
-
-## 2. Zone Border Snapping (Keep Linear Mapping)
-
-The linear `scoreToRadius()` mapping stays, but nodes that land on a zone border get nudged fully into one zone. The rule: if more than 50% of the node's diameter is in a zone, snap fully into that zone.
-
-### Changes in `src/lib/freemind-layout.ts` -- `scoreToRadius()`:
-- After computing the linear radius, check proximity to each zone boundary (`greenRadius`, `yellowRadius`, `pinkRadius`)
-- If the node center is within `nodeRadius` (one node-radius = half the node diameter) of a boundary, snap it:
-  - If center is inside the inner zone (closer to center than boundary), push it inward by `nodeRadius + small padding`
-  - If center is outside, push it outward by `nodeRadius + small padding`
-- This ensures no node visually straddles a zone border
+**Fix**: Keep the outer `<g>` for translation only. Apply the scale to the inner `<svg>` element instead, scaling it around its own center (20, 20 in the 40x40 viewBox). This isolates the scale from the position.
 
 ```text
-boundaries = [greenRadius, yellowRadius, pinkRadius]
-for each boundary:
-  if abs(radius - boundary) < nodeRadius:
-    if radius < boundary:
-      radius = boundary - nodeRadius - 2px padding
-    else:
-      radius = boundary + nodeRadius + 2px padding
+Outer <g>: translate(x, y) only
+  Inner <svg>: scale via CSS transform with transform-origin: center
 ```
 
-## 3. Comment Out "Suitable For" Section
+**File**: `src/themes/signal/SignalNode.tsx`
 
-In `src/pages/Landing.tsx`, wrap lines 257-286 (the "Geeignet fur" section) in a JSX block comment `{/* ... */}` so it's hidden but easily restorable.
+---
 
-## Files Modified
+## 2. Replace InfoPanel with "?" Help Button
 
-| File | Change |
-|------|--------|
-| `src/lib/freemind-layout.ts` | Remove top-5 cap, add zone-border snapping to `scoreToRadius()` |
-| `src/themes/tokenizer.ts` | Remove `tokenizeNodesWithCoreCap()` |
-| `src/themes/city/CityRenderer.tsx` | Use `tokenizeNode()` instead of `tokenizeNodesWithCoreCap()` |
-| `src/themes/arcane/ArcaneRenderer.tsx` | Use `tokenizeNode()` instead of `tokenizeNodesWithCoreCap()` |
-| `src/themes/signal/SignalRenderer.tsx` | Use `tokenizeNode()` instead of `tokenizeNodesWithCoreCap()` |
-| `src/pages/Landing.tsx` | Comment out "Suitable For" section |
+**Current**: The left-side `InfoPanel` shows "Meinung", "Chatte", "Bewerte" steps + opinion count, taking up significant horizontal space.
+
+**New**: 
+- Remove `InfoPanel` from `Index.tsx` entirely
+- Add a floating "?" button above the Settings gear button (bottom-left, stacked vertically)
+- Clicking it opens a small tooltip/popover showing a numbered list:
+  1. Teile deine Meinung
+  2. Frag Chats an
+  3. Bewerte deine Chats
+- This frees up the entire left column on desktop
+
+**Files**: `src/pages/Index.tsx` (remove InfoPanel, add ? button + popover)
+
+---
+
+## 3. Bigger Circle + Zoom on Mobile
+
+With InfoPanel removed, the layout becomes a single centered column for the graph.
+
+**Desktop**: Increase graph size from `min(viewportHeight - 100, 600)` to `min(viewportHeight - 100, 800)` and center it.
+
+**Mobile**: 
+- Default size fills screen width: `window.innerWidth - 32`
+- Add a small zoom toggle button (e.g. magnifying glass icon) near the graph
+- Two fixed states: "fit" (current, fits in viewport) and "zoomed" (1.4x, allows scrolling)
+- Simple toggle between the two sizes
+
+**File**: `src/pages/Index.tsx` (update `updateSize`, add zoom state + button)
+
+---
+
+## 4. Stats (Opinion Count + Chat Count) -- Header Badges
+
+**Best position**: Small inline badges in the header bar, next to the topic title or as subtle pill-shaped counters. They're always visible without taking space.
+
+- Add opinion count (e.g. "42 opinions") and active chat count (e.g. "5 chats") as small text badges in the header, next to the centered title on desktop, or below the title on mobile.
+- Data: opinion count from `topicData.opinions.length`, chat count from `activeChats.length` (accepted chats).
+
+**Files**: `src/components/Header.tsx` (add count props + render badges), `src/pages/Index.tsx` (pass counts)
+
+---
+
+## 5. Bigger Header + Buttons
+
+- Header height: increase from `h-14` to `h-16` (desktop and mobile)
+- Header buttons: increase from `h-9 w-9` to `h-10 w-10`, icons from `h-4 w-4` to `h-5 w-5`
+- "Add Opinion" / "Sign Up" buttons: increase from `h-9` to `h-10`
+- Floating settings + help buttons: increase from `h-10 w-10` to `h-12 w-12`
+
+**File**: `src/components/Header.tsx`
+
+---
+
+## 6. Floating Chat Windows -- Reduce Transparency
+
+**Problem**: The floating chat windows use `bg-background` with `bg-muted/50` header and `bg-muted/30` footer, which looks too pastel/transparent.
+
+**Fix**:
+- Header: change `bg-muted/50` to `bg-muted`
+- Footer: change `bg-muted/30` to `bg-muted/80`
+- Main container: add stronger border, e.g. `border-border/80` and a slight `shadow-xl` boost
+- Ensure `bg-background` is fully opaque (it should be, but verify)
+
+**File**: `src/components/chat/FloatingChatWindow.tsx`
+
+---
+
+## Summary of Files Changed
+
+| File | Changes |
+|------|---------|
+| `src/themes/signal/SignalNode.tsx` | Fix scale transform to avoid jump |
+| `src/pages/Index.tsx` | Remove InfoPanel, add ? help button, update graph sizing, add zoom toggle for mobile, pass stats to header |
+| `src/components/Header.tsx` | Bigger height/buttons, add opinion + chat count badges |
+| `src/components/chat/FloatingChatWindow.tsx` | Reduce transparency in header/footer |
