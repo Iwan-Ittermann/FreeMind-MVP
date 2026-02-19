@@ -59,39 +59,41 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-black/80 backdrop-blur-md">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="container mx-auto px-4 h-20 md:h-20 flex items-center justify-between">
           <Link to="/" className="flex items-center">
             <motion.span
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-lg font-medium text-white"
+              className="text-xl md:text-2xl font-semibold text-white"
             >
               freemind
             </motion.span>
           </Link>
 
           {title && (
-            <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 max-w-[40%] items-center gap-3 pr-4">
-              <h1 className="text-sm font-medium text-white/80 truncate">{title}</h1>
-              {opinionCount !== undefined && (
-                <span className="text-[10px] font-medium bg-white/10 text-white/60 px-2 py-0.5 rounded-full whitespace-nowrap">
-                  {opinionCount} {t('common.opinions')}
-                </span>
-              )}
-              {chatCount !== undefined && chatCount > 0 && (
-                <span className="text-[10px] font-medium bg-white/10 text-white/60 px-2 py-0.5 rounded-full whitespace-nowrap">
-                  {chatCount} Chats
-                </span>
-              )}
+            <div className="absolute left-1/2 transform -translate-x-1/2 max-w-[50%] flex flex-col items-center gap-0.5">
+              <h1 className="text-sm md:text-lg font-semibold text-white truncate">{title}</h1>
+              <div className="flex items-center gap-2">
+                {opinionCount !== undefined && (
+                  <span className="text-[10px] md:text-xs font-medium bg-white/10 text-white/60 px-2 py-0.5 rounded-full whitespace-nowrap">
+                    {opinionCount} {t('common.opinions')}
+                  </span>
+                )}
+                {chatCount !== undefined && chatCount > 0 && (
+                  <span className="text-[10px] md:text-xs font-medium bg-white/10 text-white/60 px-2 py-0.5 rounded-full whitespace-nowrap">
+                    {chatCount} Chats
+                  </span>
+                )}
+              </div>
             </div>
           )}
 
           <div className="flex items-center gap-2">
             {!user && (
               <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
-                <Button
+              <Button
                   onClick={() => navigate('/auth')}
-                  className="h-10 px-3 md:px-4 bg-accent text-accent-foreground hover:bg-accent/90 font-medium shadow-lg shadow-accent/25 animate-pulse-fast"
+                  className="h-12 px-4 md:px-5 text-base bg-accent text-accent-foreground hover:bg-accent/90 font-medium shadow-lg shadow-accent/25 animate-pulse-fast"
                 >
                   <UserPlus className="h-5 w-5 md:mr-2" />
                   <span className="hidden md:inline">{t('common.signUp')}</span>
@@ -109,9 +111,9 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
                   transition={{ duration: 0.3 }}
                   data-tutorial="add-opinion-button"
                 >
-                  <Button
+              <Button
                     onClick={() => setOpinionDialogOpen(true)}
-                    className="h-10 px-3 md:px-4 bg-accent text-accent-foreground hover:bg-accent/90 font-medium shadow-lg shadow-accent/25 animate-pulse-fast"
+                    className="h-12 px-4 md:px-5 text-base bg-accent text-accent-foreground hover:bg-accent/90 font-medium shadow-lg shadow-accent/25 animate-pulse-fast"
                   >
                     <Pencil className="h-5 w-5 md:mr-2" />
                     <span className="hidden md:inline">{t('header.addOpinion')}</span>
@@ -125,7 +127,7 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
                 onClick={() => { setOpinionsOpen(true); setChatsOpen(false); }}
                 size="icon"
                 variant="ghost"
-                className="h-10 w-10 text-muted-foreground hover:text-foreground hover:bg-muted"
+                className="h-12 w-12 text-muted-foreground hover:text-foreground hover:bg-muted"
                 title={t('sidebar.allOpinions', 'All Opinions')}
                 data-tutorial="opinions-button"
               >
@@ -139,7 +141,7 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
                   onClick={() => { setChatsOpen(true); setOpinionsOpen(false); }}
                   size="icon"
                   variant="ghost"
-                  className="h-10 w-10 text-muted-foreground hover:text-foreground hover:bg-muted"
+                  className="h-12 w-12 text-muted-foreground hover:text-foreground hover:bg-muted"
                   title={t('sidebar.myChats', 'My Chats')}
                   data-tutorial="chats-button"
                 >

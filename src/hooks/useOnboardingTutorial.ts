@@ -16,7 +16,7 @@ export interface UnifiedTutorialStep {
 export const UNIFIED_STEPS: UnifiedTutorialStep[] = [
   { id: 'welcome', targetSelector: null, titleKey: 'unifiedTutorial.welcome.title', textKey: 'unifiedTutorial.welcome.text', waitForEvent: false },
   { id: 'addOpinion', targetSelector: '[data-tutorial="add-opinion-button"]', titleKey: 'unifiedTutorial.addOpinion.title', textKey: 'unifiedTutorial.addOpinion.text', waitForEvent: true },
-  { id: 'yourTent', targetSelector: null, titleKey: 'unifiedTutorial.yourTent.title', textKey: 'unifiedTutorial.yourTent.text', waitForEvent: false },
+  { id: 'yourTent', targetSelector: '[data-user-node="true"]', titleKey: 'unifiedTutorial.yourTent.title', textKey: 'unifiedTutorial.yourTent.text', waitForEvent: false },
   { id: 'exploreOpinions', targetSelector: null, titleKey: 'unifiedTutorial.exploreOpinions.title', textKey: 'unifiedTutorial.exploreOpinions.text', waitForEvent: true },
   { id: 'requestChat', targetSelector: null, titleKey: 'unifiedTutorial.requestChat.title', textKey: 'unifiedTutorial.requestChat.text', waitForEvent: true },
   { id: 'nowWeWait', targetSelector: null, titleKey: 'unifiedTutorial.nowWeWait.title', textKey: 'unifiedTutorial.nowWeWait.text', waitForEvent: false },
