@@ -68,23 +68,24 @@ export const SignalNode = memo(function SignalNode({
   const opacity = isDimmed ? 0.4 : token.isHidden ? 0.3 : 1;
   const isScaled = isHighlighted && !isDimmed;
   const bubbleText = token.opinionText
-    ? (token.opinionText.length > 10 ? token.opinionText.slice(0, 10) + '…' : token.opinionText)
+    ? (token.opinionText.length > 16 ? token.opinionText.slice(0, 16) + '…' : token.opinionText)
     : '';
 
   return (
       <g
         transform={`translate(${token.x}, ${token.y})`}
         style={{ cursor: 'pointer', opacity }}
+        data-user-node={token.isCurrentUser ? 'true' : undefined}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
       {/* Speech bubble */}
       {showSpeechBubble && bubbleText && (
-        <g transform={`translate(0, ${-HALF - 14})`} opacity={token.zone === 'core' || token.zone === 'middle' ? 0.5 : 0.92}>
-          <rect x={-32} y={-12} width={64} height={16} rx={4} fill="#0B0E1A" fillOpacity={0.92} stroke="#00D4FF" strokeWidth={0.5} strokeOpacity={0.4} />
-          <polygon points="-3,4 3,4 0,8" fill="#0B0E1A" fillOpacity={0.92} />
-          <text x={0} y={-3} textAnchor="middle" dominantBaseline="central" fill="#E0FFFF" fontSize="5" fontFamily="monospace">
+        <g transform={`translate(0, ${-HALF - 22})`} opacity={token.zone === 'core' || token.zone === 'middle' ? 0.5 : 0.92}>
+          <rect x={-48} y={-16} width={96} height={22} rx={5} fill="#0B0E1A" fillOpacity={0.92} stroke="#00D4FF" strokeWidth={0.5} strokeOpacity={0.4} />
+          <polygon points="-4,6 4,6 0,12" fill="#0B0E1A" fillOpacity={0.92} />
+          <text x={0} y={-4} textAnchor="middle" dominantBaseline="central" fill="#E0FFFF" fontSize="8" fontFamily="monospace">
             {bubbleText}
           </text>
         </g>
