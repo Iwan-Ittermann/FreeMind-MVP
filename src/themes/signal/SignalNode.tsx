@@ -7,8 +7,14 @@ const HALF = NODE_SIZE / 2;
 function CoreShape() {
   return (
     <>
-      <circle cx="20" cy="20" r="15" stroke="#E0FFFF" strokeWidth="1" fill="none" />
-      <path d="M20 5 L24 16 L35 20 L24 24 L20 35 L16 24 L5 20 L16 16 Z" fill="#E0FFFF" />
+      <defs>
+        <filter id="signal-glow">
+          <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+          <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <circle cx="20" cy="20" r="14" stroke="#FFFFFF" strokeWidth="1" fill="none" filter="url(#signal-glow)" />
+      <path d="M20 8 L23 17 L32 20 L23 23 L20 32 L17 23 L8 20 L17 17 Z" fill="#FFFFFF" filter="url(#signal-glow)" />
     </>
   );
 }
@@ -24,11 +30,7 @@ function MiddleShape() {
 
 function OuterShape() {
   return (
-    <>
-      <rect x="5" y="5" width="20" height="20" fill="#FF3B3B" fillOpacity="0.6" />
-      <rect x="15" y="15" width="20" height="20" fill="#FF3B3B" />
-      <path d="M0 20 H40 M20 0 V40" stroke="#FF3B3B" strokeWidth="1" strokeDasharray="2 2" />
-    </>
+    <rect x="12" y="12" width="16" height="16" fill="#551111" />
   );
 }
 
