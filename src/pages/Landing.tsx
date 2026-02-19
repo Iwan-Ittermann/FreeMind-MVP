@@ -254,7 +254,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* SECTION 4 — Geeignet für */}
+      {/* SECTION 4 — Geeignet für (commented out)
       <section className="py-20 md:py-28 bg-muted/50">
         <div className="container mx-auto px-6 max-w-4xl">
           <motion.h2 className="text-2xl md:text-3xl lg:text-4xl font-medium text-center mb-10" {...fadeInUp}>
@@ -284,6 +284,7 @@ export default function Landing() {
           </motion.p>
         </div>
       </section>
+      */}
 
       {/* SECTION 5 — Wie es funktioniert */}
       <section className="py-20 md:py-28">

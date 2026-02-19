@@ -1,7 +1,7 @@
 import { useMemo, useCallback, useRef } from 'react';
 import { GraphNode, GraphEdge, LayoutConfig } from '@/types/graph';
 import { ActiveChat, MessageAnimationData } from '@/hooks/useTopicData';
-import { tokenizeNodesWithCoreCap, tokenizeEdge, tokenizeZones } from '../tokenizer';
+import { tokenizeNodes, tokenizeEdge, tokenizeZones } from '../tokenizer';
 import { SemanticNodeToken, SemanticEdgeToken, SemanticEventToken } from '../types';
 import { SignalZones } from './SignalZones';
 import { SignalEdge } from './SignalEdge';
@@ -39,7 +39,7 @@ export function SignalRenderer({
   const maxBubbles = parseInt(maxBubblesSetting?.value || '15', 10);
 
   const nodeTokens: readonly SemanticNodeToken[] = useMemo(
-    () => tokenizeNodesWithCoreCap(nodes, config, edges, currentUserId, currentUserOpinionId),
+    () => tokenizeNodes(nodes, config, edges, currentUserId, currentUserOpinionId),
     [nodes, config, edges, currentUserId, currentUserOpinionId],
   );
 
