@@ -34,11 +34,15 @@ export function SignalZones({ zones, config }: SignalZonesProps) {
               radial-gradient(circle, transparent ${outP + 4.5}%, #32394E ${outP + 5}%, transparent ${outP + 5.5}%),
               radial-gradient(
                 circle,
-                rgba(0, 229, 255, 0.04) 0%,
+                rgba(255, 255, 255, 0.08) 0%,
+                rgba(255, 255, 255, 0.08) ${coreP}%,
+                rgba(0, 229, 255, 0.04) ${coreP}%,
                 rgba(0, 229, 255, 0.04) ${midP}%,
                 rgba(85, 17, 17, 0.06) ${midP}%,
                 rgba(85, 17, 17, 0.06) ${outP}%,
-                rgba(0, 0, 0, 0.6) ${outP}%,
+                rgba(0, 0, 0, 0.85) ${outP}%,
+                rgba(0, 0, 0, 0.85) ${outP + 5}%,
+                rgba(0, 0, 0, 0.6) ${outP + 5}%,
                 rgba(0, 0, 0, 0.6) 100%
               )
             `,
