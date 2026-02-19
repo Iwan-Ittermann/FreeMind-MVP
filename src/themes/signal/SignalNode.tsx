@@ -66,22 +66,23 @@ export const SignalNode = memo(function SignalNode({
 }: SignalNodeProps) {
   const Shape = ZONE_SHAPE[token.zone] ?? InactiveShape;
   const opacity = isDimmed ? 0.4 : token.isHidden ? 0.3 : 1;
-  const scale = isHighlighted ? 1.25 : 1;
+  const isScaled = isHighlighted && !isDimmed;
+  const scale = isScaled ? 1.25 : 1;
   const bubbleText = token.opinionText
     ? (token.opinionText.length > 10 ? token.opinionText.slice(0, 10) + '…' : token.opinionText)
     : '';
 
   return (
-    <g
-      transform={`translate(${token.x}, ${token.y})`}
-      style={{ cursor: 'pointer', opacity }}
+      <g
+        transform={`translate(${token.x}, ${token.y}) scale(${scale})`}
+        style={{ cursor: 'pointer', opacity, transformOrigin: `${token.x}px ${token.y}px`, transition: 'transform 0.15s ease' }}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
       {/* Speech bubble */}
       {showSpeechBubble && bubbleText && (
-        <g transform={`translate(0, ${-HALF - 14})`}>
+        <g transform={`translate(0, ${-HALF - 14})`} opacity={token.zone === 'core' || token.zone === 'middle' ? 0.5 : 0.92}>
           <rect x={-32} y={-12} width={64} height={16} rx={4} fill="#0B0E1A" fillOpacity={0.92} stroke="#00D4FF" strokeWidth={0.5} strokeOpacity={0.4} />
           <polygon points="-3,4 3,4 0,8" fill="#0B0E1A" fillOpacity={0.92} />
           <text x={0} y={-3} textAnchor="middle" dominantBaseline="central" fill="#E0FFFF" fontSize="5" fontFamily="monospace">
@@ -98,7 +99,7 @@ export const SignalNode = memo(function SignalNode({
         height={NODE_SIZE}
         viewBox="0 0 40 40"
         overflow="visible"
-        style={{ transform: `scale(${scale})`, transformOrigin: 'center', transition: 'transform 0.15s ease' }}
+        style={{ transition: 'transform 0.15s ease' }}
       >
         <Shape />
       </svg>

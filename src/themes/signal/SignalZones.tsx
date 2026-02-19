@@ -23,22 +23,22 @@ export function SignalZones({ zones, config }: SignalZonesProps) {
             borderRadius: '50%',
             backgroundColor: '#121826',
             backgroundImage: `
-              repeating-radial-gradient(
-                circle,
-                transparent 0,
-                transparent 79px,
-                rgba(255, 255, 255, 0.05) 80px
-              ),
+              radial-gradient(circle, transparent 24.5%, #2A3347 25%, transparent 25.5%),
+              radial-gradient(circle, transparent 59.5%, #2A3347 60%, transparent 60.5%),
+              radial-gradient(circle, transparent 84.5%, #2A3347 85%, transparent 85.5%),
+              radial-gradient(circle, transparent 89.5%, #32394E 90%, transparent 90.5%),
               radial-gradient(
-                circle at center,
-                rgba(255, 255, 255, 0.15) 0%,
-                rgba(0, 229, 255, 0.1) 40%,
-                rgba(85, 17, 17, 0.1) 75%,
-                rgba(18, 24, 38, 1) 100%
+                circle,
+                rgba(255, 255, 255, 0.08) 0%,
+                rgba(255, 255, 255, 0.08) 25%,
+                rgba(0, 229, 255, 0.04) 25%,
+                rgba(0, 229, 255, 0.04) 60%,
+                rgba(85, 17, 17, 0.06) 60%,
+                rgba(85, 17, 17, 0.06) 85%,
+                transparent 85%
               )
             `,
             border: '2px solid #2A3347',
-            boxShadow: '0 0 40px rgba(0, 229, 255, 0.1)',
           }}
         />
       </foreignObject>
