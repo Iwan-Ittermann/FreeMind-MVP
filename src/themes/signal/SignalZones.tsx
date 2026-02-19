@@ -12,6 +12,11 @@ export function SignalZones({ zones, config }: SignalZonesProps) {
   const r = config.outerRadius;
   const size = r * 2;
 
+  // Compute gradient percentages from layout config
+  const coreP = (config.greenRadius / r) * 100;
+  const midP = (config.yellowRadius / r) * 100;
+  const outP = (config.pinkRadius / r) * 100;
+
   return (
     <g className="signal-zones">
       {/* CSS radial gradient via foreignObject */}
@@ -23,19 +28,20 @@ export function SignalZones({ zones, config }: SignalZonesProps) {
             borderRadius: '50%',
             backgroundColor: '#121826',
             backgroundImage: `
-              radial-gradient(circle, transparent 24.5%, #2A3347 25%, transparent 25.5%),
-              radial-gradient(circle, transparent 59.5%, #2A3347 60%, transparent 60.5%),
-              radial-gradient(circle, transparent 84.5%, #2A3347 85%, transparent 85.5%),
-              radial-gradient(circle, transparent 89.5%, #32394E 90%, transparent 90.5%),
+              radial-gradient(circle, transparent ${coreP - 0.5}%, #2A3347 ${coreP}%, transparent ${coreP + 0.5}%),
+              radial-gradient(circle, transparent ${midP - 0.5}%, #2A3347 ${midP}%, transparent ${midP + 0.5}%),
+              radial-gradient(circle, transparent ${outP - 0.5}%, #2A3347 ${outP}%, transparent ${outP + 0.5}%),
+              radial-gradient(circle, transparent ${outP + 4.5}%, #32394E ${outP + 5}%, transparent ${outP + 5.5}%),
               radial-gradient(
                 circle,
                 rgba(255, 255, 255, 0.08) 0%,
-                rgba(255, 255, 255, 0.08) 25%,
-                rgba(0, 229, 255, 0.04) 25%,
-                rgba(0, 229, 255, 0.04) 60%,
-                rgba(85, 17, 17, 0.06) 60%,
-                rgba(85, 17, 17, 0.06) 85%,
-                transparent 85%
+                rgba(255, 255, 255, 0.08) ${coreP}%,
+                rgba(0, 229, 255, 0.04) ${coreP}%,
+                rgba(0, 229, 255, 0.04) ${midP}%,
+                rgba(85, 17, 17, 0.06) ${midP}%,
+                rgba(85, 17, 17, 0.06) ${outP}%,
+                rgba(50, 57, 78, 0.15) ${outP}%,
+                rgba(50, 57, 78, 0.15) 100%
               )
             `,
             border: '2px solid #2A3347',
