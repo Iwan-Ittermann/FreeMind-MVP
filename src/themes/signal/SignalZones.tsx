@@ -21,18 +21,24 @@ export function SignalZones({ zones, config }: SignalZonesProps) {
             width: size,
             height: size,
             borderRadius: '50%',
-            background: `radial-gradient(
-              circle,
-              rgba(255,255,255,0.15) 0%,
-              rgba(11,14,26,1) 20%,
-              rgba(0,212,255,0.05) 21%,
-              rgba(11,14,26,1) 50%,
-              rgba(255,59,59,0.05) 51%,
-              rgba(11,14,26,1) 85%,
-              rgba(50,57,78,1) 90%,
-              rgba(11,14,26,1) 91%
-            )`,
-            border: '1px solid #1E2A44',
+            background: `
+              repeating-radial-gradient(
+                circle,
+                transparent 0,
+                transparent 49px,
+                rgba(255, 255, 255, 0.03) 50px
+              ),
+              radial-gradient(
+                circle,
+                rgba(255, 255, 255, 0.2) 0%,
+                rgba(0, 229, 255, 0.08) 30%,
+                rgba(85, 17, 17, 0.15) 70%,
+                #05070A 100%
+              )
+            `,
+            backgroundColor: '#05070A',
+            border: '2px solid #1A1F2E',
+            boxShadow: 'inset 0 0 100px rgba(0,0,0,0.8)',
           }}
         />
       </foreignObject>
