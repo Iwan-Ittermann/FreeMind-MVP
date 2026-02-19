@@ -86,56 +86,18 @@ export function tokenizeNode(
 }
 
 /**
- * Tokenize all nodes with top-5 core zone enforcement.
- * Only the 5 highest bridging-score nodes get zone 'core'.
- * Others that would qualify are placed at 'middle'.
+ * Tokenize all nodes. No core cap — any node with zone 'core' keeps it.
  */
-export function tokenizeNodesWithCoreCap(
+export function tokenizeNodes(
   nodes: GraphNode[],
   config: LayoutConfig,
   edges: GraphEdge[],
   currentUserId: string | null,
   currentUserOpinionId: string | null,
 ): SemanticNodeToken[] {
-  // First pass: identify which nodes would be core
-  const coreEligible: { node: GraphNode; score: number }[] = [];
-  const rest: GraphNode[] = [];
-
-  for (const node of nodes) {
-    const zone = resolveZone(node, config);
-    if (zone === 'core') {
-      const score = node.distanceToCenter != null
-        ? ((1 - node.distanceToCenter / config.outerRadius) * 10000) - 5000
-        : 0;
-      coreEligible.push({ node, score });
-    } else {
-      rest.push(node);
-    }
-  }
-
-  // Sort by bridging score descending, take top 5
-  coreEligible.sort((a, b) => b.score - a.score);
-  const top5 = coreEligible.slice(0, 5);
-  const overflow = coreEligible.slice(5);
-
-  const tokens: SemanticNodeToken[] = [];
-
-  // Top 5 keep core zone
-  for (const { node } of top5) {
-    tokens.push(tokenizeNode(node, config, edges, currentUserId, currentUserOpinionId, 'core'));
-  }
-
-  // Overflow nodes pushed to middle zone
-  for (const { node } of overflow) {
-    tokens.push(tokenizeNode(node, config, edges, currentUserId, currentUserOpinionId, 'middle'));
-  }
-
-  // Rest keep their natural zone
-  for (const node of rest) {
-    tokens.push(tokenizeNode(node, config, edges, currentUserId, currentUserOpinionId));
-  }
-
-  return tokens;
+  return nodes.map(node =>
+    tokenizeNode(node, config, edges, currentUserId, currentUserOpinionId),
+  );
 }
 
 export function tokenizeEdge(

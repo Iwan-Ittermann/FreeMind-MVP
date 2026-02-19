@@ -19,8 +19,8 @@
 
 import { GraphNode, GraphEdge, GraphData, ChatRating, Opinion, LayoutConfig, GreenZoneSlot } from '@/types/graph';
 
-// Maximum number of nodes that can occupy the green zone
-const MAX_GREEN_ZONE_NODES = 5;
+// Zone border snapping: nodes are nudged away from zone boundaries
+// so they sit fully inside one zone (no straddling).
 
 /**
  * Calculate the Bridging Score for a specific opinion in a specific chat
@@ -422,7 +422,6 @@ function scoreToRadius(
   config: LayoutConfig
 ): number {
   // Normalize score: -5000 to +5000 → 0 to 1
-  // Score of 0 should map to 0.5 (halfway)
   const normalizedScore = (freeMindScore + 5000) / 10000;
   
   // Invert: high score = closer to center
@@ -432,29 +431,27 @@ function scoreToRadius(
   const minRadius = config.nodeRadius * 2;
   const maxRadius = config.outerRadius - config.nodeRadius;
   
-  return minRadius + invertedScore * (maxRadius - minRadius);
+  let radius = minRadius + invertedScore * (maxRadius - minRadius);
+
+  // Zone border snapping: if a node center is within nodeRadius of a
+  // zone boundary, nudge it fully into the zone where >50% of it sits.
+  const pad = config.nodeRadius + 2;
+  const boundaries = [config.greenRadius, config.yellowRadius, config.pinkRadius];
+
+  for (const boundary of boundaries) {
+    if (Math.abs(radius - boundary) < config.nodeRadius) {
+      // Node straddles this boundary — snap to the side with more area
+      radius = radius < boundary
+        ? boundary - pad   // center is inside → push inward
+        : boundary + pad;  // center is outside → push outward
+    }
+  }
+
+  // Clamp to valid range
+  return Math.max(minRadius, Math.min(maxRadius, radius));
 }
 
-/**
- * Calculate pentagon slot positions for the green zone
- * Returns 5 positions arranged in a pentagon pattern within the green zone
- */
-function calculateGreenZoneSlotPositions(config: LayoutConfig): { x: number; y: number }[] {
-  const positions: { x: number; y: number }[] = [];
-  const slotRadius = config.greenRadius * 0.6; // Position slots at 60% of green zone radius
-  
-  for (let i = 0; i < MAX_GREEN_ZONE_NODES; i++) {
-    // Pentagon positions starting from top (12 o'clock) going clockwise
-    // Offset by -π/2 to start from top
-    const angle = (i * 2 * Math.PI / MAX_GREEN_ZONE_NODES) - Math.PI / 2;
-    positions.push({
-      x: config.centerX + Math.cos(angle) * slotRadius,
-      y: config.centerY + Math.sin(angle) * slotRadius,
-    });
-  }
-  
-  return positions;
-}
+// (calculateGreenZoneSlotPositions removed — core zone now uses standard linear layout)
 
 // Main layout function
 export function calculateLayout(
@@ -468,42 +465,8 @@ export function calculateLayout(
     nodeScores.set(op.id, calculateFreeMindScore(op.id, ratings));
   });
 
-  // Step 2: Identify top 5 bridge nodes for green zone
-  const bridgeNodes = opinions
-    .filter(op => {
-      const scores = nodeScores.get(op.id);
-      return scores && scores.hasChats && isBridgeNode(scores.freeMindScore);
-    })
-    .map(op => ({
-      opinion: op,
-      freeMindScore: nodeScores.get(op.id)!.freeMindScore,
-    }))
-    // Sort by FreeMind score descending, then by ID for determinism
-    .sort((a, b) => {
-      if (b.freeMindScore !== a.freeMindScore) {
-        return b.freeMindScore - a.freeMindScore;
-      }
-      return a.opinion.id.localeCompare(b.opinion.id);
-    })
-    .slice(0, MAX_GREEN_ZONE_NODES);
-
-  // Create a set of top 5 node IDs for quick lookup
-  const top5NodeIds = new Set(bridgeNodes.map(n => n.opinion.id));
-  
-  // Calculate pentagon positions for green zone slots
-  const slotPositions = calculateGreenZoneSlotPositions(config);
-  
-  // Create green zone slots with occupancy info
-  const greenZoneSlots: GreenZoneSlot[] = slotPositions.map((pos, i) => {
-    const occupyingNode = bridgeNodes[i];
-    return {
-      position: i + 1,
-      x: pos.x,
-      y: pos.y,
-      occupied: !!occupyingNode,
-      nodeId: occupyingNode?.opinion.id,
-    };
-  });
+  // Green zone slots are no longer used (core zone uses standard layout)
+  const greenZoneSlots: GreenZoneSlot[] = [];
 
   // Step 3: Separate active (has chats) and inactive (no chats) nodes
   const activeOpinions = opinions.filter(op => nodeScores.get(op.id)?.hasChats);
@@ -523,28 +486,13 @@ export function calculateLayout(
   // (used for non-green-zone nodes)
   const angleMap = calculateDeterministicAngles(opinions, ratings);
 
-  // Step 6: Position active nodes
+  // Step 6: Position active nodes (all use linear radius + angle)
   const activeNodes: GraphNode[] = activeOpinions.map((op) => {
     const scores = nodeScores.get(op.id)!;
-    const isTop5 = top5NodeIds.has(op.id);
-    
-    let x: number, y: number, distanceToCenter: number;
-    
-    if (isTop5) {
-      // Top 5 nodes get fixed pentagon positions
-      const slotIndex = bridgeNodes.findIndex(n => n.opinion.id === op.id);
-      const slotPos = slotPositions[slotIndex];
-      x = slotPos.x;
-      y = slotPos.y;
-      distanceToCenter = config.greenRadius * 0.6;
-    } else {
-      // Non-top-5 nodes use normal positioning
-      const targetRadius = scoreToRadius(scores.freeMindScore, config);
-      const angle = angleMap.get(op.id) || 0;
-      x = config.centerX + Math.cos(angle) * targetRadius;
-      y = config.centerY + Math.sin(angle) * targetRadius;
-      distanceToCenter = targetRadius;
-    }
+    const targetRadius = scoreToRadius(scores.freeMindScore, config);
+    const angle = angleMap.get(op.id) || 0;
+    const x = config.centerX + Math.cos(angle) * targetRadius;
+    const y = config.centerY + Math.sin(angle) * targetRadius;
 
     return {
       id: op.id,
@@ -552,9 +500,9 @@ export function calculateLayout(
       y,
       opinion: op,
       isBridge: isBridgeNode(scores.freeMindScore),
-      distanceToCenter,
+      distanceToCenter: targetRadius,
       hasChats: true,
-      zone: isTop5 ? 'green' : undefined, // Mark top 5 as green zone
+      zone: isBridgeNode(scores.freeMindScore) ? 'green' : undefined,
     } as GraphNode;
   });
 
