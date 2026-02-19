@@ -7,7 +7,7 @@ interface SignalEventMarkerProps {
 }
 
 export const SignalEventMarker = memo(function SignalEventMarker({ events }: SignalEventMarkerProps) {
-  const visible = events.slice(0, 2);
+  const visible = events.slice(0, 5);
 
   return (
     <g className="signal-events">

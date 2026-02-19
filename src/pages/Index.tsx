@@ -215,13 +215,16 @@ const Index = () => {
         isLoading={isLoading}
       />
 
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 md:py-6">
-        {/* Mobile title above graph */}
-        {isMobile && topicData?.title && (
-          <h1 className="text-base font-semibold text-white truncate max-w-[80%] text-center mb-2">
+      {/* Mobile title below header */}
+      {isMobile && topicData?.title && (
+        <div className="w-full px-4 py-2 bg-black/80 border-b border-white/10">
+          <h1 className="text-base font-semibold text-white truncate text-center">
             {topicData.title}
           </h1>
-        )}
+        </div>
+      )}
+
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 md:py-6">
 
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
@@ -248,19 +251,7 @@ const Index = () => {
             selectedNodeId={selectedNode?.id ?? null}
           />
 
-          {/* Stats bar at bottom center of graph */}
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10">
-            {hasRealData && (
-              <span className="text-[10px] font-medium bg-white/10 text-white/60 px-2 py-0.5 rounded-full whitespace-nowrap">
-                {topicData.opinions.length} {t('common.opinions')}
-              </span>
-            )}
-            {topicData && (
-              <span className="text-[10px] font-medium bg-white/10 text-white/60 px-2 py-0.5 rounded-full whitespace-nowrap">
-                {activeChats?.length ?? 0} Chats
-              </span>
-            )}
-          </div>
+          {/* Stats bar removed from here — now below the graph */}
 
           {/* Selected node action panel */}
           <AnimatePresence>
@@ -347,6 +338,20 @@ const Index = () => {
             />
           )}
         </motion.div>
+
+        {/* Stats bar below the graph */}
+        <div className="flex items-center justify-center gap-2 mt-3">
+          {hasRealData && (
+            <span className="text-[10px] font-medium bg-white/10 text-white/60 px-2 py-0.5 rounded-full whitespace-nowrap">
+              {topicData.opinions.length} {t('common.opinions')}
+            </span>
+          )}
+          {topicData && (
+            <span className="text-[10px] font-medium bg-white/10 text-white/60 px-2 py-0.5 rounded-full whitespace-nowrap">
+              {topicData.ratings?.length ?? 0} Chats
+            </span>
+          )}
+        </div>
       </div>
 
       <Footer />

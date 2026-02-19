@@ -86,7 +86,7 @@ export function useTopicData(topicId: string) {
         prev.filter(chat => now - chat.lastActivity < 3000)
       );
       setMessageAnimations(prev =>
-        prev.filter(anim => now - anim.timestamp < 1000)
+        prev.filter(anim => now - anim.timestamp < 2000)
       );
     }, 500);
     return () => clearInterval(interval);

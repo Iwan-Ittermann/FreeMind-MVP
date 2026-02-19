@@ -40,8 +40,8 @@ export function SignalZones({ zones, config }: SignalZonesProps) {
                 rgba(0, 229, 255, 0.04) ${midP}%,
                 rgba(85, 17, 17, 0.06) ${midP}%,
                 rgba(85, 17, 17, 0.06) ${outP}%,
-                rgba(40, 45, 60, 0.35) ${outP}%,
-                rgba(40, 45, 60, 0.35) 100%
+                rgba(0, 0, 0, 0.6) ${outP}%,
+                rgba(0, 0, 0, 0.6) 100%
               )
             `,
             border: '2px solid #2A3347',
@@ -49,24 +49,35 @@ export function SignalZones({ zones, config }: SignalZonesProps) {
         />
       </foreignObject>
 
-      {/* Zone boundary rings */}
-      {zones.map((z) => (
+      {/* Zone boundary rings with numbers */}
+      {zones.map((z, index) => (
         z.innerRadius > 0 && (
-          <circle
-            key={`boundary-${z.zone}`}
-            cx={z.centerX}
-            cy={z.centerY}
-            r={z.innerRadius}
-            fill="none"
-            stroke="#00D4FF"
-            strokeWidth={0.5}
-            strokeOpacity={0.15}
-            strokeDasharray="4 4"
-          />
+          <g key={`boundary-${z.zone}`}>
+            <circle
+              cx={z.centerX}
+              cy={z.centerY}
+              r={z.innerRadius}
+              fill="none"
+              stroke="#00D4FF"
+              strokeWidth={0.5}
+              strokeOpacity={0.15}
+              strokeDasharray="4 4"
+            />
+            <text
+              x={z.centerX + z.innerRadius + 4}
+              y={z.centerY - 2}
+              fill="#00D4FF"
+              fillOpacity={0.25}
+              fontSize="8"
+              fontFamily="monospace"
+            >
+              {index + 1}
+            </text>
+          </g>
         )
       ))}
 
-      {/* Outer boundary */}
+      {/* Outer boundary with number */}
       <circle
         cx={cx}
         cy={cy}
@@ -76,6 +87,16 @@ export function SignalZones({ zones, config }: SignalZonesProps) {
         strokeWidth={1}
         strokeOpacity={0.5}
       />
+      <text
+        x={cx + r + 4}
+        y={cy - 2}
+        fill="#1E2A44"
+        fillOpacity={0.5}
+        fontSize="8"
+        fontFamily="monospace"
+      >
+        {zones.length + 1}
+      </text>
     </g>
   );
 }
