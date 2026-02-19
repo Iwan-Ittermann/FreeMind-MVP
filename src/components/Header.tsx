@@ -20,11 +20,10 @@ interface HeaderProps {
   onChatOpen?: (theirOpinionId: string) => void;
   totalUnread?: number;
   unreadMessageCounts?: Map<string, number>;
-  opinionCount?: number;
-  chatCount?: number;
+  isLoading?: boolean;
 }
 
-export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted, myOpinionId, onChatOpen, totalUnread = 0, unreadMessageCounts, opinionCount, chatCount }: HeaderProps) {
+export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted, myOpinionId, onChatOpen, totalUnread = 0, unreadMessageCounts, isLoading = false }: HeaderProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -71,20 +70,8 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
           </Link>
 
           {title && (
-            <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 max-w-[50%] flex-col items-center gap-0.5">
+            <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 max-w-[50%]">
               <h1 className="text-lg font-semibold text-white truncate">{title}</h1>
-              <div className="flex items-center gap-2">
-                {opinionCount !== undefined && (
-                  <span className="text-xs font-medium bg-white/10 text-white/60 px-2 py-0.5 rounded-full whitespace-nowrap">
-                    {opinionCount} {t('common.opinions')}
-                  </span>
-                )}
-                {chatCount !== undefined && chatCount > 0 && (
-                  <span className="text-xs font-medium bg-white/10 text-white/60 px-2 py-0.5 rounded-full whitespace-nowrap">
-                    {chatCount} Chats
-                  </span>
-                )}
-              </div>
             </div>
           )}
 
@@ -101,9 +88,9 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
               </motion.div>
             )}
 
-            {/* Add Opinion — animated out after submission */}
+            {/* Add Opinion — animated out after submission, hidden during loading */}
             <AnimatePresence>
-              {showOpinionButton && canAddOpinion && (
+              {showOpinionButton && canAddOpinion && !isLoading && (
                 <motion.div
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
@@ -127,11 +114,11 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
                 onClick={() => { setOpinionsOpen(true); setChatsOpen(false); }}
                 size="icon"
                 variant="ghost"
-                className="h-12 w-12 text-muted-foreground hover:text-foreground hover:bg-muted"
+                className="h-12 w-12 md:h-14 md:w-14 text-muted-foreground hover:text-foreground hover:bg-muted"
                 title={t('sidebar.allOpinions', 'All Opinions')}
                 data-tutorial="opinions-button"
               >
-                <List className="h-5 w-5" />
+                <List className="h-5 w-5 md:h-6 md:w-6" />
               </Button>
             )}
 
@@ -141,11 +128,11 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
                   onClick={() => { setChatsOpen(true); setOpinionsOpen(false); }}
                   size="icon"
                   variant="ghost"
-                  className="h-12 w-12 text-muted-foreground hover:text-foreground hover:bg-muted"
+                  className="h-12 w-12 md:h-14 md:w-14 text-muted-foreground hover:text-foreground hover:bg-muted"
                   title={t('sidebar.myChats', 'My Chats')}
                   data-tutorial="chats-button"
                 >
-                  <MessagesSquare className="h-5 w-5" />
+                  <MessagesSquare className="h-5 w-5 md:h-6 md:w-6" />
                 </Button>
                 {totalUnread > 0 && (
                   <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center px-1">
@@ -158,22 +145,7 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
             {/* Settings button removed from header — now floating on /home */}
           </div>
         </div>
-        {/* Mobile title row below main row */}
-        {title && (
-          <div className="md:hidden px-4 pb-2 flex items-center justify-center gap-2">
-            <h1 className="text-sm font-semibold text-white truncate max-w-[60%]">{title}</h1>
-            {opinionCount !== undefined && (
-              <span className="text-[10px] font-medium bg-white/10 text-white/60 px-1.5 py-0.5 rounded-full whitespace-nowrap">
-                {opinionCount}
-              </span>
-            )}
-            {chatCount !== undefined && chatCount > 0 && (
-              <span className="text-[10px] font-medium bg-white/10 text-white/60 px-1.5 py-0.5 rounded-full whitespace-nowrap">
-                {chatCount} 💬
-              </span>
-            )}
-          </div>
-        )}
+        {/* Mobile title removed — now shown above graph in Index */}
       </header>
 
       {topicId && (

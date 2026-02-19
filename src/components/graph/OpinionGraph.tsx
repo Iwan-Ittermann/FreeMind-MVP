@@ -27,6 +27,7 @@ interface OpinionGraphProps {
   width?: number;
   height?: number;
   useMockData?: boolean;
+  selectedNodeId?: string | null;
 }
 
 export function OpinionGraph({ 
@@ -44,9 +45,9 @@ export function OpinionGraph({
   width = 600,
   height = 600,
   useMockData = false,
+  selectedNodeId = null,
 }: OpinionGraphProps) {
   const [highlightedNode, setHighlightedNode] = useState<string | null>(null);
-  const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
 
   // Layout configuration based on size
   // Adjusted zone sizes: narrower green/pink, wider yellow
@@ -129,12 +130,6 @@ export function OpinionGraph({
   }, [opinions, ratings, config, chatRequests, currentUserOpinionId, onlineOpinionIds, unreadMessageCounts]);
 
   const handleNodeClick = useCallback((node: GraphNode | null) => {
-    if (!node) {
-      setSelectedNode(null);
-      onNodeSelect?.(null);
-      return;
-    }
-    setSelectedNode(prev => prev?.id === node.id ? null : node);
     onNodeSelect?.(node);
   }, [onNodeSelect]);
 
@@ -154,7 +149,7 @@ export function OpinionGraph({
           config={config}
           width={width}
           height={height}
-          highlightedNode={highlightedNode || selectedNode?.id || null}
+          highlightedNode={highlightedNode || selectedNodeId || null}
           currentUserId={currentUserId || null}
           currentUserOpinionId={currentUserOpinionId || null}
           activeChats={activeChats}
@@ -188,7 +183,7 @@ export function OpinionGraph({
         <GraphEdges 
           nodes={graphData.nodes} 
           edges={graphData.edges}
-          highlightedNode={highlightedNode || selectedNode?.id}
+          highlightedNode={highlightedNode || selectedNodeId}
           activeChats={activeChats}
           onEdgeClick={onEdgeClick}
         />
@@ -197,7 +192,7 @@ export function OpinionGraph({
         <GraphNodes
           nodes={graphData.nodes}
           config={config}
-          highlightedNode={highlightedNode || selectedNode?.id}
+          highlightedNode={highlightedNode || selectedNodeId}
           currentUserId={currentUserId}
           currentUserOpinionId={currentUserOpinionId}
           onNodeClick={handleNodeClick}

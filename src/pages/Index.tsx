@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, X, Send, Check, Flag, Settings, HelpCircle, ZoomIn, ZoomOut } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useTranslation } from 'react-i18next';
 import { FloatingChatManager, FloatingChatManagerHandle } from '@/components/chat/FloatingChatManager';
 import { OpinionGraph } from '@/components/graph/OpinionGraph';
 import { Footer } from '@/components/Footer';
@@ -30,6 +31,7 @@ const DEFAULT_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
 const Index = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const isMobile = useIsMobile();
   const chatManagerRef = useRef<FloatingChatManagerHandle>(null);
   const tutorial = useTutorialContext();
@@ -210,11 +212,17 @@ const Index = () => {
         onChatOpen={handleFloatingChatOpen}
         totalUnread={totalUnreadCount}
         unreadMessageCounts={unreadMessageCounts}
-        opinionCount={hasRealData ? topicData.opinions.length : 40}
-        chatCount={activeChats?.length ?? 0}
+        isLoading={isLoading}
       />
 
-      <div className="flex-1 flex items-center justify-center px-4 py-4 md:py-6">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 md:py-6">
+        {/* Mobile title above graph */}
+        {isMobile && topicData?.title && (
+          <h1 className="text-sm font-semibold text-foreground truncate max-w-[80%] text-center mb-2">
+            {topicData.title}
+          </h1>
+        )}
+
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -236,8 +244,23 @@ const Index = () => {
             height={displaySize.height}
             onNodeSelect={handleNodeClick}
             onEdgeClick={handleEdgeClick}
-            useMockData={!hasRealData}
+            useMockData={false}
+            selectedNodeId={selectedNode?.id ?? null}
           />
+
+          {/* Stats bar at bottom center of graph */}
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10">
+            {hasRealData && (
+              <span className="text-[10px] font-medium bg-white/10 text-white/60 px-2 py-0.5 rounded-full whitespace-nowrap">
+                {topicData.opinions.length} {t('common.opinions')}
+              </span>
+            )}
+            {(activeChats?.length ?? 0) > 0 && (
+              <span className="text-[10px] font-medium bg-white/10 text-white/60 px-2 py-0.5 rounded-full whitespace-nowrap">
+                {activeChats?.length} Chats
+              </span>
+            )}
+          </div>
 
           {/* Selected node action panel */}
           <AnimatePresence>
