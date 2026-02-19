@@ -18,7 +18,7 @@ import {
  * Determine semantic zone from a GraphNode.
  */
 function resolveZone(node: GraphNode, config: LayoutConfig): SemanticZone {
-  if (node.zone === 'green') return 'core';
+  if (node.zone === 'green' || node.isBridge) return 'core';
   if (node.hasChats === false) return 'inactive';
 
   const dist = node.distanceToCenter ?? config.outerRadius;

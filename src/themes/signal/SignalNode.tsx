@@ -76,6 +76,7 @@ export const SignalNode = memo(function SignalNode({
         transform={`translate(${token.x}, ${token.y})`}
         style={{ cursor: 'pointer', opacity }}
         data-user-node={token.isCurrentUser ? 'true' : undefined}
+      data-node-clickable
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
@@ -108,12 +109,11 @@ export const SignalNode = memo(function SignalNode({
         <Shape />
       </svg>
 
-      {/* "YOU" flag */}
+      {/* "YOU" badge — red circle, top-right */}
       {token.isCurrentUser && (
-        <g transform={`translate(0, ${HALF - 4})`}>
-          <rect x={-1} y={0} width={2} height={12} fill="#32394E" />
-          <rect x={1} y={0} width={16} height={9} rx={1} fill="#00D4FF" />
-          <text x={9} y={4.5} textAnchor="middle" dominantBaseline="central" fill="#0B0E1A" fontSize="5" fontWeight="bold" fontFamily="monospace">
+        <g transform={`translate(${HALF * 0.7}, ${-HALF * 0.7})`}>
+          <circle r={8} fill="#FF3B3B" />
+          <text x={0} y={0.5} textAnchor="middle" dominantBaseline="central" fill="#FFFFFF" fontSize="5" fontWeight="bold" fontFamily="monospace">
             YOU
           </text>
         </g>

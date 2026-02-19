@@ -102,7 +102,7 @@ const Index = () => {
 
   const handleBackgroundClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
-    if (selectedNode && !target.closest('[data-opinion-panel]') && !target.closest('svg') && !target.closest('button')) {
+    if (selectedNode && !target.closest('[data-opinion-panel]') && !target.closest('button') && !target.closest('[data-node-clickable]')) {
       setSelectedNode(null);
     }
   };
@@ -114,7 +114,6 @@ const Index = () => {
         requesterOpinionId: myOpinion.id,
         targetOpinionId: selectedNode.id,
       });
-      toast.success('Chat request sent!');
       tutorial.onChatRequested();
     } catch (err: any) {
       toast.error(err.message || 'Failed to send request');
@@ -127,8 +126,12 @@ const Index = () => {
     if (!request) return;
     try {
       await acceptRequest(request.id);
-      toast.success('Chat request accepted!');
-      navigate(`/chat?their=${selectedNode.id}`);
+      if (isMobile) {
+        navigate(`/chat?their=${selectedNode.id}`);
+      } else {
+        chatManagerRef.current?.openChat(selectedNode.id);
+        setSelectedNode(null);
+      }
     } catch (err: any) {
       toast.error(err.message || 'Failed to accept request');
     }
@@ -140,7 +143,6 @@ const Index = () => {
     if (!request) return;
     try {
       await declineRequest(request.id);
-      toast.success('Chat request declined');
       setSelectedNode(null);
     } catch (err: any) {
       toast.error(err.message || 'Failed to decline request');

@@ -80,7 +80,7 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
   const handleSaveRating = async () => {
     try {
       await saveRating(empathy, disagreement);
-      toast.success(t('chat.ratingSaved'));
+      // Rating saved successfully
       setIsRatingOpen(false);
     } catch {
       toast.error(t('chat.failedToSaveRating'));

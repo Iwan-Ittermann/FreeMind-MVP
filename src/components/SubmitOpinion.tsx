@@ -67,7 +67,7 @@ export function SubmitOpinion({ topicId, onSuccess, hasExistingOpinion = false }
           setError(insertError.message);
         }
       } else {
-        toast.success('Opinion submitted! It will appear on the graph.');
+        // Opinion submitted successfully
         setText('');
         setIsOpen(false);
         setSubmitted(true);

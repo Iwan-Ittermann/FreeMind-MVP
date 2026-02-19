@@ -429,7 +429,7 @@ function scoreToRadius(
   
   // Map to radius: 0 → center, 1 → outer edge
   const minRadius = config.nodeRadius * 2;
-  const maxRadius = config.outerRadius - config.nodeRadius;
+  const maxRadius = config.pinkRadius - config.nodeRadius;
   
   let radius = minRadius + invertedScore * (maxRadius - minRadius);
 
