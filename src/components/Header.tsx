@@ -118,7 +118,7 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
                 title={t('sidebar.allOpinions', 'All Opinions')}
                 data-tutorial="opinions-button"
               >
-                <List className="h-5 w-5 md:h-6 md:w-6" />
+                <List className="h-5 w-5 md:h-7 md:w-7" />
               </Button>
             )}
 
@@ -132,7 +132,7 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
                   title={t('sidebar.myChats', 'My Chats')}
                   data-tutorial="chats-button"
                 >
-                  <MessagesSquare className="h-5 w-5 md:h-6 md:w-6" />
+                  <MessagesSquare className="h-5 w-5 md:h-7 md:w-7" />
                 </Button>
                 {totalUnread > 0 && (
                   <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center px-1">

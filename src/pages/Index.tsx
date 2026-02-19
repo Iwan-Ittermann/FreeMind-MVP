@@ -218,7 +218,7 @@ const Index = () => {
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 md:py-6">
         {/* Mobile title above graph */}
         {isMobile && topicData?.title && (
-          <h1 className="text-sm font-semibold text-foreground truncate max-w-[80%] text-center mb-2">
+          <h1 className="text-base font-semibold text-white truncate max-w-[80%] text-center mb-2">
             {topicData.title}
           </h1>
         )}
@@ -249,15 +249,15 @@ const Index = () => {
           />
 
           {/* Stats bar at bottom center of graph */}
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10">
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10">
             {hasRealData && (
               <span className="text-[10px] font-medium bg-white/10 text-white/60 px-2 py-0.5 rounded-full whitespace-nowrap">
                 {topicData.opinions.length} {t('common.opinions')}
               </span>
             )}
-            {(activeChats?.length ?? 0) > 0 && (
+            {topicData && (
               <span className="text-[10px] font-medium bg-white/10 text-white/60 px-2 py-0.5 rounded-full whitespace-nowrap">
-                {activeChats?.length} Chats
+                {activeChats?.length ?? 0} Chats
               </span>
             )}
           </div>
