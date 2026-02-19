@@ -30,7 +30,7 @@ export function FreeMindThemeProvider({ children }: { children: ReactNode }) {
     return () => { supabase.removeChannel(channel); };
   }, [queryClient]);
 
-  const theme: ThemeName = (setting?.value === 'city') ? 'city' : (setting?.value === 'arcane') ? 'arcane' : 'classic';
+  const theme: ThemeName = (setting?.value === 'city') ? 'city' : (setting?.value === 'arcane') ? 'arcane' : (setting?.value === 'signal') ? 'signal' : 'classic';
 
   const value = useMemo<ThemeContextValue>(() => ({ theme }), [theme]);
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
