@@ -49,54 +49,28 @@ export function SignalZones({ zones, config }: SignalZonesProps) {
         />
       </foreignObject>
 
-      {/* Zone boundary rings with numbers */}
-      {zones.map((z, index) => (
-        z.innerRadius > 0 && (
-          <g key={`boundary-${z.zone}`}>
-            <circle
-              cx={z.centerX}
-              cy={z.centerY}
-              r={z.innerRadius}
-              fill="none"
-              stroke="#00D4FF"
-              strokeWidth={0.5}
-              strokeOpacity={0.15}
-              strokeDasharray="4 4"
-            />
-            <text
-              x={z.centerX + z.innerRadius + 4}
-              y={z.centerY - 2}
-              fill="#00D4FF"
-              fillOpacity={0.25}
-              fontSize="8"
-              fontFamily="monospace"
-            >
-              {index + 1}
-            </text>
-          </g>
-        )
-      ))}
+      {/* All 5 numbered lines from center outward */}
+      {/* Line 1: Core zone boundary (greenRadius) */}
+      <circle cx={cx} cy={cy} r={config.greenRadius} fill="none" stroke="#00D4FF" strokeWidth={0.5} strokeOpacity={0.15} strokeDasharray="4 4" />
+      <text x={cx + config.greenRadius + 4} y={cy - 2} fill="#00D4FF" fillOpacity={0.25} fontSize="8" fontFamily="monospace">1</text>
 
-      {/* Outer boundary with number */}
-      <circle
-        cx={cx}
-        cy={cy}
-        r={r}
-        fill="none"
-        stroke="#1E2A44"
-        strokeWidth={1}
-        strokeOpacity={0.5}
-      />
-      <text
-        x={cx + r + 4}
-        y={cy - 2}
-        fill="#1E2A44"
-        fillOpacity={0.5}
-        fontSize="8"
-        fontFamily="monospace"
-      >
-        {zones.length + 1}
-      </text>
+      {/* Line 2: Middle zone boundary (yellowRadius) */}
+      <circle cx={cx} cy={cy} r={config.yellowRadius} fill="none" stroke="#00D4FF" strokeWidth={0.5} strokeOpacity={0.15} strokeDasharray="4 4" />
+      <text x={cx + config.yellowRadius + 4} y={cy - 2} fill="#00D4FF" fillOpacity={0.25} fontSize="8" fontFamily="monospace">2</text>
+
+      {/* Line 3: Outer/pink zone boundary (pinkRadius) */}
+      <circle cx={cx} cy={cy} r={config.pinkRadius} fill="none" stroke="#00D4FF" strokeWidth={0.5} strokeOpacity={0.15} strokeDasharray="4 4" />
+      <text x={cx + config.pinkRadius + 4} y={cy - 2} fill="#00D4FF" fillOpacity={0.25} fontSize="8" fontFamily="monospace">3</text>
+
+      {/* Line 4: Inactive zone ring (outP+5% — the grayish ring) */}
+      {(() => { const r4 = r * (outP + 5) / 100; return (<>
+        <circle cx={cx} cy={cy} r={r4} fill="none" stroke="#32394E" strokeWidth={0.5} strokeOpacity={0.4} />
+        <text x={cx + r4 + 4} y={cy - 2} fill="#32394E" fillOpacity={0.5} fontSize="8" fontFamily="monospace">4</text>
+      </>); })()}
+
+      {/* Line 5: Outer border */}
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="#1E2A44" strokeWidth={1} strokeOpacity={0.5} />
+      <text x={cx + r + 4} y={cy - 2} fill="#1E2A44" fillOpacity={0.5} fontSize="8" fontFamily="monospace">5</text>
     </g>
   );
 }
