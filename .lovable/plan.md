@@ -1,88 +1,80 @@
 
-# Arcane Theme — Sprite Sheet Integration
+# New Theme: "Signal & Noise"
 
 ## Overview
 
-Add a new "Arcane" theme that uses the uploaded SVG sprite sheets (9 buildings per file, 3x3 grid on 1024x1024 canvas). Instead of extracting individual SVGs, we render each building by referencing the sprite sheet with SVG `viewBox` cropping. The circle texture file will be assessed for performance and either used directly or replaced with a CSS/SVG gradient approximation.
+Create a fourth theme called `signal` that uses inline SVG shapes for nodes (no sprite sheets, no external assets) and a CSS radial gradient for zones. This is the lightest-weight theme yet -- zero asset files, pure code.
 
-## Sprite Sheet Approach
+## Sprite Sheet Code
 
-Each uploaded file is a 1024x1024 SVG with 9 buildings arranged in a 3x3 grid. Each cell is approximately 341x341 pixels. To render a single building, we use an `<image>` tag with a clip/viewBox trick:
+The existing Arcane sprite sheet code (`src/assets/arcane/`, `ArcaneNode.tsx` with its sprite imports) stays untouched. It's isolated to the Arcane theme and doesn't affect anything else. No cleanup needed.
 
-- Building 1 (top-left): crop to `(0, 0, 341, 341)`
-- Building 2 (top-center): crop to `(341, 0, 341, 341)`
-- Building 3 (top-right): crop to `(682, 0, 341, 341)`
-- ...and so on for all 9 positions
+## New Files
 
-This is implemented by wrapping each `<image>` in a `<svg>` element with the appropriate `viewBox` offset, keeping the sprite sheet as a single imported asset.
+| File | Purpose |
+|------|---------|
+| `src/themes/signal/SignalNode.tsx` | Inline SVG node shapes per zone |
+| `src/themes/signal/SignalZones.tsx` | CSS-based radial gradient circle |
+| `src/themes/signal/SignalEdge.tsx` | Edge renderer (glowing lines) |
+| `src/themes/signal/SignalEventMarker.tsx` | Event marker (pulse effect) |
+| `src/themes/signal/SignalRenderer.tsx` | Main renderer (same pattern as City/Arcane) |
 
-## File Size Analysis
+## Modified Files
 
-| File | Lines | Estimated Size |
-|------|-------|---------------|
-| Core zone nodes | 6,941 | ~250KB |
-| Middle zone nodes | 8,065 | ~300KB |
-| Outer zone nodes | 8,792 | ~330KB |
-| Inactive nodes | 6,558 | ~240KB |
-| Circle texture | 6,028 | ~220KB |
-
-Total: ~1.3MB for all assets. Since only one theme is active at a time and Vite handles lazy imports, this is acceptable. The texture file (circle_texture.svg) is the largest concern -- if it's used as a repeating background, we'll create a simplified CSS radial gradient that mimics its appearance instead of loading the full 220KB SVG.
-
-## Files to Create/Modify
-
-| File | Action |
+| File | Change |
 |------|--------|
-| `src/assets/arcane/nodes/core.svg` | Copy from upload (sprite sheet) |
-| `src/assets/arcane/nodes/middle.svg` | Copy from upload (sprite sheet) |
-| `src/assets/arcane/nodes/outer.svg` | Copy from upload (sprite sheet) |
-| `src/assets/arcane/nodes/inactive.svg` | Copy from upload (sprite sheet) |
-| `src/assets/arcane/textures/circle-texture.svg` | Copy from upload (for reference), but use CSS gradient |
-| `src/themes/arcane/ArcaneNode.tsx` | New -- renders nodes via sprite sheet cropping |
-| `src/themes/arcane/ArcaneZones.tsx` | New -- zone rings styled in arcane palette |
-| `src/themes/arcane/ArcaneEdge.tsx` | New -- edge renderer |
-| `src/themes/arcane/ArcaneRenderer.tsx` | New -- main renderer (mirrors CityRenderer) |
-| `src/themes/arcane/ArcaneEventMarker.tsx` | New -- event marker |
-| `src/themes/types.ts` | Add `'arcane'` to `ThemeName` |
-| `src/themes/ThemeContext.tsx` | Handle `'arcane'` value |
-| `src/components/admin/ThemePanel.tsx` | Add Arcane option to dropdown |
-| `src/components/graph/OpinionGraph.tsx` | Add arcane renderer branch |
+| `src/themes/types.ts` | Add `'signal'` to `ThemeName` union |
+| `src/themes/ThemeContext.tsx` | Handle `'signal'` value |
+| `src/components/admin/ThemePanel.tsx` | Add `{ value: 'signal', label: '📡 Signal & Noise' }` |
+| `src/components/graph/OpinionGraph.tsx` | Add `SignalRenderer` branch alongside city/arcane |
 
-## Technical Details
+## Node Designs (Inline SVG)
 
-### ArcaneNode Component
+All nodes are 40x40 viewBox, rendered inline -- no external files.
 
-The key innovation: instead of importing 9 individual SVGs, we import one sprite sheet per zone and use SVG viewBox cropping:
+**Core (Star/Compass):**
+- Outer ring: `circle r=15, stroke #E0FFFF`
+- Inner star: 8-point path in `#E0FFFF`
+
+**Middle (Stable Signal):**
+- Outer ring: `circle r=12, stroke #00D4FF, stroke-width 2`
+- Inner dot: `circle r=6, fill #00D4FF`
+
+**Outer (Glitch):**
+- Two offset red squares: `rect fill #FF3B3B` (one at 60% opacity)
+- Crosshair dashed lines
+
+**Inactive (Dormant Shell):**
+- Dashed circle: `stroke #32394E, stroke-dasharray 4 2`
+- Tiny center dot: `fill #32394E`
+
+## Zone Design (CSS Radial Gradient)
+
+Instead of SVG circles, the zones use an HTML `div` with a CSS radial gradient overlaid on the SVG via `foreignObject`:
 
 ```text
-// Pseudo-code for sprite rendering
-const GRID_SIZE = 341; // 1024 / 3
-const col = index % 3;
-const row = Math.floor(index / 3);
-
-<svg viewBox={`${col * GRID_SIZE} ${row * GRID_SIZE} ${GRID_SIZE} ${GRID_SIZE}`}
-     width={NODE_SIZE} height={NODE_SIZE}>
-  <image href={spriteSheet} width={1024} height={1024} />
-</svg>
+radial-gradient(
+  circle,
+  rgba(255,255,255,0.15) 0%,      -- Center glow
+  rgba(11,14,26,1) 20%,            -- Gap
+  rgba(0,212,255,0.05) 21%,        -- Middle zone tint
+  rgba(11,14,26,1) 50%,            -- Gap
+  rgba(255,59,59,0.05) 51%,        -- Outer zone tint
+  rgba(11,14,26,1) 85%,            -- Gap
+  rgba(50,57,78,1) 90%,            -- Inactive ring
+  rgba(11,14,26,1) 91%             -- Edge
+)
 ```
 
-Each node gets a building index (0-8) based on a hash of its ID, then renders the corresponding grid cell from the appropriate zone's sprite sheet.
+This is rendered as an SVG `foreignObject` containing a `div` with `border-radius: 50%` and the gradient, so it integrates seamlessly into the SVG canvas used by all renderers.
 
-### ArcaneZones Component
+## Edge Design
 
-Instead of loading the large circle texture SVG (~220KB), create an arcane-themed zone gradient inline:
-- Colors sampled from the texture file (olive/khaki tones: `#777558` base)
-- Radial gradients with grain-like noise via SVG `<feTurbulence>` (lightweight, no external asset)
+Thin glowing lines using `#00D4FF` for active/accepted edges and `#FF3B3B` for pending edges, with a subtle glow filter. Matches the signal aesthetic.
 
-### Theme Registration
+## Technical Notes
 
-- Add `'arcane'` to the `ThemeName` union type
-- Add detection in `ThemeContext.tsx` for the `'arcane'` value
-- Add `{ value: 'arcane', label: 'Arcane' }` to the admin ThemePanel dropdown
-- Add conditional branch in `OpinionGraph.tsx` similar to the existing city theme branch
-
-## Performance Considerations
-
-- Sprite sheets are imported once and reused across all nodes in that zone
-- No individual file extraction = fewer HTTP requests
-- The texture background uses inline SVG gradients (same pattern as the existing city theme) instead of loading the large SVG file
-- Vite will bundle only the active theme's assets
+- `SignalRenderer` follows the exact same pattern as `ArcaneRenderer` / `CityRenderer` -- reuses the shared tokenizer, same props interface
+- Zero external assets = fastest loading theme
+- The dark background (`#0B0E1A`) of the gradient naturally provides the theme's mood
+- Speech bubbles, YOU flag, Online badge, unread badge, and incoming request pulse all reuse the same pattern from existing themes, restyled with the Signal & Noise color palette (`#00D4FF` cyan, `#FF3B3B` red, `#E0FFFF` light cyan, `#32394E` muted blue-gray)
