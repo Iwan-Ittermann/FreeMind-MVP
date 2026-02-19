@@ -40,8 +40,8 @@ export function SignalZones({ zones, config }: SignalZonesProps) {
                 rgba(0, 229, 255, 0.04) ${midP}%,
                 rgba(85, 17, 17, 0.06) ${midP}%,
                 rgba(85, 17, 17, 0.06) ${outP}%,
-                rgba(50, 57, 78, 0.15) ${outP}%,
-                rgba(50, 57, 78, 0.15) 100%
+                rgba(40, 45, 60, 0.35) ${outP}%,
+                rgba(40, 45, 60, 0.35) 100%
               )
             `,
             border: '2px solid #2A3347',

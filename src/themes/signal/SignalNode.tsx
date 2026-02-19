@@ -106,6 +106,7 @@ export const SignalNode = memo(function SignalNode({
           transition: 'transform 0.15s ease',
         }}
       >
+        <circle cx="20" cy="20" r="20" fill="transparent" />
         <Shape />
       </svg>
 

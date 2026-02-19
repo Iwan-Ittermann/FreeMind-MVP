@@ -79,11 +79,11 @@ export function ChatBubble({
             className={`px-4 py-3 rounded-2xl ${
               isOwn 
                 ? isOpinion 
-                  ? 'bg-primary/20 border border-primary/30 rounded-br-md' 
+                  ? 'bg-primary/40 border border-primary/50 rounded-br-md' 
                   : 'bg-primary rounded-br-md shadow-lg shadow-primary/20'
                 : isOpinion
-                  ? 'bg-secondary/20 border border-secondary/30 rounded-bl-md'
-                  : 'bg-white/10 rounded-bl-md'
+                  ? 'bg-secondary/40 border border-secondary/50 rounded-bl-md'
+                  : 'bg-white/20 rounded-bl-md'
             }`}
           >
             <p className={`text-sm leading-relaxed ${isOwn && !isOpinion ? 'text-white' : 'text-white/90'}`}>
