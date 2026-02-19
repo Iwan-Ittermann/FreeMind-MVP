@@ -67,15 +67,14 @@ export const SignalNode = memo(function SignalNode({
   const Shape = ZONE_SHAPE[token.zone] ?? InactiveShape;
   const opacity = isDimmed ? 0.4 : token.isHidden ? 0.3 : 1;
   const isScaled = isHighlighted && !isDimmed;
-  const scale = isScaled ? 1.25 : 1;
   const bubbleText = token.opinionText
     ? (token.opinionText.length > 10 ? token.opinionText.slice(0, 10) + '…' : token.opinionText)
     : '';
 
   return (
       <g
-        transform={`translate(${token.x}, ${token.y}) scale(${scale})`}
-        style={{ cursor: 'pointer', opacity, transformOrigin: `${token.x}px ${token.y}px`, transition: 'transform 0.15s ease' }}
+        transform={`translate(${token.x}, ${token.y})`}
+        style={{ cursor: 'pointer', opacity }}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
@@ -91,7 +90,7 @@ export const SignalNode = memo(function SignalNode({
         </g>
       )}
 
-      {/* Node shape */}
+      {/* Node shape — scale applied here to avoid position jump */}
       <svg
         x={-HALF}
         y={-HALF}
@@ -99,7 +98,11 @@ export const SignalNode = memo(function SignalNode({
         height={NODE_SIZE}
         viewBox="0 0 40 40"
         overflow="visible"
-        style={{ transition: 'transform 0.15s ease' }}
+        style={{
+          transform: isScaled ? 'scale(1.25)' : 'scale(1)',
+          transformOrigin: '20px 20px',
+          transition: 'transform 0.15s ease',
+        }}
       >
         <Shape />
       </svg>

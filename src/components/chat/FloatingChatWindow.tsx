@@ -138,11 +138,11 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 40, scale: 0.9 }}
       transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-      className="fixed bottom-16 z-50 w-[360px] h-[480px] bg-background border border-border rounded-xl shadow-2xl flex flex-col overflow-hidden"
+      className="fixed bottom-16 z-50 w-[360px] h-[480px] bg-background border border-border/80 rounded-xl shadow-2xl flex flex-col overflow-hidden ring-1 ring-border/20"
       style={style}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-muted/50 shrink-0">
+      <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-muted shrink-0">
         <p className="text-sm font-medium text-foreground truncate flex-1 mr-2">
           {theirOpinion ? `"${theirOpinion.text.slice(0, 30)}${theirOpinion.text.length > 30 ? '…' : ''}"` : t('common.loading')}
         </p>
@@ -281,7 +281,7 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
 
       {/* Footer — input + Rate! button (hidden in read-only mode) */}
       {!readOnly && (
-        <div className="border-t border-border p-2 shrink-0 bg-muted/30">
+        <div className="border-t border-border p-2 shrink-0 bg-muted/80">
           {isBlocked || isBlockedByOther ? (
             <p className="text-xs text-muted-foreground text-center py-1">
               {isBlocked ? t('floatingChat.blockedByYou') : t('floatingChat.blockedByThem')}
@@ -317,7 +317,7 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
         </div>
       )}
       {readOnly && (
-        <div className="border-t border-border p-2 shrink-0 bg-muted/30">
+        <div className="border-t border-border p-2 shrink-0 bg-muted/80">
           <p className="text-xs text-muted-foreground text-center py-1">{t('floatingChat.readOnly', 'Read-only view')}</p>
         </div>
       )}

@@ -20,9 +20,11 @@ interface HeaderProps {
   onChatOpen?: (theirOpinionId: string) => void;
   totalUnread?: number;
   unreadMessageCounts?: Map<string, number>;
+  opinionCount?: number;
+  chatCount?: number;
 }
 
-export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted, myOpinionId, onChatOpen, totalUnread = 0, unreadMessageCounts }: HeaderProps) {
+export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted, myOpinionId, onChatOpen, totalUnread = 0, unreadMessageCounts, opinionCount, chatCount }: HeaderProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -57,7 +59,7 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-black/80 backdrop-blur-md">
-        <div className="container mx-auto px-4 h-14 flex items-center justify-between">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center">
             <motion.span
               initial={{ opacity: 0 }}
@@ -69,8 +71,18 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
           </Link>
 
           {title && (
-            <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 max-w-[40%] pr-4">
+            <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 max-w-[40%] items-center gap-3 pr-4">
               <h1 className="text-sm font-medium text-white/80 truncate">{title}</h1>
+              {opinionCount !== undefined && (
+                <span className="text-[10px] font-medium bg-white/10 text-white/60 px-2 py-0.5 rounded-full whitespace-nowrap">
+                  {opinionCount} {t('common.opinions')}
+                </span>
+              )}
+              {chatCount !== undefined && chatCount > 0 && (
+                <span className="text-[10px] font-medium bg-white/10 text-white/60 px-2 py-0.5 rounded-full whitespace-nowrap">
+                  {chatCount} Chats
+                </span>
+              )}
             </div>
           )}
 
@@ -79,9 +91,9 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
               <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
                 <Button
                   onClick={() => navigate('/auth')}
-                  className="h-9 px-3 md:px-4 bg-accent text-accent-foreground hover:bg-accent/90 font-medium shadow-lg shadow-accent/25 animate-pulse-fast"
+                  className="h-10 px-3 md:px-4 bg-accent text-accent-foreground hover:bg-accent/90 font-medium shadow-lg shadow-accent/25 animate-pulse-fast"
                 >
-                  <UserPlus className="h-4 w-4 md:mr-2" />
+                  <UserPlus className="h-5 w-5 md:mr-2" />
                   <span className="hidden md:inline">{t('common.signUp')}</span>
                 </Button>
               </motion.div>
@@ -99,9 +111,9 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
                 >
                   <Button
                     onClick={() => setOpinionDialogOpen(true)}
-                    className="h-9 px-3 md:px-4 bg-accent text-accent-foreground hover:bg-accent/90 font-medium shadow-lg shadow-accent/25 animate-pulse-fast"
+                    className="h-10 px-3 md:px-4 bg-accent text-accent-foreground hover:bg-accent/90 font-medium shadow-lg shadow-accent/25 animate-pulse-fast"
                   >
-                    <Pencil className="h-4 w-4 md:mr-2" />
+                    <Pencil className="h-5 w-5 md:mr-2" />
                     <span className="hidden md:inline">{t('header.addOpinion')}</span>
                   </Button>
                 </motion.div>
@@ -113,11 +125,11 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
                 onClick={() => { setOpinionsOpen(true); setChatsOpen(false); }}
                 size="icon"
                 variant="ghost"
-                className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted"
+                className="h-10 w-10 text-muted-foreground hover:text-foreground hover:bg-muted"
                 title={t('sidebar.allOpinions', 'All Opinions')}
                 data-tutorial="opinions-button"
               >
-                <List className="h-4 w-4" />
+                <List className="h-5 w-5" />
               </Button>
             )}
 
@@ -127,11 +139,11 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
                   onClick={() => { setChatsOpen(true); setOpinionsOpen(false); }}
                   size="icon"
                   variant="ghost"
-                  className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted"
+                  className="h-10 w-10 text-muted-foreground hover:text-foreground hover:bg-muted"
                   title={t('sidebar.myChats', 'My Chats')}
                   data-tutorial="chats-button"
                 >
-                  <MessagesSquare className="h-4 w-4" />
+                  <MessagesSquare className="h-5 w-5" />
                 </Button>
                 {totalUnread > 0 && (
                   <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center px-1">
