@@ -97,7 +97,7 @@ export function OpinionsSidebar({ open, onOpenChange, topicId }: OpinionsSidebar
         requesterOpinionId: myOpinion.id,
         targetOpinionId,
       });
-      toast.success(t('index.chatRequestSent', 'Chat request sent!'));
+      // Request sent successfully
     } catch (err: any) {
       toast.error(err.message || 'Failed to send request');
     }
@@ -109,7 +109,7 @@ export function OpinionsSidebar({ open, onOpenChange, topicId }: OpinionsSidebar
     if (!request) return;
     try {
       await acceptRequest(request.id);
-      toast.success(t('index.chatRequestAccepted', 'Chat request accepted!'));
+      // Accepted — navigate to chat
       navigate(`/chat?their=${targetOpinionId}`);
       onOpenChange(false);
     } catch (err: any) {
@@ -123,7 +123,7 @@ export function OpinionsSidebar({ open, onOpenChange, topicId }: OpinionsSidebar
     if (!request) return;
     try {
       await declineRequest(request.id);
-      toast.success(t('index.chatRequestDeclined', 'Chat request declined'));
+      // Declined successfully
       setExpandedOpinionId(null);
     } catch (err: any) {
       toast.error(err.message || 'Failed to decline request');

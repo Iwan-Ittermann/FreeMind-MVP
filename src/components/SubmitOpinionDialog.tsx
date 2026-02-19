@@ -65,7 +65,7 @@ export function SubmitOpinionDialog({
 
       if (submitError) throw submitError;
 
-      toast.success('Opinion submitted!');
+      // Opinion submitted successfully
       setText('');
       onSuccess?.();
     } catch (err: any) {

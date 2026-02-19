@@ -47,7 +47,7 @@ export default function Chat() {
   const handleSubmitRating = async (empathy: number, disagreement: number) => {
     try {
       await saveRating(empathy, disagreement);
-      toast.success('Rating saved!');
+      // Rating saved successfully
     } catch (err) {
       console.error('Error saving rating:', err);
       toast.error('Failed to save rating');

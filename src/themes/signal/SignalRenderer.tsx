@@ -106,7 +106,7 @@ export function SignalRenderer({
 
   return (
     <svg width={width} height={height} className="overflow-visible">
-      <rect width={width} height={height} fill="transparent" />
+      <rect width={width} height={height} fill="transparent" onClick={() => onNodeClick(null as unknown as GraphNode)} />
       <SignalZones zones={zoneTokens} config={config} />
       <g className="signal-edges">
         {edgeTokens.map((et, i) => (
@@ -119,7 +119,6 @@ export function SignalRenderer({
           />
         ))}
       </g>
-      <SignalEventMarker events={eventTokens} />
       <g className="signal-nodes">
         {nodeTokens.map(nt => (
           <SignalNode
@@ -134,6 +133,7 @@ export function SignalRenderer({
           />
         ))}
       </g>
+      <SignalEventMarker events={eventTokens} />
     </svg>
   );
 }

@@ -128,7 +128,12 @@ export function OpinionGraph({
     };
   }, [opinions, ratings, config, chatRequests, currentUserOpinionId, onlineOpinionIds, unreadMessageCounts]);
 
-  const handleNodeClick = useCallback((node: GraphNode) => {
+  const handleNodeClick = useCallback((node: GraphNode | null) => {
+    if (!node) {
+      setSelectedNode(null);
+      onNodeSelect?.(null);
+      return;
+    }
     setSelectedNode(prev => prev?.id === node.id ? null : node);
     onNodeSelect?.(node);
   }, [onNodeSelect]);
@@ -188,12 +193,6 @@ export function OpinionGraph({
           onEdgeClick={onEdgeClick}
         />
         
-        {/* Message animation dots */}
-        <MessageDots 
-          nodes={graphData.nodes}
-          messageAnimations={messageAnimations}
-        />
-        
         {/* Opinion nodes */}
         <GraphNodes
           nodes={graphData.nodes}
@@ -203,6 +202,12 @@ export function OpinionGraph({
           currentUserOpinionId={currentUserOpinionId}
           onNodeClick={handleNodeClick}
           onNodeHover={handleNodeHover}
+        />
+        
+        {/* Message animation dots (on top of nodes) */}
+        <MessageDots 
+          nodes={graphData.nodes}
+          messageAnimations={messageAnimations}
         />
       </svg>
     </div>

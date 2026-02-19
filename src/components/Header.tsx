@@ -71,16 +71,16 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
           </Link>
 
           {title && (
-            <div className="absolute left-1/2 transform -translate-x-1/2 max-w-[50%] flex flex-col items-center gap-0.5">
-              <h1 className="text-sm md:text-lg font-semibold text-white truncate">{title}</h1>
+            <div className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 max-w-[50%] flex-col items-center gap-0.5">
+              <h1 className="text-lg font-semibold text-white truncate">{title}</h1>
               <div className="flex items-center gap-2">
                 {opinionCount !== undefined && (
-                  <span className="text-[10px] md:text-xs font-medium bg-white/10 text-white/60 px-2 py-0.5 rounded-full whitespace-nowrap">
+                  <span className="text-xs font-medium bg-white/10 text-white/60 px-2 py-0.5 rounded-full whitespace-nowrap">
                     {opinionCount} {t('common.opinions')}
                   </span>
                 )}
                 {chatCount !== undefined && chatCount > 0 && (
-                  <span className="text-[10px] md:text-xs font-medium bg-white/10 text-white/60 px-2 py-0.5 rounded-full whitespace-nowrap">
+                  <span className="text-xs font-medium bg-white/10 text-white/60 px-2 py-0.5 rounded-full whitespace-nowrap">
                     {chatCount} Chats
                   </span>
                 )}
@@ -158,6 +158,22 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
             {/* Settings button removed from header — now floating on /home */}
           </div>
         </div>
+        {/* Mobile title row below main row */}
+        {title && (
+          <div className="md:hidden px-4 pb-2 flex items-center justify-center gap-2">
+            <h1 className="text-sm font-semibold text-white truncate max-w-[60%]">{title}</h1>
+            {opinionCount !== undefined && (
+              <span className="text-[10px] font-medium bg-white/10 text-white/60 px-1.5 py-0.5 rounded-full whitespace-nowrap">
+                {opinionCount}
+              </span>
+            )}
+            {chatCount !== undefined && chatCount > 0 && (
+              <span className="text-[10px] font-medium bg-white/10 text-white/60 px-1.5 py-0.5 rounded-full whitespace-nowrap">
+                {chatCount} 💬
+              </span>
+            )}
+          </div>
+        )}
       </header>
 
       {topicId && (
