@@ -1,64 +1,72 @@
 
+# UI Fixes Round 2
 
-# UI Fixes and Improvements (Updated)
+## 1. Header Button Icons Too Small
 
-## 1. Fix Flash of Mock Data and "Add Opinion" Button on Reload
+The buttons in `Header.tsx` are `h-12 w-12 md:h-14 md:w-14` but the icons inside are only `h-5 w-5 md:h-6 md:w-6`. On desktop the 14x14 button with a 6x6 icon still looks small.
 
-In `src/pages/Index.tsx`:
-- Change `useMockData={!hasRealData}` to `useMockData={false}`
-- Gate the "Add Opinion" button with `!isLoading` so it only appears once data is fetched
+**Fix** (`src/components/Header.tsx`):
+- Desktop icons: increase to `h-7 w-7` (from `h-6 w-6`) on `md:` breakpoint
+- Mobile icons: keep `h-5 w-5`
+- Apply to both the Opinions list button (line 121) and Chats button (line 135)
 
-## 2. Increase Inactive Zone Opacity
+## 2. Inactive Zone Color Distinction
 
-In `src/themes/signal/SignalZones.tsx`:
-- Add a subtle tint (`rgba(50, 57, 78, 0.15)`) in the 85%-100% range of the radial gradient so the inactive ring is visually distinct from the outer/red zone
+The inactive zone (between `pinkRadius` and `outerRadius`) blends with the outer/red zone. The gradient in `SignalZones.tsx` needs a distinct grayish fill in that band.
 
-## 3. Fix Node/Edge Deselection Highlighting
+**Fix** (`src/themes/signal/SignalZones.tsx`):
+- Change the inactive zone band (`outP%` to `100%`) in the bottom radial gradient from `rgba(50, 57, 78, 0.15)` to a more visible grayish tone like `rgba(40, 45, 60, 0.35)` -- darker and more opaque, clearly distinct from the reddish outer zone
+- Also add a visible ring line between outer and inactive at `outP%` radius (dashed circle in the zone boundaries section)
+- Ensure inactive node shapes (`#32394E` strokes) still contrast against this background
 
-In `src/components/graph/OpinionGraph.tsx` and `src/pages/Index.tsx`:
-- Remove OpinionGraph's internal `selectedNode` state
-- Add a `selectedNodeId` prop to OpinionGraph, passed from Index
-- This makes Index the single source of truth -- clearing selection in Index also clears highlights on nodes and edges
+## 3. Core (Green) Zone Back to 25%
 
-## 4. Mobile: Move Title Out of Header, Place Above Graph
+The `greenRadius` in `OpinionGraph.tsx` is currently `outerRadius * 0.35`. Set it back to `outerRadius * 0.25`.
 
-In `src/components/Header.tsx` and `src/pages/Index.tsx`:
-- Remove the mobile title row from Header
-- Add a centered title element above the graph on mobile in Index
+**Fix** (`src/components/graph/OpinionGraph.tsx`, line 66):
+- Change `greenRadius: outerRadius * 0.35` to `greenRadius: outerRadius * 0.25`
+- The dotted boundary rings in `SignalZones.tsx` already use `zones[].innerRadius` which comes from the config, so they will automatically align with the new 25% value
 
-## 5. Bigger Desktop Buttons (Opinion List + Chat List)
+## 4. Node Hover Hit Area (Flickering on Desktop)
 
-In `src/components/Header.tsx`:
-- Increase to `h-14 w-14` with `h-6 w-6` icons on desktop
+The middle node shape has a ring (`r=12`) and a dot (`r=6`) with empty space between them. When the cursor enters that gap, `onMouseLeave` fires, causing flickering.
 
-## 6. Opinion Count + Chat Count at Bottom Center of Graph
+**Fix** (`src/themes/signal/SignalNode.tsx`):
+- Add an invisible hit-area circle (`r=20`, `fill="transparent"`) as the first element inside the `<svg>` viewBox, before the Shape component. This ensures the entire 40x40 area is hoverable, eliminating gaps between visual elements.
 
-In `src/pages/Index.tsx`:
-- Remove count badges from Header
-- Add a centered stats bar below the graph showing "X Opinions / Y Chats" as subtle pill badges, positioned with `absolute bottom-2 left-1/2 -translate-x-1/2`
+## 5. Floating Chat Window Colors -- Bolder Bubbles
 
-## 7. Fix Zone Visual/Logic Mismatch (Core Zone Rendering)
+The chat bubbles in `ChatBubble.tsx` use pastel/light colors: `bg-primary/20`, `bg-secondary/20`, `bg-white/10`.
 
-Two parts:
+**Fix** (`src/components/chat/ChatBubble.tsx`):
+- Own opinion bubble: change `bg-primary/20 border border-primary/30` to `bg-primary/40 border border-primary/50`
+- Their opinion bubble: change `bg-secondary/20 border border-secondary/30` to `bg-secondary/40 border border-secondary/50`
+- Their regular message: change `bg-white/10` to `bg-white/20`
+- Own regular message: keep `bg-primary` (already solid)
 
-**a) Align gradient to config ratios** in `src/themes/signal/SignalZones.tsx`:
-- Replace hardcoded gradient percentages (25%, 60%, 85%) with values computed from the layout config:
-  - `corePercent = (greenRadius / outerRadius) * 100` (~35%)
-  - `middlePercent = (yellowRadius / outerRadius) * 100` (~80%)
-  - `outerPercent = (pinkRadius / outerRadius) * 100` (~92%)
-- Update ALL radial-gradient stops to use these computed values
+## 6. Stats Bar Padding and Chat Count
 
-**b) Add distance-based core fallback** in `src/themes/tokenizer.ts`:
-- Add `if (dist <= config.greenRadius) return 'core';` before the `yellowRadius` check in `resolveZone()`
-- Ensures any node physically inside the green radius gets the core-zone rendering
+The opinion count pill sits too close to the circle edge. Also, chat count is missing.
+
+**Fix** (`src/pages/Index.tsx`):
+- Change `bottom-2` to `bottom-6` (or `bottom-8`) on the stats bar div to add padding between it and the circle
+- The chat count display already exists (lines 258-262) but only shows when `activeChats?.length > 0`. It should always show (even when 0 chats). Change to always render: `{topicData ? ... : null}` showing "0 Chats" when none exist
+
+## 7. Mobile Title Not Visible
+
+The mobile title (line 220-223) uses `text-foreground` which on the dark background may not be visible. Also verify it renders.
+
+**Fix** (`src/pages/Index.tsx`):
+- Change `text-foreground` to `text-white` to ensure visibility on the black background
+- Also increase from `text-sm` to `text-base` for better readability
 
 ## Summary of File Changes
 
 | File | Changes |
 |------|---------|
-| `src/pages/Index.tsx` | Remove mock data, gate add-opinion on loading, add mobile title above graph, add stats bar below graph, pass selectedNodeId to OpinionGraph |
-| `src/components/graph/OpinionGraph.tsx` | Accept `selectedNodeId` prop, remove internal selectedNode state |
-| `src/components/Header.tsx` | Remove mobile title row, remove count badges, increase button sizes on desktop |
-| `src/themes/signal/SignalZones.tsx` | Compute gradient percentages from config, increase inactive zone opacity |
-| `src/themes/tokenizer.ts` | Add distance-based core zone fallback in resolveZone |
-
+| `src/components/Header.tsx` | Increase icon sizes to `md:h-7 md:w-7` |
+| `src/themes/signal/SignalZones.tsx` | Stronger grayish inactive zone fill |
+| `src/components/graph/OpinionGraph.tsx` | `greenRadius` back to `0.25` |
+| `src/themes/signal/SignalNode.tsx` | Add transparent hit-area circle for hover |
+| `src/components/chat/ChatBubble.tsx` | Bolder bubble colors |
+| `src/pages/Index.tsx` | Stats bar padding, always show chat count, fix mobile title color |
