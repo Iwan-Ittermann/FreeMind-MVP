@@ -305,7 +305,9 @@
     "finish": "Finish",
     "startTutorial": "Start Tutorial",
     "startChatTutorial": "Start Chat Tutorial",
-    "waitingForAction": "👆 Do the action above!"
+    "waitingForAction": "Do the action first!",
+    "pleaseLoginFirst": "Please login first!",
+    "loginToStart": "Go to Login"
   },
   "unifiedTutorial": {
     "welcome": { "title": "Welcome!", "text": "Welcome to FreeMind! Let's walk you through the basics." },
