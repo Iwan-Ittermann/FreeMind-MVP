@@ -2,9 +2,11 @@ import { useState, useCallback, useEffect, forwardRef, useImperativeHandle } fro
 import { AnimatePresence } from 'framer-motion';
 import { FloatingChatWindow } from './FloatingChatWindow';
 import { MinimizedChatBubble } from './MinimizedChatBubble';
+import { ChatTutorialOverlay } from './ChatTutorialOverlay';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useTutorialContext } from '@/contexts/TutorialContext';
 
 interface OpenChat {
   theirOpinionId: string;
@@ -131,6 +133,9 @@ export const FloatingChatManager = forwardRef<FloatingChatManagerHandle, Floatin
     const WINDOW_GAP = 8;
     const bubbleColumnWidth = minimizedChats.length > 0 ? BUBBLE_SIZE + BUBBLE_RIGHT : BUBBLE_RIGHT;
 
+    const tutorial = useTutorialContext();
+    const showTutorialOverlay = tutorial.isActive && tutorial.currentStepData?.id === 'chatStarted' && expandedChats.length > 0;
+
     return (
       <>
         {/* Minimized bubbles — vertical stack, right edge */}
@@ -179,6 +184,17 @@ export const FloatingChatManager = forwardRef<FloatingChatManagerHandle, Floatin
             );
           })}
         </AnimatePresence>
+
+        {/* Desktop tutorial overlay - rendered outside chat windows to avoid overflow clipping */}
+        {showTutorialOverlay && (
+          <ChatTutorialOverlay
+            stepData={tutorial.currentStepData!}
+            currentStep={tutorial.currentStep}
+            totalSteps={tutorial.totalSteps}
+            onNext={tutorial.nextStep}
+            onSkip={tutorial.skipTutorial}
+          />
+        )}
       </>
     );
   }
