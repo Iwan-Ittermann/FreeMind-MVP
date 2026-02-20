@@ -307,13 +307,31 @@
   },
   "unifiedTutorial": {
     "welcome": { "title": "Willkommen!", "text": "Willkommen bei FreeMind! Wir zeigen dir die Grundlagen." },
-    "addOpinion": { "title": "Teile deine Meinung", "text": "Klicke auf 'Meinung hinzufügen' um deine Perspektive zum Thema zu teilen." },
-    "yourTent": { "title": "Dein Zelt", "text": "Das ist dein Zelt auf der Karte! Wenn du mit anderen chattest, wird es zu einem Haus." },
-    "exploreOpinions": { "title": "Entdecke Andere", "text": "Klicke auf 2 andere Häuser und lies ihre Meinungen." },
-    "requestChat": { "title": "Chat anfragen", "text": "Klicke jetzt auf 'Chat anfragen' bei einer Meinung, um ein Gespräch zu starten." },
-    "nowWeWait": { "title": "Jetzt warten wir!", "text": "Deine Anfrage wurde gesendet! Warte auf eine Antwort oder akzeptiere eine eingehende Anfrage." },
-    "chatStarted": { "title": "Dein erster Chat", "text": "Benutze die Bewertungsskalen um euren Chat zu bewerten. Deine Bewertungen beeinflussen deine Position im Graphen." },
-    "done": { "title": "Du bist bereit!", "text": "Glückwunsch! Du weißt alles, was du brauchst. Viel Spaß beim Brücken bauen!" }
+    "addOpinion": {
+      "title": "Teile deine Meinung",
+      "text": "Klicke auf 'Meinung hinzufügen' um deine Perspektive zum Thema zu teilen."
+    },
+    "yourOpinion": {
+      "title": "Deine Meinung",
+      "text": "Das ist deine Meinung auf der Karte! Wenn du mit anderen chattest, wird es zu einem Haus."
+    },
+    "exploreOpinions": { "title": "Entdecke Andere", "text": "Klicke auf 2 andere Meinungen." },
+    "requestChat": {
+      "title": "Chat anfragen",
+      "text": "Klicke jetzt auf 'Chat anfragen' bei einer Meinung, um ein Gespräch zu starten."
+    },
+    "nowWeWait": {
+      "title": "Jetzt warten wir!",
+      "text": "Deine Anfrage wurde gesendet! Warte auf eine Antwort oder akzeptiere eine eingehende Anfrage."
+    },
+    "chatStarted": {
+      "title": "Dein erster Chat",
+      "text": "Benutze die Bewertungsskalen um euren Chat zu bewerten. Deine Bewertungen beeinflussen deine Position im Graphen."
+    },
+    "done": {
+      "title": "Du bist bereit!",
+      "text": "Glückwunsch! Du weißt alles, was du brauchst. Viel Spaß beim Brücken bauen!"
+    }
   },
   "help": {
     "startTutorial": "Tutorial starten",
@@ -357,15 +375,33 @@
     },
     "problem": {
       "headline": "Öffentliche Diskussion funktioniert nicht mehr.",
-      "polarization": { "title": "Polarisierung", "desc": "Debatten driften in Extreme – produktiver Austausch findet kaum statt." },
-      "volume": { "title": "Lautstärke statt Qualität", "desc": "Die sichtbarsten Stimmen sind nicht die konstruktivsten." },
-      "structure": { "title": "Fehlende Struktur", "desc": "Es fehlt ein Raum, in dem Gegensätze geordnet aufeinandertreffen." }
+      "polarization": {
+        "title": "Polarisierung",
+        "desc": "Debatten driften in Extreme – produktiver Austausch findet kaum statt."
+      },
+      "volume": {
+        "title": "Lautstärke statt Qualität",
+        "desc": "Die sichtbarsten Stimmen sind nicht die konstruktivsten."
+      },
+      "structure": {
+        "title": "Fehlende Struktur",
+        "desc": "Es fehlt ein Raum, in dem Gegensätze geordnet aufeinandertreffen."
+      }
     },
     "approach": {
       "headline": "Wie FreeMind.city das löst",
-      "discourse": { "title": "Strukturierter Diskursraum", "desc": "Jede Meinung bekommt einen klaren Platz im öffentlichen Graphen." },
-      "respect": { "title": "Respekt × Gegensätzlichkeit", "desc": "Nur wer respektvoll mit echten Gegensätzen spricht, bewegt sich ins Zentrum." },
-      "quality": { "title": "Sichtbare Qualität", "desc": "Konstruktive Auseinandersetzungen werden messbar – nicht Lautstärke." }
+      "discourse": {
+        "title": "Strukturierter Diskursraum",
+        "desc": "Jede Meinung bekommt einen klaren Platz im öffentlichen Graphen."
+      },
+      "respect": {
+        "title": "Respekt × Gegensätzlichkeit",
+        "desc": "Nur wer respektvoll mit echten Gegensätzen spricht, bewegt sich ins Zentrum."
+      },
+      "quality": {
+        "title": "Sichtbare Qualität",
+        "desc": "Konstruktive Auseinandersetzungen werden messbar – nicht Lautstärke."
+      }
     },
     "useCases": {
       "headline": "Geeignet für",
@@ -377,9 +413,18 @@
     },
     "steps": {
       "headline": "Wie es funktioniert",
-      "publish": { "title": "Meinung veröffentlichen", "desc": "Anonym mit Passkey registrieren und Position zu einem Thema einbringen." },
-      "choose": { "title": "Gegensätzliche Stimme wählen", "desc": "Bewusst eine andere Perspektive auswählen und einen 1-zu-1-Dialog starten." },
-      "rate": { "title": "Austausch bewerten", "desc": "Respekt und Gegensätzlichkeit werden sichtbar – der Diskurs ordnet sich neu." }
+      "publish": {
+        "title": "Meinung veröffentlichen",
+        "desc": "Anonym mit Passkey registrieren und Position zu einem Thema einbringen."
+      },
+      "choose": {
+        "title": "Gegensätzliche Stimme wählen",
+        "desc": "Bewusst eine andere Perspektive auswählen und einen 1-zu-1-Dialog starten."
+      },
+      "rate": {
+        "title": "Austausch bewerten",
+        "desc": "Respekt und Gegensätzlichkeit werden sichtbar – der Diskurs ordnet sich neu."
+      }
     },
     "benefits": {
       "passkey": "Anonyme Teilnahme mit Passkey",
@@ -389,9 +434,18 @@
       "bold": "Demokratie LEBT von Gegensätzen."
     },
     "faq": {
-      "social": { "q": "Ist FreeMind.city ein soziales Netzwerk?", "a": "Nein. Es ist ein strukturierter Diskursraum mit klarer Mechanik." },
-      "abuse": { "q": "Wie wird Missbrauch verhindert?", "a": "Durch topic-spezifisches IP-Logging, rechtssichere Meldeverfahren und transparente Löschlogik nach deutschem Recht." },
-      "public": { "q": "Sind die Diskussionen öffentlich?", "a": "Die Meinungen sind sichtbar, Identitäten bleiben anonym." }
+      "social": {
+        "q": "Ist FreeMind.city ein soziales Netzwerk?",
+        "a": "Nein. Es ist ein strukturierter Diskursraum mit klarer Mechanik."
+      },
+      "abuse": {
+        "q": "Wie wird Missbrauch verhindert?",
+        "a": "Durch topic-spezifisches IP-Logging, rechtssichere Meldeverfahren und transparente Löschlogik nach deutschem Recht."
+      },
+      "public": {
+        "q": "Sind die Diskussionen öffentlich?",
+        "a": "Die Meinungen sind sichtbar, Identitäten bleiben anonym."
+      }
     },
     "cta": {
       "headline": "Bereit für eine neue Form öffentlicher Auseinandersetzung?",
