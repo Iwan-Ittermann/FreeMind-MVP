@@ -14,6 +14,7 @@ interface TutorialProps {
   onNext: () => void;
   onPrev: () => void;
   onSkip: () => void;
+  hasExistingOpinion?: boolean;
 }
 
 interface HighlightPosition {
@@ -31,11 +32,13 @@ export function Tutorial({
   onNext,
   onPrev,
   onSkip,
+  hasExistingOpinion,
 }: TutorialProps) {
   const { t, i18n } = useTranslation();
   const { getCustomTitle, getCustomText } = useTutorialSettings();
   const [highlightPosition, setHighlightPosition] = useState<HighlightPosition | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+  const [userNodePosition, setUserNodePosition] = useState<HighlightPosition | null>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
 
   const currentLanguage = i18n.language.startsWith('de') ? 'de' : 'en';
@@ -44,8 +47,62 @@ export function Tutorial({
   const displayTitle = customTitle || (currentStepData ? t(currentStepData.titleKey) : '');
   const displayText = customText || (currentStepData ? t(currentStepData.textKey) : '');
 
+  // Track user node position for red highlight during yourTent and exploreOpinions steps
   useEffect(() => {
-    if (!isActive || !currentStepData || !currentStepData.targetSelector) {
+    if (!isActive || !currentStepData) {
+      setUserNodePosition(null);
+      return;
+    }
+
+    const shouldHighlightUserNode = currentStepData.id === 'yourTent' || currentStepData.id === 'exploreOpinions';
+    if (!shouldHighlightUserNode) {
+      setUserNodePosition(null);
+      return;
+    }
+
+    const updateUserNodePos = () => {
+      const el = document.querySelector('[data-user-node="true"]');
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        setUserNodePosition({
+          top: rect.top - 6,
+          left: rect.left - 6,
+          width: rect.width + 12,
+          height: rect.height + 12,
+        });
+      }
+    };
+
+    updateUserNodePos();
+    const interval = setInterval(updateUserNodePos, 500);
+    window.addEventListener('resize', updateUserNodePos);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('resize', updateUserNodePos);
+    };
+  }, [isActive, currentStepData]);
+
+  useEffect(() => {
+    if (!isActive || !currentStepData) {
+      setHighlightPosition(null);
+      setTooltipPosition({
+        top: window.innerHeight / 2 - 100,
+        left: window.innerWidth / 2 - 160,
+      });
+      return;
+    }
+
+    // For exploreOpinions, force tooltip to top
+    if (currentStepData.id === 'exploreOpinions') {
+      setHighlightPosition(null);
+      setTooltipPosition({
+        top: 80,
+        left: Math.max(16, window.innerWidth / 2 - 160),
+      });
+      return;
+    }
+
+    if (!currentStepData.targetSelector) {
       setHighlightPosition(null);
       setTooltipPosition({
         top: window.innerHeight / 2 - 100,
@@ -97,9 +154,14 @@ export function Tutorial({
 
   if (!isActive || !currentStepData) return null;
 
+  // Don't render step 7 (chatStarted) here — it renders inside the chat UI
+  if (currentStepData.id === 'chatStarted') return null;
+
   const isLastStep = currentStep === totalSteps - 1;
   const isFirstStep = currentStep === 0;
-  const isEventDriven = currentStepData.waitForEvent;
+  // Override: if user already has opinion and we're on addOpinion step, show Next button
+  const isEventDriven = currentStepData.waitForEvent && 
+    !(hasExistingOpinion && currentStepData.id === 'addOpinion');
 
   return (
     <AnimatePresence>
@@ -120,6 +182,27 @@ export function Tutorial({
           >
             <div className="absolute inset-0 rounded-lg border-2 border-accent animate-pulse" />
             <div className="absolute inset-0 rounded-lg ring-4 ring-accent/30" />
+          </motion.div>
+        )}
+
+        {/* Red pulsing circle around user's node */}
+        {userNodePosition && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5 }}
+            className="absolute pointer-events-none"
+            style={{
+              top: userNodePosition.top,
+              left: userNodePosition.left,
+              width: userNodePosition.width,
+              height: userNodePosition.height,
+            }}
+          >
+            <div className="absolute inset-0 rounded-full border-3 border-red-500 animate-pulse" 
+              style={{ borderWidth: '3px' }} />
+            <div className="absolute -inset-2 rounded-full border-2 border-red-500/40 animate-ping" 
+              style={{ animationDuration: '1.5s' }} />
           </motion.div>
         )}
 
@@ -178,7 +261,7 @@ export function Tutorial({
             )}
             {isEventDriven && (
               <span className="text-xs text-accent italic">
-                {t('tutorial.waitingForAction', '👆 Do the action above!')}
+                {t('tutorial.waitingForAction')}
               </span>
             )}
           </div>

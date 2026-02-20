@@ -4,9 +4,11 @@ import { FloatingChat } from '@/components/chat/FloatingChat';
 import { ChatTutorial } from '@/components/chat/ChatTutorial';
 import { FloatingHelpButton } from '@/components/FloatingHelpButton';
 import { VideoMiniPlayer } from '@/components/VideoMiniPlayer';
+import { ChatTutorialOverlay } from '@/components/chat/ChatTutorialOverlay';
 import { useAuth } from '@/hooks/useAuth';
 import { useChatSession } from '@/hooks/useChatSession';
 import { useChatTutorialContext } from '@/contexts/ChatTutorialContext';
+import { useTutorialContext } from '@/contexts/TutorialContext';
 import { toast } from 'sonner';
 
 const VIDEO_URL = 'https://jmkbkwhiucnksdygbomc.supabase.co/storage/v1/object/public/tutorials/freemind-video-tutorial.mp4';
@@ -17,44 +19,34 @@ export default function Chat() {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
   const chatTutorial = useChatTutorialContext();
+  const tutorial = useTutorialContext();
   const [videoOpen, setVideoOpen] = useState(false);
   
   const theirOpinionIdParam = searchParams.get('their');
-  const sourceOpinionIdParam = searchParams.get('source'); // For read-only edge viewing
+  const sourceOpinionIdParam = searchParams.get('source');
   const isReadOnly = searchParams.get('readonly') === 'true';
   
   const { 
-    chatId,
-    topicId,
-    myOpinion, 
-    theirOpinion,
-    theirUserId,
-    myOpinionId,
-    theirOpinionId,
-    isLoading, 
-    error,
-    saveRating,
-    isSavingRating,
-    existingRating,
-    averageBridgingScore,
+    chatId, topicId, myOpinion, theirOpinion, theirUserId,
+    myOpinionId, theirOpinionId, isLoading, error,
+    saveRating, isSavingRating, existingRating, averageBridgingScore,
   } = useChatSession(theirOpinionIdParam, isReadOnly ? sourceOpinionIdParam : undefined);
 
-
-  const handleClose = () => {
-    navigate('/home');
-  };
+  const handleClose = () => { navigate('/home'); };
 
   const handleSubmitRating = async (empathy: number, disagreement: number) => {
     try {
       await saveRating(empathy, disagreement);
-      // Rating saved successfully
     } catch (err) {
       console.error('Error saving rating:', err);
       toast.error('Failed to save rating');
     }
   };
 
-  // Read-only mode: don't require user login
+  // Check if onboarding tutorial is on chatStarted step
+  const showOnboardingChatOverlay = tutorial.isActive && tutorial.currentStepData?.id === 'chatStarted';
+
+  // Read-only mode
   if (isReadOnly) {
     if (isLoading) {
       return (
@@ -66,41 +58,23 @@ export default function Chat() {
         </div>
       );
     }
-
     if (!theirOpinion) {
       return (
         <div className="min-h-screen bg-black flex items-center justify-center p-4">
           <div className="text-center">
             <p className="text-white/60 mb-4 text-sm md:text-base">Chat not found.</p>
-            <button 
-              onClick={() => navigate('/home')}
-              className="text-primary hover:underline py-2 px-4 text-base"
-            >
-              Go Back
-            </button>
+            <button onClick={() => navigate('/home')} className="text-primary hover:underline py-2 px-4 text-base">Go Back</button>
           </div>
         </div>
       );
     }
-
     return (
       <FloatingChat
-        chatId={chatId}
-        topicId={topicId || undefined}
-        myOpinion={{
-          text: myOpinion?.text || 'Unknown opinion',
-          visible: myOpinion?.visible ?? true,
-          notice_text: myOpinion?.notice_text ?? null,
-        }}
-        theirOpinion={{
-          text: theirOpinion.text,
-          visible: theirOpinion.visible,
-          notice_text: theirOpinion.notice_text,
-        }}
-        myOpinionId={myOpinionId || undefined}
-        theirOpinionId={theirOpinionId || undefined}
-        onClose={handleClose}
-        isReadOnly={true}
+        chatId={chatId} topicId={topicId || undefined}
+        myOpinion={{ text: myOpinion?.text || 'Unknown opinion', visible: myOpinion?.visible ?? true, notice_text: myOpinion?.notice_text ?? null }}
+        theirOpinion={{ text: theirOpinion.text, visible: theirOpinion.visible, notice_text: theirOpinion.notice_text }}
+        myOpinionId={myOpinionId || undefined} theirOpinionId={theirOpinionId || undefined}
+        onClose={handleClose} isReadOnly={true}
       />
     );
   }
@@ -110,12 +84,7 @@ export default function Chat() {
       <div className="min-h-screen bg-black flex items-center justify-center p-4">
         <div className="text-center">
           <p className="text-white/60 mb-4 text-sm md:text-base">You need to be signed in to chat.</p>
-          <button 
-            onClick={() => navigate('/auth')}
-            className="text-primary hover:underline py-2 px-4 text-base"
-          >
-            Sign In
-          </button>
+          <button onClick={() => navigate('/auth')} className="text-primary hover:underline py-2 px-4 text-base">Sign In</button>
         </div>
       </div>
     );
@@ -139,12 +108,7 @@ export default function Chat() {
           <p className="text-white/60 mb-4 text-sm md:text-base">
             {error || "You need to submit your own opinion first before chatting with others."}
           </p>
-          <button 
-            onClick={() => navigate('/home')}
-            className="text-primary hover:underline py-2 px-4 text-base"
-          >
-            Go Back
-          </button>
+          <button onClick={() => navigate('/home')} className="text-primary hover:underline py-2 px-4 text-base">Go Back</button>
         </div>
       </div>
     );
@@ -155,12 +119,7 @@ export default function Chat() {
       <div className="min-h-screen bg-black flex items-center justify-center p-4">
         <div className="text-center">
           <p className="text-white/60 mb-4 text-sm md:text-base">Opinion not found.</p>
-          <button 
-            onClick={() => navigate('/home')}
-            className="text-primary hover:underline py-2 px-4 text-base"
-          >
-            Go Back
-          </button>
+          <button onClick={() => navigate('/home')} className="text-primary hover:underline py-2 px-4 text-base">Go Back</button>
         </div>
       </div>
     );
@@ -169,36 +128,26 @@ export default function Chat() {
   return (
     <>
       <FloatingChat
-        chatId={chatId}
-        topicId={topicId || undefined}
-        myOpinion={{
-          text: myOpinion.text,
-          visible: myOpinion.visible,
-          notice_text: myOpinion.notice_text,
-        }}
-        theirOpinion={{
-          text: theirOpinion.text,
-          visible: theirOpinion.visible,
-          notice_text: theirOpinion.notice_text,
-        }}
-        myOpinionId={myOpinionId || undefined}
-        theirOpinionId={theirOpinionId || undefined}
-        theirUserId={theirUserId}
-        onClose={handleClose}
-        onSubmitRating={handleSubmitRating}
-        isSavingRating={isSavingRating}
-        isReadOnly={false}
-        initialEmpathy={existingRating?.empathy}
-        initialDisagreement={existingRating?.disagreement}
+        chatId={chatId} topicId={topicId || undefined}
+        myOpinion={{ text: myOpinion.text, visible: myOpinion.visible, notice_text: myOpinion.notice_text }}
+        theirOpinion={{ text: theirOpinion.text, visible: theirOpinion.visible, notice_text: theirOpinion.notice_text }}
+        myOpinionId={myOpinionId || undefined} theirOpinionId={theirOpinionId || undefined}
+        theirUserId={theirUserId} onClose={handleClose} onSubmitRating={handleSubmitRating}
+        isSavingRating={isSavingRating} isReadOnly={false}
+        initialEmpathy={existingRating?.empathy} initialDisagreement={existingRating?.disagreement}
         averageBridgingScore={averageBridgingScore}
       />
 
-      {/* FloatingHelpButton commented out — tutorial is now unified and auto-starts */}
-      {/* <FloatingHelpButton
-        onStartTutorial={() => chatTutorial.startTutorial()}
-        onOpenVideo={() => setVideoOpen(true)}
-        position="top-right"
-      /> */}
+      {/* Onboarding tutorial step 7 overlay for mobile */}
+      {showOnboardingChatOverlay && (
+        <ChatTutorialOverlay
+          stepData={tutorial.currentStepData!}
+          currentStep={tutorial.currentStep}
+          totalSteps={tutorial.totalSteps}
+          onNext={tutorial.nextStep}
+          onSkip={tutorial.skipTutorial}
+        />
+      )}
 
       {/* Video Mini Player */}
       <VideoMiniPlayer
@@ -207,17 +156,6 @@ export default function Chat() {
         videoSrc={VIDEO_URL}
         startTime={CHAT_VIDEO_START_TIME}
       />
-
-      {/* Chat Tutorial commented out — merged into unified tutorial */}
-      {/* <ChatTutorial
-        isActive={chatTutorial.isActive}
-        currentStep={chatTutorial.currentStep}
-        currentStepData={chatTutorial.currentStepData}
-        totalSteps={chatTutorial.totalSteps}
-        onNext={chatTutorial.nextStep}
-        onPrev={chatTutorial.prevStep}
-        onEnd={chatTutorial.endTutorial}
-      /> */}
     </>
   );
 }

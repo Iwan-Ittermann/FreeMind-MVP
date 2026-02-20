@@ -70,6 +70,11 @@ export function ConfigPanel({ open, onOpenChange }: ConfigPanelProps) {
   };
 
   const handleRestartTutorial = () => {
+    if (!user) {
+      onOpenChange(false);
+      navigate('/auth');
+      return;
+    }
     onOpenChange(false);
     resetTutorialStatus();
     setTimeout(() => startTutorial(), 300);

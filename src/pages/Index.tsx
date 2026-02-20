@@ -41,6 +41,7 @@ const Index = () => {
   const [videoOpen, setVideoOpen] = useState(false);
   const [configOpen, setConfigOpen] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: topicData, isLoading, error, activeChats, messageAnimations } = useTopicData(DEFAULT_TOPIC_ID);
@@ -429,7 +430,39 @@ const Index = () => {
         onNext={tutorial.nextStep}
         onPrev={tutorial.prevStep}
         onSkip={tutorial.skipTutorial}
+        hasExistingOpinion={!!myOpinion}
       />
+
+      {/* Login prompt for tutorial */}
+      <AnimatePresence>
+        {showLoginPrompt && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="fixed inset-0 z-[110] flex items-center justify-center"
+          >
+            <div className="absolute inset-0 bg-black/50" onClick={() => setShowLoginPrompt(false)} />
+            <div className="relative bg-card border border-border rounded-xl shadow-2xl p-6 max-w-xs text-center">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-2 right-2 h-6 w-6 text-muted-foreground hover:text-foreground"
+                onClick={() => setShowLoginPrompt(false)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+              <p className="text-foreground font-medium mb-4">{t('tutorial.pleaseLoginFirst')}</p>
+              <Button
+                onClick={() => navigate('/auth')}
+                className="bg-accent text-accent-foreground hover:bg-accent/90"
+              >
+                {t('tutorial.loginToStart')}
+              </Button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
