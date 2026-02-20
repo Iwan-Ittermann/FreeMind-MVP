@@ -30,7 +30,7 @@ export function SignalZones({ zones, config }: SignalZonesProps) {
             backgroundImage: `
               radial-gradient(circle closest-side, transparent ${midP - 0.5}%, #2A3347 ${midP}%, transparent ${midP + 0.5}%),
               radial-gradient(circle closest-side, transparent ${outP - 0.5}%, #2A3347 ${outP}%, transparent ${outP + 0.5}%),
-              radial-gradient(circle closest-side, transparent ${outP + 4.5}%, #32394E ${outP + 5}%, transparent ${outP + 5.5}%),
+              
               radial-gradient(
                 circle closest-side,
                 rgba(255, 255, 255, 0.08) 0%,
@@ -45,7 +45,6 @@ export function SignalZones({ zones, config }: SignalZonesProps) {
                 rgba(0, 0, 0, 0.6) 100%
               )
             `,
-            border: '2px solid #2A3347',
           }}
         />
       </foreignObject>
@@ -68,8 +67,6 @@ export function SignalZones({ zones, config }: SignalZonesProps) {
         <text x={cx + r4 + 4} y={cy - 2} fill="#00D4FF" fillOpacity={0.25} fontSize="8" fontFamily="monospace">4</text>
       ); })()}
 
-      {/* Line 5: Outer border (rendered by CSS border, just add number) */}
-      <text x={cx + r + 4} y={cy - 2} fill="#00D4FF" fillOpacity={0.25} fontSize="8" fontFamily="monospace">5</text>
     </g>
   );
 }
