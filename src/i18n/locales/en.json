@@ -76,7 +76,9 @@
     "passphraseDownloaded": "Passphrase downloaded! Keep the file safe.",
     "downloadFileTitle": "FreeMind Passphrase",
     "downloadFileWarning": "IMPORTANT: Keep this file safe! This is your only way to log in.\nThere is no password recovery available.\n\nDo not share this passphrase with anyone.",
-    "back": "Back"
+    "back": "Back",
+    "alreadyHavePassphrase": "Already have a passphrase?",
+    "dontHavePassphrase": "Don't have a passphrase yet?"
   },
   "chat": {
     "chatNotFound": "Chat not found.",

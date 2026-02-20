@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import { Copy, RefreshCw, LogIn, UserPlus, AlertCircle, Check, Download } from "lucide-react";
+import { Copy, RefreshCw, LogIn, UserPlus, AlertCircle, Check, Download, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -15,7 +15,6 @@ type AuthMode = "login" | "signup";
 export default function Auth() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
-  
   const { t } = useTranslation();
 
   const [mode, setMode] = useState<AuthMode>("signup");
@@ -25,14 +24,12 @@ export default function Auth() {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  // Redirect if already logged in
   useEffect(() => {
     if (!loading && user) {
       navigate("/home");
     }
   }, [user, loading, navigate]);
 
-  // Generate initial passphrase for signup
   useEffect(() => {
     if (mode === "signup") {
       setGeneratedPassphrase(generatePassphrase());
@@ -47,23 +44,14 @@ export default function Auth() {
   const handleCopy = async () => {
     await navigator.clipboard.writeText(generatedPassphrase);
     setCopied(true);
-    toast.success("Passphrase copied! Save it somewhere safe.");
+    toast.success(t("auth.passphraseCopied"));
     setTimeout(() => setCopied(false), 2000);
   };
 
   const handleDownload = () => {
     const timestamp = new Date().toISOString();
     const formattedDate = new Date().toLocaleString();
-    const content = `FreeMind Passphrase
-==================
-Passphrase: ${generatedPassphrase}
-Downloaded: ${formattedDate}
-Timestamp: ${timestamp}
-
-⚠️ IMPORTANT: Keep this file safe! This is your only way to log in.
-There is no password recovery available.
-
-Do not share this passphrase with anyone.`;
+    const content = `${t("auth.downloadFileTitle")}\n==================\nPassphrase: ${generatedPassphrase}\nDownloaded: ${formattedDate}\nTimestamp: ${timestamp}\n\n${t("auth.downloadFileWarning")}`;
 
     const blob = new Blob([content], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
@@ -74,7 +62,7 @@ Do not share this passphrase with anyone.`;
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    toast.success("Passphrase downloaded! Keep the file safe.");
+    toast.success(t("auth.passphraseDownloaded"));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -85,7 +73,7 @@ Do not share this passphrase with anyone.`;
     const phraseToUse = mode === "signup" ? generatedPassphrase : passphrase;
 
     if (!isValidPassphrase(phraseToUse)) {
-      setError("Invalid passphrase format. Use format: word-word-word-number");
+      setError(t("auth.invalidPassphraseFormat"));
       setIsSubmitting(false);
       return;
     }
@@ -105,13 +93,13 @@ Do not share this passphrase with anyone.`;
 
         if (signUpError) {
           if (signUpError.message.includes("already registered")) {
-            setError("This passphrase is already taken. Generate a new one.");
+            setError(t("auth.passphraseTaken"));
           } else {
             setError(signUpError.message);
           }
         } else {
           localStorage.setItem('freemind_new_account', 'true');
-          toast.success("Account created! Redirecting...");
+          toast.success(t("auth.accountCreated"));
           navigate("/");
         }
       } else {
@@ -122,17 +110,17 @@ Do not share this passphrase with anyone.`;
 
         if (signInError) {
           if (signInError.message.includes("Invalid login")) {
-            setError("Invalid passphrase. Please check and try again.");
+            setError(t("auth.invalidPassphrase"));
           } else {
             setError(signInError.message);
           }
         } else {
-          toast.success("Welcome back!");
+          toast.success(t("auth.welcomeBack"));
           navigate("/");
         }
       }
     } catch (err) {
-      setError("An unexpected error occurred. Please try again.");
+      setError(t("auth.unexpectedError"));
     } finally {
       setIsSubmitting(false);
     }
@@ -147,104 +135,79 @@ Do not share this passphrase with anyone.`;
   }
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4 safe-area-inset">
+    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4 safe-area-inset relative">
+      {/* Back button - top left, aligned with content on desktop */}
+      <div className="absolute top-4 left-4 md:static md:w-full md:max-w-md md:mb-2">
+        <a
+          href="/home"
+          className="inline-flex items-center gap-1.5 text-sm text-white/40 hover:text-white transition-colors py-2"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          {t("auth.back")}
+        </a>
+      </div>
+
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
         {/* Logo */}
         <h1 className="text-2xl md:text-3xl font-medium text-center mb-2">freemind</h1>
         <p className="text-white/60 text-center mb-6 md:mb-8 text-sm md:text-base">
-          Free and Safe Online Conversations
+          {t("auth.tagline")}
         </p>
-
-        {/* Mode Toggle */}
-        <div className="flex bg-white/5 rounded-lg p-1 mb-6 md:mb-8">
-          <button
-            onClick={() => setMode("signup")}
-            className={`flex-1 py-3 md:py-2 px-4 rounded-md text-sm font-medium transition-all ${
-              mode === "signup" 
-                ? "bg-primary text-white shadow-lg" 
-                : "text-white/30 hover:text-white/50 hover:bg-white/5"
-            }`}
-          >
-            <UserPlus className="inline-block w-4 h-4 mr-2" />
-            {t("common.signUp")}
-          </button>
-          <button
-            onClick={() => setMode("login")}
-            className={`flex-1 py-3 md:py-2 px-4 rounded-md text-sm font-medium transition-all ${
-              mode === "login" 
-                ? "bg-primary text-white shadow-lg" 
-                : "text-white/30 hover:text-white/50 hover:bg-white/5"
-            }`}
-          >
-            <LogIn className="inline-block w-4 h-4 mr-2" />
-            {t("common.logIn")}
-          </button>
-        </div>
 
         <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6">
           {mode === "signup" ? (
-            <>
-              <div className="space-y-2">
-                <label className="text-sm text-white/80">Dein anonymer Schlüssel</label>
-                <p className="text-xs text-white/50">Das ist dein einziger Zugang. Speichere ihn sicher!</p>
-                <div className="flex gap-2">
-                  <div className="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 md:px-4 py-3 font-mono text-base md:text-lg break-all">
-                    {generatedPassphrase}
-                  </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={handleCopy}
-                    className="border-white/20 bg-transparent hover:bg-white/10 h-12 w-12 md:h-10 md:w-10 flex-shrink-0"
-                  >
-                    {copied ? (
-                      <Check className="w-5 h-5 md:w-4 md:h-4 text-green-400" />
-                    ) : (
-                      <Copy className="w-5 h-5 md:w-4 md:h-4" />
-                    )}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={handleDownload}
-                    className="border-white/20 bg-transparent hover:bg-white/10 h-12 w-12 md:h-10 md:w-10 flex-shrink-0"
-                    title="Schlüssel als .txt herunterladen"
-                  >
-                    <Download className="w-5 h-5 md:w-4 md:h-4" />
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={handleGenerateNew}
-                    className="border-white/20 bg-transparent hover:bg-white/10 h-12 w-12 md:h-10 md:w-10 flex-shrink-0"
-                    title="Neuen Schlüssel generieren"
-                  >
-                    <RefreshCw className="w-5 h-5 md:w-4 md:h-4" />
-                  </Button>
+            <div className="space-y-2">
+              <label className="text-sm text-white/80">{t("auth.yourSecretPassphrase")}</label>
+              <p className="text-xs text-white/50">{t("auth.passphraseHelp")}</p>
+              <div className="flex gap-2">
+                <div className="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 md:px-4 py-3 font-mono text-base md:text-lg break-all">
+                  {generatedPassphrase}
                 </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={handleCopy}
+                  className="border-white/20 bg-transparent hover:bg-white/10 h-12 w-12 md:h-10 md:w-10 flex-shrink-0"
+                >
+                  {copied ? (
+                    <Check className="w-5 h-5 md:w-4 md:h-4 text-green-400" />
+                  ) : (
+                    <Copy className="w-5 h-5 md:w-4 md:h-4" />
+                  )}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={handleDownload}
+                  className="border-white/20 bg-transparent hover:bg-white/10 h-12 w-12 md:h-10 md:w-10 flex-shrink-0"
+                  title={t("auth.passphraseDownloaded")}
+                >
+                  <Download className="w-5 h-5 md:w-4 md:h-4" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={handleGenerateNew}
+                  className="border-white/20 bg-transparent hover:bg-white/10 h-12 w-12 md:h-10 md:w-10 flex-shrink-0"
+                >
+                  <RefreshCw className="w-5 h-5 md:w-4 md:h-4" />
+                </Button>
               </div>
-
-              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
-                <p className="text-sm text-yellow-200">
-                  ⚠️ <strong>Wichtig:</strong> Speicher deinen Schlüssel. Du kannst ihn NICHT zurücksetzen.
-                  <br />⚠️ <strong>Keine illegalen Inhalte. IP Adressen werden gespeichert.</strong>
-                </p>
-              </div>
-            </>
+            </div>
           ) : (
             <div className="space-y-2">
-              <label className="text-sm text-white/80">Enter Your Passphrase</label>
+              <label className="text-sm text-white/80">{t("auth.enterPassphrase")}</label>
               <Input
                 type="text"
                 value={passphrase}
                 onChange={(e) => setPassphrase(e.target.value)}
-                placeholder="brave-ocean-dance-42"
+                placeholder={t("auth.passphrasePlaceholder")}
                 className="bg-white/10 border-white/20 text-white placeholder:text-white/40 font-mono h-12 md:h-10 text-base md:text-sm"
               />
-              <p className="text-xs text-white/50">Format: word-word-word-number</p>
+              <p className="text-xs text-white/50">{t("auth.passphraseFormat")}</p>
             </div>
           )}
 
@@ -275,14 +238,18 @@ Do not share this passphrase with anyone.`;
               t("common.logIn")
             )}
           </Button>
-        </form>
 
-        {/* Back link */}
-        <p className="text-center mt-6 md:mt-8 text-white/40 text-sm">
-          <a href="/home" className="hover:text-white transition-colors py-2 inline-block">
-            ← {t("auth.back")}
-          </a>
-        </p>
+          {/* Toggle link */}
+          <p className="text-center text-sm">
+            <button
+              type="button"
+              onClick={() => { setMode(mode === "signup" ? "login" : "signup"); setError(null); }}
+              className="text-white/40 hover:text-white/70 transition-colors"
+            >
+              {mode === "signup" ? t("auth.alreadyHavePassphrase") : t("auth.dontHavePassphrase")}
+            </button>
+          </p>
+        </form>
       </motion.div>
     </div>
   );
