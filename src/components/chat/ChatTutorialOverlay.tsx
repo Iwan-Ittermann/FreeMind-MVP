@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { GraduationCap, ChevronRight, X } from 'lucide-react';
@@ -16,6 +17,7 @@ interface ChatTutorialOverlayProps {
 export function ChatTutorialOverlay({ stepData, currentStep, totalSteps, onNext, onSkip }: ChatTutorialOverlayProps) {
   const { t, i18n } = useTranslation();
   const { getCustomTitle, getCustomText } = useTutorialSettings();
+  const [ratingHighlightRect, setRatingHighlightRect] = useState<DOMRect | null>(null);
 
   const currentLanguage = i18n.language.startsWith('de') ? 'de' : 'en';
   const customTitle = getCustomTitle('onboarding', stepData.id, currentLanguage);
@@ -23,18 +25,50 @@ export function ChatTutorialOverlay({ stepData, currentStep, totalSteps, onNext,
   const displayTitle = customTitle || t(stepData.titleKey);
   const displayText = customText || t(stepData.textKey);
 
+  // Find and highlight the rating scales
+  useEffect(() => {
+    const findRating = () => {
+      // Try mobile rating first, then desktop
+      const el = document.querySelector('[data-chat-tutorial="rating-scales-mobile"]') 
+        || document.querySelector('[data-chat-tutorial="rating-scales"]');
+      if (el) {
+        setRatingHighlightRect(el.getBoundingClientRect());
+      }
+    };
+    findRating();
+    const interval = setInterval(findRating, 500);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="fixed inset-0 z-[200] pointer-events-none">
-      {/* Highlight overlay pulsing around the "Rate!" button area */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-black/40 pointer-events-auto" onClick={(e) => e.stopPropagation()} />
-      </div>
+      {/* Semi-transparent backdrop */}
+      <div className="absolute inset-0 bg-black/40 pointer-events-auto" onClick={(e) => e.stopPropagation()} />
 
-      {/* Tutorial card */}
+      {/* Pulsing highlight around rating scales */}
+      {ratingHighlightRect && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="absolute pointer-events-none"
+          style={{
+            top: ratingHighlightRect.top - 6,
+            left: ratingHighlightRect.left - 6,
+            width: ratingHighlightRect.width + 12,
+            height: ratingHighlightRect.height + 12,
+            borderRadius: 12,
+            border: '3px solid hsl(var(--accent))',
+            boxShadow: '0 0 20px hsl(var(--accent) / 0.6), 0 0 40px hsl(var(--accent) / 0.3), inset 0 0 20px hsl(var(--accent) / 0.1)',
+            animation: 'pulse 1.5s ease-in-out infinite',
+          }}
+        />
+      )}
+
+      {/* Tutorial card - positioned higher on mobile so rating buttons are visible */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="absolute bottom-24 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-80 pointer-events-auto bg-card border-2 border-accent rounded-xl shadow-2xl p-4"
+        className="absolute top-8 left-4 right-4 md:top-auto md:bottom-24 md:left-1/2 md:-translate-x-1/2 md:w-80 pointer-events-auto bg-card border-2 border-accent rounded-xl shadow-2xl p-4"
       >
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-2">
