@@ -307,13 +307,28 @@
   },
   "unifiedTutorial": {
     "welcome": { "title": "Welcome!", "text": "Welcome to FreeMind! Let's walk you through the basics." },
-    "addOpinion": { "title": "Share Your Opinion", "text": "Click the 'Add Opinion' button to share your perspective on the topic." },
-    "yourTent": { "title": "Your Tent", "text": "This is your tent on the map! As you chat with others, it will grow into a house." },
-    "exploreOpinions": { "title": "Explore Others", "text": "Click on 2 other houses to read their opinions." },
-    "requestChat": { "title": "Request a Chat", "text": "Now click 'Request to Chat' on someone's opinion to start a conversation." },
-    "nowWeWait": { "title": "Now We Wait!", "text": "Your request has been sent! Wait for someone to accept, or accept an incoming request." },
-    "chatStarted": { "title": "Your First Chat", "text": "Use the rating scales to rate your conversation. Your ratings affect your position on the graph." },
-    "done": { "title": "You're Ready!", "text": "Congratulations! You know everything you need. Enjoy bridging the divide!" }
+    "addOpinion": {
+      "title": "Share Your Opinion",
+      "text": "Click the 'Add Opinion' button to share your perspective on the topic."
+    },
+    "yourOpinion": {
+      "title": "Your Opinion",
+      "text": "This is your opinion on the map! As you chat with others, it will move to the middle."
+    },
+    "exploreOpinions": { "title": "Explore Others", "text": "Click on 2 other opinions you find interesting." },
+    "requestChat": { "title": "Request a Chat", "text": "Now click 'Request to Chat' to start a conversation." },
+    "nowWeWait": {
+      "title": "Now We Wait!",
+      "text": "Your request has been sent! Wait for someone to accept, or accept an incoming request."
+    },
+    "chatStarted": {
+      "title": "Your First Chat",
+      "text": "Use the rating scales to rate your conversation. Your ratings affect your position on the graph."
+    },
+    "done": {
+      "title": "You're Ready!",
+      "text": "Congratulations! You know everything you need. Enjoy bridging the divide!"
+    }
   },
   "help": {
     "startTutorial": "Start Tutorial",
@@ -357,14 +372,26 @@
     },
     "problem": {
       "headline": "Public discourse is broken.",
-      "polarization": { "title": "Polarization", "desc": "Debates drift to extremes – productive exchange barely happens." },
+      "polarization": {
+        "title": "Polarization",
+        "desc": "Debates drift to extremes – productive exchange barely happens."
+      },
       "volume": { "title": "Volume Over Quality", "desc": "The most visible voices are not the most constructive." },
-      "structure": { "title": "Missing Structure", "desc": "There is no space where opposing views can meet in an orderly way." }
+      "structure": {
+        "title": "Missing Structure",
+        "desc": "There is no space where opposing views can meet in an orderly way."
+      }
     },
     "approach": {
       "headline": "How FreeMind.city solves this",
-      "discourse": { "title": "Structured Discourse Space", "desc": "Every opinion gets a clear place on the public graph." },
-      "respect": { "title": "Respect × Opposition", "desc": "Only those who engage respectfully with real opposites move to the center." },
+      "discourse": {
+        "title": "Structured Discourse Space",
+        "desc": "Every opinion gets a clear place on the public graph."
+      },
+      "respect": {
+        "title": "Respect × Opposition",
+        "desc": "Only those who engage respectfully with real opposites move to the center."
+      },
       "quality": { "title": "Visible Quality", "desc": "Constructive exchanges become measurable – not volume." }
     },
     "useCases": {
@@ -377,9 +404,18 @@
     },
     "steps": {
       "headline": "How It Works",
-      "publish": { "title": "Publish Your Opinion", "desc": "Register anonymously with a passkey and share your position on a topic." },
-      "choose": { "title": "Choose an Opposing Voice", "desc": "Deliberately select a different perspective and start a 1-on-1 dialogue." },
-      "rate": { "title": "Rate the Exchange", "desc": "Respect and opposition become visible – the discourse reorganizes itself." }
+      "publish": {
+        "title": "Publish Your Opinion",
+        "desc": "Register anonymously with a passkey and share your position on a topic."
+      },
+      "choose": {
+        "title": "Choose an Opposing Voice",
+        "desc": "Deliberately select a different perspective and start a 1-on-1 dialogue."
+      },
+      "rate": {
+        "title": "Rate the Exchange",
+        "desc": "Respect and opposition become visible – the discourse reorganizes itself."
+      }
     },
     "benefits": {
       "passkey": "Anonymous participation with passkey",
@@ -389,8 +425,14 @@
       "bold": "Democracy THRIVES on opposing views."
     },
     "faq": {
-      "social": { "q": "Is FreeMind.city a social network?", "a": "No. It is a structured discourse space with clear mechanics." },
-      "abuse": { "q": "How is abuse prevented?", "a": "Through topic-specific IP logging, legally compliant reporting procedures, and transparent deletion logic under German law." },
+      "social": {
+        "q": "Is FreeMind.city a social network?",
+        "a": "No. It is a structured discourse space with clear mechanics."
+      },
+      "abuse": {
+        "q": "How is abuse prevented?",
+        "a": "Through topic-specific IP logging, legally compliant reporting procedures, and transparent deletion logic under German law."
+      },
       "public": { "q": "Are the discussions public?", "a": "Opinions are visible, identities remain anonymous." }
     },
     "cta": {
