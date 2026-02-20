@@ -75,10 +75,10 @@ export function useOnboardingTutorial() {
     localStorage.setItem(COMPLETED_KEY, 'true');
   }, []);
 
-  const nextStep = useCallback(() => {
+  const nextStep = useCallback((force?: boolean) => {
     const currentStepData = activeSteps[state.step];
-    // Don't allow manual next on event-driven steps
-    if (currentStepData?.waitForEvent) return;
+    // Don't allow manual next on event-driven steps unless forced
+    if (currentStepData?.waitForEvent && !force) return;
     
     if (state.step < activeSteps.length - 1) {
       updateState({ ...state, step: state.step + 1 });
