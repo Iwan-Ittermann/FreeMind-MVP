@@ -6,12 +6,10 @@ import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { ChatBubble } from './ChatBubble';
 import { TypingIndicator } from './TypingIndicator';
-import { ChatTutorialOverlay } from './ChatTutorialOverlay';
 import { useChatSession } from '@/hooks/useChatSession';
 import { useChatMessages } from '@/hooks/useChatMessages';
 import { useTypingIndicator } from '@/hooks/useTypingIndicator';
 import { useUserBlocks } from '@/hooks/useUserBlocks';
-import { useTutorialContext } from '@/contexts/TutorialContext';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
@@ -27,8 +25,6 @@ interface FloatingChatWindowProps {
 
 export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style, readOnly, readOnlySourceId, readOnlyTargetId }: FloatingChatWindowProps) {
   const { t } = useTranslation();
-  const tutorial = useTutorialContext();
-  const showTutorialOverlay = tutorial.isActive && tutorial.currentStepData?.id === 'chatStarted';
   const {
     chatId, myOpinion, theirOpinion, theirUserId,
     saveRating, isSavingRating, existingRating, averageBridgingScore,
@@ -297,6 +293,7 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
                 size="sm"
                 onClick={() => setIsRatingOpen(!isRatingOpen)}
                 className={`shrink-0 text-xs h-8 px-2.5 border-foreground/30 text-foreground ${hasNeverRated && !isRatingOpen ? 'animate-pulse' : ''}`}
+                data-chat-tutorial="rating-scales"
               >
                 {t('floatingChat.rate')}
               </Button>
@@ -326,16 +323,7 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
         </div>
       )}
 
-      {/* Onboarding tutorial step 7 overlay for desktop */}
-      {showTutorialOverlay && (
-        <ChatTutorialOverlay
-          stepData={tutorial.currentStepData!}
-          currentStep={tutorial.currentStep}
-          totalSteps={tutorial.totalSteps}
-          onNext={tutorial.nextStep}
-          onSkip={tutorial.skipTutorial}
-        />
-      )}
     </motion.div>
   );
 }
+

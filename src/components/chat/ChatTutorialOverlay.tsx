@@ -64,11 +64,16 @@ export function ChatTutorialOverlay({ stepData, currentStep, totalSteps, onNext,
         />
       )}
 
-      {/* Tutorial card - positioned higher on mobile so rating buttons are visible */}
+      {/* Tutorial card - positioned just above rating buttons on mobile, bottom-center on desktop */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="absolute top-8 left-4 right-4 md:top-auto md:bottom-24 md:left-1/2 md:-translate-x-1/2 md:w-80 pointer-events-auto bg-card border-2 border-accent rounded-xl shadow-2xl p-4"
+        className="fixed left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-80 pointer-events-auto bg-card border-2 border-accent rounded-xl shadow-2xl p-4"
+        style={{
+          bottom: ratingHighlightRect
+            ? `calc(100vh - ${ratingHighlightRect.top}px + 12px)`
+            : 120,
+        }}
       >
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-2">
