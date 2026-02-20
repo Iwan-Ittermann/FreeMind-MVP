@@ -11,7 +11,7 @@ interface TutorialProps {
   currentStep: number;
   currentStepData: UnifiedTutorialStep | null;
   totalSteps: number;
-  onNext: () => void;
+  onNext: (force?: boolean) => void;
   onPrev: () => void;
   onSkip: () => void;
   hasExistingOpinion?: boolean;
@@ -252,7 +252,7 @@ export function Tutorial({
             {!isEventDriven && (
               <Button
                 size="sm"
-                onClick={onNext}
+                onClick={() => onNext(hasExistingOpinion && currentStepData?.id === 'addOpinion' ? true : undefined)}
                 className="gap-1 bg-accent text-accent-foreground hover:bg-accent/90"
               >
                 {isLastStep ? t('tutorial.finish', 'Finish') : t('tutorial.next', 'Next')}
