@@ -133,7 +133,9 @@
     "adminPasswordRequired": "Requires admin password to access moderation tools.",
     "passphraseCopied": "Passphrase copied!",
     "passphraseDownloaded": "Passphrase downloaded!",
-    "failedToCopy": "Failed to copy"
+    "failedToCopy": "Failed to copy",
+    "hidePendingEdges": "Hide pending requests",
+    "hidePendingEdgesDesc": "Hide unanswered chat request lines on the graph"
   },
   "floatingChat": {
     "bridgingScore": "Bridging Score:",

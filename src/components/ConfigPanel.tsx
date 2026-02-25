@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Settings, Download, Copy, Check, Info, LogIn, LogOut, GraduationCap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/hooks/useAuth';
 import { emailToPassphrase } from '@/lib/passphrase';
 import { toast } from 'sonner';
@@ -8,6 +9,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { useTutorialContext } from '@/contexts/TutorialContext';
+import { useHidePendingEdges } from '@/themes/ThemeContext';
 import {
   Sheet,
   SheetContent,
@@ -29,6 +31,7 @@ export function ConfigPanel({ open, onOpenChange }: ConfigPanelProps) {
   const { user, signOut } = useAuth();
   const { startTutorial, resetTutorialStatus } = useTutorialContext();
   const [copied, setCopied] = useState(false);
+  const [hidePendingEdges, setHidePendingEdges] = useHidePendingEdges();
 
   const passphrase = user?.email ? emailToPassphrase(user.email) : null;
 
@@ -115,6 +118,16 @@ export function ConfigPanel({ open, onOpenChange }: ConfigPanelProps) {
               <GraduationCap className="w-4 h-4 text-muted-foreground" />
               <span className="text-sm">{t('tutorial.startTutorial', 'Start Tutorial')}</span>
             </button>
+          </div>
+
+          <div className="border-t border-border" />
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <label className="text-sm font-medium text-foreground">{t('config.hidePendingEdges')}</label>
+              <p className="text-xs text-muted-foreground">{t('config.hidePendingEdgesDesc')}</p>
+            </div>
+            <Switch checked={hidePendingEdges} onCheckedChange={setHidePendingEdges} />
           </div>
 
           <div className="border-t border-border" />
