@@ -8,13 +8,15 @@ function CoreShape() {
   return (
     <>
       <defs>
-        <filter id="signal-glow">
+        <filter id="signal-glow-gold">
           <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
-          <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          <feFlood floodColor="#FFDC8C" floodOpacity="0.6" result="goldColor"/>
+          <feComposite in="goldColor" in2="coloredBlur" operator="in" result="goldGlow"/>
+          <feMerge><feMergeNode in="goldGlow"/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
       </defs>
-      <circle cx="20" cy="20" r="14" stroke="#FFFFFF" strokeWidth="1" fill="none" filter="url(#signal-glow)" />
-      <path d="M20 8 L23 17 L32 20 L23 23 L20 32 L17 23 L8 20 L17 17 Z" fill="#FFFFFF" filter="url(#signal-glow)" />
+      <circle cx="20" cy="20" r="14" stroke="#FFFFFF" strokeWidth="1" fill="none" filter="url(#signal-glow-gold)" />
+      <path d="M20 8 L23 17 L32 20 L23 23 L20 32 L17 23 L8 20 L17 17 Z" fill="#FFFFFF" filter="url(#signal-glow-gold)" />
     </>
   );
 }
@@ -30,15 +32,15 @@ function MiddleShape() {
 
 function OuterShape() {
   return (
-    <rect x="12" y="12" width="16" height="16" fill="#551111" />
+    <rect x="10" y="10" width="20" height="20" fill="rgba(85, 17, 17, 0.4)" stroke="#FF6B6B" strokeWidth="1.5" />
   );
 }
 
 function InactiveShape() {
   return (
     <>
-      <circle cx="20" cy="20" r="12" stroke="#32394E" strokeWidth="1.5" strokeDasharray="4 2" fill="none" />
-      <circle cx="20" cy="20" r="3" fill="#32394E" />
+      <circle cx="20" cy="20" r="12" stroke="#4A5168" strokeWidth="1.5" strokeDasharray="4 2" fill="none" />
+      <circle cx="20" cy="20" r="3" fill="#4A5168" />
     </>
   );
 }
