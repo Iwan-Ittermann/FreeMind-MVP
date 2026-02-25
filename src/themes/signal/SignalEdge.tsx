@@ -29,37 +29,6 @@ export const SignalEdge = memo(function SignalEdge({
   const stroke = '#00D4FF';
   const glowColor = '#00D4FF';
 
-  // For pending edges, compute short stubs (30% from each end)
-  if (isPending && !isHighlighted && !isDimmed) {
-    const dx = token.targetX - token.sourceX;
-    const dy = token.targetY - token.sourceY;
-    const stubFraction = 0.3;
-
-    const stubAX = token.sourceX + dx * stubFraction;
-    const stubAY = token.sourceY + dy * stubFraction;
-    const stubBX = token.targetX - dx * stubFraction;
-    const stubBY = token.targetY - dy * stubFraction;
-
-    return (
-      <g>
-        <line
-          x1={token.sourceX} y1={token.sourceY}
-          x2={stubAX} y2={stubAY}
-          stroke={stroke} strokeWidth={strokeWidth}
-          strokeOpacity={opacity} strokeDasharray="4 3"
-          strokeLinecap="round" className="cursor-pointer" onClick={onClick}
-        />
-        <line
-          x1={stubBX} y1={stubBY}
-          x2={token.targetX} y2={token.targetY}
-          stroke={stroke} strokeWidth={strokeWidth}
-          strokeOpacity={opacity} strokeDasharray="4 3"
-          strokeLinecap="round" className="cursor-pointer" onClick={onClick}
-        />
-      </g>
-    );
-  }
-
   return (
     <g>
       {/* Glow layer */}
