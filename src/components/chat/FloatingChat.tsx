@@ -35,6 +35,7 @@ interface FloatingChatProps {
   initialEmpathy?: number;
   initialDisagreement?: number;
   averageBridgingScore?: number | null;
+  isBotChat?: boolean;
 }
 
 export function FloatingChat({ 
@@ -52,9 +53,10 @@ export function FloatingChat({
   initialEmpathy,
   initialDisagreement,
   averageBridgingScore,
+  isBotChat = false,
 }: FloatingChatProps) {
   const { t } = useTranslation();
-  const { messages: dbMessages, sendMessage, isSending } = useChatMessages(chatId);
+  const { messages: dbMessages, sendMessage, isSending, isBotTyping } = useChatMessages(chatId, isBotChat);
   const { partnerTyping, setTyping } = useTypingIndicator(chatId);
   const { isBlocked, isBlockedByOther, blockUser, unblockUser, isBlocking, isUnblocking } = useUserBlocks(chatId, theirUserId || null);
   const [inputValue, setInputValue] = useState('');
@@ -223,7 +225,7 @@ export function FloatingChat({
           
           <div className="text-center" data-chat-tutorial="bridging-score">
             <p className="text-sm font-medium text-white">
-              {isReadOnly ? 'Viewing Discussion' : 'Discussion'}
+              {isReadOnly ? 'Viewing Discussion' : isBotChat ? '🤖 AI Bot' : 'Discussion'}
             </p>
             {isReadOnly ? (
               <p className="text-xs text-white/40">Read-only mode</p>
@@ -248,8 +250,8 @@ export function FloatingChat({
         </div>
 
         <div className="flex items-center gap-1">
-          {/* Block/Unblock button */}
-          {!isReadOnly && theirUserId && (
+          {/* Block/Unblock button - hidden for bot chats */}
+          {!isReadOnly && !isBotChat && theirUserId && (
             <Button
               variant="ghost"
               onClick={isBlocked ? handleUnblock : handleBlock}
@@ -273,8 +275,8 @@ export function FloatingChat({
 
       {/* Main content area */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Desktop Left rail - Empathy slider (hidden in read-only) */}
-        {!isReadOnly && (
+        {/* Desktop Left rail - Empathy slider (hidden in read-only and bot chats) */}
+        {!isReadOnly && !isBotChat && (
           <div className="hidden md:flex flex-col items-center justify-center w-20 border-r border-white/10 bg-black/50 py-6" data-chat-tutorial="rating-scales">
             <VerticalRatingSlider
               value={empathy}
@@ -323,8 +325,8 @@ export function FloatingChat({
               
               {/* Typing indicator */}
               <AnimatePresence>
-                {partnerTyping.isTyping && (
-                  <TypingIndicator userName={partnerTyping.userName} />
+                {(partnerTyping.isTyping || isBotTyping) && (
+                  <TypingIndicator userName={isBotTyping ? 'AI Bot' : partnerTyping.userName} />
                 )}
               </AnimatePresence>
               
@@ -362,7 +364,8 @@ export function FloatingChat({
                 </div>
               ) : (
                 <div className="border-t border-white/10 bg-black">
-                  {/* Mobile rating buttons - above typing area */}
+                  {/* Mobile rating buttons - above typing area (hidden for bot chats) */}
+                  {!isBotChat && (
                   <div className="md:hidden flex justify-between items-center px-4 py-2 border-b border-white/5" data-chat-tutorial="rating-scales-mobile">
                     {/* Left - Empathy */}
                     <div className="relative">
@@ -450,6 +453,7 @@ export function FloatingChat({
                       </AnimatePresence>
                     </div>
                   </div>
+                  )}
 
                   {/* Input area */}
                   <div className="p-4">
@@ -491,8 +495,8 @@ export function FloatingChat({
           )}
         </div>
 
-        {/* Desktop Right rail - Disagreement slider (hidden in read-only) */}
-        {!isReadOnly && (
+        {/* Desktop Right rail - Disagreement slider (hidden in read-only and bot chats) */}
+        {!isReadOnly && !isBotChat && (
           <div className="hidden md:flex flex-col items-center justify-center w-20 border-l border-white/10 bg-black/50 py-6">
             <VerticalRatingSlider
               value={disagreement}

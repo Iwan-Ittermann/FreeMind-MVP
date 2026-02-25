@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
+import { BOT_USER_ID } from '@/lib/constants';
 
 export interface ChatMessage {
   id: string;
@@ -16,9 +17,10 @@ interface UseChatMessagesResult {
   isLoading: boolean;
   sendMessage: (content: string) => Promise<void>;
   isSending: boolean;
+  isBotTyping: boolean;
 }
 
-export function useChatMessages(chatId: string | null): UseChatMessagesResult {
+export function useChatMessages(chatId: string | null, isBotChat = false): UseChatMessagesResult {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -103,6 +105,8 @@ export function useChatMessages(chatId: string | null): UseChatMessagesResult {
     };
   }, [chatId, user?.id, queryClient]);
 
+  const [isBotTyping, setIsBotTyping] = useState(false);
+
   // Send message mutation
   const sendMutation = useMutation({
     mutationFn: async (content: string) => {
@@ -118,6 +122,24 @@ export function useChatMessages(chatId: string | null): UseChatMessagesResult {
       
       if (error) throw error;
     },
+    onSuccess: async () => {
+      // If this is a bot chat, trigger the AI response
+      if (isBotChat && chatId) {
+        setIsBotTyping(true);
+        try {
+          const { error } = await supabase.functions.invoke('ai-chat', {
+            body: { chatId },
+          });
+          if (error) {
+            console.error('AI chat error:', error);
+          }
+        } catch (err) {
+          console.error('Failed to get AI response:', err);
+        } finally {
+          setIsBotTyping(false);
+        }
+      }
+    },
   });
 
   const sendMessage = async (content: string) => {
@@ -129,5 +151,6 @@ export function useChatMessages(chatId: string | null): UseChatMessagesResult {
     isLoading,
     sendMessage,
     isSending: sendMutation.isPending,
+    isBotTyping,
   };
 }

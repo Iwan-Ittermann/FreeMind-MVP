@@ -723,6 +723,7 @@ export type Database = {
         Args: { _description?: string; _title: string }
         Returns: string
       }
+      delete_bot_opinion: { Args: { _topic_id: string }; Returns: undefined }
       get_graph_pairs: {
         Args: { topic_uuid: string }
         Returns: {
@@ -769,6 +770,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      insert_bot_message: {
+        Args: { _chat_id: string; _content: string }
+        Returns: string
       }
       is_chat_participant: {
         Args: { chat_id: string; checking_user_id: string }
@@ -841,6 +846,10 @@ export type Database = {
       update_topic_status: {
         Args: { _new_status: string; _topic_id: string }
         Returns: undefined
+      }
+      upsert_bot_opinion: {
+        Args: { _text: string; _topic_id: string }
+        Returns: string
       }
     }
     Enums: {

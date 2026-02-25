@@ -8,6 +8,7 @@ import { ChatBubble } from './ChatBubble';
 import { TypingIndicator } from './TypingIndicator';
 import { useChatSession } from '@/hooks/useChatSession';
 import { useChatMessages } from '@/hooks/useChatMessages';
+import { BOT_USER_ID } from '@/lib/constants';
 import { useTypingIndicator } from '@/hooks/useTypingIndicator';
 import { useUserBlocks } from '@/hooks/useUserBlocks';
 import { useTranslation } from 'react-i18next';
@@ -28,9 +29,10 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
   const {
     chatId, myOpinion, theirOpinion, theirUserId,
     saveRating, isSavingRating, existingRating, averageBridgingScore,
+    isBotChat,
   } = useChatSession(theirOpinionId);
 
-  const { messages: dbMessages, sendMessage, isSending } = useChatMessages(chatId);
+  const { messages: dbMessages, sendMessage, isSending, isBotTyping } = useChatMessages(chatId, isBotChat);
   const { partnerTyping, setTyping } = useTypingIndicator(chatId);
   const { isBlocked, isBlockedByOther } = useUserBlocks(chatId, theirUserId);
 
@@ -144,7 +146,7 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2 border-b border-border bg-muted shrink-0">
         <p className="text-sm font-medium text-foreground truncate flex-1 mr-2">
-          {theirOpinion ? `"${theirOpinion.text.slice(0, 30)}${theirOpinion.text.length > 30 ? '…' : ''}"` : t('common.loading')}
+          {isBotChat ? '🤖 AI Bot' : theirOpinion ? `"${theirOpinion.text.slice(0, 30)}${theirOpinion.text.length > 30 ? '…' : ''}"` : t('common.loading')}
         </p>
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="icon" className="h-7 w-7 text-foreground" onClick={onMinimize}>
@@ -269,7 +271,7 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
                     />
                   ))}
                   <AnimatePresence>
-                    {partnerTyping.isTyping && <TypingIndicator userName={partnerTyping.userName} />}
+                    {(partnerTyping.isTyping || isBotTyping) && <TypingIndicator userName={isBotTyping ? 'AI Bot' : partnerTyping.userName} />}
                   </AnimatePresence>
                   <div ref={messagesEndRef} />
                 </div>
@@ -288,15 +290,17 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
             </p>
           ) : (
             <div className="flex items-center gap-1.5">
-              <Button
-                variant={isRatingOpen ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setIsRatingOpen(!isRatingOpen)}
-                className={`shrink-0 text-xs h-8 px-2.5 border-foreground/30 text-foreground ${hasNeverRated && !isRatingOpen ? 'animate-pulse' : ''}`}
-                data-chat-tutorial="rating-scales"
-              >
-                {t('floatingChat.rate')}
-              </Button>
+              {!isBotChat && (
+                <Button
+                  variant={isRatingOpen ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setIsRatingOpen(!isRatingOpen)}
+                  className={`shrink-0 text-xs h-8 px-2.5 border-foreground/30 text-foreground ${hasNeverRated && !isRatingOpen ? 'animate-pulse' : ''}`}
+                  data-chat-tutorial="rating-scales"
+                >
+                  {t('floatingChat.rate')}
+                </Button>
+              )}
               <Input
                 value={inputValue}
                 onChange={(e) => handleInputChange(e.target.value)}

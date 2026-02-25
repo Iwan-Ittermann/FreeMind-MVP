@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
+import { BOT_USER_ID } from '@/lib/constants';
 
 interface Opinion {
   id: string;
@@ -30,6 +31,7 @@ interface ChatSession {
   averageBridgingScore: number | null;
   myBridgingScore: number | null;
   theirBridgingScore: number | null;
+  isBotChat: boolean;
 }
 
 export function useChatSession(theirOpinionId: string | null, sourceOpinionId?: string | null): ChatSession {
@@ -260,5 +262,6 @@ export function useChatSession(theirOpinionId: string | null, sourceOpinionId?: 
     averageBridgingScore,
     myBridgingScore,
     theirBridgingScore,
+    isBotChat: theirOpinion?.user_id === BOT_USER_ID,
   };
 }
