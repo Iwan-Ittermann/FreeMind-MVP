@@ -53,6 +53,12 @@ export function ArcaneZones({ zones, config }: ArcaneZonesProps) {
         )
       ))}
 
+      {/* Zone labels — placed inside each zone */}
+      <text x={cx} y={cy + config.greenRadius * 0.55} textAnchor="middle" fill="hsl(45, 30%, 70%)" fillOpacity={0.35} fontSize="8" fontFamily="serif">Respektvoll</text>
+      <text x={cx} y={cy + (config.greenRadius + config.yellowRadius) / 2 + 3} textAnchor="middle" fill="hsl(45, 30%, 60%)" fillOpacity={0.30} fontSize="8" fontFamily="serif">Moderat</text>
+      <text x={cx} y={cy + (config.yellowRadius + config.pinkRadius) / 2 + 3} textAnchor="middle" fill="hsl(45, 30%, 50%)" fillOpacity={0.30} fontSize="8" fontFamily="serif">Extrem</text>
+      <text x={cx} y={cy + (config.pinkRadius + config.outerRadius) / 2 + 3} textAnchor="middle" fill="hsl(45, 25%, 45%)" fillOpacity={0.30} fontSize="8" fontFamily="serif">Offen</text>
+
       {/* Outer boundary ring */}
       <circle
         cx={cx}
