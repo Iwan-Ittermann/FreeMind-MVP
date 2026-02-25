@@ -11,12 +11,54 @@ interface SignalEdgeProps {
 export const SignalEdge = memo(function SignalEdge({
   token, isHighlighted, isDimmed, onClick,
 }: SignalEdgeProps) {
-  const baseWidth = 1.5;
-  const strokeWidth = isHighlighted ? baseWidth * 2 : baseWidth;
-  const opacity = isDimmed ? 0.08 : isHighlighted ? 0.9 : 0.2 + token.respectLevel * 0.4;
+  const isPending = token.isPending;
 
-  const stroke = token.isPending ? '#FF3B3B' : '#00D4FF';
-  const glowColor = token.isPending ? '#FF3B3B' : '#00D4FF';
+  // Pending edges: dim cyan stubs instead of full-length red dashes
+  const baseWidth = isPending ? 1 : 1.5;
+  const strokeWidth = isHighlighted ? baseWidth * 2 : baseWidth;
+
+  const opacity = isDimmed
+    ? 0.08
+    : isHighlighted
+      ? 0.9
+      : isPending
+        ? 0.12
+        : 0.15 + token.respectLevel * 0.25;
+
+  // All edges use cyan; pending are just much dimmer
+  const stroke = '#00D4FF';
+  const glowColor = '#00D4FF';
+
+  // For pending edges, compute short stubs (30% from each end)
+  if (isPending && !isHighlighted && !isDimmed) {
+    const dx = token.targetX - token.sourceX;
+    const dy = token.targetY - token.sourceY;
+    const stubFraction = 0.3;
+
+    const stubAX = token.sourceX + dx * stubFraction;
+    const stubAY = token.sourceY + dy * stubFraction;
+    const stubBX = token.targetX - dx * stubFraction;
+    const stubBY = token.targetY - dy * stubFraction;
+
+    return (
+      <g>
+        <line
+          x1={token.sourceX} y1={token.sourceY}
+          x2={stubAX} y2={stubAY}
+          stroke={stroke} strokeWidth={strokeWidth}
+          strokeOpacity={opacity} strokeDasharray="4 3"
+          strokeLinecap="round" className="cursor-pointer" onClick={onClick}
+        />
+        <line
+          x1={stubBX} y1={stubBY}
+          x2={token.targetX} y2={token.targetY}
+          stroke={stroke} strokeWidth={strokeWidth}
+          strokeOpacity={opacity} strokeDasharray="4 3"
+          strokeLinecap="round" className="cursor-pointer" onClick={onClick}
+        />
+      </g>
+    );
+  }
 
   return (
     <g>
@@ -37,7 +79,7 @@ export const SignalEdge = memo(function SignalEdge({
         stroke={stroke}
         strokeWidth={strokeWidth}
         strokeOpacity={opacity}
-        strokeDasharray={token.isPending ? '6 4' : 'none'}
+        strokeDasharray={isPending ? '6 4' : 'none'}
         strokeLinecap="round"
         className="cursor-pointer"
         onClick={onClick}
