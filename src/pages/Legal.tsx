@@ -17,7 +17,7 @@ export default function Legal() {
 
         <div className="space-y-6 text-foreground/90">
           <div className="space-y-1">
-            <p>freemind GbR</p>
+            <p>Digital Peace Talks gUG (haftungsbeschränkt)</p>
             <p>Kurt-Schumacher-Straße 76</p>
             <p>c/o flexdienst – #20159</p>
             <p>67663 Kaiserslautern</p>
