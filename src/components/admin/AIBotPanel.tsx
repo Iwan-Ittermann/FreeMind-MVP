@@ -11,7 +11,10 @@ import { toast } from 'sonner';
 
 export function AIBotPanel() {
   const { data: topics } = useAllTopics(true);
-  const primaryTopic = topics?.[0];
+  // Pick the oldest (original) topic as primary, not the newest
+  const primaryTopic = topics?.length
+    ? [...topics].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())[0]
+    : undefined;
 
   const { data: enabledSetting, isLoading: loadingEnabled } = useAppSetting('ai_bot_enabled');
   const { data: opinionSetting, isLoading: loadingOpinion } = useAppSetting('ai_bot_opinion_text');
