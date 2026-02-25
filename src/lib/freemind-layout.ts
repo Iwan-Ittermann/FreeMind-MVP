@@ -18,6 +18,7 @@
  */
 
 import { GraphNode, GraphEdge, GraphData, ChatRating, Opinion, LayoutConfig, GreenZoneSlot } from '@/types/graph';
+import { BOT_USER_ID } from '@/lib/constants';
 
 // Zone border snapping: nodes are nudged away from zone boundaries
 // so they sit fully inside one zone (no straddling).
@@ -523,7 +524,22 @@ export function calculateLayout(
   });
 
   // Combine active and inactive nodes
-  const allNodes = [...activeNodes, ...inactiveNodes];
+  let allNodes = [...activeNodes, ...inactiveNodes];
+
+  // Fix bot node position: medium radius at 6 o'clock (bottom center)
+  allNodes = allNodes.map(node => {
+    if (node.opinion.authorId === BOT_USER_ID) {
+      const botRadius = (config.greenRadius + config.yellowRadius) / 2; // medium zone
+      return {
+        ...node,
+        x: config.centerX,
+        y: config.centerY + botRadius,
+        distanceToCenter: botRadius,
+        hasChats: true, // ensure it's treated as active
+      };
+    }
+    return node;
+  });
 
   return { nodes: allNodes, edges, greenZoneSlots };
 }
