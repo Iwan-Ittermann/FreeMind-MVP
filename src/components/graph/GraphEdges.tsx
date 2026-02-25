@@ -1,5 +1,6 @@
 import { GraphNode, GraphEdge } from '@/types/graph';
 import { ActiveChat } from '@/hooks/useTopicData';
+import { useHidePendingEdges } from '@/themes/ThemeContext';
 
 interface GraphEdgesProps {
   nodes: GraphNode[];
@@ -11,6 +12,9 @@ interface GraphEdgesProps {
 
 export function GraphEdges({ nodes, edges, highlightedNode, activeChats = [], onEdgeClick }: GraphEdgesProps) {
   const nodeMap = new Map(nodes.map(n => [n.id, n]));
+  const [hidePendingEdges] = useHidePendingEdges();
+
+  const filteredEdges = hidePendingEdges ? edges.filter(e => e.status !== 'pending') : edges;
 
   // Check if an edge has recent activity
   const isEdgeActive = (source: string, target: string) => {
@@ -33,7 +37,7 @@ export function GraphEdges({ nodes, edges, highlightedNode, activeChats = [], on
         </filter>
       </defs>
       
-      {edges.map((edge, index) => {
+      {filteredEdges.map((edge, index) => {
         const source = nodeMap.get(edge.source);
         const target = nodeMap.get(edge.target);
 

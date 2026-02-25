@@ -9,6 +9,7 @@ import { ArcaneEdge } from './ArcaneEdge';
 import { ArcaneNode } from './ArcaneNode';
 import { ArcaneEventMarker } from './ArcaneEventMarker';
 import { useAppSetting } from '@/hooks/useAppSettings';
+import { useHidePendingEdges } from '../ThemeContext';
 
 interface ArcaneRendererProps {
   nodes: GraphNode[];
@@ -38,6 +39,7 @@ export function ArcaneRenderer({
 
   const { data: maxBubblesSetting } = useAppSetting('max_speech_bubbles');
   const maxBubbles = parseInt(maxBubblesSetting?.value || '15', 10);
+  const [hidePendingEdges] = useHidePendingEdges();
 
   const nodeTokens: readonly SemanticNodeToken[] = useMemo(
     () => tokenizeNodes(nodes, config, edges, currentUserId, currentUserOpinionId),
@@ -52,8 +54,11 @@ export function ArcaneRenderer({
   }, [nodeTokens, maxBubbles]);
 
   const edgeTokens: readonly SemanticEdgeToken[] = useMemo(
-    () => edges.map(e => tokenizeEdge(e, nodeMap, activeChats)),
-    [edges, nodeMap, activeChats],
+    () => {
+      const all = edges.map(e => tokenizeEdge(e, nodeMap, activeChats));
+      return hidePendingEdges ? all.filter(e => !e.isPending) : all;
+    },
+    [edges, nodeMap, activeChats, hidePendingEdges],
   );
 
   const zoneTokens = useMemo(() => tokenizeZones(config), [config]);
