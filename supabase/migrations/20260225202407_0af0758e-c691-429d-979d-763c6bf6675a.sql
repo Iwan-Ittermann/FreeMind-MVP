@@ -1,0 +1,1 @@
+ALTER TABLE public.opinions DROP CONSTRAINT IF EXISTS opinion_user_id_fkey;
