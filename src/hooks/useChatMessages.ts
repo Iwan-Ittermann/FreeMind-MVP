@@ -48,6 +48,21 @@ export function useChatMessages(chatId: string | null): UseChatMessagesResult {
     enabled: !!chatId && !!user?.id,
   });
 
+  // Mark other user's messages as read when chat is open
+  useEffect(() => {
+    if (!chatId || !user?.id || messages.length === 0) return;
+
+    supabase
+      .from('chat_messages')
+      .update({ read_at: new Date().toISOString() })
+      .eq('chat_id', chatId)
+      .neq('sender_id', user.id)
+      .is('read_at', null)
+      .then(() => {
+        queryClient.invalidateQueries({ queryKey: ['unreadMessages'] });
+      });
+  }, [chatId, user?.id, messages.length, queryClient]);
+
   // Subscribe to real-time updates with unique channel name
   useEffect(() => {
     if (!chatId) return;

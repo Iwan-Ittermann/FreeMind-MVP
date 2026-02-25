@@ -33,12 +33,12 @@ export function SignalZones({ zones, config }: SignalZonesProps) {
               
               radial-gradient(
                 circle closest-side,
-                rgba(255, 220, 140, 0.10) 0%,
-                rgba(255, 220, 140, 0.10) ${coreP}%,
-                rgba(0, 229, 255, 0.08) ${coreP}%,
-                rgba(0, 229, 255, 0.08) ${midP}%,
-                rgba(180, 40, 40, 0.10) ${midP}%,
-                rgba(180, 40, 40, 0.10) ${outP}%,
+                rgba(255, 220, 140, 0.05) 0%,
+                rgba(255, 220, 140, 0.05) ${coreP}%,
+                rgba(0, 229, 255, 0.04) ${coreP}%,
+                rgba(0, 229, 255, 0.04) ${midP}%,
+                rgba(180, 40, 40, 0.05) ${midP}%,
+                rgba(180, 40, 40, 0.05) ${outP}%,
                 rgba(0, 0, 0, 0.85) ${outP}%,
                 rgba(0, 0, 0, 0.85) ${outP + 5}%,
                 rgba(0, 0, 0, 0.6) ${outP + 5}%,
@@ -51,20 +51,20 @@ export function SignalZones({ zones, config }: SignalZonesProps) {
 
       {/* All 5 numbered lines from center outward */}
       {/* Line 1: Core zone boundary (greenRadius) */}
-      <circle cx={cx} cy={cy} r={config.greenRadius} fill="none" stroke="#FFDC8C" strokeWidth={0.5} strokeOpacity={0.30} strokeDasharray="4 4" />
-      <text x={cx + config.greenRadius + 4} y={cy - 2} fill="#FFDC8C" fillOpacity={0.35} fontSize="9" fontFamily="monospace">CORE</text>
+      <circle cx={cx} cy={cy} r={config.greenRadius} fill="none" stroke="#FFDC8C" strokeWidth={0.5} strokeOpacity={0.20} strokeDasharray="4 4" />
+      <text x={cx + config.greenRadius + 4} y={cy - 2} fill="#FFDC8C" fillOpacity={0.25} fontSize="9" fontFamily="monospace">CORE</text>
 
       {/* Line 2: Middle zone boundary (yellowRadius) */}
-      <circle cx={cx} cy={cy} r={config.yellowRadius} fill="none" stroke="#00D4FF" strokeWidth={0.5} strokeOpacity={0.30} strokeDasharray="4 4" />
-      <text x={cx + config.yellowRadius + 4} y={cy - 2} fill="#00D4FF" fillOpacity={0.35} fontSize="9" fontFamily="monospace">MID</text>
+      <circle cx={cx} cy={cy} r={config.yellowRadius} fill="none" stroke="#00D4FF" strokeWidth={0.5} strokeOpacity={0.20} strokeDasharray="4 4" />
+      <text x={cx + config.yellowRadius + 4} y={cy - 2} fill="#00D4FF" fillOpacity={0.25} fontSize="9" fontFamily="monospace">MID</text>
 
       {/* Line 3: Outer/pink zone boundary (pinkRadius) */}
-      <circle cx={cx} cy={cy} r={config.pinkRadius} fill="none" stroke="#FF6B6B" strokeWidth={0.5} strokeOpacity={0.30} strokeDasharray="4 4" />
-      <text x={cx + config.pinkRadius + 4} y={cy - 2} fill="#FF6B6B" fillOpacity={0.35} fontSize="9" fontFamily="monospace">OUTER</text>
+      <circle cx={cx} cy={cy} r={config.pinkRadius} fill="none" stroke="#FF6B6B" strokeWidth={0.5} strokeOpacity={0.20} strokeDasharray="4 4" />
+      <text x={cx + config.pinkRadius + 4} y={cy - 2} fill="#FF6B6B" fillOpacity={0.25} fontSize="9" fontFamily="monospace">OUTER</text>
 
       {/* Line 4: Inactive zone ring (rendered by CSS gradient, just add label) */}
       {(() => { const r4 = r * (outP + 5) / 100; return (
-        <text x={cx + r4 + 4} y={cy - 2} fill="#4A5168" fillOpacity={0.35} fontSize="9" fontFamily="monospace">INACTIVE</text>
+        <text x={cx + r4 + 4} y={cy - 2} fill="#4A5168" fillOpacity={0.25} fontSize="9" fontFamily="monospace">INACTIVE</text>
       ); })()}
 
     </g>

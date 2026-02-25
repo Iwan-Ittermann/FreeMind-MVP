@@ -32,7 +32,7 @@ function MiddleShape() {
 
 function OuterShape() {
   return (
-    <rect x="10" y="10" width="20" height="20" fill="rgba(85, 17, 17, 0.4)" stroke="#FF6B6B" strokeWidth="1.5" />
+    <rect x="12" y="12" width="16" height="16" fill="#551111" stroke="none" />
   );
 }
 
