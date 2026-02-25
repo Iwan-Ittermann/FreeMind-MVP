@@ -35,19 +35,10 @@ export function AIBotPanel() {
   }, [initialized, loadingEnabled, loadingOpinion, loadingPrompt, enabledSetting, opinionSetting, promptSetting]);
 
   const upsertSetting = async (key: string, value: string) => {
-    // Try update first
-    const { error: updateError } = await supabase
+    const { error } = await supabase
       .from('app_settings')
-      .update({ value })
-      .eq('key', key);
-
-    // If no rows updated, insert
-    if (updateError) {
-      const { error: insertError } = await supabase
-        .from('app_settings')
-        .insert({ key, value });
-      if (insertError) throw insertError;
-    }
+      .upsert({ key, value }, { onConflict: 'key' });
+    if (error) throw error;
   };
 
   const handleSave = async () => {
