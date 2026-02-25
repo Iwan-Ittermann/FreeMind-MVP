@@ -319,6 +319,7 @@ export function FloatingChat({
                     onReact={(reaction) => handleReaction(msg.id, reaction)}
                     visible={msg.visible}
                     noticeText={msg.noticeText}
+                    isBotMessage={isBotChat && !msg.isOwn}
                   />
                 ))}
               </AnimatePresence>

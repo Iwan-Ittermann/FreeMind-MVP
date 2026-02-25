@@ -13,6 +13,7 @@ interface ChatBubbleProps {
   onReact?: (reaction: string) => void;
   visible?: boolean;
   noticeText?: string;
+  isBotMessage?: boolean;
 }
 
 export function ChatBubble({ 
@@ -23,6 +24,7 @@ export function ChatBubble({
   isOpinion = false,
   visible = true,
   noticeText,
+  isBotMessage = false,
 }: ChatBubbleProps) {
   const [showReport, setShowReport] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
@@ -81,12 +83,14 @@ export function ChatBubble({
                 ? isOpinion 
                   ? 'bg-primary/40 border border-primary/50 rounded-br-md' 
                   : 'bg-primary rounded-br-md shadow-lg shadow-primary/20'
-                : isOpinion
-                  ? 'bg-secondary/40 border border-secondary/50 rounded-bl-md'
-                  : 'bg-white/20 rounded-bl-md'
+                : isBotMessage
+                  ? 'bg-white rounded-bl-md shadow-sm'
+                  : isOpinion
+                    ? 'bg-secondary/40 border border-secondary/50 rounded-bl-md'
+                    : 'bg-white/20 rounded-bl-md'
             }`}
           >
-            <p className={`text-sm leading-relaxed ${isOwn && !isOpinion ? 'text-white' : 'text-white/90'}`}>
+            <p className={`text-sm leading-relaxed ${isBotMessage && !isOwn ? 'text-black' : isOwn && !isOpinion ? 'text-white' : 'text-white/90'}`}>
               {content}
             </p>
           </motion.div>
