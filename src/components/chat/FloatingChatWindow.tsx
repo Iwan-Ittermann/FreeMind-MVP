@@ -268,6 +268,7 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
                       onReact={() => {}}
                       visible={msg.visible}
                       noticeText={msg.noticeText}
+                      isBotMessage={isBotChat && !msg.isOwn}
                     />
                   ))}
                   <AnimatePresence>
