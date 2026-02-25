@@ -45,6 +45,16 @@ function InactiveShape() {
   );
 }
 
+function BotShape() {
+  return (
+    <>
+      <circle cx="20" cy="20" r="14" stroke="#A855F7" strokeWidth="2" fill="none" />
+      <circle cx="20" cy="20" r="8" fill="#A855F7" fillOpacity="0.6" />
+      <text x="20" y="21" textAnchor="middle" dominantBaseline="central" fill="#FFFFFF" fontSize="10" fontWeight="bold" fontFamily="monospace">AI</text>
+    </>
+  );
+}
+
 const ZONE_SHAPE: Record<SemanticZone, () => JSX.Element> = {
   core: CoreShape,
   middle: MiddleShape,
@@ -66,7 +76,7 @@ export const SignalNode = memo(function SignalNode({
   token, isHighlighted, isDimmed, showSpeechBubble,
   onClick, onMouseEnter, onMouseLeave,
 }: SignalNodeProps) {
-  const Shape = ZONE_SHAPE[token.zone] ?? InactiveShape;
+  const Shape = token.isBot ? BotShape : (ZONE_SHAPE[token.zone] ?? InactiveShape);
   const opacity = isDimmed ? 0.4 : token.isHidden ? 0.3 : 1;
   const isScaled = isHighlighted && !isDimmed;
   const bubbleText = token.opinionText

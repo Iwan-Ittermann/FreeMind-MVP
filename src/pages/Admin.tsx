@@ -12,6 +12,7 @@ import { TopicPanel } from '@/components/admin/TopicPanel';
 import { TutorialSettingsPanel } from '@/components/admin/TutorialSettingsPanel';
 import { FakeNodesPanel } from '@/components/admin/FakeNodesPanel';
 import { ThemePanel } from '@/components/admin/ThemePanel';
+import { AIBotPanel } from '@/components/admin/AIBotPanel';
 import { useReports } from '@/hooks/useReports';
 import { useGrantAdminRole } from '@/hooks/useAdminRole';
 import { useAuth } from '@/hooks/useAuth';
@@ -170,7 +171,7 @@ export default function Admin() {
               exit={{ opacity: 0, y: -20 }}
             >
               <Tabs defaultValue="topics" className="w-full">
-                <TabsList className="grid w-full max-w-4xl grid-cols-8 mb-6">
+                <TabsList className="grid w-full max-w-4xl grid-cols-9 mb-6">
                   <TabsTrigger value="topics">
                     <Layers className="w-4 h-4 mr-2" />
                     Topics
@@ -206,6 +207,10 @@ export default function Admin() {
                   <TabsTrigger value="audit">
                     <History className="w-4 h-4 mr-2" />
                     Audit-Log
+                  </TabsTrigger>
+                  <TabsTrigger value="ai-bot">
+                    <Bot className="w-4 h-4 mr-2" />
+                    AI Bot
                   </TabsTrigger>
                   <TabsTrigger value="danger" className="text-destructive">
                     <Trash2 className="w-4 h-4 mr-2" />
@@ -271,6 +276,10 @@ export default function Admin() {
                   <div className="bg-card border border-border rounded-lg p-4">
                     <AuditLogTable enabled={isUnlocked} />
                   </div>
+                </TabsContent>
+
+                <TabsContent value="ai-bot">
+                  <AIBotPanel />
                 </TabsContent>
 
                 <TabsContent value="danger">

@@ -6,6 +6,7 @@
  */
 
 import { GraphNode, GraphEdge, LayoutConfig } from '@/types/graph';
+import { BOT_USER_ID } from '@/lib/constants';
 import { ActiveChat } from '@/hooks/useTopicData';
 import {
   SemanticNodeToken,
@@ -83,6 +84,7 @@ export function tokenizeNode(
     hasIncomingRequest: node.isRequester ?? false,
     isHidden: node.opinion.visible === false,
     opinionText: node.opinion.text,
+    isBot: node.opinion.authorId === BOT_USER_ID,
   });
 }
 

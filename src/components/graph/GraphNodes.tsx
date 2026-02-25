@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { GraphNode, LayoutConfig } from '@/types/graph';
+import { BOT_USER_ID } from '@/lib/constants';
 
 interface GraphNodesProps {
   nodes: GraphNode[];
@@ -55,6 +56,7 @@ export function GraphNodes({
       {nodes.map((node, index) => {
         const isHighlighted = highlightedNode === node.id;
         const isCurrentUser = currentUserId && node.opinion.authorId === currentUserId;
+        const isBot = node.opinion.authorId === BOT_USER_ID;
         const shouldDim = highlightedNode && !isHighlighted;
         const hasIncomingRequest = node.isRequester; // This node sent a request TO current user
         const isInactive = node.hasChats === false; // Node has no chats yet
@@ -71,9 +73,12 @@ export function GraphNodes({
         let fillColor: string;
         let strokeColor: string;
 
-        if (isHidden) {
-          fillColor = "hsl(0 0% 30%)"; // Dark grey for hidden content
-          strokeColor = "hsl(0 70% 50%)"; // Red tint stroke
+        if (isBot) {
+          fillColor = "hsl(270 70% 60%)"; // Purple for bot
+          strokeColor = "hsl(270 70% 70%)";
+        } else if (isHidden) {
+          fillColor = "hsl(0 0% 30%)";
+          strokeColor = "hsl(0 70% 50%)";
         } else if (isHighlighted) {
           fillColor = "hsl(0 0% 100%)"; // White when highlighted
           strokeColor = "hsl(0 0% 100% / 0.8)"; // Subtle white stroke

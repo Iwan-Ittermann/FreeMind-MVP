@@ -30,6 +30,7 @@ export default function Chat() {
     chatId, topicId, myOpinion, theirOpinion, theirUserId,
     myOpinionId, theirOpinionId, isLoading, error,
     saveRating, isSavingRating, existingRating, averageBridgingScore,
+    isBotChat,
   } = useChatSession(theirOpinionIdParam, isReadOnly ? sourceOpinionIdParam : undefined);
 
   const handleClose = () => { navigate('/home'); };
@@ -136,6 +137,7 @@ export default function Chat() {
         isSavingRating={isSavingRating} isReadOnly={false}
         initialEmpathy={existingRating?.empathy} initialDisagreement={existingRating?.disagreement}
         averageBridgingScore={averageBridgingScore}
+        isBotChat={isBotChat}
       />
 
       {/* Onboarding tutorial step 7 overlay for mobile */}

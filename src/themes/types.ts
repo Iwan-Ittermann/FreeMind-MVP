@@ -31,6 +31,7 @@ export type SemanticNodeToken = Readonly<{
   hasIncomingRequest: boolean;
   isHidden: boolean;
   opinionText: string;
+  isBot: boolean;
 }>;
 
 // --- Edge Token ---
