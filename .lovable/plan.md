@@ -1,107 +1,68 @@
-
-## Goal
-Resolve the persistent AI bot save failure and ensure bot chats also work after enabling.
-
-## What I found (root cause)
-I checked the live backend schema and confirmed:
-
-1. `public.opinions` still has this FK:
-   - `opinions_user_id_fkey` → `auth.users(id)`
-
-2. The previous migration dropped the wrong constraint name:
-   - It tries to drop `opinion_user_id_fkey` (singular `opinion`)
-   - Actual constraint is `opinions_user_id_fkey` (plural `opinions`)
-   - So nothing was actually removed.
-
-3. There is a second blocker waiting right after this:
-   - `public.chat_messages` has `chat_messages_sender_id_fkey` → `auth.users(id)`
-   - Even after fixing opinion insert, bot replies would fail when inserting messages as `BOT_USER_ID`.
-
-So the current error is real and expected with current schema.
+## Analysis and Plan
 
 ---
 
-## Implementation plan
+### 2. Show pending edges only to the involved user
 
-### 1) Create a corrective backend migration (idempotent)
-Add a new migration that safely removes both FK constraints needed for non-auth bot identity:
+**Feasibility assessment**: This is safe and does NOT break determinism.
 
-- On `public.opinions`:
-  - Drop `opinions_user_id_fkey`
-  - Also drop `opinion_user_id_fkey` defensively (in case of env naming drift)
+The pending edges are added as a post-processing step in `OpinionGraph.tsx` (lines 89-127), **after** the deterministic layout is computed. Pending edges do not affect node positions at all — they are purely visual overlays. Filtering them per-user changes nothing about the layout algorithm.
 
-- On `public.chat_messages`:
-  - Drop `chat_messages_sender_id_fkey`
+**Current behavior**: All pending requests for the topic are fetched and rendered as dashed edges for everyone.
 
-This will allow:
-- Admin save to create/update bot opinion row
-- AI function to insert bot chat responses
+**Proposed change**: In `OpinionGraph.tsx`, filter `chatRequests` to only include requests where the current user's opinion is either the requester or the target. This means:
 
-### 2) Keep existing access controls as-is
-No RLS broadening needed for this fix:
-- `upsert_bot_opinion` already requires admin role
-- `insert_bot_message` already runs as security-definer function
-- Message read/visibility policies remain unchanged
+- User A sends request to User B → only A and B see that dashed edge
+- Everyone else sees no pending edge
 
-### 3) Small reliability improvement in admin settings save path
-In `AIBotPanel`, replace the current update-then-insert logic with a single upsert for `app_settings` (`on conflict key`).
-Reason: current update path can silently “succeed with 0 rows” and never insert; upsert is safer and simpler.
+**File**: `src/components/graph/OpinionGraph.tsx`
 
-### 4) Verification steps (post-fix)
-Run these checks in order:
+- Filter `chatRequests` before creating `pendingEdges`: only keep requests where `requesterOpinionId === currentUserOpinionId` or `targetOpinionId === currentUserOpinionId`.
 
-1. Schema check:
-   - Confirm both FK constraints are gone from `opinions` and `chat_messages`.
+Same filtering should be applied in the themed renderers' edge tokenization (already done via `edgeTokens` in `SignalRenderer`, `ArcaneRenderer`, `CityRenderer`) since they receive the already-filtered edge array from `OpinionGraph`.
 
-2. Admin flow:
-   - Open Admin → AI Bot
-   - Enable bot + save
-   - Confirm no FK error toast.
-
-3. Data check:
-   - Confirm one opinion exists with `user_id = BOT_USER_ID`.
-
-4. Runtime chat check:
-   - Request chat with bot (auto-accepted)
-   - Send message
-   - Confirm AI reply inserts successfully (no sender FK error).
-
-5. UI check:
-   - Bot remains visible and chat continues to work 1-to-1.
+No layout/determinism impact. No database changes needed.
 
 ---
 
-## Files / backend objects involved
+### 3. Prevent node overlap (collision avoidance)
 
-### New migration
-- `supabase/migrations/<new_timestamp>_fix_bot_fk_constraints.sql`
-  - Drops:
-    - `public.opinions.opinions_user_id_fkey` (and defensive singular variant)
-    - `public.chat_messages.chat_messages_sender_id_fkey`
+**Assessment**: Adding a post-layout collision resolution step is feasible and safe.
 
-### Frontend reliability tweak
-- `src/components/admin/AIBotPanel.tsx`
-  - Replace custom update/insert helper with true upsert for `app_settings`.
+The layout algorithm (`freemind-layout.ts`) positions nodes by radius and angle. Nodes can end up close together, especially in crowded zones. A simple repulsion pass after positioning can push overlapping nodes apart angularly.
 
----
+**Key concern — zone crossing**: If we only adjust angles (not radii), nodes stay in their assigned zones. This is the safe approach. We should NOT adjust radii during collision resolution.
 
-## Technical details
-```sql
--- idempotent corrective migration
-ALTER TABLE public.opinions DROP CONSTRAINT IF EXISTS opinions_user_id_fkey;
-ALTER TABLE public.opinions DROP CONSTRAINT IF EXISTS opinion_user_id_fkey; -- defensive
-ALTER TABLE public.chat_messages DROP CONSTRAINT IF EXISTS chat_messages_sender_id_fkey;
-```
+**Proposed approach**:
 
-And for settings writes in admin panel, use:
-- `.from('app_settings').upsert({ key, value }, { onConflict: 'key' })`
+- After all nodes are positioned (end of `calculateLayout`), run a collision pass
+- For each pair of nodes, if their distance is less than `2 * nodeRadius + padding`, rotate one slightly along its current radius
+- Only modify angles, never radii — this guarantees no zone crossing
+- Use a few iterations (5-10) for convergence
 
-This prevents “no row updated” edge cases from silently skipping inserts.
+**File**: `src/lib/freemind-layout.ts`
+
+- Add a `resolveCollisions(nodes, config)` function that adjusts angles only
+- Call it before the bot-position fixup at the end of `calculateLayout`
 
 ---
 
-## Why this is the minimal safe fix
-- Fixes the exact failing constraint name mismatch.
-- Prevents the next guaranteed failure in bot messaging.
-- Preserves current authorization boundaries.
-- Avoids larger refactors and keeps your existing bot architecture intact.
+### 4. Pending requests in chat sidebar
+
+**Finding**: The `ChatsSidebar` component (`src/components/ChatsSidebar.tsx`) queries the `chats` table — it only shows conversations that have an actual `chats` row. Pending requests do NOT create a `chats` row (that only happens on acceptance via `get_or_create_chat`).
+
+**Conclusion**: Pending requests are NOT shown in the chat sidebar. Only accepted/active chats appear there.   
+  
+CHANGE REQUIRED: Please include a pending chat request in the chat sidebar. Also inlcude two radio buttons in the chatssidebar so the user can filter for chats or requests. 
+
+---
+
+### Summary of changes
+
+
+| #   | Change                                    | Files                | Risk                               | &nbsp; | &nbsp; | &nbsp; |
+| --- | ----------------------------------------- | -------------------- | ---------------------------------- | ------ | ------ | ------ |
+| 1   | Default `hidePendingEdges` to `true`      | `ThemeContext.tsx`   | None                               | &nbsp; | &nbsp; | &nbsp; |
+| 2   | Filter pending edges to current user only | `OpinionGraph.tsx`   | None (post-layout only)            | &nbsp; | &nbsp; | &nbsp; |
+| 3   | Angular collision resolution              | `freemind-layout.ts` | Low (angle-only, no zone crossing) | &nbsp; | &nbsp; | &nbsp; |
+| 4   | Pending requests                          | &nbsp;               | &nbsp;                             | &nbsp; | &nbsp; | &nbsp; |
