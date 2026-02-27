@@ -526,6 +526,9 @@ export function calculateLayout(
   // Combine active and inactive nodes
   let allNodes = [...activeNodes, ...inactiveNodes];
 
+  // Collision avoidance: push overlapping nodes apart angularly (never change radius)
+  allNodes = resolveCollisions(allNodes, config);
+
   // Fix bot node position: medium radius at 6 o'clock (bottom center)
   allNodes = allNodes.map(node => {
     if (node.opinion.authorId === BOT_USER_ID) {
@@ -542,6 +545,59 @@ export function calculateLayout(
   });
 
   return { nodes: allNodes, edges, greenZoneSlots };
+}
+
+/**
+ * Post-layout collision resolution.
+ * Pushes overlapping nodes apart by adjusting angles only (never radii),
+ * so nodes can never cross zone boundaries.
+ */
+function resolveCollisions(nodes: GraphNode[], config: LayoutConfig, iterations: number = 8): GraphNode[] {
+  if (nodes.length < 2) return nodes;
+
+  const minDist = config.nodeRadius * 2 + 4; // minimum px between node centers
+  const updated = nodes.map(n => ({ ...n }));
+
+  for (let iter = 0; iter < iterations; iter++) {
+    let moved = false;
+
+    for (let i = 0; i < updated.length; i++) {
+      for (let j = i + 1; j < updated.length; j++) {
+        const a = updated[i];
+        const b = updated[j];
+        const dx = a.x - b.x;
+        const dy = a.y - b.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist >= minDist || dist < 0.01) continue;
+
+        // Compute radii from center
+        const rA = Math.sqrt((a.x - config.centerX) ** 2 + (a.y - config.centerY) ** 2);
+        const rB = Math.sqrt((b.x - config.centerX) ** 2 + (b.y - config.centerY) ** 2);
+
+        // Only push angularly: compute current angles and nudge apart
+        const angleA = Math.atan2(a.y - config.centerY, a.x - config.centerX);
+        const angleB = Math.atan2(b.y - config.centerY, b.x - config.centerX);
+
+        // How much angular push is needed (approximate)
+        const overlap = minDist - dist;
+        const avgR = Math.max((rA + rB) / 2, 1);
+        const angularPush = (overlap / avgR) * 0.5; // split between both nodes
+
+        const newAngleA = angleA + angularPush;
+        const newAngleB = angleB - angularPush;
+
+        updated[i] = { ...a, x: config.centerX + Math.cos(newAngleA) * rA, y: config.centerY + Math.sin(newAngleA) * rA };
+        updated[j] = { ...b, x: config.centerX + Math.cos(newAngleB) * rB, y: config.centerY + Math.sin(newAngleB) * rB };
+
+        moved = true;
+      }
+    }
+
+    if (!moved) break;
+  }
+
+  return updated;
 }
 
 // Generate mock data for testing with diverse zone distribution and clusters
