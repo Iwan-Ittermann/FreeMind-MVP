@@ -17,7 +17,7 @@ export function FreeMindThemeProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
 
   const [hidePendingEdges, setHidePendingEdgesState] = useState(() => {
-    try { return localStorage.getItem('hidePendingEdges') === 'true'; } catch { return false; }
+    try { const v = localStorage.getItem('hidePendingEdges'); return v === null ? true : v === 'true'; } catch { return true; }
   });
 
   const setHidePendingEdges = useCallback((v: boolean) => {

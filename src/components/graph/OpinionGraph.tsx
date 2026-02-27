@@ -86,9 +86,11 @@ export function OpinionGraph({
   const graphData = useMemo(() => {
     const baseData = calculateLayout(opinions, ratings, config);
     
-    // Add pending request edges
+    // Add pending request edges (only show edges involving the current user)
     const pendingEdges: GraphEdge[] = chatRequests
-      .filter(req => req.status === 'pending')
+      .filter(req => req.status === 'pending' && currentUserOpinionId && (
+        req.requesterOpinionId === currentUserOpinionId || req.targetOpinionId === currentUserOpinionId
+      ))
       .map(req => ({
         source: req.requesterOpinionId,
         target: req.targetOpinionId,
