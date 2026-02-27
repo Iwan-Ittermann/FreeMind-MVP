@@ -552,10 +552,13 @@ export function calculateLayout(
  * Pushes overlapping nodes apart by adjusting angles only (never radii),
  * so nodes can never cross zone boundaries.
  */
-function resolveCollisions(nodes: GraphNode[], config: LayoutConfig, iterations: number = 8): GraphNode[] {
+function resolveCollisions(nodes: GraphNode[], config: LayoutConfig, iterations: number = 12): GraphNode[] {
   if (nodes.length < 2) return nodes;
 
-  const minDist = config.nodeRadius * 2 + 4; // minimum px between node centers
+  // The rendered node graphics are 40-48px wide; use 48 as the max visual size
+  // so that no rendered rings/shapes overlap regardless of theme.
+  const VISUAL_NODE_SIZE = 48;
+  const minDist = VISUAL_NODE_SIZE + 4; // minimum px between node centers
   const updated = nodes.map(n => ({ ...n }));
 
   for (let iter = 0; iter < iterations; iter++) {
