@@ -1,7 +1,9 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MessagesSquare, Search, X, Clock, CheckCircle2 } from 'lucide-react';
+import { MessagesSquare, Search, X, Clock, CheckCircle2, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Button } from '@/components/ui/button';
+import { useChatRequests } from '@/hooks/useChatRequests';
 import {
   Sheet,
   SheetContent,
@@ -50,7 +52,8 @@ export function ChatsSidebar({ open, onOpenChange, topicId, onChatOpen, unreadMe
   const { user } = useAuth();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<FilterMode>('chats');
-
+  const [expandedRequestId, setExpandedRequestId] = useState<string | null>(null);
+  const { acceptRequest, declineRequest, isAccepting, isDeclining } = useChatRequests(topicId);
   // First get the user's opinion for this topic
   const { data: myOpinion } = useQuery({
     queryKey: ['myOpinionForTopic', topicId, user?.id],
@@ -365,10 +368,10 @@ export function ChatsSidebar({ open, onOpenChange, topicId, onChatOpen, unreadMe
                 ) : (
                   <div className="space-y-2 pb-4">
                     {filteredRequests.map((req) => (
-                      <button
+                      <div
                         key={req.id}
-                        onClick={() => handleRequestClick(req)}
-                        className="w-full text-left p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+                        className="w-full text-left p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer"
+                        onClick={() => setExpandedRequestId(prev => prev === req.id ? null : req.id)}
                       >
                         <div className="flex justify-between items-start gap-2">
                           <div className="flex-1">
@@ -390,7 +393,36 @@ export function ChatsSidebar({ open, onOpenChange, topicId, onChatOpen, unreadMe
                             {formatTime(req.created_at)}
                           </span>
                         </div>
-                      </button>
+                        {/* Inline accept/decline for incoming requests */}
+                        {expandedRequestId === req.id && req.direction === 'incoming' && (
+                          <div className="flex gap-2 mt-2" onClick={e => e.stopPropagation()}>
+                            <Button
+                              size="sm"
+                              className="flex-1 bg-accent hover:bg-accent/90 text-accent-foreground"
+                              disabled={isAccepting || isDeclining}
+                              onClick={() => acceptRequest(req.id)}
+                            >
+                              <Check className="w-4 h-4 mr-1" />
+                              {isAccepting ? '...' : t('sidebar.accept', 'Accept')}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="flex-1 border-destructive text-destructive hover:bg-destructive/10"
+                              disabled={isAccepting || isDeclining}
+                              onClick={() => declineRequest(req.id)}
+                            >
+                              <X className="w-4 h-4 mr-1" />
+                              {isDeclining ? '...' : t('sidebar.decline', 'Decline')}
+                            </Button>
+                          </div>
+                        )}
+                        {expandedRequestId === req.id && req.direction === 'outgoing' && (
+                          <p className="text-xs text-muted-foreground italic mt-2">
+                            {t('sidebar.waitingForAccept', 'Waiting for them to accept...')}
+                          </p>
+                        )}
+                      </div>
                     ))}
                   </div>
                 )
