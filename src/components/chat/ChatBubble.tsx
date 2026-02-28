@@ -1,7 +1,5 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Quote, Flag, AlertTriangle } from 'lucide-react';
-import { ReportDialog } from '@/components/moderation/ReportDialog';
+import { Quote, AlertTriangle } from 'lucide-react';
 
 interface ChatBubbleProps {
   id: string;
@@ -26,8 +24,6 @@ export function ChatBubble({
   noticeText,
   isBotMessage = false,
 }: ChatBubbleProps) {
-  const [showReport, setShowReport] = useState(false);
-  const [reportDialogOpen, setReportDialogOpen] = useState(false);
 
   // Show notice for hidden content
   if (!visible && noticeText) {
@@ -59,8 +55,6 @@ export function ChatBubble({
           damping: 30
         }}
         className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
-        onMouseEnter={() => setShowReport(true)}
-        onMouseLeave={() => setShowReport(false)}
       >
         <div className={`relative max-w-[85%] group`}>
           {/* Opinion label */}
@@ -100,35 +94,8 @@ export function ChatBubble({
             {timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </p>
 
-          {/* Report button on hover */}
-          {showReport && !isOpinion && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className={`absolute -top-8 flex p-1 bg-black/90 backdrop-blur-sm rounded-full border border-white/10 shadow-lg ${
-                isOwn ? 'right-0' : 'left-0'
-              }`}
-            >
-              <button
-                onClick={() => setReportDialogOpen(true)}
-                className="p-1.5 rounded-full hover:bg-destructive/20 transition-colors text-white/40 hover:text-destructive"
-                title="Report"
-              >
-                <Flag size={14} />
-              </button>
-            </motion.div>
-          )}
         </div>
       </motion.div>
-
-      {/* Report Dialog */}
-      <ReportDialog
-        open={reportDialogOpen}
-        onOpenChange={setReportDialogOpen}
-        contentId={id}
-        contentType="ChatMessage"
-        contentPreview={content}
-      />
     </>
   );
 }

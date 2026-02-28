@@ -60,15 +60,17 @@ const Index = () => {
     : 0;
   useBrowserNotification(totalUnreadCount);
 
-  // Auto-start tutorial for new accounts
-  useEffect(() => {
-    if (user && localStorage.getItem('freemind_new_account') === 'true') {
-      localStorage.removeItem('freemind_new_account');
-      if (!tutorial.hasCompletedTutorial()) {
-        setTimeout(() => tutorial.startTutorial(), 500);
-      }
+  // Track whether user has ever opened the help popover (for glow effect)
+  const [helpEverOpened, setHelpEverOpened] = useState(() => {
+    try { return localStorage.getItem('freemind_help_opened') === 'true'; } catch { return false; }
+  });
+
+  const handleHelpOpenChange = (open: boolean) => {
+    if (open && !helpEverOpened) {
+      setHelpEverOpened(true);
+      try { localStorage.setItem('freemind_help_opened', 'true'); } catch {}
     }
-  }, [user, tutorial]);
+  };
 
   const graphChatRequests: ChatRequest[] = chatRequests.map(r => ({
     id: r.id,
@@ -360,20 +362,30 @@ const Index = () => {
       {/* Floating buttons stack (bottom-left) */}
       <div className="fixed bottom-6 left-6 z-40 flex flex-col gap-3">
         {/* Help "?" button */}
-        <Popover>
+        <Popover onOpenChange={handleHelpOpenChange}>
           <PopoverTrigger asChild>
             <button
-              className="h-12 w-12 rounded-full bg-muted/80 backdrop-blur-sm border border-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shadow-lg"
+              className={`h-12 w-12 rounded-full bg-muted/80 backdrop-blur-sm border border-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shadow-lg ${
+                !helpEverOpened ? 'animate-pulse-fast ring-2 ring-accent ring-offset-2 ring-offset-background' : ''
+              }`}
             >
               <HelpCircle className="h-5 w-5" />
             </button>
           </PopoverTrigger>
           <PopoverContent side="right" align="end" className="w-64 p-4">
-            <ol className="list-decimal list-inside space-y-2 text-sm text-foreground">
+            <ol className="list-decimal list-inside space-y-2 text-sm text-foreground mb-3">
               <li>Teile deine Meinung</li>
               <li>Frag Chats an</li>
               <li>Bewerte deine Chats</li>
             </ol>
+            <Button
+              onClick={() => { tutorial.startTutorial(); }}
+              variant="outline"
+              size="sm"
+              className="w-full border-accent text-accent hover:bg-accent/10"
+            >
+              {t('help.startTutorial')}
+            </Button>
           </PopoverContent>
         </Popover>
 

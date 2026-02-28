@@ -555,52 +555,73 @@ export function calculateLayout(
 function resolveCollisions(nodes: GraphNode[], config: LayoutConfig, iterations: number = 12): GraphNode[] {
   if (nodes.length < 2) return nodes;
 
-  // The rendered node graphics are 40-48px wide; use 48 as the max visual size
-  // so that no rendered rings/shapes overlap regardless of theme.
   const VISUAL_NODE_SIZE = 48;
-  const minDist = VISUAL_NODE_SIZE + 4; // minimum px between node centers
-  const updated = nodes.map(n => ({ ...n }));
+  const minDist = VISUAL_NODE_SIZE + 4; // 52px minimum between node centers
+
+  // Sort by ID for deterministic processing order
+  const sorted = [...nodes].map(n => ({ ...n }));
+  sorted.sort((a, b) => a.id.localeCompare(b.id));
+
+  // Convert to polar coordinates (angle + radius from center)
+  const polar = sorted.map(n => {
+    const dx = n.x - config.centerX;
+    const dy = n.y - config.centerY;
+    return {
+      id: n.id,
+      radius: Math.sqrt(dx * dx + dy * dy),
+      angle: Math.atan2(dy, dx),
+    };
+  });
 
   for (let iter = 0; iter < iterations; iter++) {
-    let moved = false;
+    // Gather phase: compute all angular deltas without modifying positions
+    const deltas = new Array(polar.length).fill(0);
+    let anyOverlap = false;
 
-    for (let i = 0; i < updated.length; i++) {
-      for (let j = i + 1; j < updated.length; j++) {
-        const a = updated[i];
-        const b = updated[j];
-        const dx = a.x - b.x;
-        const dy = a.y - b.y;
+    for (let i = 0; i < polar.length; i++) {
+      for (let j = i + 1; j < polar.length; j++) {
+        const a = polar[i];
+        const b = polar[j];
+
+        // Compute Cartesian distance from current polar coords
+        const ax = config.centerX + Math.cos(a.angle) * a.radius;
+        const ay = config.centerY + Math.sin(a.angle) * a.radius;
+        const bx = config.centerX + Math.cos(b.angle) * b.radius;
+        const by = config.centerY + Math.sin(b.angle) * b.radius;
+        const dx = ax - bx;
+        const dy = ay - by;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         if (dist >= minDist || dist < 0.01) continue;
 
-        // Compute radii from center
-        const rA = Math.sqrt((a.x - config.centerX) ** 2 + (a.y - config.centerY) ** 2);
-        const rB = Math.sqrt((b.x - config.centerX) ** 2 + (b.y - config.centerY) ** 2);
-
-        // Only push angularly: compute current angles and nudge apart
-        const angleA = Math.atan2(a.y - config.centerY, a.x - config.centerX);
-        const angleB = Math.atan2(b.y - config.centerY, b.x - config.centerX);
-
-        // How much angular push is needed (approximate)
+        anyOverlap = true;
         const overlap = minDist - dist;
-        const avgR = Math.max((rA + rB) / 2, 1);
-        const angularPush = (overlap / avgR) * 0.5; // split between both nodes
+        const avgR = Math.max((a.radius + b.radius) / 2, 1);
+        const angularPush = (overlap / avgR) * 0.5;
 
-        const newAngleA = angleA + angularPush;
-        const newAngleB = angleB - angularPush;
-
-        updated[i] = { ...a, x: config.centerX + Math.cos(newAngleA) * rA, y: config.centerY + Math.sin(newAngleA) * rA };
-        updated[j] = { ...b, x: config.centerX + Math.cos(newAngleB) * rB, y: config.centerY + Math.sin(newAngleB) * rB };
-
-        moved = true;
+        // Determine push direction deterministically:
+        // The node with the smaller ID gets pushed in the positive angular direction
+        deltas[i] += angularPush;
+        deltas[j] -= angularPush;
       }
     }
 
-    if (!moved) break;
+    if (!anyOverlap) break;
+
+    // Apply phase: update all angles simultaneously
+    for (let i = 0; i < polar.length; i++) {
+      polar[i].angle += deltas[i];
+    }
   }
 
-  return updated;
+  // Convert back to Cartesian and rebuild node array
+  const result = sorted.map((node, i) => ({
+    ...node,
+    x: config.centerX + Math.cos(polar[i].angle) * polar[i].radius,
+    y: config.centerY + Math.sin(polar[i].angle) * polar[i].radius,
+  }));
+
+  return result;
 }
 
 // Generate mock data for testing with diverse zone distribution and clusters
