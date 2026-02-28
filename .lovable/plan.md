@@ -1,68 +1,31 @@
-## Analysis and Plan
+## Plan: 5 Changes
 
----
+### 1. Tutorial: Manual start only, with glowing ? button
 
-### 2. Show pending edges only to the involved user
+**Files**: `src/pages/Index.tsx`, `src/index.css`
 
-**Feasibility assessment**: This is safe and does NOT break determinism.
+- Remove the auto-start `useEffect` (lines 63-71 in Index.tsx) that triggers tutorial on `freemind_new_account`
+- Move the "Start Tutorial" button into the `PopoverContent` of the ? button (lines 371-377), alongside the existing 3-step guide
+- Track in localStorage whether user has ever opened the ? popover. If not, apply a pulsing glow animation (reuse `animate-pulse-fast` + accent ring styling matching the "add opinion" button)
 
-The pending edges are added as a post-processing step in `OpinionGraph.tsx` (lines 89-127), **after** the deterministic layout is computed. Pending edges do not affect node positions at all — they are purely visual overlays. Filtering them per-user changes nothing about the layout algorithm.
 
-**Current behavior**: All pending requests for the topic are fetched and rendered as dashed edges for everyone.
 
-**Proposed change**: In `OpinionGraph.tsx`, filter `chatRequests` to only include requests where the current user's opinion is either the requester or the target. This means:
+### 4. Remove report button from chat messages
 
-- User A sends request to User B → only A and B see that dashed edge
-- Everyone else sees no pending edge
+**File**: `src/components/chat/ChatBubble.tsx`
 
-**File**: `src/components/graph/OpinionGraph.tsx`
+- Remove the `showReport` state, the `onMouseEnter`/`onMouseLeave` handlers (lines 62-63), the report button hover UI (lines 103-120), and the `ReportDialog` render (lines 124-131)
+- Keep reporting only on opinions (already handled in Index.tsx's node action panel)
 
-- Filter `chatRequests` before creating `pendingEdges`: only keep requests where `requesterOpinionId === currentUserOpinionId` or `targetOpinionId === currentUserOpinionId`.
-
-Same filtering should be applied in the themed renderers' edge tokenization (already done via `edgeTokens` in `SignalRenderer`, `ArcaneRenderer`, `CityRenderer`) since they receive the already-filtered edge array from `OpinionGraph`.
-
-No layout/determinism impact. No database changes needed.
-
----
-
-### 3. Prevent node overlap (collision avoidance)
-
-**Assessment**: Adding a post-layout collision resolution step is feasible and safe.
-
-The layout algorithm (`freemind-layout.ts`) positions nodes by radius and angle. Nodes can end up close together, especially in crowded zones. A simple repulsion pass after positioning can push overlapping nodes apart angularly.
-
-**Key concern — zone crossing**: If we only adjust angles (not radii), nodes stay in their assigned zones. This is the safe approach. We should NOT adjust radii during collision resolution.
-
-**Proposed approach**:
-
-- After all nodes are positioned (end of `calculateLayout`), run a collision pass
-- For each pair of nodes, if their distance is less than `2 * nodeRadius + padding`, rotate one slightly along its current radius
-- Only modify angles, never radii — this guarantees no zone crossing
-- Use a few iterations (5-10) for convergence
+### 5. Make collision avoidance deterministic
 
 **File**: `src/lib/freemind-layout.ts`
 
-- Add a `resolveCollisions(nodes, config)` function that adjusts angles only
-- Call it before the bot-position fixup at the end of `calculateLayout`
+The current algorithm applies pushes sequentially per-pair, meaning iteration order affects the result. Different browsers or different node orderings produce different layouts.
 
----
+**Fix**: Switch to a **gather-then-apply** approach:
 
-### 4. Pending requests in chat sidebar
-
-**Finding**: The `ChatsSidebar` component (`src/components/ChatsSidebar.tsx`) queries the `chats` table — it only shows conversations that have an actual `chats` row. Pending requests do NOT create a `chats` row (that only happens on acceptance via `get_or_create_chat`).
-
-**Conclusion**: Pending requests are NOT shown in the chat sidebar. Only accepted/active chats appear there.   
-  
-CHANGE REQUIRED: Please include a pending chat request in the chat sidebar. Also inlcude two radio buttons in the chatssidebar so the user can filter for chats or requests. 
-
----
-
-### Summary of changes
-
-
-| #   | Change                                    | Files                | Risk                               | &nbsp; | &nbsp; | &nbsp; |
-| --- | ----------------------------------------- | -------------------- | ---------------------------------- | ------ | ------ | ------ |
-| 1   | Default `hidePendingEdges` to `true`      | `ThemeContext.tsx`   | None                               | &nbsp; | &nbsp; | &nbsp; |
-| 2   | Filter pending edges to current user only | `OpinionGraph.tsx`   | None (post-layout only)            | &nbsp; | &nbsp; | &nbsp; |
-| 3   | Angular collision resolution              | `freemind-layout.ts` | Low (angle-only, no zone crossing) | &nbsp; | &nbsp; | &nbsp; |
-| 4   | Pending requests                          | &nbsp;               | &nbsp;                             | &nbsp; | &nbsp; | &nbsp; |
+1. Sort nodes by ID before processing (deterministic order)
+2. In each iteration, compute all angular displacement deltas into an array without modifying positions
+3. After all pairs are processed, apply all deltas simultaneously
+4. This ensures the same input always produces the same output regardless of platform
