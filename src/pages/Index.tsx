@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, X, Send, Check, Flag, Settings, HelpCircle, ZoomIn, ZoomOut } from 'lucide-react';
+import { MessageSquare, X, Send, Check, Flag, Settings, HelpCircle, ZoomIn, ZoomOut, Pencil, List, MessagesSquare } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useTranslation } from 'react-i18next';
 import { FloatingChatManager, FloatingChatManagerHandle } from '@/components/chat/FloatingChatManager';
@@ -83,7 +83,7 @@ const Index = () => {
     const updateSize = () => {
       const mobile = window.innerWidth < 768;
       if (mobile) {
-        const base = Math.min(window.innerWidth - 32, window.innerHeight - 180);
+        const base = Math.min(window.innerWidth - 16, window.innerHeight - 160);
         setGraphSize({ width: base, height: base });
       } else {
         const size = Math.min(window.innerHeight - 100, 800);
@@ -216,6 +216,8 @@ const Index = () => {
         totalUnread={totalUnreadCount}
         unreadMessageCounts={unreadMessageCounts}
         isLoading={isLoading}
+        hideAddOpinion
+        hideSidebarButtons
       />
 
       {/* Mobile title below header */}
@@ -227,7 +229,7 @@ const Index = () => {
         </div>
       )}
 
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 md:py-6">
+      <div className="flex-1 flex flex-col items-center justify-center px-2 md:px-4 py-4 md:py-6">
 
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
@@ -355,13 +357,45 @@ const Index = () => {
             </span>
           )}
         </div>
+
+        {/* Full-width CTA below graph */}
+        <AnimatePresence>
+          {user && !myOpinion && !isLoading && (
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="w-full max-w-sm mt-4"
+            >
+              <Button
+                onClick={() => {
+                  const header = document.querySelector('[data-opinion-dialog-trigger]');
+                  if (header) (header as HTMLButtonElement).click();
+                }}
+                className="w-full h-11 rounded-full bg-accent text-accent-foreground hover:bg-accent/90 font-semibold text-base shadow-lg shadow-accent/25 animate-pulse-fast"
+              >
+                <Pencil className="h-5 w-5 mr-2" />
+                {t('header.addOpinion')}
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       <Footer />
 
-      {/* Floating buttons stack (bottom-left) */}
-      <div className="fixed bottom-6 left-6 z-40 flex flex-col gap-3">
-        {/* Help "?" button */}
+      {/* Settings button — top-right */}
+      <button
+        onClick={() => setConfigOpen(true)}
+        className="fixed top-24 right-4 z-40 h-12 w-12 rounded-full bg-muted/80 backdrop-blur-sm border border-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shadow-lg"
+        data-tutorial="settings-button"
+      >
+        <Settings className="h-5 w-5" />
+      </button>
+
+      {/* Help "?" button — bottom-left */}
+      <div className="fixed bottom-6 left-6 z-40">
         <Popover onOpenChange={handleHelpOpenChange}>
           <PopoverTrigger asChild>
             <button
@@ -388,26 +422,48 @@ const Index = () => {
             </Button>
           </PopoverContent>
         </Popover>
-
-        {/* Settings button */}
-        <button
-          onClick={() => setConfigOpen(true)}
-          className="h-12 w-12 rounded-full bg-muted/80 backdrop-blur-sm border border-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shadow-lg"
-          data-tutorial="settings-button"
-        >
-          <Settings className="h-5 w-5" />
-        </button>
       </div>
 
-      {/* Mobile zoom toggle (bottom-right) */}
-      {isMobile && (
+      {/* Sidebar buttons — bottom-right, stacked vertically */}
+      <div className="fixed bottom-6 right-6 z-40 flex flex-col gap-3">
+        {isMobile && (
+          <button
+            onClick={() => setIsZoomed(z => !z)}
+            className="h-12 w-12 rounded-full bg-muted/80 backdrop-blur-sm border border-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shadow-lg"
+          >
+            {isZoomed ? <ZoomOut className="h-5 w-5" /> : <ZoomIn className="h-5 w-5" />}
+          </button>
+        )}
         <button
-          onClick={() => setIsZoomed(z => !z)}
-          className="fixed bottom-6 right-6 z-40 h-12 w-12 rounded-full bg-muted/80 backdrop-blur-sm border border-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shadow-lg"
+          onClick={() => {
+            const btn = document.querySelector('[data-tutorial="opinions-button"]') as HTMLButtonElement;
+            btn?.click();
+          }}
+          className="h-12 w-12 rounded-full bg-muted/80 backdrop-blur-sm border border-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shadow-lg"
+          title={t('sidebar.allOpinions', 'All Opinions')}
         >
-          {isZoomed ? <ZoomOut className="h-5 w-5" /> : <ZoomIn className="h-5 w-5" />}
+          <List className="h-5 w-5" />
         </button>
-      )}
+        {user && (
+          <div className="relative">
+            <button
+              onClick={() => {
+                const btn = document.querySelector('[data-tutorial="chats-button"]') as HTMLButtonElement;
+                btn?.click();
+              }}
+              className="h-12 w-12 rounded-full bg-muted/80 backdrop-blur-sm border border-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shadow-lg"
+              title={t('sidebar.myChats', 'My Chats')}
+            >
+              <MessagesSquare className="h-5 w-5" />
+            </button>
+            {totalUnreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center px-1">
+                {totalUnreadCount > 99 ? '99+' : totalUnreadCount}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Floating Chat Manager (desktop only) */}
       {!isMobile && (

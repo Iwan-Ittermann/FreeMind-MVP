@@ -21,9 +21,11 @@ interface HeaderProps {
   totalUnread?: number;
   unreadMessageCounts?: Map<string, number>;
   isLoading?: boolean;
+  hideAddOpinion?: boolean;
+  hideSidebarButtons?: boolean;
 }
 
-export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted, myOpinionId, onChatOpen, totalUnread = 0, unreadMessageCounts, isLoading = false }: HeaderProps) {
+export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted, myOpinionId, onChatOpen, totalUnread = 0, unreadMessageCounts, isLoading = false, hideAddOpinion = false, hideSidebarButtons = false }: HeaderProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -90,7 +92,7 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
 
             {/* Add Opinion — animated out after submission, hidden during loading */}
             <AnimatePresence>
-              {showOpinionButton && canAddOpinion && !isLoading && (
+              {showOpinionButton && canAddOpinion && !isLoading && !hideAddOpinion && (
                 <motion.div
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
@@ -100,6 +102,7 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
                 >
               <Button
                     onClick={() => setOpinionDialogOpen(true)}
+                    data-opinion-dialog-trigger
                     className="h-12 px-4 md:px-5 text-base bg-accent text-accent-foreground hover:bg-accent/90 font-medium shadow-lg shadow-accent/25 animate-pulse-fast"
                   >
                     <Pencil className="h-5 w-5 md:mr-2" />
@@ -109,7 +112,7 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
               )}
             </AnimatePresence>
 
-            {topicId && (
+            {topicId && !hideSidebarButtons && (
               <Button
                 onClick={() => { setOpinionsOpen(true); setChatsOpen(false); }}
                 size="icon"
@@ -122,7 +125,7 @@ export function Header({ title, topicId, hasExistingOpinion, onOpinionSubmitted,
               </Button>
             )}
 
-            {topicId && user && (
+            {topicId && user && !hideSidebarButtons && (
               <div className="relative">
                 <Button
                   onClick={() => { setChatsOpen(true); setOpinionsOpen(false); }}

@@ -138,10 +138,10 @@ export const FloatingChatManager = forwardRef<FloatingChatManagerHandle, Floatin
 
     return (
       <>
-        {/* Minimized bubbles — vertical stack, right edge */}
+        {/* Minimized bubbles — horizontal stack, left to right */}
         <div
-          className="fixed z-50 flex flex-col-reverse gap-2"
-          style={{ right: BUBBLE_RIGHT, bottom: BUBBLE_BOTTOM }}
+          className="fixed z-50 flex flex-row gap-2"
+          style={{ left: 24, bottom: BUBBLE_BOTTOM }}
         >
           <AnimatePresence>
             {minimizedChats.map(chat => (

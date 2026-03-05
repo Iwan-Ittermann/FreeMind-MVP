@@ -14,6 +14,9 @@ function CoreShape() {
           <feComposite in="goldColor" in2="coloredBlur" operator="in" result="goldGlow"/>
           <feMerge><feMergeNode in="goldGlow"/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
+        <filter id="signal-select-glow">
+          <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#00D4FF" floodOpacity="0.7"/>
+        </filter>
       </defs>
       <circle cx="20" cy="20" r="14" stroke="#FFFFFF" strokeWidth="1" fill="none" filter="url(#signal-glow-gold)" />
       <path d="M20 8 L23 17 L32 20 L23 23 L20 32 L17 23 L8 20 L17 17 Z" fill="#FFFFFF" filter="url(#signal-glow-gold)" />
@@ -80,7 +83,7 @@ export const SignalNode = memo(function SignalNode({
   const opacity = isDimmed ? 0.4 : token.isHidden ? 0.3 : 1;
   const isScaled = isHighlighted && !isDimmed;
   const bubbleText = token.opinionText
-    ? (token.opinionText.length > 16 ? token.opinionText.slice(0, 16) + '…' : token.opinionText)
+    ? (token.opinionText.length > 20 ? token.opinionText.slice(0, 20) + '…' : token.opinionText)
     : '';
 
   return (
@@ -95,10 +98,10 @@ export const SignalNode = memo(function SignalNode({
     >
       {/* Speech bubble */}
       {showSpeechBubble && bubbleText && (
-        <g transform={`translate(0, ${-HALF - 10})`} opacity={token.zone === 'core' || token.zone === 'middle' ? 0.5 : 0.92}>
-          <rect x={-48} y={-16} width={96} height={22} rx={5} fill="#0B0E1A" fillOpacity={0.92} stroke="#00D4FF" strokeWidth={0.5} strokeOpacity={0.4} />
-          <polygon points="-4,6 4,6 0,12" fill="#0B0E1A" fillOpacity={0.92} />
-          <text x={0} y={-4} textAnchor="middle" dominantBaseline="central" fill="#E0FFFF" fontSize="8" fontFamily="monospace">
+        <g transform={`translate(0, ${-HALF - 14})`} opacity={token.zone === 'core' || token.zone === 'middle' ? 0.5 : 0.92}>
+          <rect x={-70} y={-18} width={140} height={28} rx={8} fill="rgba(0,0,0,0.30)" stroke="#00D4FF" strokeWidth={0.5} strokeOpacity={0.4} />
+          <polygon points="-4,10 4,10 0,16" fill="rgba(0,0,0,0.30)" />
+          <text x={0} y={-3} textAnchor="middle" dominantBaseline="central" fill="#FFFFFFE6" fontSize="14" fontFamily="monospace">
             {bubbleText}
           </text>
         </g>
@@ -118,7 +121,12 @@ export const SignalNode = memo(function SignalNode({
           transition: 'transform 0.15s ease',
         }}
       >
-        <circle cx="20" cy="20" r="20" fill="transparent" />
+        {/* Expanded 44px hit area */}
+        <circle cx="20" cy="20" r="22" fill="transparent" />
+        {/* Selection highlight */}
+        {isHighlighted && !isDimmed && (
+          <circle cx="20" cy="20" r="18" fill="none" stroke="#00D4FF" strokeWidth={2} filter="url(#signal-select-glow)" />
+        )}
         <Shape />
       </svg>
 
