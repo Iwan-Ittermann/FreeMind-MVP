@@ -102,6 +102,7 @@ const Index = () => {
   }, []);
 
   const handleOpinionSubmitted = () => {
+    setOpinionDialogOpen(false);
     queryClient.invalidateQueries({ queryKey: ['topic', DEFAULT_TOPIC_ID] });
     tutorial.onOpinionSubmitted();
   };
