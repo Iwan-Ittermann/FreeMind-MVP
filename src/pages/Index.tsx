@@ -529,6 +529,20 @@ const Index = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Opinion dialog (driven from Index CTA) */}
+      <SubmitOpinionDialog
+        open={opinionDialogOpen}
+        onOpenChange={setOpinionDialogOpen}
+        topicId={DEFAULT_TOPIC_ID}
+        topicTitle={topicData?.title}
+        onSuccess={handleOpinionSubmitted}
+        hasExistingOpinion={!!myOpinion}
+      />
+
+      {/* Sidebars (driven from floating buttons) */}
+      <OpinionsSidebar open={opinionsOpen} onOpenChange={setOpinionsOpen} topicId={DEFAULT_TOPIC_ID} />
+      <ChatsSidebar open={chatsOpen} onOpenChange={setChatsOpen} topicId={DEFAULT_TOPIC_ID} onChatOpen={handleFloatingChatOpen} unreadMessageCounts={unreadMessageCounts} />
     </div>
   );
 };
