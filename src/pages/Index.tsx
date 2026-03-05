@@ -12,6 +12,9 @@ import { Button } from '@/components/ui/button';
 import { Tutorial } from '@/components/Tutorial';
 import { VideoMiniPlayer } from '@/components/VideoMiniPlayer';
 import { ReportDialog } from '@/components/moderation/ReportDialog';
+import { SubmitOpinionDialog } from '@/components/SubmitOpinionDialog';
+import { OpinionsSidebar } from '@/components/OpinionsSidebar';
+import { ChatsSidebar } from '@/components/ChatsSidebar';
 import { ConfigPanel } from '@/components/ConfigPanel';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { GraphNode, GraphEdge, ChatRequest } from '@/types/graph';
@@ -42,6 +45,9 @@ const Index = () => {
   const [configOpen, setConfigOpen] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [opinionDialogOpen, setOpinionDialogOpen] = useState(false);
+  const [opinionsOpen, setOpinionsOpen] = useState(false);
+  const [chatsOpen, setChatsOpen] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: topicData, isLoading, error, activeChats, messageAnimations } = useTopicData(DEFAULT_TOPIC_ID);
@@ -369,10 +375,7 @@ const Index = () => {
               className="w-full max-w-sm mt-4"
             >
               <Button
-                onClick={() => {
-                  const header = document.querySelector('[data-opinion-dialog-trigger]');
-                  if (header) (header as HTMLButtonElement).click();
-                }}
+                onClick={() => setOpinionDialogOpen(true)}
                 className="w-full h-11 rounded-full bg-accent text-accent-foreground hover:bg-accent/90 font-semibold text-base shadow-lg shadow-accent/25 animate-pulse-fast"
               >
                 <Pencil className="h-5 w-5 mr-2" />
@@ -435,10 +438,7 @@ const Index = () => {
           </button>
         )}
         <button
-          onClick={() => {
-            const btn = document.querySelector('[data-tutorial="opinions-button"]') as HTMLButtonElement;
-            btn?.click();
-          }}
+          onClick={() => { setOpinionsOpen(true); setChatsOpen(false); }}
           className="h-12 w-12 rounded-full bg-muted/80 backdrop-blur-sm border border-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shadow-lg"
           title={t('sidebar.allOpinions', 'All Opinions')}
         >
@@ -447,10 +447,7 @@ const Index = () => {
         {user && (
           <div className="relative">
             <button
-              onClick={() => {
-                const btn = document.querySelector('[data-tutorial="chats-button"]') as HTMLButtonElement;
-                btn?.click();
-              }}
+              onClick={() => { setChatsOpen(true); setOpinionsOpen(false); }}
               className="h-12 w-12 rounded-full bg-muted/80 backdrop-blur-sm border border-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shadow-lg"
               title={t('sidebar.myChats', 'My Chats')}
             >
