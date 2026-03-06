@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, X, Send, Check, Flag, Settings, HelpCircle, ZoomIn, ZoomOut, Pencil, List, MessagesSquare } from 'lucide-react';
+import { MessageSquare, X, Send, Check, Flag, Pencil } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useTranslation } from 'react-i18next';
 import { FloatingChatManager, FloatingChatManagerHandle } from '@/components/chat/FloatingChatManager';
@@ -10,13 +10,11 @@ import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Tutorial } from '@/components/Tutorial';
-import { VideoMiniPlayer } from '@/components/VideoMiniPlayer';
 import { ReportDialog } from '@/components/moderation/ReportDialog';
 import { SubmitOpinionDialog } from '@/components/SubmitOpinionDialog';
 import { OpinionsSidebar } from '@/components/OpinionsSidebar';
 import { ChatsSidebar } from '@/components/ChatsSidebar';
-import { ConfigPanel } from '@/components/ConfigPanel';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { RequestsSidebar } from '@/components/RequestsSidebar';
 import { GraphNode, GraphEdge, ChatRequest } from '@/types/graph';
 import { useTopicData } from '@/hooks/useTopicData';
 import { useChatRequests } from '@/hooks/useChatRequests';
@@ -28,7 +26,6 @@ import { useTutorialContext } from '@/contexts/TutorialContext';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
-const VIDEO_URL = 'https://jmkbkwhiucnksdygbomc.supabase.co/storage/v1/object/public/tutorials/freemind-video-tutorial.mp4';
 const DEFAULT_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
 
 const Index = () => {
@@ -41,13 +38,10 @@ const Index = () => {
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [graphSize, setGraphSize] = useState({ width: 600, height: 600 });
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
-  const [videoOpen, setVideoOpen] = useState(false);
-  const [configOpen, setConfigOpen] = useState(false);
-  const [isZoomed, setIsZoomed] = useState(false);
-  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [opinionDialogOpen, setOpinionDialogOpen] = useState(false);
   const [opinionsOpen, setOpinionsOpen] = useState(false);
   const [chatsOpen, setChatsOpen] = useState(false);
+  const [requestsOpen, setRequestsOpen] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: topicData, isLoading, error, activeChats, messageAnimations } = useTopicData(DEFAULT_TOPIC_ID);
@@ -65,18 +59,6 @@ const Index = () => {
     ? Array.from(unreadMessageCounts.values()).reduce((sum, count) => sum + count, 0)
     : 0;
   useBrowserNotification(totalUnreadCount);
-
-  // Track whether user has ever opened the help popover (for glow effect)
-  const [helpEverOpened, setHelpEverOpened] = useState(() => {
-    try { return localStorage.getItem('freemind_help_opened') === 'true'; } catch { return false; }
-  });
-
-  const handleHelpOpenChange = (open: boolean) => {
-    if (open && !helpEverOpened) {
-      setHelpEverOpened(true);
-      try { localStorage.setItem('freemind_help_opened', 'true'); } catch {}
-    }
-  };
 
   const graphChatRequests: ChatRequest[] = chatRequests.map(r => ({
     id: r.id,
@@ -202,29 +184,21 @@ const Index = () => {
   const actionState = getNodeActionState();
   const hasRealData = topicData && topicData.opinions.length > 0;
 
-  const userChats = chatRequests.filter(r => r.status === 'accepted');
-  const hasActiveChats = userChats.length > 0;
-
-  const zoomScale = isZoomed ? 1.4 : 1;
-  const displaySize = {
-    width: Math.round(graphSize.width * zoomScale),
-    height: Math.round(graphSize.height * zoomScale),
-  };
-
   return (
     <div className="min-h-screen bg-black text-white overflow-x-hidden flex flex-col" onClick={handleBackgroundClick}>
       <Header
         title={topicData?.title || "How to fix Climate Change?"}
         topicId={DEFAULT_TOPIC_ID}
         hasExistingOpinion={!!myOpinion}
-        onOpinionSubmitted={handleOpinionSubmitted}
         myOpinionId={myOpinion?.id}
         onChatOpen={handleFloatingChatOpen}
         totalUnread={totalUnreadCount}
         unreadMessageCounts={unreadMessageCounts}
         isLoading={isLoading}
         hideAddOpinion
-        hideSidebarButtons
+        onOpenOpinions={() => setOpinionsOpen(true)}
+        onOpenChats={() => setChatsOpen(true)}
+        onOpenRequests={() => setRequestsOpen(true)}
       />
 
       {/* Mobile title below header */}
@@ -237,13 +211,11 @@ const Index = () => {
       )}
 
       <div className="flex-1 flex flex-col items-center justify-center px-2 md:px-4 py-4 md:py-6">
-
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2 }}
           className="relative flex items-center justify-center"
-          style={isMobile && isZoomed ? { overflow: 'auto', maxWidth: '100%', maxHeight: 'calc(100vh - 140px)' } : undefined}
         >
           <OpinionGraph
             opinions={hasRealData ? topicData.opinions : undefined}
@@ -255,15 +227,13 @@ const Index = () => {
             currentUserOpinionId={myOpinion?.id}
             onlineOpinionIds={onlineOpinionIds}
             unreadMessageCounts={unreadMessageCounts}
-            width={displaySize.width}
-            height={displaySize.height}
+            width={graphSize.width}
+            height={graphSize.height}
             onNodeSelect={handleNodeClick}
             onEdgeClick={handleEdgeClick}
             useMockData={false}
             selectedNodeId={selectedNode?.id ?? null}
           />
-
-          {/* Stats bar removed from here — now below the graph */}
 
           {/* Selected node action panel */}
           <AnimatePresence>
@@ -389,80 +359,6 @@ const Index = () => {
 
       <Footer />
 
-      {/* Settings button — top-right */}
-      <button
-        onClick={() => setConfigOpen(true)}
-        className="fixed top-24 right-4 z-40 h-12 w-12 rounded-full bg-muted/80 backdrop-blur-sm border border-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shadow-lg"
-        data-tutorial="settings-button"
-      >
-        <Settings className="h-5 w-5" />
-      </button>
-
-      {/* Help "?" button — bottom-left */}
-      <div className="fixed bottom-6 left-6 z-40">
-        <Popover onOpenChange={handleHelpOpenChange}>
-          <PopoverTrigger asChild>
-            <button
-              className={`h-12 w-12 rounded-full bg-muted/80 backdrop-blur-sm border border-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shadow-lg ${
-                !helpEverOpened ? 'animate-pulse-fast ring-2 ring-accent ring-offset-2 ring-offset-background' : ''
-              }`}
-            >
-              <HelpCircle className="h-5 w-5" />
-            </button>
-          </PopoverTrigger>
-          <PopoverContent side="right" align="end" className="w-64 p-4">
-            <ol className="list-decimal list-inside space-y-2 text-sm text-foreground mb-3">
-              <li>Teile deine Meinung</li>
-              <li>Frag Chats an</li>
-              <li>Bewerte deine Chats</li>
-            </ol>
-            <Button
-              onClick={() => { tutorial.startTutorial(); }}
-              variant="outline"
-              size="sm"
-              className="w-full border-accent text-accent hover:bg-accent/10"
-            >
-              {t('help.startTutorial')}
-            </Button>
-          </PopoverContent>
-        </Popover>
-      </div>
-
-      {/* Sidebar buttons — bottom-right, stacked vertically */}
-      <div className="fixed bottom-6 right-6 z-40 flex flex-col gap-3">
-        {isMobile && (
-          <button
-            onClick={() => setIsZoomed(z => !z)}
-            className="h-12 w-12 rounded-full bg-muted/80 backdrop-blur-sm border border-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shadow-lg"
-          >
-            {isZoomed ? <ZoomOut className="h-5 w-5" /> : <ZoomIn className="h-5 w-5" />}
-          </button>
-        )}
-        <button
-          onClick={() => { setOpinionsOpen(true); setChatsOpen(false); }}
-          className="h-12 w-12 rounded-full bg-muted/80 backdrop-blur-sm border border-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shadow-lg"
-          title={t('sidebar.allOpinions', 'All Opinions')}
-        >
-          <List className="h-5 w-5" />
-        </button>
-        {user && (
-          <div className="relative">
-            <button
-              onClick={() => { setChatsOpen(true); setOpinionsOpen(false); }}
-              className="h-12 w-12 rounded-full bg-muted/80 backdrop-blur-sm border border-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shadow-lg"
-              title={t('sidebar.myChats', 'My Chats')}
-            >
-              <MessagesSquare className="h-5 w-5" />
-            </button>
-            {totalUnreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center px-1">
-                {totalUnreadCount > 99 ? '99+' : totalUnreadCount}
-              </span>
-            )}
-          </div>
-        )}
-      </div>
-
       {/* Floating Chat Manager (desktop only) */}
       {!isMobile && (
         <FloatingChatManager
@@ -472,20 +368,6 @@ const Index = () => {
           unreadMessageCounts={unreadMessageCounts}
         />
       )}
-
-      {/* Config Panel */}
-      <ConfigPanel
-        open={configOpen}
-        onOpenChange={setConfigOpen}
-        hasActiveChats={hasActiveChats}
-      />
-
-      {/* Video Mini Player */}
-      <VideoMiniPlayer
-        isOpen={videoOpen}
-        onClose={() => setVideoOpen(false)}
-        videoSrc={VIDEO_URL}
-      />
 
       {/* Tutorial Overlay */}
       <Tutorial
@@ -499,38 +381,7 @@ const Index = () => {
         hasExistingOpinion={!!myOpinion}
       />
 
-      {/* Login prompt for tutorial */}
-      <AnimatePresence>
-        {showLoginPrompt && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="fixed inset-0 z-[110] flex items-center justify-center"
-          >
-            <div className="absolute inset-0 bg-black/50" onClick={() => setShowLoginPrompt(false)} />
-            <div className="relative bg-card border border-border rounded-xl shadow-2xl p-6 max-w-xs text-center">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute top-2 right-2 h-6 w-6 text-muted-foreground hover:text-foreground"
-                onClick={() => setShowLoginPrompt(false)}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-              <p className="text-foreground font-medium mb-4">{t('tutorial.pleaseLoginFirst')}</p>
-              <Button
-                onClick={() => navigate('/auth')}
-                className="bg-accent text-accent-foreground hover:bg-accent/90"
-              >
-                {t('tutorial.loginToStart')}
-              </Button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Opinion dialog (driven from Index CTA) */}
+      {/* Opinion dialog */}
       <SubmitOpinionDialog
         open={opinionDialogOpen}
         onOpenChange={setOpinionDialogOpen}
@@ -540,9 +391,10 @@ const Index = () => {
         hasExistingOpinion={!!myOpinion}
       />
 
-      {/* Sidebars (driven from floating buttons) */}
+      {/* Sidebars */}
       <OpinionsSidebar open={opinionsOpen} onOpenChange={setOpinionsOpen} topicId={DEFAULT_TOPIC_ID} />
       <ChatsSidebar open={chatsOpen} onOpenChange={setChatsOpen} topicId={DEFAULT_TOPIC_ID} onChatOpen={handleFloatingChatOpen} unreadMessageCounts={unreadMessageCounts} />
+      <RequestsSidebar open={requestsOpen} onOpenChange={setRequestsOpen} topicId={DEFAULT_TOPIC_ID} />
     </div>
   );
 };
