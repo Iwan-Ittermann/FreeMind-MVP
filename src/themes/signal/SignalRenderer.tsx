@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useRef } from 'react';
+import { useMemo, useCallback, useRef, useState, useEffect } from 'react';
 import { GraphNode, GraphEdge, LayoutConfig } from '@/types/graph';
 import { ActiveChat, MessageAnimationData } from '@/hooks/useTopicData';
 import { tokenizeNodes, tokenizeEdge, tokenizeZones } from '../tokenizer';
