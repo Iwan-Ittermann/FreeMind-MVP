@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useRef } from 'react';
+import { useMemo, useCallback, useRef, useState, useEffect } from 'react';
 import { GraphNode, GraphEdge, LayoutConfig } from '@/types/graph';
 import { ActiveChat, MessageAnimationData } from '@/hooks/useTopicData';
 import { tokenizeNodes, tokenizeEdge, tokenizeZones } from '../tokenizer';
@@ -45,12 +45,47 @@ export function SignalRenderer({
     [nodes, config, edges, currentUserId, currentUserOpinionId],
   );
 
+  // Rolling label rotation: show 5 at a time, swap 2 every 3s
+  const [visibleLabelIds, setVisibleLabelIds] = useState<Set<string>>(new Set());
+  const allNodeIds = useMemo(() => nodeTokens.map(n => n.id), [nodeTokens]);
+
+  useEffect(() => {
+    if (allNodeIds.length <= 5) {
+      setVisibleLabelIds(new Set(allNodeIds));
+      return;
+    }
+    // Initialize with first 5 (excluding current user which is always shown)
+    const nonUserIds = allNodeIds.filter(id => id !== currentUserOpinionId);
+    setVisibleLabelIds(new Set(nonUserIds.slice(0, 5)));
+
+    const interval = setInterval(() => {
+      setVisibleLabelIds(prev => {
+        const currentVisible = Array.from(prev);
+        const currentHidden = nonUserIds.filter(id => !prev.has(id));
+        if (currentHidden.length === 0) return prev;
+
+        const next = new Set(prev);
+        // Remove up to 2 random visible ones
+        const shuffledVisible = [...currentVisible].sort(() => Math.random() - 0.5);
+        const toRemove = shuffledVisible.slice(0, Math.min(2, currentHidden.length));
+        toRemove.forEach(id => next.delete(id));
+        // Add up to 2 random hidden ones
+        const shuffledHidden = [...currentHidden].sort(() => Math.random() - 0.5);
+        shuffledHidden.slice(0, 2).forEach(id => next.add(id));
+        return next;
+      });
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [allNodeIds, currentUserOpinionId]);
+
   const speechBubbleIds = useMemo(() => {
-    const sorted = [...nodeTokens].sort((a, b) =>
-      (ZONE_PRIORITY[a.zone] ?? 9) - (ZONE_PRIORITY[b.zone] ?? 9)
-    );
-    return new Set(sorted.slice(0, maxBubbles).map(n => n.id));
-  }, [nodeTokens, maxBubbles]);
+    const base = new Set(visibleLabelIds);
+    // Always show current user's node
+    if (currentUserOpinionId) base.add(currentUserOpinionId);
+    // Always show highlighted node
+    if (highlightedNode) base.add(highlightedNode);
+    return base;
+  }, [visibleLabelIds, currentUserOpinionId, highlightedNode]);
 
   const edgeTokens: readonly SemanticEdgeToken[] = useMemo(
     () => {
