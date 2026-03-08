@@ -211,9 +211,6 @@ export default function TopicView() {
       <Header 
         title={topicData.title}
         topicId={topicId}
-        hasExistingOpinion={!!myOpinion}
-        onOpinionSubmitted={handleOpinionSubmitted}
-        myOpinionId={myOpinion?.id}
       />
 
       <div className="flex-1 container mx-auto px-4 py-6 md:py-8">

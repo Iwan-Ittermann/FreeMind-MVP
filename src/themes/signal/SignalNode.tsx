@@ -10,7 +10,7 @@ function CoreShape() {
       <defs>
         <filter id="signal-glow-gold">
           <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
-          <feFlood floodColor="#FFDC8C" floodOpacity="0.6" result="goldColor"/>
+          <feFlood floodColor="#DAA520" floodOpacity="0.5" result="goldColor"/>
           <feComposite in="goldColor" in2="coloredBlur" operator="in" result="goldGlow"/>
           <feMerge><feMergeNode in="goldGlow"/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
@@ -18,8 +18,8 @@ function CoreShape() {
           <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#00D4FF" floodOpacity="0.7"/>
         </filter>
       </defs>
-      <circle cx="20" cy="20" r="14" stroke="#FFFFFF" strokeWidth="1" fill="none" filter="url(#signal-glow-gold)" />
-      <path d="M20 8 L23 17 L32 20 L23 23 L20 32 L17 23 L8 20 L17 17 Z" fill="#FFFFFF" filter="url(#signal-glow-gold)" />
+      {/* Star/diamond shape only — no outer ring */}
+      <path d="M20 8 L23 17 L32 20 L23 23 L20 32 L17 23 L8 20 L17 17 Z" fill="#DAA520" filter="url(#signal-glow-gold)" />
     </>
   );
 }
@@ -27,23 +27,23 @@ function CoreShape() {
 function MiddleShape() {
   return (
     <>
-      <circle cx="20" cy="20" r="12" stroke="#00D4FF" strokeWidth="2" fill="none" />
-      <circle cx="20" cy="20" r="6" fill="#00D4FF" />
+      {/* Inner dot only — no outer ring */}
+      <circle cx="20" cy="20" r="6" fill="#8FBC5E" />
     </>
   );
 }
 
 function OuterShape() {
   return (
-    <rect x="12" y="12" width="16" height="16" fill="#551111" stroke="none" />
+    <rect x="12" y="12" width="16" height="16" fill="#CC5500" stroke="none" />
   );
 }
 
 function InactiveShape() {
   return (
     <>
-      <circle cx="20" cy="20" r="12" stroke="#4A5168" strokeWidth="1.5" strokeDasharray="4 2" fill="none" />
-      <circle cx="20" cy="20" r="3" fill="#4A5168" />
+      <circle cx="20" cy="20" r="12" stroke="#78716C" strokeWidth="1.5" strokeDasharray="4 2" fill="none" />
+      <circle cx="20" cy="20" r="3" fill="#78716C" />
     </>
   );
 }
@@ -99,8 +99,8 @@ export const SignalNode = memo(function SignalNode({
       {/* Speech bubble */}
       {showSpeechBubble && bubbleText && (
         <g transform={`translate(0, ${-HALF - 14})`} opacity={token.zone === 'core' || token.zone === 'middle' ? 0.5 : 0.92}>
-          <rect x={-70} y={-18} width={140} height={28} rx={8} fill="rgba(0,0,0,0.30)" stroke="#00D4FF" strokeWidth={0.5} strokeOpacity={0.4} />
-          <polygon points="-4,10 4,10 0,16" fill="rgba(0,0,0,0.30)" />
+          <rect x={-70} y={-18} width={140} height={28} rx={8} fill="rgba(26,26,46,0.85)" stroke="#DAA520" strokeWidth={0.5} strokeOpacity={0.3} />
+          <polygon points="-4,10 4,10 0,16" fill="rgba(26,26,46,0.85)" />
           <text x={0} y={-3} textAnchor="middle" dominantBaseline="central" fill="#FFFFFFE6" fontSize="14" fontFamily="monospace">
             {bubbleText}
           </text>
@@ -143,8 +143,8 @@ export const SignalNode = memo(function SignalNode({
       {/* Online badge */}
       {token.isOnline && !token.isCurrentUser && (
         <g transform={`translate(${-HALF + 2}, ${4})`}>
-          <rect x={-14} y={-6} width={28} height={12} rx={2} fill="#00D4FF" fillOpacity={0.8} />
-          <text x={0} y={0} textAnchor="middle" dominantBaseline="central" fill="#0B0E1A" fontSize="5" fontWeight="bold" fontFamily="monospace">
+          <rect x={-14} y={-6} width={28} height={12} rx={2} fill="#8FBC5E" fillOpacity={0.8} />
+          <text x={0} y={0} textAnchor="middle" dominantBaseline="central" fill="#1A1A2E" fontSize="5" fontWeight="bold" fontFamily="monospace">
             Online
           </text>
         </g>
@@ -153,8 +153,8 @@ export const SignalNode = memo(function SignalNode({
       {/* Unread badge */}
       {token.hasUnread && !token.hasIncomingRequest && (
         <g transform={`translate(${HALF * 0.6}, ${-HALF * 0.9})`}>
-          <rect x={-6} y={-5} width={12} height={9} rx={1.5} fill="#0B0E1A" stroke="#00D4FF" strokeWidth={0.5} />
-          <path d="M-5,-4 L0,0 L5,-4" fill="none" stroke="#00D4FF" strokeWidth={0.5} />
+          <rect x={-6} y={-5} width={12} height={9} rx={1.5} fill="#1A1A2E" stroke="#DAA520" strokeWidth={0.5} />
+          <path d="M-5,-4 L0,0 L5,-4" fill="none" stroke="#DAA520" strokeWidth={0.5} />
           <circle cx={5} cy={-5} r={5} fill="#FF3B3B" />
           <text x={5} y={-5} textAnchor="middle" dominantBaseline="central" fill="#E0FFFF" fontSize="6" fontWeight="bold" fontFamily="monospace">
             {token.unreadCount > 9 ? '9+' : token.unreadCount}
@@ -167,7 +167,7 @@ export const SignalNode = memo(function SignalNode({
         <circle
           r={HALF * 0.9}
           fill="none"
-          stroke="#00D4FF"
+          stroke="#DAA520"
           strokeWidth={2}
           className="animate-gentle-ring-pulse"
           style={{ transformOrigin: 'center' }}

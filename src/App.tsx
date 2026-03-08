@@ -11,7 +11,7 @@ import { FreeMindThemeProvider } from "@/themes/ThemeContext";
 import Splash from "./pages/Splash";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
-import Chat from "./pages/Chat";
+import { Navigate } from "react-router-dom";
 import Admin from "./pages/Admin";
 import TopicJoin from "./pages/TopicJoin";
 import TopicView from "./pages/TopicView";
@@ -48,7 +48,7 @@ function AppRoutes() {
       <Route path="/about" element={<About />} />
       <Route path="/home" element={<Index />} />
       <Route path="/auth" element={<Auth />} />
-      <Route path="/chat" element={<Chat />} />
+      <Route path="/chat" element={<Navigate to="/home" replace />} />
       <Route path="/admin" element={<Admin />} />
       <Route path="/legal" element={<Legal />} />
       <Route path="/t/:slug" element={<TopicJoin />} />

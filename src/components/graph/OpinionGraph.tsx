@@ -28,6 +28,7 @@ interface OpinionGraphProps {
   height?: number;
   useMockData?: boolean;
   selectedNodeId?: string | null;
+  showLabels?: 'none' | 'highlighted-only';
 }
 
 export function OpinionGraph({ 
@@ -46,6 +47,7 @@ export function OpinionGraph({
   height = 600,
   useMockData = false,
   selectedNodeId = null,
+  showLabels = 'highlighted-only',
 }: OpinionGraphProps) {
   const [highlightedNode, setHighlightedNode] = useState<string | null>(null);
 
@@ -159,6 +161,7 @@ export function OpinionGraph({
           onNodeClick={handleNodeClick}
           onNodeHover={handleNodeHover}
           onEdgeClick={onEdgeClick}
+          {...(theme === 'signal' ? { showLabels } : {})}
         />
       </div>
     );
