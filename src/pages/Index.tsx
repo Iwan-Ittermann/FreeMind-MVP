@@ -1,12 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, X, Send, Check, Flag, Pencil, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MessageSquare, X, Send, Check, Flag, Pencil } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useTranslation } from 'react-i18next';
 import { FloatingChatManager, FloatingChatManagerHandle } from '@/components/chat/FloatingChatManager';
 import { OpinionGraph } from '@/components/graph/OpinionGraph';
-import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Tutorial } from '@/components/Tutorial';
@@ -16,6 +15,7 @@ import { OpinionsSidebar } from '@/components/OpinionsSidebar';
 import { ChatsSidebar } from '@/components/ChatsSidebar';
 import { BottomTabBar, MobilePanel } from '@/components/BottomTabBar';
 import { BottomPanel } from '@/components/BottomPanel';
+import { DesktopBottomBar } from '@/components/DesktopBottomBar';
 import { MainMenu } from '@/components/MainMenu';
 import { GraphNode, GraphEdge, ChatRequest } from '@/types/graph';
 import { useTopicData } from '@/hooks/useTopicData';
@@ -47,9 +47,12 @@ const Index = () => {
   const [activeMobilePanel, setActiveMobilePanel] = useState<MobilePanel>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Desktop sidebar collapse state
-  const [leftCollapsed, setLeftCollapsed] = useState(false);
-  const [rightCollapsed, setRightCollapsed] = useState(false);
+  // Desktop sidebar state
+  const [leftOpen, setLeftOpen] = useState(true);
+  const [rightOpen, setRightOpen] = useState(true);
+
+  // Desktop settings sheet
+  const [settingsSheetOpen, setSettingsSheetOpen] = useState(false);
 
   const { data: topicData, isLoading, error, activeChats, messageAnimations } = useTopicData(DEFAULT_TOPIC_ID);
   const {
@@ -74,7 +77,7 @@ const Index = () => {
     status: r.status as 'pending' | 'accepted' | 'declined',
   }));
 
-  // Handle mobile panel changes — close menu sheet when switching to menu panel
+  // Handle mobile panel changes
   const handleMobilePanelChange = useCallback((panel: MobilePanel) => {
     if (panel === 'menu') {
       setActiveMobilePanel(null);
@@ -85,19 +88,18 @@ const Index = () => {
     }
   }, []);
 
-  // Graph sizing — responsive to panel state
+  // Graph sizing
   useEffect(() => {
     const updateSize = () => {
       const mobile = window.innerWidth < 768;
       if (mobile) {
-        // Calculate available height: screen - header(56) - bottomBar(56) - panelHeight(if open)
         const panelHeight = activeMobilePanel ? window.innerHeight * 0.55 : 0;
         const availableHeight = window.innerHeight - 56 - 56 - panelHeight;
         const availableWidth = window.innerWidth - 16;
         const size = Math.min(availableWidth, availableHeight - 16);
         setGraphSize({ width: Math.max(size, 200), height: Math.max(size, 200) });
       } else {
-        const panelWidth = (leftCollapsed ? 48 : 280) + (rightCollapsed ? 48 : 300);
+        const panelWidth = (leftOpen ? 280 : 0) + (rightOpen ? 300 : 0);
         const available = window.innerWidth - panelWidth - 48;
         const size = Math.min(available, window.innerHeight - 140, 700);
         setGraphSize({ width: size, height: size });
@@ -106,7 +108,7 @@ const Index = () => {
     updateSize();
     window.addEventListener('resize', updateSize);
     return () => window.removeEventListener('resize', updateSize);
-  }, [activeMobilePanel, leftCollapsed, rightCollapsed]);
+  }, [activeMobilePanel, leftOpen, rightOpen]);
 
   const handleOpinionSubmitted = () => {
     setOpinionDialogOpen(false);
@@ -161,10 +163,8 @@ const Index = () => {
     }
   };
 
-  // Central chat-opening function — no more /chat navigation
   const openChatWith = useCallback((theirOpinionId: string) => {
     if (isMobile) {
-      // Open chats panel on mobile
       setActiveMobilePanel('chats');
     } else {
       chatManagerRef.current?.openChat(theirOpinionId);
@@ -179,19 +179,15 @@ const Index = () => {
 
   const handleEdgeClick = (edge: GraphEdge) => {
     if (isMobile) {
-      // On mobile, just highlight and open chats panel
       setActiveMobilePanel('chats');
     } else {
       chatManagerRef.current?.openReadOnlyChat(edge.source, edge.target);
     }
   };
 
-  // Sidebar highlight callbacks
   const handleSidebarOpinionClick = useCallback((opinionId: string) => {
-    // Find the node and select it for highlighting
     const node = topicData?.opinions.find(op => op.id === opinionId);
     if (node) {
-      // Use selectedNode to trigger graph highlighting
       setSelectedNode(prev => prev?.id === opinionId ? null : {
         id: opinionId,
         x: 0, y: 0, zone: 'outer' as const,
@@ -210,6 +206,15 @@ const Index = () => {
     openChatWith(theirOpinionId);
   }, [openChatWith]);
 
+  // Desktop bottom bar handlers
+  const handleAbout = () => navigate('/');
+  const handleTutorial = () => {
+    if (!user) { navigate('/auth'); return; }
+    tutorial.resetTutorialStatus();
+    setTimeout(() => tutorial.startTutorial(), 300);
+  };
+  const handleSettings = () => setSettingsSheetOpen(true);
+
   const getNodeActionState = () => {
     if (!selectedNode || !myOpinion) return 'none';
     if (selectedNode.opinion.authorId === user?.id) return 'own';
@@ -225,45 +230,40 @@ const Index = () => {
   const actionState = getNodeActionState();
   const hasRealData = topicData && topicData.opinions.length > 0;
 
-  return (
-    <div className="min-h-screen bg-[#1A1A2E] text-foreground overflow-x-hidden flex flex-col" onClick={handleBackgroundClick}>
-      <Header
-        title={topicData?.title || "How to fix Climate Change?"}
-        topicId={DEFAULT_TOPIC_ID}
-        totalUnread={totalUnreadCount}
-      />
+  // Mobile graph height when panel is open
+  const mobileGraphStyle = isMobile && activeMobilePanel
+    ? { height: 'calc(100vh - 56px - 55vh - 56px)' }
+    : isMobile
+    ? { height: 'calc(100vh - 56px - 56px)' }
+    : undefined;
 
-      {/* Stats and mobile title removed */}
+  return (
+    <div className="h-screen bg-[#1A1A2E] text-foreground overflow-hidden flex flex-col" onClick={handleBackgroundClick}>
+      <Header title={topicData?.title || "How to fix Climate Change?"} />
 
       {/* Main layout */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden min-h-0">
         {/* Desktop left panel — Opinions */}
-        {!isMobile && (
-          <div className={`flex flex-col border-r border-border/20 bg-[#1A1A2E]/60 transition-all duration-300 flex-shrink-0 ${leftCollapsed ? 'w-[48px]' : 'w-[280px]'}`}>
-            {!leftCollapsed && (
-              <div className="flex-1 p-3 overflow-hidden flex flex-col">
-                <OpinionsSidebar
-                  open={true}
-                  onOpenChange={() => {}}
-                  topicId={DEFAULT_TOPIC_ID}
-                  variant="inline"
-                  onOpinionClick={handleSidebarOpinionClick}
-                  onChatOpen={openChatWith}
-                />
-              </div>
-            )}
-            <button
-              onClick={() => setLeftCollapsed(!leftCollapsed)}
-              className="w-full h-10 flex items-center justify-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 border-t border-border/20 transition-colors"
-            >
-              {leftCollapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
-              {!leftCollapsed && <span>{t('sidebar.hideOpinions', 'Hide Opinions')}</span>}
-            </button>
+        {!isMobile && leftOpen && (
+          <div className="w-[280px] flex flex-col border-r border-border/20 bg-[#1A1A2E]/60 flex-shrink-0">
+            <div className="flex-1 p-3 overflow-y-auto">
+              <OpinionsSidebar
+                open={true}
+                onOpenChange={() => {}}
+                topicId={DEFAULT_TOPIC_ID}
+                variant="inline"
+                onOpinionClick={handleSidebarOpinionClick}
+                onChatOpen={openChatWith}
+              />
+            </div>
           </div>
         )}
 
         {/* Center — Graph + CTA */}
-        <div className="flex-1 flex flex-col items-center justify-center px-2 md:px-4">
+        <div
+          className="flex-1 flex flex-col items-center justify-center px-2 md:px-4 min-h-0"
+          style={mobileGraphStyle}
+        >
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -373,7 +373,7 @@ const Index = () => {
             )}
           </motion.div>
 
-          {/* CTA — between graph and bottom bar on mobile, only when no opinion */}
+          {/* CTA */}
           <AnimatePresence>
             {user && !myOpinion && !isLoading && (
               <motion.div
@@ -396,31 +396,36 @@ const Index = () => {
         </div>
 
         {/* Desktop right panel — Chats + Requests */}
-        {!isMobile && (
-          <div className={`flex flex-col border-l border-border/20 bg-[#1A1A2E]/60 transition-all duration-300 flex-shrink-0 ${rightCollapsed ? 'w-[48px]' : 'w-[300px]'}`}>
-            {!rightCollapsed && (
-              <div className="flex-1 p-3 overflow-hidden flex flex-col">
-                <ChatsSidebar
-                  open={true}
-                  onOpenChange={() => {}}
-                  topicId={DEFAULT_TOPIC_ID}
-                  onChatOpen={openChatWith}
-                  unreadMessageCounts={unreadMessageCounts}
-                  variant="inline"
-                  onChatClick={handleSidebarChatClick}
-                />
-              </div>
-            )}
-            <button
-              onClick={() => setRightCollapsed(!rightCollapsed)}
-              className="w-full h-10 flex items-center justify-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 border-t border-border/20 transition-colors"
-            >
-              {rightCollapsed ? <ChevronLeft className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
-              {!rightCollapsed && <span>{t('sidebar.hideChats', 'Hide Chats')}</span>}
-            </button>
+        {!isMobile && rightOpen && (
+          <div className="w-[300px] flex flex-col border-l border-border/20 bg-[#1A1A2E]/60 flex-shrink-0">
+            <div className="flex-1 p-3 overflow-y-auto">
+              <ChatsSidebar
+                open={true}
+                onOpenChange={() => {}}
+                topicId={DEFAULT_TOPIC_ID}
+                onChatOpen={openChatWith}
+                unreadMessageCounts={unreadMessageCounts}
+                variant="inline"
+                onChatClick={handleSidebarChatClick}
+              />
+            </div>
           </div>
         )}
       </div>
+
+      {/* Desktop bottom bar */}
+      {!isMobile && (
+        <DesktopBottomBar
+          leftOpen={leftOpen}
+          rightOpen={rightOpen}
+          onToggleLeft={() => setLeftOpen(v => !v)}
+          onToggleRight={() => setRightOpen(v => !v)}
+          onAbout={handleAbout}
+          onTutorial={handleTutorial}
+          onSettings={handleSettings}
+          totalUnread={totalUnreadCount}
+        />
+      )}
 
       {/* Mobile: Bottom panels */}
       {isMobile && (
@@ -448,7 +453,6 @@ const Index = () => {
             />
           </BottomPanel>
 
-          {/* Mobile menu uses Sheet via MainMenu */}
           <MainMenu
             open={mobileMenuOpen}
             onOpenChange={setMobileMenuOpen}
@@ -464,7 +468,14 @@ const Index = () => {
         </>
       )}
 
-      {!isMobile && <Footer />}
+      {/* Desktop settings sheet (reuse MainMenu settings) */}
+      {!isMobile && (
+        <MainMenu
+          open={settingsSheetOpen}
+          onOpenChange={setSettingsSheetOpen}
+          topicId={DEFAULT_TOPIC_ID}
+        />
+      )}
 
       {/* Floating Chat Manager (desktop only) */}
       {!isMobile && (
