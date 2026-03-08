@@ -210,7 +210,6 @@ export default function TopicView() {
       {/* Header */}
       <Header 
         title={topicData.title}
-        topicId={topicId}
       />
 
       <div className="flex-1 container mx-auto px-4 py-6 md:py-8">
