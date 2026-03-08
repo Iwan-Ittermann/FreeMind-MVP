@@ -4,18 +4,11 @@ import { Link } from 'react-router-dom';
 interface HeaderProps {
   title?: string;
 }
-  title?: string;
-  topicId?: string;
-  totalUnread?: number;
-}
 
-export function Header({ title, topicId, totalUnread = 0 }: HeaderProps) {
-  const isMobile = useIsMobile();
-  const [menuOpen, setMenuOpen] = useState(false);
-
+export function Header({ title }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-white dark:bg-background flex-shrink-0">
-      <div className="px-3 md:px-4 h-14 md:h-14 flex items-center gap-3">
+      <div className="px-3 md:px-4 h-14 flex items-center gap-3">
         <Link to="/" className="flex items-center flex-shrink-0">
           <motion.span
             initial={{ opacity: 0 }}
