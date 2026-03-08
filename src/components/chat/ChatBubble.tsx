@@ -15,7 +15,7 @@ interface ChatBubbleProps {
   isBotMessage?: boolean;
 }
 
-export function ChatBubble({ 
+export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(function ChatBubble({ 
   id, 
   content, 
   isOwn, 
@@ -24,7 +24,7 @@ export function ChatBubble({
   visible = true,
   noticeText,
   isBotMessage = false,
-}: ChatBubbleProps) {
+}: ChatBubbleProps, ref) {
 
   // Show notice for hidden content
   if (!visible && noticeText) {
