@@ -105,6 +105,8 @@ export function SignalRenderer({
     return nodeId === highlightedNode || nodeId === currentUserOpinionId;
   }, [showLabels, highlightedNode, currentUserOpinionId]);
 
+  const nodeScale = config.nodeRadius / 6;
+
   return (
     <svg width={width} height={height} className="overflow-visible">
       <rect width={width} height={height} fill="transparent" onClick={() => onNodeClick(null as unknown as GraphNode)} />
@@ -128,6 +130,7 @@ export function SignalRenderer({
             isHighlighted={highlightedNode === nt.id}
             isDimmed={!!(highlightedNode && highlightedNode !== nt.id)}
             showSpeechBubble={shouldShowBubble(nt.id)}
+            scale={nodeScale}
             onClick={() => handleNodeClick(nt.id)}
             onMouseEnter={() => handleNodeHover(nt.id)}
             onMouseLeave={() => handleNodeHover(null)}
