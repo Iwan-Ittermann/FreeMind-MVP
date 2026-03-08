@@ -52,17 +52,26 @@ export function useChatMessages(chatId: string | null, isBotChat = false): UseCh
 
   // Mark other user's messages as read when chat is open
   useEffect(() => {
-    if (!chatId || !user?.id || messages.length === 0) return;
+    if (!chatId || !user?.id) return;
 
-    supabase
-      .from('chat_messages')
-      .update({ read_at: new Date().toISOString() })
-      .eq('chat_id', chatId)
-      .neq('sender_id', user.id)
-      .is('read_at', null)
-      .then(() => {
-        queryClient.invalidateQueries({ queryKey: ['unreadMessages'] });
-      });
+    const markAsRead = async () => {
+      const { error } = await supabase
+        .from('chat_messages')
+        .update({ read_at: new Date().toISOString() })
+        .eq('chat_id', chatId)
+        .neq('sender_id', user.id)
+        .is('read_at', null);
+
+      if (error) {
+        console.error('Failed to mark messages as read:', error);
+        return;
+      }
+
+      // Force immediate refetch for badge updates
+      queryClient.refetchQueries({ queryKey: ['unreadMessages'] });
+    };
+
+    markAsRead();
   }, [chatId, user?.id, messages.length, queryClient]);
 
   // Subscribe to real-time updates with unique channel name
