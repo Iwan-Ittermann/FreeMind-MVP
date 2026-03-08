@@ -30,6 +30,7 @@ export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(function C
   if (!visible && noticeText) {
     return (
       <motion.div
+        ref={ref}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
