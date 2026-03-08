@@ -46,10 +46,10 @@ export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(function C
   }
 
   return (
-    <>
-      <motion.div
-        initial={{ opacity: 0, y: 10, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ 
           duration: 0.3,
           type: "spring",
