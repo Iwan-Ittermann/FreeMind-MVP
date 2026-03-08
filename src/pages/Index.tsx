@@ -463,7 +463,7 @@ const Index = () => {
             activePanel={activeMobilePanel}
             onPanelChange={handleMobilePanelChange}
             totalUnread={totalUnreadCount}
-            opinionCount={topicData?.opinions.length ?? 0}
+            
           />
         </>
       )}

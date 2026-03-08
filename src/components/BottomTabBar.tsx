@@ -26,11 +26,6 @@ export function BottomTabBar({ activePanel, onPanelChange, totalUnread = 0 }: Bo
       <button className={btnClass('opinions')} onClick={() => handleTap('opinions')}>
         <List className="h-5 w-5" />
         <span className="text-[10px] font-medium">{t('sidebar.allOpinions', 'Opinions')}</span>
-        {opinionCount > 0 && (
-          <span className="absolute top-1 right-[calc(50%-18px)] min-w-[16px] h-[16px] rounded-full bg-muted text-muted-foreground text-[9px] font-bold flex items-center justify-center px-0.5">
-            {opinionCount > 99 ? '99+' : opinionCount}
-          </span>
-        )}
       </button>
 
       <button className={btnClass('menu')} onClick={() => handleTap('menu')}>
