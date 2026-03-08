@@ -161,6 +161,7 @@ export function OpinionGraph({
           onNodeClick={handleNodeClick}
           onNodeHover={handleNodeHover}
           onEdgeClick={onEdgeClick}
+          {...(theme === 'signal' ? { showLabels } : {})}
         />
       </div>
     );
