@@ -20,7 +20,11 @@ interface UseChatMessagesResult {
   isBotTyping: boolean;
 }
 
-export function useChatMessages(chatId: string | null, isBotChat = false): UseChatMessagesResult {
+export function useChatMessages(
+  chatId: string | null,
+  isBotChat = false,
+  broadcastInfo?: { topicId: string; myOpinionId: string; theirOpinionId: string },
+): UseChatMessagesResult {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
