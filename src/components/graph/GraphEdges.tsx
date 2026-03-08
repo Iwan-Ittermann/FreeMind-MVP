@@ -61,7 +61,7 @@ export function GraphEdges({ nodes, edges, highlightedNode, activeChats = [], on
         // Active edges get a brighter color
         const stroke = isActive 
           ? "hsl(var(--primary))" 
-          : "hsl(0 0% 100%)";
+          : "hsl(var(--foreground))";
 
         return (
           <g key={`edge-${index}`}>
