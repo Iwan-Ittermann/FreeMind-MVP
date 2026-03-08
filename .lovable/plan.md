@@ -1,53 +1,24 @@
+## Plan: Bottom Bar, Desktop Panels, Signal Theme Overhaul, Mobile Chat-in-Sidebar, /chat Removal
 
+### ✅ Step 1 Complete
 
-## Fixes: Sidebar Headers, Background, Title Centering, Node Scaling
+1. ✅ Mobile Bottom Tab Bar (`BottomTabBar.tsx`) — 3 buttons: Opinions, Chats, Menu
+2. ✅ Mobile Bottom Panel (`BottomPanel.tsx`) — slide-up panel, no overlay, graph stays visible
+3. ✅ Graph shrinking on mobile panel open — 55% shrink with smooth transition
+4. ✅ Sidebar highlighting — clicking opinion/chat highlights node in graph
+5. ✅ Labels removed — mobile: none, desktop: highlighted-only
+6. ✅ Desktop 3-column layout — persistent side panels with collapse toggles
+7. ✅ Requests merged into ChatsSidebar — tabs: Chats | Requests
+8. ✅ Header cleanup — mobile: logo only, desktop: logo + burger
+9. ✅ MainMenu simplified — only About, Tutorial, Settings, Login/Logout
+10. ✅ /chat route redirects to /home
+11. ✅ Signal theme warm earth palette — charcoal bg, gold core, sage middle, burnt orange outer, stone inactive
+12. ✅ Core/middle node rings removed
 
-### 1. Remove inline header from OpinionsSidebar
+### Step 2 (Later)
 
-**File: `src/components/OpinionsSidebar.tsx`** (lines 137-143)
-
-Delete the `variant === 'inline'` header block (icon, "All Opinions" text, counter). The sidebar will start directly with the search bar.
-
-### 2. Remove opinion count badge from BottomTabBar
-
-**File: `src/components/BottomTabBar.tsx`**
-
-- Remove the `opinionCount` prop and the badge rendering (lines 30-34).
-
-### 3. Background to white
-
-**File: `src/pages/Index.tsx`**
-
-- Change root div `bg-[#1A1A2E]` to `bg-white dark:bg-[#1A1A2E]`.
-- Change desktop left panel `bg-[#1A1A2E]/60` to `bg-white/60 dark:bg-[#1A1A2E]/60`.
-
-### 4. Center title in header
-
-**File: `src/components/Header.tsx`**
-
-- Title: change from `text-left` flex item to `absolute left-1/2 -translate-x-1/2` centered, with `max-w-[60%] truncate text-center`. Logo stays at left edge.
-
-### 5. Scale nodes with graph size
-
-**File: `src/components/graph/OpinionGraph.tsx`** (line 69)
-
-Currently `nodeRadius: 6` is fixed. Make it scale: `nodeRadius: Math.max(3, size * 0.012)`. This means on a 600px graph it's ~7, on a 200px graph it's ~3.
-
-**File: `src/themes/signal/SignalNode.tsx`**
-
-The signal theme uses a fixed `NODE_SIZE = 40`. Pass `scale` factor from the graph (based on `nodeRadius / 6`) and apply `transform: scale(factor)` to the node SVG group. This requires:
-- Adding a `scale` prop to `SignalNode` 
-- Applying it in `SignalRenderer` based on `config.nodeRadius`
-
-### Files Summary
-
-| File | Changes |
-|------|---------|
-| `src/components/OpinionsSidebar.tsx` | Remove inline header (icon + text + counter) |
-| `src/components/BottomTabBar.tsx` | Remove opinion count badge |
-| `src/pages/Index.tsx` | White background |
-| `src/components/Header.tsx` | Center title on both mobile and desktop |
-| `src/components/graph/OpinionGraph.tsx` | Scale `nodeRadius` with graph size |
-| `src/themes/signal/SignalNode.tsx` | Accept and apply scale factor |
-| `src/themes/signal/SignalRenderer.tsx` | Pass scale from config to nodes |
-
+- Unread badge audit
+- TopicView.tsx /chat cleanup
+- Delete RequestsSidebar.tsx
+- Delete /chat route entirely
+- Button design audit across themes

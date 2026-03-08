@@ -238,14 +238,14 @@ const Index = () => {
     : undefined;
 
   return (
-    <div className="h-screen bg-[#1A1A2E] text-foreground overflow-hidden flex flex-col" onClick={handleBackgroundClick}>
+    <div className="h-screen bg-white dark:bg-[#1A1A2E] text-foreground overflow-hidden flex flex-col" onClick={handleBackgroundClick}>
       <Header title={topicData?.title || "How to fix Climate Change?"} />
 
       {/* Main layout */}
       <div className="flex-1 flex overflow-hidden min-h-0">
         {/* Desktop left panel — Opinions */}
         {!isMobile && leftOpen && (
-          <div className="w-[280px] flex flex-col border-r border-border/20 bg-[#1A1A2E]/60 flex-shrink-0">
+          <div className="w-[280px] flex flex-col border-r border-border/20 bg-white/60 dark:bg-[#1A1A2E]/60 flex-shrink-0">
             <div className="flex-1 p-3 overflow-y-auto">
               <OpinionsSidebar
                 open={true}
@@ -397,7 +397,7 @@ const Index = () => {
 
         {/* Desktop right panel — Chats + Requests */}
         {!isMobile && rightOpen && (
-          <div className="w-[300px] flex flex-col border-l border-border/20 bg-[#1A1A2E]/60 flex-shrink-0">
+          <div className="w-[300px] flex flex-col border-l border-border/20 bg-white/60 dark:bg-[#1A1A2E]/60 flex-shrink-0">
             <div className="flex-1 p-3 overflow-y-auto">
               <ChatsSidebar
                 open={true}
@@ -463,7 +463,7 @@ const Index = () => {
             activePanel={activeMobilePanel}
             onPanelChange={handleMobilePanelChange}
             totalUnread={totalUnreadCount}
-            opinionCount={topicData?.opinions.length ?? 0}
+            
           />
         </>
       )}

@@ -133,14 +133,6 @@ export function OpinionsSidebar({ open, onOpenChange, topicId, variant = 'sheet'
 
   const content = (
     <div className="flex flex-col h-full">
-      {/* Header for inline variant */}
-      {variant === 'inline' && (
-        <div className="flex items-center gap-2 mb-3">
-          <List className="w-4 h-4 text-muted-foreground" />
-          <span className="text-sm font-semibold text-foreground">{t('sidebar.allOpinions', 'All Opinions')}</span>
-          {opinions && <span className="text-xs text-muted-foreground ml-auto">{opinions.length}</span>}
-        </div>
-      )}
 
       {/* Search */}
       <div className="relative">

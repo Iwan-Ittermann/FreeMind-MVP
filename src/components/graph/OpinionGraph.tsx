@@ -66,7 +66,7 @@ export function OpinionGraph({
       pinkRadius: outerRadius * 0.92,  // Narrower pink (was 0.95)
       yellowRadius: outerRadius * 0.80, // Wider yellow (was 0.75)
       greenRadius: outerRadius * 0.25,  // Core zone at 25%
-      nodeRadius: 6,
+      nodeRadius: Math.max(3, size * 0.012),
     };
   }, [width, height]);
 
