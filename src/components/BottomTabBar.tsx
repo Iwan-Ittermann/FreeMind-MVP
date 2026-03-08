@@ -10,7 +10,7 @@ interface BottomTabBarProps {
   opinionCount?: number;
 }
 
-export function BottomTabBar({ activePanel, onPanelChange, totalUnread = 0, opinionCount = 0 }: BottomTabBarProps) {
+export function BottomTabBar({ activePanel, onPanelChange, totalUnread = 0 }: BottomTabBarProps) {
   const { t } = useTranslation();
 
   const handleTap = (panel: MobilePanel) => {
