@@ -133,9 +133,9 @@ export const SignalNode = memo(function SignalNode({
 
       {/* "YOU" badge */}
       {token.isCurrentUser && (
-        <g transform={`translate(${HALF * 0.7}, ${-HALF * 0.7})`}>
-          <circle r={8} fill="#FF3B3B" />
-          <text x={0} y={0.5} textAnchor="middle" dominantBaseline="central" fill="#FFFFFF" fontSize="5" fontWeight="bold" fontFamily="monospace">
+        <g transform={`translate(${scaledHalf * 0.7}, ${-scaledHalf * 0.7})`}>
+          <circle r={8 * scale} fill="#FF3B3B" />
+          <text x={0} y={0.5} textAnchor="middle" dominantBaseline="central" fill="#FFFFFF" fontSize={5 * scale} fontWeight="bold" fontFamily="monospace">
             YOU
           </text>
         </g>
@@ -143,9 +143,9 @@ export const SignalNode = memo(function SignalNode({
 
       {/* Online badge */}
       {token.isOnline && !token.isCurrentUser && (
-        <g transform={`translate(${-HALF + 2}, ${4})`}>
-          <rect x={-14} y={-6} width={28} height={12} rx={2} fill="#8FBC5E" fillOpacity={0.8} />
-          <text x={0} y={0} textAnchor="middle" dominantBaseline="central" fill="#1A1A2E" fontSize="5" fontWeight="bold" fontFamily="monospace">
+        <g transform={`translate(${-scaledHalf + 2}, ${4 * scale})`}>
+          <rect x={-14 * scale} y={-6 * scale} width={28 * scale} height={12 * scale} rx={2} fill="#8FBC5E" fillOpacity={0.8} />
+          <text x={0} y={0} textAnchor="middle" dominantBaseline="central" fill="#1A1A2E" fontSize={5 * scale} fontWeight="bold" fontFamily="monospace">
             Online
           </text>
         </g>
@@ -153,11 +153,11 @@ export const SignalNode = memo(function SignalNode({
 
       {/* Unread badge */}
       {token.hasUnread && !token.hasIncomingRequest && (
-        <g transform={`translate(${HALF * 0.6}, ${-HALF * 0.9})`}>
-          <rect x={-6} y={-5} width={12} height={9} rx={1.5} fill="#1A1A2E" stroke="#DAA520" strokeWidth={0.5} />
-          <path d="M-5,-4 L0,0 L5,-4" fill="none" stroke="#DAA520" strokeWidth={0.5} />
-          <circle cx={5} cy={-5} r={5} fill="#FF3B3B" />
-          <text x={5} y={-5} textAnchor="middle" dominantBaseline="central" fill="#E0FFFF" fontSize="6" fontWeight="bold" fontFamily="monospace">
+        <g transform={`translate(${scaledHalf * 0.6}, ${-scaledHalf * 0.9})`}>
+          <rect x={-6 * scale} y={-5 * scale} width={12 * scale} height={9 * scale} rx={1.5} fill="#1A1A2E" stroke="#DAA520" strokeWidth={0.5} />
+          <path d={`M${-5 * scale},${-4 * scale} L0,0 L${5 * scale},${-4 * scale}`} fill="none" stroke="#DAA520" strokeWidth={0.5} />
+          <circle cx={5 * scale} cy={-5 * scale} r={5 * scale} fill="#FF3B3B" />
+          <text x={5 * scale} y={-5 * scale} textAnchor="middle" dominantBaseline="central" fill="#E0FFFF" fontSize={6 * scale} fontWeight="bold" fontFamily="monospace">
             {token.unreadCount > 9 ? '9+' : token.unreadCount}
           </text>
         </g>
@@ -166,7 +166,7 @@ export const SignalNode = memo(function SignalNode({
       {/* Incoming request pulse */}
       {token.hasIncomingRequest && !token.isCurrentUser && (
         <circle
-          r={HALF * 0.9}
+          r={scaledHalf * 0.9}
           fill="none"
           stroke="#DAA520"
           strokeWidth={2}
