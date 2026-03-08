@@ -245,7 +245,7 @@ const Index = () => {
       <div className="flex-1 flex overflow-hidden min-h-0">
         {/* Desktop left panel — Opinions */}
         {!isMobile && leftOpen && (
-          <div className="w-[280px] flex flex-col border-r border-border/20 bg-[#1A1A2E]/60 flex-shrink-0">
+          <div className="w-[280px] flex flex-col border-r border-border/20 bg-white/60 dark:bg-[#1A1A2E]/60 flex-shrink-0">
             <div className="flex-1 p-3 overflow-y-auto">
               <OpinionsSidebar
                 open={true}
