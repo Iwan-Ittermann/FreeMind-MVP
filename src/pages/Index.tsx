@@ -238,7 +238,7 @@ const Index = () => {
     : undefined;
 
   return (
-    <div className="h-screen bg-[#1A1A2E] text-foreground overflow-hidden flex flex-col" onClick={handleBackgroundClick}>
+    <div className="h-screen bg-white dark:bg-[#1A1A2E] text-foreground overflow-hidden flex flex-col" onClick={handleBackgroundClick}>
       <Header title={topicData?.title || "How to fix Climate Change?"} />
 
       {/* Main layout */}
