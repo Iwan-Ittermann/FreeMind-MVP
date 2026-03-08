@@ -90,13 +90,14 @@ const Index = () => {
     const updateSize = () => {
       const mobile = window.innerWidth < 768;
       if (mobile) {
-        const base = Math.min(window.innerWidth - 16, window.innerHeight - 160);
-        // Shrink when panel is open
-        const shrunk = activeMobilePanel ? base * 0.55 : base;
-        setGraphSize({ width: shrunk, height: shrunk });
+        // Calculate available height: screen - header(56) - bottomBar(56) - panelHeight(if open)
+        const panelHeight = activeMobilePanel ? window.innerHeight * 0.55 : 0;
+        const availableHeight = window.innerHeight - 56 - 56 - panelHeight;
+        const availableWidth = window.innerWidth - 16;
+        const size = Math.min(availableWidth, availableHeight - 16);
+        setGraphSize({ width: Math.max(size, 200), height: Math.max(size, 200) });
       } else {
-        // Desktop: account for side panels
-        const panelWidth = (leftCollapsed ? 0 : 280) + (rightCollapsed ? 0 : 300);
+        const panelWidth = (leftCollapsed ? 48 : 280) + (rightCollapsed ? 48 : 300);
         const available = window.innerWidth - panelWidth - 48;
         const size = Math.min(available, window.innerHeight - 140, 700);
         setGraphSize({ width: size, height: size });
