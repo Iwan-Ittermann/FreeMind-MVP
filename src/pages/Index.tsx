@@ -90,13 +90,14 @@ const Index = () => {
     const updateSize = () => {
       const mobile = window.innerWidth < 768;
       if (mobile) {
-        const base = Math.min(window.innerWidth - 16, window.innerHeight - 160);
-        // Shrink when panel is open
-        const shrunk = activeMobilePanel ? base * 0.55 : base;
-        setGraphSize({ width: shrunk, height: shrunk });
+        // Calculate available height: screen - header(56) - bottomBar(56) - panelHeight(if open)
+        const panelHeight = activeMobilePanel ? window.innerHeight * 0.55 : 0;
+        const availableHeight = window.innerHeight - 56 - 56 - panelHeight;
+        const availableWidth = window.innerWidth - 16;
+        const size = Math.min(availableWidth, availableHeight - 16);
+        setGraphSize({ width: Math.max(size, 200), height: Math.max(size, 200) });
       } else {
-        // Desktop: account for side panels
-        const panelWidth = (leftCollapsed ? 0 : 280) + (rightCollapsed ? 0 : 300);
+        const panelWidth = (leftCollapsed ? 48 : 280) + (rightCollapsed ? 48 : 300);
         const available = window.innerWidth - panelWidth - 48;
         const size = Math.min(available, window.innerHeight - 140, 700);
         setGraphSize({ width: size, height: size });
@@ -232,34 +233,15 @@ const Index = () => {
         totalUnread={totalUnreadCount}
       />
 
-      {/* Mobile title below header */}
-      {isMobile && topicData?.title && (
-        <div className="w-full px-4 py-2 bg-[#1A1A2E]/80 border-b border-border/20">
-          <h1 className="text-base font-semibold text-foreground truncate text-center">
-            {topicData.title}
-          </h1>
-        </div>
-      )}
-
-      {/* Stats below title (both mobile and desktop) */}
-      {hasRealData && (
-        <div className="flex items-center justify-center gap-2 py-1.5">
-          <span className="text-[10px] font-medium bg-muted/50 text-muted-foreground px-2 py-0.5 rounded-full">
-            {topicData.opinions.length} {t('common.opinions')}
-          </span>
-          <span className="text-[10px] font-medium bg-muted/50 text-muted-foreground px-2 py-0.5 rounded-full">
-            {topicData.ratings?.length ?? 0} Chats
-          </span>
-        </div>
-      )}
+      {/* Stats and mobile title removed */}
 
       {/* Main layout */}
       <div className="flex-1 flex overflow-hidden">
         {/* Desktop left panel — Opinions */}
         {!isMobile && (
-          <div className={`relative border-r border-border/20 bg-[#1A1A2E]/60 transition-all duration-300 flex-shrink-0 ${leftCollapsed ? 'w-0 overflow-hidden' : 'w-[280px]'}`}>
+          <div className={`flex flex-col border-r border-border/20 bg-[#1A1A2E]/60 transition-all duration-300 flex-shrink-0 ${leftCollapsed ? 'w-[48px]' : 'w-[280px]'}`}>
             {!leftCollapsed && (
-              <div className="h-full p-3 overflow-hidden flex flex-col">
+              <div className="flex-1 p-3 overflow-hidden flex flex-col">
                 <OpinionsSidebar
                   open={true}
                   onOpenChange={() => {}}
@@ -272,9 +254,10 @@ const Index = () => {
             )}
             <button
               onClick={() => setLeftCollapsed(!leftCollapsed)}
-              className="absolute top-1/2 -translate-y-1/2 -right-3 z-10 w-6 h-12 bg-muted/80 hover:bg-muted border border-border/40 rounded-r-lg flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              className="w-full h-10 flex items-center justify-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 border-t border-border/20 transition-colors"
             >
               {leftCollapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
+              {!leftCollapsed && <span>{t('sidebar.hideOpinions', 'Hide Opinions')}</span>}
             </button>
           </div>
         )}
@@ -414,9 +397,9 @@ const Index = () => {
 
         {/* Desktop right panel — Chats + Requests */}
         {!isMobile && (
-          <div className={`relative border-l border-border/20 bg-[#1A1A2E]/60 transition-all duration-300 flex-shrink-0 ${rightCollapsed ? 'w-0 overflow-hidden' : 'w-[300px]'}`}>
+          <div className={`flex flex-col border-l border-border/20 bg-[#1A1A2E]/60 transition-all duration-300 flex-shrink-0 ${rightCollapsed ? 'w-[48px]' : 'w-[300px]'}`}>
             {!rightCollapsed && (
-              <div className="h-full p-3 overflow-hidden flex flex-col">
+              <div className="flex-1 p-3 overflow-hidden flex flex-col">
                 <ChatsSidebar
                   open={true}
                   onOpenChange={() => {}}
@@ -430,9 +413,10 @@ const Index = () => {
             )}
             <button
               onClick={() => setRightCollapsed(!rightCollapsed)}
-              className="absolute top-1/2 -translate-y-1/2 -left-3 z-10 w-6 h-12 bg-muted/80 hover:bg-muted border border-border/40 rounded-l-lg flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              className="w-full h-10 flex items-center justify-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 border-t border-border/20 transition-colors"
             >
               {rightCollapsed ? <ChevronLeft className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+              {!rightCollapsed && <span>{t('sidebar.hideChats', 'Hide Chats')}</span>}
             </button>
           </div>
         )}
