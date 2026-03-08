@@ -69,6 +69,7 @@ interface SignalNodeProps {
   isHighlighted: boolean;
   isDimmed: boolean;
   showSpeechBubble: boolean;
+  scale?: number;
   onClick: () => void;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
