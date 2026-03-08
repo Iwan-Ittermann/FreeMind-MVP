@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { motion } from 'framer-motion';
 import { Quote, AlertTriangle } from 'lucide-react';
 
@@ -14,7 +15,7 @@ interface ChatBubbleProps {
   isBotMessage?: boolean;
 }
 
-export function ChatBubble({ 
+export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(function ChatBubble({ 
   id, 
   content, 
   isOwn, 
@@ -23,12 +24,13 @@ export function ChatBubble({
   visible = true,
   noticeText,
   isBotMessage = false,
-}: ChatBubbleProps) {
+}: ChatBubbleProps, ref) {
 
   // Show notice for hidden content
   if (!visible && noticeText) {
     return (
       <motion.div
+        ref={ref}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
@@ -44,10 +46,10 @@ export function ChatBubble({
   }
 
   return (
-    <>
-      <motion.div
-        initial={{ opacity: 0, y: 10, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ 
           duration: 0.3,
           type: "spring",
@@ -95,7 +97,6 @@ export function ChatBubble({
           </p>
 
         </div>
-      </motion.div>
-    </>
+    </motion.div>
   );
-}
+});

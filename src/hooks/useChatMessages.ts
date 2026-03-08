@@ -140,16 +140,26 @@ export function useChatMessages(
       if (broadcastInfo && chatId) {
         try {
           const channel = supabase.channel(`topic-${broadcastInfo.topicId}-animations`);
-          await channel.send({
-            type: 'broadcast',
-            event: 'message-animation',
-            payload: {
-              sourceOpinionId: broadcastInfo.myOpinionId,
-              targetOpinionId: broadcastInfo.theirOpinionId,
-              chatId,
-            },
+
+          channel.subscribe(async (status) => {
+            if (status !== 'SUBSCRIBED') return;
+
+            try {
+              await channel.send({
+                type: 'broadcast',
+                event: 'message-animation',
+                payload: {
+                  sourceOpinionId: broadcastInfo.myOpinionId,
+                  targetOpinionId: broadcastInfo.theirOpinionId,
+                  chatId,
+                },
+              });
+            } catch (sendErr) {
+              console.error('Failed to send animation broadcast:', sendErr);
+            } finally {
+              supabase.removeChannel(channel);
+            }
           });
-          supabase.removeChannel(channel);
         } catch (err) {
           console.error('Failed to broadcast animation:', err);
         }
