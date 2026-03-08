@@ -11,7 +11,7 @@ import { FreeMindThemeProvider } from "@/themes/ThemeContext";
 import Splash from "./pages/Splash";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
-import Chat from "./pages/Chat";
+import { Navigate } from "react-router-dom";
 import Admin from "./pages/Admin";
 import TopicJoin from "./pages/TopicJoin";
 import TopicView from "./pages/TopicView";
