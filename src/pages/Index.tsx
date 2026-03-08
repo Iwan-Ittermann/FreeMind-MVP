@@ -397,7 +397,7 @@ const Index = () => {
 
         {/* Desktop right panel — Chats + Requests */}
         {!isMobile && rightOpen && (
-          <div className="w-[300px] flex flex-col border-l border-border/20 bg-[#1A1A2E]/60 flex-shrink-0">
+          <div className="w-[300px] flex flex-col border-l border-border/20 bg-white/60 dark:bg-[#1A1A2E]/60 flex-shrink-0">
             <div className="flex-1 p-3 overflow-y-auto">
               <ChatsSidebar
                 open={true}
