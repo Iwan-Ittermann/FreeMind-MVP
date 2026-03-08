@@ -16,7 +16,9 @@ export const SignalEventMarker = memo(function SignalEventMarker({ events }: Sig
           <motion.circle
             key={`${evt.sourceId}-${evt.targetId}-${evt.timestamp}-${i}`}
             r={3}
-            fill="#FFFFFF"
+            fill="hsl(var(--primary))"
+            stroke="hsl(var(--primary))"
+            strokeWidth={1}
             initial={{ cx: evt.sourceX, cy: evt.sourceY, opacity: 0.9, scale: 1 }}
             animate={{
               cx: evt.targetX,
