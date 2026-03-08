@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { SemanticZoneToken } from '../types';
 import { LayoutConfig } from '@/types/graph';
 
@@ -6,7 +7,7 @@ interface SignalZonesProps {
   config: LayoutConfig;
 }
 
-export function SignalZones({ zones, config }: SignalZonesProps) {
+export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function SignalZones({ zones, config }, ref) {
   const cx = config.centerX;
   const cy = config.centerY;
   const r = config.outerRadius;
