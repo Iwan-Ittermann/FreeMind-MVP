@@ -1,4 +1,4 @@
-import { MessagesSquare, List, Menu } from 'lucide-react';
+import { MessagesSquare, List, MoreVertical } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export type MobilePanel = 'chats' | 'opinions' | 'menu' | null;
@@ -34,6 +34,11 @@ export function BottomTabBar({ activePanel, onPanelChange, totalUnread = 0, opin
         )}
       </button>
 
+      <button className={btnClass('menu')} onClick={() => handleTap('menu')}>
+        <MoreVertical className="h-5 w-5" />
+        <span className="text-[10px] font-medium">{t('common.menu', 'Menu')}</span>
+      </button>
+
       <button className={btnClass('chats')} onClick={() => handleTap('chats')}>
         <MessagesSquare className="h-5 w-5" />
         <span className="text-[10px] font-medium">{t('sidebar.myChats', 'Chats')}</span>
@@ -42,12 +47,6 @@ export function BottomTabBar({ activePanel, onPanelChange, totalUnread = 0, opin
             {totalUnread > 99 ? '99+' : totalUnread}
           </span>
         )}
-      </button>
-
-      <button className={btnClass('menu')} onClick={() => handleTap('menu')}>
-        <Menu className="h-5 w-5" />
-        <span className="text-[10px] font-medium">{t('common.menu', 'Menu')}</span>
-      </button>
     </div>
   );
 }
