@@ -7,7 +7,6 @@ interface BottomTabBarProps {
   activePanel: MobilePanel;
   onPanelChange: (panel: MobilePanel) => void;
   totalUnread?: number;
-  opinionCount?: number;
 }
 
 export function BottomTabBar({ activePanel, onPanelChange, totalUnread = 0 }: BottomTabBarProps) {
