@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { MessagesSquare, Inbox, Search, X, Check, Clock } from 'lucide-react';
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { MessagesSquare, Inbox, Search, X, Check, Clock, ArrowLeft, Send } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import {
   Sheet,
@@ -16,6 +16,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useChatRequests } from '@/hooks/useChatRequests';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { EmbeddedChatView } from '@/components/chat/EmbeddedChatView';
 
 interface ChatsSidebarProps {
   open: boolean;
@@ -49,8 +51,10 @@ interface PendingRequestItem {
 export function ChatsSidebar({ open, onOpenChange, topicId, onChatOpen, unreadMessageCounts, variant = 'sheet', onChatClick }: ChatsSidebarProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   const [search, setSearch] = useState('');
   const [expandedRequestId, setExpandedRequestId] = useState<string | null>(null);
+  const [activeChatOpinionId, setActiveChatOpinionId] = useState<string | null>(null);
   const { acceptRequest, declineRequest, isAccepting, isDeclining } = useChatRequests(topicId);
 
   const { data: myOpinion } = useQuery({
@@ -183,18 +187,29 @@ export function ChatsSidebar({ open, onOpenChange, topicId, onChatOpen, unreadMe
 
   const handleChatItemClick = (chat: ChatItem) => {
     const theirOpinionId = chat.opinion_a_id === myOpinion?.id ? chat.opinion_b_id : chat.opinion_a_id;
-    onChatClick?.(theirOpinionId);
-    if (onChatOpen) {
-      onChatOpen(theirOpinionId);
+    
+    if (isMobile) {
+      // On mobile, open embedded chat inside sidebar
+      setActiveChatOpinionId(theirOpinionId);
+    } else {
+      // On desktop, use floating chat
+      onChatClick?.(theirOpinionId);
+      if (onChatOpen) {
+        onChatOpen(theirOpinionId);
+      }
+      if (variant === 'sheet') onOpenChange(false);
     }
-    if (variant === 'sheet') onOpenChange(false);
   };
 
   const handleAcceptAndOpen = async (requestId: string, theirOpinionId: string) => {
     try {
       await acceptRequest(requestId);
-      onChatOpen?.(theirOpinionId);
-      onChatClick?.(theirOpinionId);
+      if (isMobile) {
+        setActiveChatOpinionId(theirOpinionId);
+      } else {
+        onChatOpen?.(theirOpinionId);
+        onChatClick?.(theirOpinionId);
+      }
     } catch (err: any) {
       // handled by mutation
     }
@@ -217,6 +232,23 @@ export function ChatsSidebar({ open, onOpenChange, topicId, onChatOpen, unreadMe
   };
 
   const incomingCount = pendingRequests?.filter(r => r.direction === 'incoming').length ?? 0;
+
+  // If an embedded chat is active on mobile, show it instead of the list
+  if (activeChatOpinionId && isMobile) {
+    return (
+      <div className="flex flex-col h-full">
+        <div className="flex items-center gap-2 pb-2 border-b border-border/40 mb-2">
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setActiveChatOpinionId(null)}>
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <span className="text-sm font-medium text-foreground truncate">{t('sidebar.myChats', 'Chat')}</span>
+        </div>
+        <div className="flex-1 overflow-hidden">
+          <EmbeddedChatView theirOpinionId={activeChatOpinionId} />
+        </div>
+      </div>
+    );
+  }
 
   const content = (
     <div className="flex flex-col h-full">

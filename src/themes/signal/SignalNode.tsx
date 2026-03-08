@@ -15,10 +15,9 @@ function CoreShape() {
           <feMerge><feMergeNode in="goldGlow"/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
         <filter id="signal-select-glow">
-          <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#00D4FF" floodOpacity="0.7"/>
+          <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#DAA520" floodOpacity="0.7"/>
         </filter>
       </defs>
-      {/* Star/diamond shape only — no outer ring */}
       <path d="M20 8 L23 17 L32 20 L23 23 L20 32 L17 23 L8 20 L17 17 Z" fill="#DAA520" filter="url(#signal-glow-gold)" />
     </>
   );
@@ -27,8 +26,8 @@ function CoreShape() {
 function MiddleShape() {
   return (
     <>
-      {/* Inner dot only — no outer ring */}
-      <circle cx="20" cy="20" r="6" fill="#8FBC5E" />
+      {/* Doubled size: r=12 instead of r=6 */}
+      <circle cx="20" cy="20" r="12" fill="#8FBC5E" />
     </>
   );
 }
@@ -107,7 +106,7 @@ export const SignalNode = memo(function SignalNode({
         </g>
       )}
 
-      {/* Node shape — scale applied here to avoid position jump */}
+      {/* Node shape */}
       <svg
         x={-HALF}
         y={-HALF}
@@ -121,16 +120,15 @@ export const SignalNode = memo(function SignalNode({
           transition: 'transform 0.15s ease',
         }}
       >
-        {/* Expanded 44px hit area */}
         <circle cx="20" cy="20" r="22" fill="transparent" />
-        {/* Selection highlight */}
+        {/* Selection highlight — gold to match warm earth palette */}
         {isHighlighted && !isDimmed && (
-          <circle cx="20" cy="20" r="18" fill="none" stroke="#00D4FF" strokeWidth={2} filter="url(#signal-select-glow)" />
+          <circle cx="20" cy="20" r="18" fill="none" stroke="#DAA520" strokeWidth={2} filter="url(#signal-select-glow)" />
         )}
         <Shape />
       </svg>
 
-      {/* "YOU" badge — red circle, top-right */}
+      {/* "YOU" badge */}
       {token.isCurrentUser && (
         <g transform={`translate(${HALF * 0.7}, ${-HALF * 0.7})`}>
           <circle r={8} fill="#FF3B3B" />
