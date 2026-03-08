@@ -76,7 +76,7 @@ interface SignalNodeProps {
 }
 
 export const SignalNode = memo(function SignalNode({
-  token, isHighlighted, isDimmed, showSpeechBubble,
+  token, isHighlighted, isDimmed, showSpeechBubble, scale = 1,
   onClick, onMouseEnter, onMouseLeave,
 }: SignalNodeProps) {
   const Shape = token.isBot ? BotShape : (ZONE_SHAPE[token.zone] ?? InactiveShape);
@@ -85,6 +85,8 @@ export const SignalNode = memo(function SignalNode({
   const bubbleText = token.opinionText
     ? (token.opinionText.length > 20 ? token.opinionText.slice(0, 20) + '…' : token.opinionText)
     : '';
+
+  const scaledHalf = HALF * scale;
 
   return (
       <g
