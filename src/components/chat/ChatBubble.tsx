@@ -97,7 +97,6 @@ export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(function C
           </p>
 
         </div>
-      </motion.div>
-    </>
+    </motion.div>
   );
-}
+});

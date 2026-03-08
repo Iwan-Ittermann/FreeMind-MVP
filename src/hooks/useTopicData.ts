@@ -171,7 +171,9 @@ export function useTopicData(topicId: string) {
     // Separate broadcast channel for animations (bypasses RLS issues)
     const animChannelName = `topic-${topicId}-animations`;
     const animChannel = supabase
-      .channel(animChannelName)
+      .channel(animChannelName, {
+        config: { broadcast: { self: true } },
+      })
       .on('broadcast', { event: 'message-animation' }, (payload) => {
         const data = payload.payload as {
           sourceOpinionId: string;
