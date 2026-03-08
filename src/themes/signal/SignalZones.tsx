@@ -19,7 +19,7 @@ export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function Si
   const outP = (config.pinkRadius / r) * 100;
 
   return (
-    <g className="signal-zones">
+    <g className="signal-zones" ref={ref}>
       {/* CSS radial gradient via foreignObject — Warm Earth palette */}
       <foreignObject x={cx - r} y={cy - r} width={size} height={size}>
         <div
