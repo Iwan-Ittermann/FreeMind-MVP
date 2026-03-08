@@ -1,0 +1,144 @@
+Chat Animation Bug Investigation Log
+Context ID: 8F42B1C3-5D9E-4A7B-B2E1-9C3F4D5A6E7B
+Date: 2026-03-08
+Status: Unresolved (animation still not visible)
+
+==================================================
+1) INITIAL SYMPTOM
+==================================================
+- User sent chat messages between opinions.
+- Expected graph animation (flying dot) did not appear.
+
+==================================================
+2) EARLY OBSERVATIONS / SIGNALS
+==================================================
+- Console repeatedly showed:
+  "[signal] building eventTokens from messageAnimations: 0"
+- This indicated messageAnimations state stayed empty.
+- React warning appeared:
+  "Function components cannot be given refs..."
+  Initially shown for SignalRenderer -> SignalZones.
+
+==================================================
+3) HYPOTHESIS #1
+==================================================
+- The message animation pipeline likely failed before token creation.
+- Existing realtime listener in useTopicData depended on database INSERT events for chat_messages.
+- Suspected this listener path was not delivering animation events reliably.
+
+==================================================
+4) CHANGES APPLIED (ROUND 1)
+==================================================
+A) Reworked animation transport to broadcast channel
+File: src/hooks/useTopicData.ts
+- Removed message animation handling from postgres_changes(chat_messages INSERT).
+- Added dedicated broadcast listener on channel:
+  topic-{topicId}-animations
+- Listener now appends to messageAnimations and updates activeChats.
+
+File: src/hooks/useChatMessages.ts
+- Extended useChatMessages signature with optional broadcastInfo:
+  { topicId, myOpinionId, theirOpinionId }
+- After successful message send, emits broadcast event:
+  event: "message-animation"
+  payload: { sourceOpinionId, targetOpinionId, chatId }
+
+B) Wired broadcast metadata from chat UIs
+Files:
+- src/components/chat/FloatingChatWindow.tsx
+- src/components/chat/EmbeddedChatView.tsx
+- src/components/chat/FloatingChat.tsx
+- Each now passes topic/opinion IDs into useChatMessages for animation payload.
+
+C) Ref warning fix (first warning source)
+File: src/themes/signal/SignalZones.tsx
+- Converted SignalZones to forwardRef and attached ref to root <g>.
+
+D) Cleanup
+File: src/themes/signal/SignalRenderer.tsx
+- Removed temporary debug console logs previously added for token diagnostics.
+
+==================================================
+5) VALIDATION AFTER ROUND 1
+==================================================
+- User reported: still no animation.
+- New warning then showed a different ref issue:
+  "Function components cannot be given refs..."
+  Now pointing to FloatingChatWindow render path and ChatBubble.
+
+==================================================
+6) HYPOTHESIS #2
+==================================================
+- Framer Motion / AnimatePresence ref handling was still broken due to ChatBubble not accepting refs.
+- Broadcast delivery timing might also be failing if send occurs before channel subscription is fully active.
+
+==================================================
+7) CHANGES APPLIED (ROUND 2)
+==================================================
+A) ChatBubble ref compatibility
+File: src/components/chat/ChatBubble.tsx
+- Converted ChatBubble to forwardRef<HTMLDivElement, ChatBubbleProps>.
+- Applied ref to root motion.div in both hidden-content and normal render paths.
+- Removed wrapper fragment to keep a single ref-compatible root return.
+
+B) Broadcast delivery hardening
+File: src/hooks/useTopicData.ts
+- Updated animation listener channel config:
+  channel(name, { config: { broadcast: { self: true } } })
+- Keeps same "message-animation" event listener.
+
+File: src/hooks/useChatMessages.ts
+- Changed broadcast send flow:
+  1) create channel
+  2) subscribe
+  3) wait for status === "SUBSCRIBED"
+  4) send broadcast payload
+  5) remove channel
+- Added explicit error log for broadcast send failures.
+
+==================================================
+8) TESTING / TOOL OUTPUTS
+==================================================
+- Attempted project tests:
+  Result: "No test files found" (Vitest exit code 1, no runnable tests).
+- Filtered client console log check did not return matching lines for broadcast diagnostics.
+- User continued to report no visible graph animation after hardening changes.
+
+==================================================
+9) CURRENT IMPLEMENTATION STATE
+==================================================
+Animation path currently in code:
+1) Message inserted via useChatMessages mutation.
+2) On success, useChatMessages emits "message-animation" broadcast with opinion IDs.
+3) useTopicData listens on topic-{topicId}-animations and pushes messageAnimations state.
+4) SignalRenderer maps messageAnimations -> eventTokens.
+5) SignalEventMarker animates circles along source/target coordinates.
+
+Known resolved warnings:
+- SignalZones ref warning addressed via forwardRef.
+- ChatBubble ref warning addressed via forwardRef.
+
+Remaining issue:
+- User still does not observe visible graph animation.
+
+==================================================
+10) RECOMMENDED NEXT DEBUG STEPS (TOMORROW)
+==================================================
+1) Add temporary runtime logs at all 5 pipeline stages above (send, receive, state update, token build, SVG render) with unique message IDs.
+2) Verify source/target opinion IDs in payload exist in current graph nodeMap at render time.
+3) Confirm coordinates are non-zero and on-screen when event token is created.
+4) Increase marker radius + stroke width + duration temporarily to rule out visibility/contrast issue.
+5) Check z-order in SVG (event marker may be behind other layers in specific theme state).
+6) Confirm graph currently shown is for same topicId as broadcast payload topic.
+7) Optionally add fallback local animation trigger directly in chat sender path (for own client only) to isolate network/realtime from rendering.
+
+==================================================
+11) FILES TO REVIEW FIRST NEXT SESSION
+==================================================
+- src/hooks/useChatMessages.ts
+- src/hooks/useTopicData.ts
+- src/themes/signal/SignalRenderer.tsx
+- src/themes/signal/SignalEventMarker.tsx
+- src/components/chat/ChatBubble.tsx
+
+End of log.
