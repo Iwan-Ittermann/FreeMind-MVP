@@ -26,7 +26,14 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
     isBotChat,
   } = useChatSession(theirOpinionId);
 
-  const { messages: dbMessages, sendMessage, isSending, isBotTyping } = useChatMessages(chatId, isBotChat);
+  const topicId = theirOpinion?.topic_id ?? null;
+  const { messages: dbMessages, sendMessage, isSending, isBotTyping } = useChatMessages(
+    chatId,
+    isBotChat,
+    topicId && myOpinion && theirOpinion
+      ? { topicId, myOpinionId: myOpinion.id, theirOpinionId: theirOpinion.id }
+      : undefined,
+  );
   const { partnerTyping, setTyping } = useTypingIndicator(chatId);
   const { isBlocked, isBlockedByOther } = useUserBlocks(chatId, theirUserId);
 

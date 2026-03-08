@@ -214,6 +214,7 @@ export function useTopicData(topicId: string) {
 
     return () => {
       supabase.removeChannel(channel);
+      supabase.removeChannel(animChannel);
     };
   }, [topicId, queryClient]);
 

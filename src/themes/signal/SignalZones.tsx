@@ -71,4 +71,4 @@ export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function Si
 
     </g>
   );
-}
+});

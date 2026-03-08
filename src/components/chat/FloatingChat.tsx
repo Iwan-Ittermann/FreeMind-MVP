@@ -56,7 +56,13 @@ export function FloatingChat({
   isBotChat = false,
 }: FloatingChatProps) {
   const { t } = useTranslation();
-  const { messages: dbMessages, sendMessage, isSending, isBotTyping } = useChatMessages(chatId, isBotChat);
+  const { messages: dbMessages, sendMessage, isSending, isBotTyping } = useChatMessages(
+    chatId,
+    isBotChat,
+    topicId && myOpinionId && theirOpinionId
+      ? { topicId, myOpinionId, theirOpinionId }
+      : undefined,
+  );
   const { partnerTyping, setTyping } = useTypingIndicator(chatId);
   const { isBlocked, isBlockedByOther, blockUser, unblockUser, isBlocking, isUnblocking } = useUserBlocks(chatId, theirUserId || null);
   const [inputValue, setInputValue] = useState('');
