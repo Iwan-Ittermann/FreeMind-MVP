@@ -238,9 +238,9 @@ const Index = () => {
       <div className="flex-1 flex overflow-hidden">
         {/* Desktop left panel — Opinions */}
         {!isMobile && (
-          <div className={`relative border-r border-border/20 bg-[#1A1A2E]/60 transition-all duration-300 flex-shrink-0 ${leftCollapsed ? 'w-0 overflow-hidden' : 'w-[280px]'}`}>
+          <div className={`flex flex-col border-r border-border/20 bg-[#1A1A2E]/60 transition-all duration-300 flex-shrink-0 ${leftCollapsed ? 'w-[48px]' : 'w-[280px]'}`}>
             {!leftCollapsed && (
-              <div className="h-full p-3 overflow-hidden flex flex-col">
+              <div className="flex-1 p-3 overflow-hidden flex flex-col">
                 <OpinionsSidebar
                   open={true}
                   onOpenChange={() => {}}
@@ -253,9 +253,10 @@ const Index = () => {
             )}
             <button
               onClick={() => setLeftCollapsed(!leftCollapsed)}
-              className="absolute top-1/2 -translate-y-1/2 -right-3 z-10 w-6 h-12 bg-muted/80 hover:bg-muted border border-border/40 rounded-r-lg flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              className="w-full h-10 flex items-center justify-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 border-t border-border/20 transition-colors"
             >
               {leftCollapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
+              {!leftCollapsed && <span>{t('sidebar.hideOpinions', 'Hide Opinions')}</span>}
             </button>
           </div>
         )}
