@@ -1,24 +1,36 @@
-## Plan: Bottom Bar, Desktop Panels, Signal Theme Overhaul, Mobile Chat-in-Sidebar, /chat Removal
 
-### ✅ Step 1 Complete
 
-1. ✅ Mobile Bottom Tab Bar (`BottomTabBar.tsx`) — 3 buttons: Opinions, Chats, Menu
-2. ✅ Mobile Bottom Panel (`BottomPanel.tsx`) — slide-up panel, no overlay, graph stays visible
-3. ✅ Graph shrinking on mobile panel open — 55% shrink with smooth transition
-4. ✅ Sidebar highlighting — clicking opinion/chat highlights node in graph
-5. ✅ Labels removed — mobile: none, desktop: highlighted-only
-6. ✅ Desktop 3-column layout — persistent side panels with collapse toggles
-7. ✅ Requests merged into ChatsSidebar — tabs: Chats | Requests
-8. ✅ Header cleanup — mobile: logo only, desktop: logo + burger
-9. ✅ MainMenu simplified — only About, Tutorial, Settings, Login/Logout
-10. ✅ /chat route redirects to /home
-11. ✅ Signal theme warm earth palette — charcoal bg, gold core, sage middle, burnt orange outer, stone inactive
-12. ✅ Core/middle node rings removed
+## Fix: Message Animations Not Firing + forwardRef Warning
 
-### Step 2 (Later)
+### Root Cause: Animations
 
-- Unread badge audit
-- TopicView.tsx /chat cleanup
-- Delete RequestsSidebar.tsx
-- Delete /chat route entirely
-- Button design audit across themes
+The `useTopicData` hook subscribes to `chat_messages` INSERT events **without a filter**. Supabase Realtime with RLS evaluates the `is_chat_participant()` function for every row — this complex function-based RLS policy is known to silently drop events in unfiltered subscriptions. That's why `[realtime] chat_messages INSERT received` never appears in logs.
+
+The `useChatMessages` hook (used in chat windows) subscribes **with a `chat_id` filter** and works fine.
+
+### Fix: Broadcast-based animations
+
+Replace the broken `chat_messages` postgres_changes listener with a Supabase Realtime **broadcast** channel (no RLS, no DB dependency):
+
+1. **`useTopicData.ts`** — Remove the `chat_messages` postgres_changes subscription (lines 170-244). Instead, subscribe to a broadcast channel `topic-{topicId}-animations` that listens for `animation` events and adds them to `messageAnimations` state.
+
+2. **`useChatMessages.ts`** — After a new message INSERT is detected via the existing realtime subscription (line 93 handler), broadcast the animation event on the same `topic-{topicId}-animations` channel. This requires accepting `topicId`, `myOpinionId`, and `theirOpinionId` as optional parameters.
+
+3. **Chat components** (`FloatingChatWindow.tsx`, `EmbeddedChatView.tsx`, `FloatingChat.tsx`) — Pass `topicId`, `myOpinionId`, `theirOpinionId` to `useChatMessages`. These values are already available via `useChatSession`.
+
+### Fix: forwardRef Warning
+
+**`SignalZones.tsx`** — Wrap with `React.forwardRef` (or more likely, the issue is that `AnimatePresence` or framer-motion tries to pass a ref). Actually, looking at `SignalRenderer`, `SignalZones` is used directly in JSX — the warning suggests something is passing a ref to it. The fix is to wrap `SignalZones` in `forwardRef` to suppress the warning.
+
+### Files to Change
+
+| File | Change |
+|------|--------|
+| `src/hooks/useTopicData.ts` | Remove `chat_messages` subscription; add broadcast listener |
+| `src/hooks/useChatMessages.ts` | Add broadcast emit on new message; accept opinion/topic params |
+| `src/hooks/useChatSession.ts` | Expose `topicId` (likely already available) |
+| `src/components/chat/FloatingChatWindow.tsx` | Pass opinion IDs + topicId to `useChatMessages` |
+| `src/components/chat/EmbeddedChatView.tsx` | Same |
+| `src/components/chat/FloatingChat.tsx` | Same |
+| `src/themes/signal/SignalZones.tsx` | Wrap with `forwardRef` |
+
