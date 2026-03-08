@@ -180,26 +180,34 @@ export function useTopicData(topicId: string) {
           const senderId = payload.new.sender_id;
           const messageId = payload.new.id;
           
-          const { data: chat } = await supabase
+          console.log('[realtime] chat_messages INSERT received', { chatId, senderId, messageId });
+          
+          const { data: chat, error: chatError } = await supabase
             .from('chats')
             .select('opinion_a_id, opinion_b_id, topic_id')
             .eq('id', chatId)
             .single();
           
+          console.log('[realtime] chat lookup result', { chat, chatError });
+          
           if (chat && chat.topic_id === topicId) {
             // Determine which opinion sent the message by looking up sender's opinion
             // Use the secure view that excludes ip_address
-            const { data: senderOpinion } = await supabase
+            const { data: senderOpinion, error: opinionError } = await supabase
               .from('opinions_public')
               .select('id')
               .eq('user_id', senderId)
               .eq('topic_id', topicId)
               .single();
 
+            console.log('[realtime] sender opinion lookup', { senderOpinion, opinionError });
+
             const sourceOpinionId = senderOpinion?.id || chat.opinion_a_id;
             const targetOpinionId = sourceOpinionId === chat.opinion_a_id 
               ? chat.opinion_b_id 
               : chat.opinion_a_id;
+
+            console.log('[realtime] adding animation', { sourceOpinionId, targetOpinionId });
 
             // Add message animation
             setMessageAnimations(prev => [...prev, {
@@ -230,6 +238,8 @@ export function useTopicData(topicId: string) {
 
             // Also refetch unread messages to update badge counts immediately
             queryClient.refetchQueries({ queryKey: ['unreadMessages', topicId] });
+          } else {
+            console.log('[realtime] skipped animation - chat not found or wrong topic', { topicId, chatTopicId: chat?.topic_id });
           }
         }
       )
