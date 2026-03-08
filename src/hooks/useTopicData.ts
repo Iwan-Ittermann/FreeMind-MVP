@@ -166,87 +166,55 @@ export function useTopicData(topicId: string) {
           queryClient.refetchQueries({ queryKey: ['topic', topicId] });
         }
       )
-      // Listen for new messages (activity indicator + animation)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'chat_messages',
-        },
-        async (payload) => {
-          // Get the chat details to find which opinions are involved
-          const chatId = payload.new.chat_id;
-          const senderId = payload.new.sender_id;
-          const messageId = payload.new.id;
-          
-          console.log('[realtime] chat_messages INSERT received', { chatId, senderId, messageId });
-          
-          const { data: chat, error: chatError } = await supabase
-            .from('chats')
-            .select('opinion_a_id, opinion_b_id, topic_id')
-            .eq('id', chatId)
-            .single();
-          
-          console.log('[realtime] chat lookup result', { chat, chatError });
-          
-          if (chat && chat.topic_id === topicId) {
-            // Determine which opinion sent the message by looking up sender's opinion
-            // Use the secure view that excludes ip_address
-            const { data: senderOpinion, error: opinionError } = await supabase
-              .from('opinions_public')
-              .select('id')
-              .eq('user_id', senderId)
-              .eq('topic_id', topicId)
-              .single();
+      .subscribe();
 
-            console.log('[realtime] sender opinion lookup', { senderOpinion, opinionError });
+    // Separate broadcast channel for animations (bypasses RLS issues)
+    const animChannelName = `topic-${topicId}-animations`;
+    const animChannel = supabase
+      .channel(animChannelName)
+      .on('broadcast', { event: 'message-animation' }, (payload) => {
+        const data = payload.payload as {
+          sourceOpinionId: string;
+          targetOpinionId: string;
+          chatId: string;
+        };
 
-            const sourceOpinionId = senderOpinion?.id || chat.opinion_a_id;
-            const targetOpinionId = sourceOpinionId === chat.opinion_a_id 
-              ? chat.opinion_b_id 
-              : chat.opinion_a_id;
+        // Add message animation
+        const animId = `${data.chatId}-${Date.now()}`;
+        setMessageAnimations(prev => [...prev, {
+          id: animId,
+          chatId: data.chatId,
+          sourceOpinionId: data.sourceOpinionId,
+          targetOpinionId: data.targetOpinionId,
+          timestamp: Date.now(),
+        }]);
 
-            console.log('[realtime] adding animation', { sourceOpinionId, targetOpinionId });
-
-            // Add message animation
-            setMessageAnimations(prev => [...prev, {
-              id: messageId,
-              chatId,
-              sourceOpinionId,
-              targetOpinionId,
-              timestamp: Date.now(),
-            }]);
-
-            // Update active chats
-            setActiveChats(prev => {
-              const existing = prev.find(c => c.chatId === chatId);
-              if (existing) {
-                return prev.map(c => 
-                  c.chatId === chatId 
-                    ? { ...c, lastActivity: Date.now() }
-                    : c
-                );
-              }
-              return [...prev, {
-                chatId,
-                opinionAId: chat.opinion_a_id,
-                opinionBId: chat.opinion_b_id,
-                lastActivity: Date.now(),
-              }];
-            });
-
-            // Also refetch unread messages to update badge counts immediately
-            queryClient.refetchQueries({ queryKey: ['unreadMessages', topicId] });
-          } else {
-            console.log('[realtime] skipped animation - chat not found or wrong topic', { topicId, chatTopicId: chat?.topic_id });
+        // Update active chats
+        setActiveChats(prev => {
+          const existing = prev.find(c => c.chatId === data.chatId);
+          if (existing) {
+            return prev.map(c =>
+              c.chatId === data.chatId
+                ? { ...c, lastActivity: Date.now() }
+                : c
+            );
           }
-        }
-      )
+          return [...prev, {
+            chatId: data.chatId,
+            opinionAId: data.sourceOpinionId,
+            opinionBId: data.targetOpinionId,
+            lastActivity: Date.now(),
+          }];
+        });
+
+        // Refetch unread messages
+        queryClient.refetchQueries({ queryKey: ['unreadMessages', topicId] });
+      })
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
+      supabase.removeChannel(animChannel);
     };
   }, [topicId, queryClient]);
 

@@ -20,7 +20,11 @@ interface UseChatMessagesResult {
   isBotTyping: boolean;
 }
 
-export function useChatMessages(chatId: string | null, isBotChat = false): UseChatMessagesResult {
+export function useChatMessages(
+  chatId: string | null,
+  isBotChat = false,
+  broadcastInfo?: { topicId: string; myOpinionId: string; theirOpinionId: string },
+): UseChatMessagesResult {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -132,6 +136,25 @@ export function useChatMessages(chatId: string | null, isBotChat = false): UseCh
       if (error) throw error;
     },
     onSuccess: async () => {
+      // Broadcast animation event for the graph
+      if (broadcastInfo && chatId) {
+        try {
+          const channel = supabase.channel(`topic-${broadcastInfo.topicId}-animations`);
+          await channel.send({
+            type: 'broadcast',
+            event: 'message-animation',
+            payload: {
+              sourceOpinionId: broadcastInfo.myOpinionId,
+              targetOpinionId: broadcastInfo.theirOpinionId,
+              chatId,
+            },
+          });
+          supabase.removeChannel(channel);
+        } catch (err) {
+          console.error('Failed to broadcast animation:', err);
+        }
+      }
+
       // If this is a bot chat, trigger the AI response
       if (isBotChat && chatId) {
         setIsBotTyping(true);

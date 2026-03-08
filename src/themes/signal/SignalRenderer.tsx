@@ -52,15 +52,9 @@ export function SignalRenderer({
   const zoneTokens = useMemo(() => tokenizeZones(config), [config]);
 
   const eventTokens: readonly SemanticEventToken[] = useMemo(() => {
-    console.log('[signal] building eventTokens from messageAnimations:', messageAnimations.length);
     return messageAnimations.map(anim => {
       const source = nodeMap.get(anim.sourceOpinionId);
       const target = nodeMap.get(anim.targetOpinionId);
-      console.log('[signal] animation token', { 
-        sourceFound: !!source, targetFound: !!target,
-        sourceX: source?.x, sourceY: source?.y,
-        targetX: target?.x, targetY: target?.y,
-      });
       return Object.freeze({
         eventType: 'rating-complete' as const,
         sourceId: anim.sourceOpinionId,

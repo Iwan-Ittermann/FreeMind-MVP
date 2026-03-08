@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { SemanticZoneToken } from '../types';
 import { LayoutConfig } from '@/types/graph';
 
@@ -6,7 +7,7 @@ interface SignalZonesProps {
   config: LayoutConfig;
 }
 
-export function SignalZones({ zones, config }: SignalZonesProps) {
+export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function SignalZones({ zones, config }, ref) {
   const cx = config.centerX;
   const cy = config.centerY;
   const r = config.outerRadius;
@@ -18,7 +19,7 @@ export function SignalZones({ zones, config }: SignalZonesProps) {
   const outP = (config.pinkRadius / r) * 100;
 
   return (
-    <g className="signal-zones">
+    <g className="signal-zones" ref={ref}>
       {/* CSS radial gradient via foreignObject — Warm Earth palette */}
       <foreignObject x={cx - r} y={cy - r} width={size} height={size}>
         <div
@@ -70,4 +71,4 @@ export function SignalZones({ zones, config }: SignalZonesProps) {
 
     </g>
   );
-}
+});
