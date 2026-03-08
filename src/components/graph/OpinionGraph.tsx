@@ -28,6 +28,7 @@ interface OpinionGraphProps {
   height?: number;
   useMockData?: boolean;
   selectedNodeId?: string | null;
+  showLabels?: 'none' | 'highlighted-only';
 }
 
 export function OpinionGraph({ 
