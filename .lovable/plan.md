@@ -1,24 +1,56 @@
-## Plan: Bottom Bar, Desktop Panels, Signal Theme Overhaul, Mobile Chat-in-Sidebar, /chat Removal
+## Step 1 Additional Fixes
 
-### ✅ Step 1 Complete
+### 1. Desktop: No page scroll, sidebars scroll internally, bottom bar replaces burger
 
-1. ✅ Mobile Bottom Tab Bar (`BottomTabBar.tsx`) — 3 buttons: Opinions, Chats, Menu
-2. ✅ Mobile Bottom Panel (`BottomPanel.tsx`) — slide-up panel, no overlay, graph stays visible
-3. ✅ Graph shrinking on mobile panel open — 55% shrink with smooth transition
-4. ✅ Sidebar highlighting — clicking opinion/chat highlights node in graph
-5. ✅ Labels removed — mobile: none, desktop: highlighted-only
-6. ✅ Desktop 3-column layout — persistent side panels with collapse toggles
-7. ✅ Requests merged into ChatsSidebar — tabs: Chats | Requests
-8. ✅ Header cleanup — mobile: logo only, desktop: logo + burger
-9. ✅ MainMenu simplified — only About, Tutorial, Settings, Login/Logout
-10. ✅ /chat route redirects to /home
-11. ✅ Signal theme warm earth palette — charcoal bg, gold core, sage middle, burnt orange outer, stone inactive
-12. ✅ Core/middle node rings removed
+**File: `src/pages/Index.tsx**`
 
-### Step 2 (Later)
+- Root div: change `min-h-screen` to `h-screen` + `overflow-hidden` to lock the page.
+- Desktop sidebars: add `overflow-y-auto` to the content area so they scroll independently.
+  &nbsp;
+- **Desktop bottom bar**: New fixed bar at the bottom (h-12) with 5 buttons in a row: `Opinions` (wide, toggles left sidebar), `About`, `Tutorial`, `Settings`, `Chats` (wide, toggles right sidebar). The two sidebar buttons (`Opinions`/`Chats`) get `flex-[2]`, the rest get `flex-1`. Remove the current sidebar toggle buttons at the bottom of each panel — sidebars now roll out from a collapsed state triggered by the bottom bar.
+- Remove the burger menu from Header on desktop (it's now in the bottom bar).
+- Move About/Tutorial/Settings handlers into Index.tsx or pass them down. The bottom bar buttons trigger: About → `navigate('/')`, Tutorial → `tutorial.startTutorial()`, Settings → open settings sheet.
 
-- Unread badge audit
-- TopicView.tsx /chat cleanup
-- Delete RequestsSidebar.tsx
-- Delete /chat route entirely
-- Button design audit across themes
+**File: `src/components/Header.tsx**`
+
+- Remove the desktop burger button entirely. Header becomes logo + title only on both mobile and desktop.
+
+### 2. Mobile: Graph visible above panel, header cleanup, tab bar swap
+
+**File: `src/pages/Index.tsx**` (mobile graph)
+
+- The graph container needs explicit height calculation. When panel is open, set graph container to `height: calc(100vh - 56px - 55vh - 56px)` (header - panel - bottom bar). Currently the graph is behind the panel because `flex-1` doesn't account for the fixed-position panel overlay. Change the center div to use a calculated height via inline style when `activeMobilePanel` is set, so the graph sits in the visible gap.
+
+**File: `src/components/Header.tsx**` (mobile)
+
+- Shrink logo text: `text-sm` on mobile instead of `text-lg`. Move to corner with less padding.
+- Title: change from `absolute left-1/2 max-w-[50%]` to a flex item that takes remaining space with `truncate` and `text-left`, giving it the full width between logo and edge.
+
+**File: `src/components/BottomTabBar.tsx**`
+
+- Swap order: Opinions, Chats, Menu (currently: Opinions, Chats, Menu → change to: Opinions, Menu, Chats... wait, user said "swap burger and chats" so: Opinions, Chats, Menu → Opinions, Menu, Chats). Actually re-reading: "swap the burger button and the chats button" means Menu comes before Chats. New order: **Opinions, Menu, Chats**.
+- Change Menu icon from `Menu` (hamburger) to `MoreVertical` (three dots).
+
+### 3. Desktop bottom bar component
+
+**New file: `src/components/DesktopBottomBar.tsx**`
+A horizontal bar with 5 buttons:
+
+- `Opinions` (flex-2, toggles left sidebar, icon: List)
+- `About` (flex-1, icon: Info)  
+- `Tutorial` (flex-1, icon: GraduationCap)
+- `Settings` (flex-1, icon: Settings, opens settings sheet)
+- `Chats` (flex-1 → flex-2, toggles right sidebar, icon: MessagesSquare, unread badge)
+
+Fixed at bottom, h-12, bg-white, border-t. Only shown on desktop (`hidden md:flex`).
+
+### Files Summary
+
+
+| File                                  | Changes                                                                                                                 |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `src/pages/Index.tsx`                 | `h-screen overflow-hidden`, remove Footer, remove sidebar toggle buttons, add DesktopBottomBar, fix mobile graph height |
+| `src/components/Header.tsx`           | Remove desktop burger, shrink mobile logo, expand title space                                                           |
+| `src/components/BottomTabBar.tsx`     | Swap Chats↔Menu order, use MoreVertical icon                                                                            |
+| `src/components/DesktopBottomBar.tsx` | **New** — desktop bottom nav with 5 buttons                                                                             |
+| `src/components/MainMenu.tsx`         | Keep settings sheet logic (reused by DesktopBottomBar via a shared settings sheet state)                                |
