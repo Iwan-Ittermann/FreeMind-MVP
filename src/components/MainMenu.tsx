@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Info, GraduationCap, Settings, List, MessagesSquare, Inbox, LogOut, LogIn, ArrowLeft, Copy, Check, Download, Globe, Pencil } from 'lucide-react';
+import { Info, GraduationCap, Settings, LogOut, LogIn, ArrowLeft, Copy, Check, Download, Globe, Pencil } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { useTutorialContext } from '@/contexts/TutorialContext';
@@ -20,13 +20,9 @@ interface MainMenuProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   topicId?: string;
-  onOpenOpinions: () => void;
-  onOpenChats: () => void;
-  onOpenRequests: () => void;
-  totalUnread?: number;
 }
 
-export function MainMenu({ open, onOpenChange, topicId, onOpenOpinions, onOpenChats, onOpenRequests, totalUnread = 0 }: MainMenuProps) {
+export function MainMenu({ open, onOpenChange, topicId }: MainMenuProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
@@ -115,36 +111,6 @@ export function MainMenu({ open, onOpenChange, topicId, onOpenOpinions, onOpenCh
               <Settings className="w-5 h-5 text-muted-foreground" />
               <span>{t('config.settings', 'Settings')}</span>
             </button>
-
-            <div className="border-t border-border my-2" />
-
-            {topicId && (
-              <>
-                <button onClick={() => { onOpenChange(false); onOpenOpinions(); }} className={menuItemClass}>
-                  <List className="w-5 h-5 text-muted-foreground" />
-                  <span>{t('sidebar.allOpinions', 'All Opinions')}</span>
-                </button>
-
-                {user && (
-                  <>
-                    <button onClick={() => { onOpenChange(false); onOpenRequests(); }} className={menuItemClass}>
-                      <Inbox className="w-5 h-5 text-muted-foreground" />
-                      <span>{t('sidebar.requests', 'Your Requests')}</span>
-                    </button>
-
-                    <button onClick={() => { onOpenChange(false); onOpenChats(); }} className={menuItemClass}>
-                      <MessagesSquare className="w-5 h-5 text-muted-foreground" />
-                      <span>{t('sidebar.myChats', 'Your Chats')}</span>
-                      {totalUnread > 0 && (
-                        <span className="ml-auto min-w-[20px] h-[20px] rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center px-1">
-                          {totalUnread > 99 ? '99+' : totalUnread}
-                        </span>
-                      )}
-                    </button>
-                  </>
-                )}
-              </>
-            )}
           </nav>
 
           <div className="border-t border-border pt-4">
