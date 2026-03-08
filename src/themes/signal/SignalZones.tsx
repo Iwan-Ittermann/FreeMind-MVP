@@ -51,17 +51,17 @@ export function SignalZones({ zones, config }: SignalZonesProps) {
 
       {/* Zone boundary circles */}
       {/* Core zone boundary (greenRadius) */}
-      <circle cx={cx} cy={cy} r={config.greenRadius} fill="none" stroke="#DAA520" strokeWidth={0.5} strokeOpacity={0.18} strokeDasharray="4 4" />
+      <circle cx={cx} cy={cy} r={config.greenRadius} fill="none" stroke="#FFFFFF" strokeWidth={0.5} strokeOpacity={0.25} strokeDasharray="4 4" />
       {/* Core zone label */}
       <text x={cx} y={cy + config.greenRadius * 0.55} textAnchor="middle" fill="#DAA520" fillOpacity={0.30} fontSize="8" fontFamily="monospace">Respektvoll</text>
 
       {/* Middle zone boundary (yellowRadius) */}
-      <circle cx={cx} cy={cy} r={config.yellowRadius} fill="none" stroke="#8FBC5E" strokeWidth={0.5} strokeOpacity={0.18} strokeDasharray="4 4" />
+      <circle cx={cx} cy={cy} r={config.yellowRadius} fill="none" stroke="#FFFFFF" strokeWidth={0.5} strokeOpacity={0.25} strokeDasharray="4 4" />
       {/* Middle zone label */}
       <text x={cx} y={cy + (config.greenRadius + config.yellowRadius) / 2 + 3} textAnchor="middle" fill="#8FBC5E" fillOpacity={0.25} fontSize="8" fontFamily="monospace">Moderat</text>
 
       {/* Outer zone boundary (pinkRadius) */}
-      <circle cx={cx} cy={cy} r={config.pinkRadius} fill="none" stroke="#CC5500" strokeWidth={0.5} strokeOpacity={0.18} strokeDasharray="4 4" />
+      <circle cx={cx} cy={cy} r={config.pinkRadius} fill="none" stroke="#FFFFFF" strokeWidth={0.5} strokeOpacity={0.25} strokeDasharray="4 4" />
       {/* Outer zone label */}
       <text x={cx} y={cy + (config.yellowRadius + config.pinkRadius) / 2 + 3} textAnchor="middle" fill="#CC5500" fillOpacity={0.25} fontSize="8" fontFamily="monospace">Extrem</text>
 

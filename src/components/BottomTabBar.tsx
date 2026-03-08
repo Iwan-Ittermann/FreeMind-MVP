@@ -1,4 +1,4 @@
-import { MessagesSquare, List, MoreVertical } from 'lucide-react';
+import { MessagesSquare, List, MoreHorizontal } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export type MobilePanel = 'chats' | 'opinions' | 'menu' | null;
