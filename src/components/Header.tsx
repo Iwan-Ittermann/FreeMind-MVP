@@ -1,12 +1,9 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Menu } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { MainMenu } from './MainMenu';
 
 interface HeaderProps {
+  title?: string;
+}
   title?: string;
   topicId?: string;
   totalUnread?: number;

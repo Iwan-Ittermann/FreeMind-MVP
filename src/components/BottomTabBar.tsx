@@ -47,6 +47,7 @@ export function BottomTabBar({ activePanel, onPanelChange, totalUnread = 0, opin
             {totalUnread > 99 ? '99+' : totalUnread}
           </span>
         )}
+      </button>
     </div>
   );
 }
