@@ -23,7 +23,7 @@ export function MessageDots({ nodes, messageAnimations }: MessageDotsProps) {
             <motion.circle
               key={anim.id}
               r={4}
-              fill="#FFFFFF"
+              fill="hsl(var(--primary))"
               filter="url(#glow)"
               initial={{ 
                 cx: source.x, 
