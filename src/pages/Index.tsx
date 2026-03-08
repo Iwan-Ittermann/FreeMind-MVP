@@ -396,9 +396,9 @@ const Index = () => {
 
         {/* Desktop right panel — Chats + Requests */}
         {!isMobile && (
-          <div className={`relative border-l border-border/20 bg-[#1A1A2E]/60 transition-all duration-300 flex-shrink-0 ${rightCollapsed ? 'w-0 overflow-hidden' : 'w-[300px]'}`}>
+          <div className={`flex flex-col border-l border-border/20 bg-[#1A1A2E]/60 transition-all duration-300 flex-shrink-0 ${rightCollapsed ? 'w-[48px]' : 'w-[300px]'}`}>
             {!rightCollapsed && (
-              <div className="h-full p-3 overflow-hidden flex flex-col">
+              <div className="flex-1 p-3 overflow-hidden flex flex-col">
                 <ChatsSidebar
                   open={true}
                   onOpenChange={() => {}}
@@ -412,9 +412,10 @@ const Index = () => {
             )}
             <button
               onClick={() => setRightCollapsed(!rightCollapsed)}
-              className="absolute top-1/2 -translate-y-1/2 -left-3 z-10 w-6 h-12 bg-muted/80 hover:bg-muted border border-border/40 rounded-l-lg flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+              className="w-full h-10 flex items-center justify-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 border-t border-border/20 transition-colors"
             >
               {rightCollapsed ? <ChevronLeft className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+              {!rightCollapsed && <span>{t('sidebar.hideChats', 'Hide Chats')}</span>}
             </button>
           </div>
         )}
