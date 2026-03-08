@@ -48,7 +48,7 @@ function AppRoutes() {
       <Route path="/about" element={<About />} />
       <Route path="/home" element={<Index />} />
       <Route path="/auth" element={<Auth />} />
-      <Route path="/chat" element={<Chat />} />
+      <Route path="/chat" element={<Navigate to="/home" replace />} />
       <Route path="/admin" element={<Admin />} />
       <Route path="/legal" element={<Legal />} />
       <Route path="/t/:slug" element={<TopicJoin />} />
