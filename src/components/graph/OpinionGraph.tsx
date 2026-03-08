@@ -47,6 +47,7 @@ export function OpinionGraph({
   height = 600,
   useMockData = false,
   selectedNodeId = null,
+  showLabels = 'highlighted-only',
 }: OpinionGraphProps) {
   const [highlightedNode, setHighlightedNode] = useState<string | null>(null);
 
