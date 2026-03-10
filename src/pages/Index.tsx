@@ -481,6 +481,9 @@ const Index = () => {
         />
       )}
 
+      {/* About sidebar (bottom sheet) */}
+      <AboutSidebar open={aboutSheetOpen} onOpenChange={setAboutSheetOpen} />
+
       {/* Floating Chat Manager (desktop only) */}
       {!isMobile && (
         <FloatingChatManager
