@@ -76,7 +76,7 @@ export function FloatingChat({
   const [mobileLeftSliderOpen, setMobileLeftSliderOpen] = useState(false);
   const [mobileRightSliderOpen, setMobileRightSliderOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Handle input change with typing indicator
   const handleInputChange = useCallback((value: string) => {

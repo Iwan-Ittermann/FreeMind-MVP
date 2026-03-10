@@ -49,7 +49,7 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
   const [disagreement, setDisagreement] = useState(50);
   const [initialized, setInitialized] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Initialize sliders from existing rating (only once when data arrives)
   useEffect(() => {
