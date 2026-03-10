@@ -54,6 +54,7 @@ const Index = () => {
 
   // Desktop settings sheet
   const [settingsSheetOpen, setSettingsSheetOpen] = useState(false);
+  const [aboutSheetOpen, setAboutSheetOpen] = useState(false);
 
   const { data: topicData, isLoading, error, activeChats, messageAnimations } = useTopicData(DEFAULT_TOPIC_ID);
   const {
