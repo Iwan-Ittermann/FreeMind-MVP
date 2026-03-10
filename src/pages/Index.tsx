@@ -209,7 +209,7 @@ const Index = () => {
   }, [openChatWith]);
 
   // Desktop bottom bar handlers
-  const handleAbout = () => navigate('/');
+  const handleAbout = () => setAboutSheetOpen(true);
   const handleTutorial = () => {
     if (!user) { navigate('/auth'); return; }
     tutorial.resetTutorialStatus();
