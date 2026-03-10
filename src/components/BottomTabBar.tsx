@@ -16,21 +16,29 @@ export function BottomTabBar({ activePanel, onPanelChange, totalUnread = 0 }: Bo
     onPanelChange(activePanel === panel ? null : panel);
   };
 
+  const isActive = (panel: MobilePanel) => activePanel === panel;
+
   const btnClass = (panel: MobilePanel) =>
     `flex-1 flex flex-col items-center justify-center gap-0.5 py-1 transition-colors relative ${
-      activePanel === panel ? 'text-accent' : 'text-muted-foreground'
+      isActive(panel) ? 'text-accent' : 'text-muted-foreground'
     }`;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-[60] h-14 border-t border-border/40 bg-background/95 backdrop-blur-md flex items-stretch md:hidden">
+    <div className="fixed bottom-0 left-0 right-0 z-[60] h-14 border-t border-border/20 bg-background/60 backdrop-blur-xl flex items-stretch md:hidden">
       <button className={btnClass('opinions')} onClick={() => handleTap('opinions')}>
         <List className="h-5 w-5" />
         <span className="text-[10px] font-medium">{t('sidebar.allOpinions', 'Opinions')}</span>
+        {isActive('opinions') && (
+          <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[2px] rounded-full bg-accent shadow-[0_0_8px_2px_hsla(var(--accent)/0.5)]" />
+        )}
       </button>
 
       <button className={btnClass('menu')} onClick={() => handleTap('menu')}>
         <MoreHorizontal className="h-5 w-5" />
         <span className="text-[10px] font-medium">{t('common.menu', 'Menu')}</span>
+        {isActive('menu') && (
+          <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[2px] rounded-full bg-accent shadow-[0_0_8px_2px_hsla(var(--accent)/0.5)]" />
+        )}
       </button>
 
       <button className={btnClass('chats')} onClick={() => handleTap('chats')}>
@@ -40,6 +48,9 @@ export function BottomTabBar({ activePanel, onPanelChange, totalUnread = 0 }: Bo
           <span className="absolute top-1 right-[calc(50%-18px)] min-w-[16px] h-[16px] rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center px-0.5">
             {totalUnread > 99 ? '99+' : totalUnread}
           </span>
+        )}
+        {isActive('chats') && (
+          <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[2px] rounded-full bg-accent shadow-[0_0_8px_2px_hsla(var(--accent)/0.5)]" />
         )}
       </button>
     </div>

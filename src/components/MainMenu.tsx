@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Settings, LogOut, LogIn, Copy, Check, Download, Globe, Pencil } from 'lucide-react';
+import { Settings, LogOut, LogIn, Copy, Check, Download, Globe, Pencil, GraduationCap, Info } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { emailToPassphrase } from '@/lib/passphrase';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -19,12 +20,15 @@ interface MainMenuProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   topicId?: string;
+  onTutorial?: () => void;
+  onAbout?: () => void;
 }
 
-export function MainMenu({ open, onOpenChange }: MainMenuProps) {
+export function MainMenu({ open, onOpenChange, onTutorial, onAbout }: MainMenuProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const isMobile = useIsMobile();
   const [copied, setCopied] = useState(false);
 
   const passphrase = user?.email ? emailToPassphrase(user.email) : null;
@@ -68,7 +72,7 @@ export function MainMenu({ open, onOpenChange }: MainMenuProps) {
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-[280px] sm:w-[320px] flex flex-col">
+      <SheetContent side="bottom" className="max-h-[80vh] rounded-t-2xl flex flex-col">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <Settings className="w-5 h-5" />
@@ -77,7 +81,33 @@ export function MainMenu({ open, onOpenChange }: MainMenuProps) {
           <SheetDescription className="sr-only">App settings</SheetDescription>
         </SheetHeader>
 
-        <div className="mt-6 space-y-6 flex-1">
+        <div className="mt-4 space-y-4 flex-1 overflow-y-auto">
+          {/* Mobile-only: Tutorial & About buttons */}
+          {isMobile && (
+            <div className="flex gap-2">
+              {onTutorial && (
+                <button
+                  onClick={() => { onOpenChange(false); onTutorial(); }}
+                  className="flex-1 flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors text-foreground"
+                >
+                  <GraduationCap className="w-5 h-5 text-muted-foreground" />
+                  <span className="text-sm font-medium">{t('tutorial.startTutorial', 'Tutorial')}</span>
+                </button>
+              )}
+              {onAbout && (
+                <button
+                  onClick={() => { onOpenChange(false); onAbout(); }}
+                  className="flex-1 flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors text-foreground"
+                >
+                  <Info className="w-5 h-5 text-muted-foreground" />
+                  <span className="text-sm font-medium">{t('about.title', 'About')}</span>
+                </button>
+              )}
+            </div>
+          )}
+
+          {isMobile && (onTutorial || onAbout) && <div className="border-t border-border" />}
+
           {/* Login Secret */}
           {user && passphrase && (
             <div className="space-y-3">

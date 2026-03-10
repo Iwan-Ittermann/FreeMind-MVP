@@ -526,23 +526,23 @@ export function calculateLayout(
   // Combine active and inactive nodes
   let allNodes = [...activeNodes, ...inactiveNodes];
 
-  // Collision avoidance: push overlapping nodes apart angularly (never change radius)
-  allNodes = resolveCollisions(allNodes, config);
-
-  // Fix bot node position: medium radius at 6 o'clock (bottom center)
+  // Fix bot node position BEFORE collision resolution so it participates
   allNodes = allNodes.map(node => {
     if (node.opinion.authorId === BOT_USER_ID) {
-      const botRadius = (config.greenRadius + config.yellowRadius) / 2; // medium zone
+      const botRadius = (config.greenRadius + config.yellowRadius) / 2;
       return {
         ...node,
         x: config.centerX,
         y: config.centerY + botRadius,
         distanceToCenter: botRadius,
-        hasChats: true, // ensure it's treated as active
+        hasChats: true,
       };
     }
     return node;
   });
+
+  // Collision avoidance: push overlapping nodes apart angularly (never change radius)
+  allNodes = resolveCollisions(allNodes, config);
 
   return { nodes: allNodes, edges, greenZoneSlots };
 }
