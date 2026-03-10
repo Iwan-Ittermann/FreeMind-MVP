@@ -459,6 +459,8 @@ const Index = () => {
             open={mobileMenuOpen}
             onOpenChange={setMobileMenuOpen}
             topicId={DEFAULT_TOPIC_ID}
+            onTutorial={handleTutorial}
+            onAbout={handleAbout}
           />
 
           <BottomTabBar
