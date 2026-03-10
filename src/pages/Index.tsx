@@ -17,6 +17,7 @@ import { BottomTabBar, MobilePanel } from '@/components/BottomTabBar';
 import { BottomPanel } from '@/components/BottomPanel';
 import { DesktopBottomBar } from '@/components/DesktopBottomBar';
 import { MainMenu } from '@/components/MainMenu';
+import { AboutSidebar } from '@/components/AboutSidebar';
 import { GraphNode, GraphEdge, ChatRequest } from '@/types/graph';
 import { useTopicData } from '@/hooks/useTopicData';
 import { useChatRequests } from '@/hooks/useChatRequests';
@@ -53,6 +54,7 @@ const Index = () => {
 
   // Desktop settings sheet
   const [settingsSheetOpen, setSettingsSheetOpen] = useState(false);
+  const [aboutSheetOpen, setAboutSheetOpen] = useState(false);
 
   const { data: topicData, isLoading, error, activeChats, messageAnimations } = useTopicData(DEFAULT_TOPIC_ID);
   const {
@@ -207,7 +209,7 @@ const Index = () => {
   }, [openChatWith]);
 
   // Desktop bottom bar handlers
-  const handleAbout = () => navigate('/');
+  const handleAbout = () => setAboutSheetOpen(true);
   const handleTutorial = () => {
     if (!user) { navigate('/auth'); return; }
     tutorial.resetTutorialStatus();
@@ -261,7 +263,7 @@ const Index = () => {
 
         {/* Center — Graph + CTA */}
         <div
-          className="flex-1 flex flex-col items-center justify-center px-2 md:px-4 min-h-0"
+          className="flex-1 flex flex-col items-center justify-center px-0.5 md:px-4 min-h-0"
           style={mobileGraphStyle}
         >
           <motion.div
@@ -457,6 +459,8 @@ const Index = () => {
             open={mobileMenuOpen}
             onOpenChange={setMobileMenuOpen}
             topicId={DEFAULT_TOPIC_ID}
+            onTutorial={handleTutorial}
+            onAbout={handleAbout}
           />
 
           <BottomTabBar
@@ -476,6 +480,9 @@ const Index = () => {
           topicId={DEFAULT_TOPIC_ID}
         />
       )}
+
+      {/* About sidebar (bottom sheet) */}
+      <AboutSidebar open={aboutSheetOpen} onOpenChange={setAboutSheetOpen} />
 
       {/* Floating Chat Manager (desktop only) */}
       {!isMobile && (

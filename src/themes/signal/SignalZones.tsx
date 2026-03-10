@@ -11,64 +11,109 @@ export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function Si
   const cx = config.centerX;
   const cy = config.centerY;
   const r = config.outerRadius;
-  const size = r * 2;
 
-  // Compute gradient percentages from layout config
+  // Glow extends 40% beyond the graph circle
+  const glowRadius = r * 1.4;
+  const glowSize = glowRadius * 2;
+
+  // Ring radii — 5 concentric ripples extending beyond outerRadius
+  const ringRadii = [
+    r * 0.35,
+    r * 0.55,
+    r * 0.75,
+    r * 0.95,
+    r * 1.15,
+  ];
+
+  // Zone boundary percentages for inner gradients
   const coreP = (config.greenRadius / r) * 100;
   const midP = (config.yellowRadius / r) * 100;
   const outP = (config.pinkRadius / r) * 100;
 
   return (
     <g className="signal-zones" ref={ref}>
-      {/* CSS radial gradient via foreignObject — Warm Earth palette */}
-      <foreignObject x={cx - r} y={cy - r} width={size} height={size}>
+      {/* Atmospheric glow — warm amber top-left, cool teal bottom-right */}
+      <defs>
+        <radialGradient id="signal-glow-warm" cx="35%" cy="35%" r="60%">
+          <stop offset="0%" stopColor="hsl(35, 80%, 55%)" stopOpacity={0.12} />
+          <stop offset="60%" stopColor="hsl(35, 80%, 55%)" stopOpacity={0.04} />
+          <stop offset="100%" stopColor="hsl(35, 80%, 55%)" stopOpacity={0} />
+        </radialGradient>
+        <radialGradient id="signal-glow-cool" cx="65%" cy="65%" r="60%">
+          <stop offset="0%" stopColor="hsl(185, 60%, 45%)" stopOpacity={0.10} />
+          <stop offset="60%" stopColor="hsl(185, 60%, 45%)" stopOpacity={0.03} />
+          <stop offset="100%" stopColor="hsl(185, 60%, 45%)" stopOpacity={0} />
+        </radialGradient>
+        <radialGradient id="signal-core-gradient" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="hsl(230, 20%, 14%)" stopOpacity={1} />
+          <stop offset="55%" stopColor="hsl(230, 25%, 11%)" stopOpacity={1} />
+          <stop offset="85%" stopColor="hsl(225, 30%, 8%)" stopOpacity={0.95} />
+          <stop offset="100%" stopColor="hsl(225, 30%, 8%)" stopOpacity={0} />
+        </radialGradient>
+      </defs>
+
+      {/* Warm glow layer (top-left bias) */}
+      <circle cx={cx} cy={cy} r={glowRadius} fill="url(#signal-glow-warm)" />
+      {/* Cool glow layer (bottom-right bias) */}
+      <circle cx={cx} cy={cy} r={glowRadius} fill="url(#signal-glow-cool)" />
+
+      {/* Dark anthracite core with soft edge */}
+      <circle cx={cx} cy={cy} r={r} fill="url(#signal-core-gradient)" />
+
+      {/* Zone tints via foreignObject */}
+      <foreignObject x={cx - r} y={cy - r} width={r * 2} height={r * 2}>
         <div
           style={{
-            width: size,
-            height: size,
+            width: r * 2,
+            height: r * 2,
             borderRadius: '50%',
-            backgroundColor: '#1A1A2E',
             backgroundImage: `
-              radial-gradient(circle closest-side, transparent ${midP - 0.5}%, #2D2A3A ${midP}%, transparent ${midP + 0.5}%),
-              radial-gradient(circle closest-side, transparent ${outP - 0.5}%, #2D2A3A ${outP}%, transparent ${outP + 0.5}%),
-              
               radial-gradient(
                 circle closest-side,
-                rgba(218, 165, 32, 0.06) 0%,
-                rgba(218, 165, 32, 0.06) ${coreP}%,
-                rgba(107, 142, 35, 0.05) ${coreP}%,
-                rgba(107, 142, 35, 0.05) ${midP}%,
-                rgba(204, 85, 0, 0.06) ${midP}%,
-                rgba(204, 85, 0, 0.06) ${outP}%,
-                rgba(120, 113, 108, 0.04) ${outP}%,
-                rgba(120, 113, 108, 0.04) ${outP + 5}%,
-                rgba(26, 26, 46, 0.8) ${outP + 5}%,
-                rgba(26, 26, 46, 0.8) 100%
+                hsla(43, 70%, 50%, 0.07) 0%,
+                hsla(43, 70%, 50%, 0.07) ${coreP}%,
+                hsla(90, 35%, 40%, 0.05) ${coreP}%,
+                hsla(90, 35%, 40%, 0.05) ${midP}%,
+                hsla(20, 80%, 45%, 0.06) ${midP}%,
+                hsla(20, 80%, 45%, 0.06) ${outP}%,
+                hsla(30, 10%, 40%, 0.03) ${outP}%,
+                transparent ${outP + 8}%
               )
             `,
           }}
         />
       </foreignObject>
 
-      {/* Zone boundary circles */}
-      {/* Core zone boundary (greenRadius) */}
-      <circle cx={cx} cy={cy} r={config.greenRadius} fill="none" stroke="#FFFFFF" strokeWidth={0.5} strokeOpacity={0.25} strokeDasharray="4 4" />
-      {/* Core zone label */}
-      <text x={cx} y={cy + config.greenRadius * 0.55} textAnchor="middle" fill="#DAA520" fillOpacity={0.30} fontSize="8" fontFamily="monospace">Respektvoll</text>
+      {/* Concentric ripple rings with soft glow */}
+      {ringRadii.map((ringR, i) => (
+        <g key={i}>
+          {/* Glow ring */}
+          <circle
+            cx={cx} cy={cy} r={ringR}
+            fill="none"
+            stroke="hsla(0, 0%, 100%, 0.03)"
+            strokeWidth={4}
+          />
+          {/* Crisp ring */}
+          <circle
+            cx={cx} cy={cy} r={ringR}
+            fill="none"
+            stroke="hsla(0, 0%, 100%, 0.08)"
+            strokeWidth={0.5}
+          />
+        </g>
+      ))}
 
-      {/* Middle zone boundary (yellowRadius) */}
-      <circle cx={cx} cy={cy} r={config.yellowRadius} fill="none" stroke="#FFFFFF" strokeWidth={0.5} strokeOpacity={0.25} strokeDasharray="4 4" />
-      {/* Middle zone label */}
-      <text x={cx} y={cy + (config.greenRadius + config.yellowRadius) / 2 + 3} textAnchor="middle" fill="#8FBC5E" fillOpacity={0.25} fontSize="8" fontFamily="monospace">Moderat</text>
+      {/* Zone boundary circles — dashed, subtle */}
+      <circle cx={cx} cy={cy} r={config.greenRadius} fill="none" stroke="hsla(0,0%,100%,0.18)" strokeWidth={0.5} strokeDasharray="4 4" />
+      <circle cx={cx} cy={cy} r={config.yellowRadius} fill="none" stroke="hsla(0,0%,100%,0.18)" strokeWidth={0.5} strokeDasharray="4 4" />
+      <circle cx={cx} cy={cy} r={config.pinkRadius} fill="none" stroke="hsla(0,0%,100%,0.18)" strokeWidth={0.5} strokeDasharray="4 4" />
 
-      {/* Outer zone boundary (pinkRadius) */}
-      <circle cx={cx} cy={cy} r={config.pinkRadius} fill="none" stroke="#FFFFFF" strokeWidth={0.5} strokeOpacity={0.25} strokeDasharray="4 4" />
-      {/* Outer zone label */}
-      <text x={cx} y={cy + (config.yellowRadius + config.pinkRadius) / 2 + 3} textAnchor="middle" fill="#CC5500" fillOpacity={0.25} fontSize="8" fontFamily="monospace">Extrem</text>
-
-      {/* Inactive zone label */}
-      <text x={cx} y={cy + (config.pinkRadius + r) / 2 + 3} textAnchor="middle" fill="#78716C" fillOpacity={0.25} fontSize="8" fontFamily="monospace">Offen</text>
-
+      {/* Zone labels */}
+      <text x={cx} y={cy + config.greenRadius * 0.55} textAnchor="middle" fill="hsl(43, 70%, 50%)" fillOpacity={0.25} fontSize="8" fontFamily="monospace">Respektvoll</text>
+      <text x={cx} y={cy + (config.greenRadius + config.yellowRadius) / 2 + 3} textAnchor="middle" fill="hsl(90, 35%, 50%)" fillOpacity={0.20} fontSize="8" fontFamily="monospace">Moderat</text>
+      <text x={cx} y={cy + (config.yellowRadius + config.pinkRadius) / 2 + 3} textAnchor="middle" fill="hsl(20, 80%, 50%)" fillOpacity={0.20} fontSize="8" fontFamily="monospace">Extrem</text>
+      <text x={cx} y={cy + (config.pinkRadius + r) / 2 + 3} textAnchor="middle" fill="hsl(30, 10%, 50%)" fillOpacity={0.20} fontSize="8" fontFamily="monospace">Offen</text>
     </g>
   );
 });
