@@ -17,6 +17,7 @@ import { BottomTabBar, MobilePanel } from '@/components/BottomTabBar';
 import { BottomPanel } from '@/components/BottomPanel';
 import { DesktopBottomBar } from '@/components/DesktopBottomBar';
 import { MainMenu } from '@/components/MainMenu';
+import { AboutSidebar } from '@/components/AboutSidebar';
 import { GraphNode, GraphEdge, ChatRequest } from '@/types/graph';
 import { useTopicData } from '@/hooks/useTopicData';
 import { useChatRequests } from '@/hooks/useChatRequests';
