@@ -28,6 +28,8 @@ const ZONE_BOUNDARY_COLOR: Record<string, string> = {
 };
 
 export function CityZones({ zones, config }: CityZonesProps) {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { t } = useTranslation();
   const cx = config.centerX;
   const cy = config.centerY;
 
