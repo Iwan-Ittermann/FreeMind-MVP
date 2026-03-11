@@ -2,6 +2,7 @@
  * ArcaneZones — concentric zone rings with the original circle texture background.
  */
 
+import { useTranslation } from 'react-i18next';
 import { SemanticZoneToken } from '../types';
 import { LayoutConfig } from '@/types/graph';
 import circleTextureUrl from '@/assets/arcane/textures/circle-texture.svg';
