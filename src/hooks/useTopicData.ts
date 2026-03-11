@@ -170,6 +170,7 @@ export function useTopicData(topicId: string) {
       .subscribe();
 
     // Separate broadcast channel for animations (bypasses RLS issues)
+    // Use a stable name so useChatMessages can reuse this exact channel instance
     const animChannelName = `topic-${topicId}-animations`;
     const animChannel = supabase
       .channel(animChannelName, {
