@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Opinion, ChatRating } from '@/types/graph';
+import { setAnimationChannel, removeAnimationChannel } from '@/lib/animation-channel';
 
 export interface TopicData {
   id: string;
