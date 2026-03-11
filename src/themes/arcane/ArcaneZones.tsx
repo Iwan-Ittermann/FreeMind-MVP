@@ -13,6 +13,7 @@ interface ArcaneZonesProps {
 }
 
 export function ArcaneZones({ zones, config }: ArcaneZonesProps) {
+  const { t } = useTranslation();
   const cx = config.centerX;
   const cy = config.centerY;
 
