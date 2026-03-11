@@ -137,30 +137,23 @@ export function useChatMessages(
       if (error) throw error;
     },
     onSuccess: async () => {
-      // Broadcast animation event for the graph
+      // Broadcast animation event for the graph using the shared channel
       if (broadcastInfo && chatId) {
         try {
-          const channel = supabase.channel(`topic-${broadcastInfo.topicId}-animations`);
-
-          channel.subscribe(async (status) => {
-            if (status !== 'SUBSCRIBED') return;
-
-            try {
-              await channel.send({
-                type: 'broadcast',
-                event: 'message-animation',
-                payload: {
-                  sourceOpinionId: broadcastInfo.myOpinionId,
-                  targetOpinionId: broadcastInfo.theirOpinionId,
-                  chatId,
-                },
-              });
-            } catch (sendErr) {
-              console.error('Failed to send animation broadcast:', sendErr);
-            } finally {
-              supabase.removeChannel(channel);
-            }
-          });
+          const animChannel = getAnimationChannel(broadcastInfo.topicId);
+          if (animChannel) {
+            await animChannel.send({
+              type: 'broadcast',
+              event: 'message-animation',
+              payload: {
+                sourceOpinionId: broadcastInfo.myOpinionId,
+                targetOpinionId: broadcastInfo.theirOpinionId,
+                chatId,
+              },
+            });
+          } else {
+            console.warn('Animation channel not found for topic:', broadcastInfo.topicId);
+          }
         } catch (err) {
           console.error('Failed to broadcast animation:', err);
         }

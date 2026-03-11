@@ -97,7 +97,7 @@ const Index = () => {
       if (mobile) {
         const panelHeight = activeMobilePanel ? window.innerHeight * 0.55 : 0;
         const availableHeight = window.innerHeight - 56 - 56 - panelHeight;
-        const availableWidth = window.innerWidth - 16;
+        const availableWidth = window.innerWidth - 4;
         const size = Math.min(availableWidth, availableHeight - 16);
         setGraphSize({ width: Math.max(size, 200), height: Math.max(size, 200) });
       } else {
