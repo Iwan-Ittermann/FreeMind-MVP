@@ -263,6 +263,12 @@
       "backHome": "Zurück zur Startseite"
     }
   },
+  "zones": {
+    "respectful": "Respektvoll",
+    "moderate": "Moderat",
+    "extreme": "Extrem",
+    "inactive": "Inaktiv"
+  },
   "sidebar": {
     "allOpinions": "Alle Meinungen",
     "browseOpinions": "Alle Meinungen zu diesem Thema durchsuchen",

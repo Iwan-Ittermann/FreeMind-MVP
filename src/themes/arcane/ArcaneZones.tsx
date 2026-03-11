@@ -2,6 +2,7 @@
  * ArcaneZones — concentric zone rings with the original circle texture background.
  */
 
+import { useTranslation } from 'react-i18next';
 import { SemanticZoneToken } from '../types';
 import { LayoutConfig } from '@/types/graph';
 import circleTextureUrl from '@/assets/arcane/textures/circle-texture.svg';
@@ -12,6 +13,7 @@ interface ArcaneZonesProps {
 }
 
 export function ArcaneZones({ zones, config }: ArcaneZonesProps) {
+  const { t } = useTranslation();
   const cx = config.centerX;
   const cy = config.centerY;
 
@@ -53,11 +55,11 @@ export function ArcaneZones({ zones, config }: ArcaneZonesProps) {
         )
       ))}
 
-      {/* Zone labels — placed inside each zone */}
-      <text x={cx} y={cy + config.greenRadius * 0.55} textAnchor="middle" fill="hsl(45, 30%, 70%)" fillOpacity={0.35} fontSize="8" fontFamily="serif">Respektvoll</text>
-      <text x={cx} y={cy + (config.greenRadius + config.yellowRadius) / 2 + 3} textAnchor="middle" fill="hsl(45, 30%, 60%)" fillOpacity={0.30} fontSize="8" fontFamily="serif">Moderat</text>
-      <text x={cx} y={cy + (config.yellowRadius + config.pinkRadius) / 2 + 3} textAnchor="middle" fill="hsl(45, 30%, 50%)" fillOpacity={0.30} fontSize="8" fontFamily="serif">Extrem</text>
-      <text x={cx} y={cy + (config.pinkRadius + config.outerRadius) / 2 + 3} textAnchor="middle" fill="hsl(45, 25%, 45%)" fillOpacity={0.30} fontSize="8" fontFamily="serif">Offen</text>
+      {/* Zone labels */}
+      <text x={cx} y={cy + 4} textAnchor="middle" fill="hsl(45, 30%, 70%)" fillOpacity={0.35} fontSize="8" fontFamily="serif">{t('zones.respectful')}</text>
+      <text x={cx} y={cy + config.greenRadius + 10} textAnchor="middle" fill="hsl(45, 30%, 60%)" fillOpacity={0.30} fontSize="8" fontFamily="serif">{t('zones.moderate')}</text>
+      <text x={cx} y={cy + config.yellowRadius + 10} textAnchor="middle" fill="hsl(45, 30%, 50%)" fillOpacity={0.30} fontSize="8" fontFamily="serif">{t('zones.extreme')}</text>
+      <text x={cx} y={cy + config.pinkRadius + 10} textAnchor="middle" fill="hsl(45, 25%, 45%)" fillOpacity={0.30} fontSize="8" fontFamily="serif">{t('zones.inactive')}</text>
 
       {/* Outer boundary ring */}
       <circle

@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Opinion, ChatRating } from '@/types/graph';
+import { setAnimationChannel, removeAnimationChannel } from '@/lib/animation-channel';
 
 export interface TopicData {
   id: string;
@@ -169,6 +170,7 @@ export function useTopicData(topicId: string) {
       .subscribe();
 
     // Separate broadcast channel for animations (bypasses RLS issues)
+    // Use a stable name so useChatMessages can reuse this exact channel instance
     const animChannelName = `topic-${topicId}-animations`;
     const animChannel = supabase
       .channel(animChannelName, {
@@ -212,9 +214,15 @@ export function useTopicData(topicId: string) {
         // Refetch unread messages
         queryClient.refetchQueries({ queryKey: ['unreadMessages', topicId] });
       })
-      .subscribe();
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          // Register the channel so useChatMessages can reuse it for sending
+          setAnimationChannel(topicId, animChannel);
+        }
+      });
 
     return () => {
+      removeAnimationChannel(topicId);
       supabase.removeChannel(channel);
       supabase.removeChannel(animChannel);
     };

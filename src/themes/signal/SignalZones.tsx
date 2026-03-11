@@ -1,4 +1,5 @@
 import { forwardRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { SemanticZoneToken } from '../types';
 import { LayoutConfig } from '@/types/graph';
 
@@ -8,51 +9,77 @@ interface SignalZonesProps {
 }
 
 export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function SignalZones({ zones, config }, ref) {
+  const { t } = useTranslation();
   const cx = config.centerX;
   const cy = config.centerY;
   const r = config.outerRadius;
 
   // Glow extends 40% beyond the graph circle
   const glowRadius = r * 1.4;
-  const glowSize = glowRadius * 2;
 
-  // Ring radii — 5 concentric ripples extending beyond outerRadius
-  const ringRadii = [
-    r * 0.35,
-    r * 0.55,
-    r * 0.75,
-    r * 0.95,
-    r * 1.15,
-  ];
+  // Zone radii
+  const gr = config.greenRadius;
+  const yr = config.yellowRadius;
+  const pr = config.pinkRadius;
 
-  // Zone boundary percentages for inner gradients
-  const coreP = (config.greenRadius / r) * 100;
-  const midP = (config.yellowRadius / r) * 100;
-  const outP = (config.pinkRadius / r) * 100;
+  // Zone boundary percentages for radial gradient
+  const coreP = (gr / r) * 100;
+  const midP = (yr / r) * 100;
+  const outP = (pr / r) * 100;
+
+  // 3 gradient sub-rings in the moderate zone (between greenRadius and yellowRadius)
+  const modStep = (yr - gr) / 3;
+  const modRing1 = gr + modStep;
+  const modRing2 = gr + modStep * 2;
 
   return (
     <g className="signal-zones" ref={ref}>
-      {/* Atmospheric glow — warm amber top-left, cool teal bottom-right */}
       <defs>
-        <radialGradient id="signal-glow-warm" cx="35%" cy="35%" r="60%">
-          <stop offset="0%" stopColor="hsl(35, 80%, 55%)" stopOpacity={0.12} />
-          <stop offset="60%" stopColor="hsl(35, 80%, 55%)" stopOpacity={0.04} />
-          <stop offset="100%" stopColor="hsl(35, 80%, 55%)" stopOpacity={0} />
+        {/* Atmospheric glow — warm orange top-left */}
+        <radialGradient id="signal-glow-warm" cx="30%" cy="30%" r="65%">
+          <stop offset="0%" stopColor="hsl(25, 90%, 55%)" stopOpacity={0.28} />
+          <stop offset="40%" stopColor="hsl(30, 85%, 50%)" stopOpacity={0.14} />
+          <stop offset="70%" stopColor="hsl(35, 80%, 50%)" stopOpacity={0.06} />
+          <stop offset="100%" stopColor="hsl(35, 80%, 50%)" stopOpacity={0} />
         </radialGradient>
-        <radialGradient id="signal-glow-cool" cx="65%" cy="65%" r="60%">
-          <stop offset="0%" stopColor="hsl(185, 60%, 45%)" stopOpacity={0.10} />
-          <stop offset="60%" stopColor="hsl(185, 60%, 45%)" stopOpacity={0.03} />
-          <stop offset="100%" stopColor="hsl(185, 60%, 45%)" stopOpacity={0} />
+
+        {/* Atmospheric glow — cool teal bottom-right */}
+        <radialGradient id="signal-glow-cool" cx="70%" cy="70%" r="65%">
+          <stop offset="0%" stopColor="hsl(180, 70%, 45%)" stopOpacity={0.24} />
+          <stop offset="40%" stopColor="hsl(185, 65%, 42%)" stopOpacity={0.12} />
+          <stop offset="70%" stopColor="hsl(185, 60%, 40%)" stopOpacity={0.05} />
+          <stop offset="100%" stopColor="hsl(185, 60%, 40%)" stopOpacity={0} />
         </radialGradient>
+
+        {/* Dark core gradient */}
         <radialGradient id="signal-core-gradient" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="hsl(230, 20%, 14%)" stopOpacity={1} />
-          <stop offset="55%" stopColor="hsl(230, 25%, 11%)" stopOpacity={1} />
-          <stop offset="85%" stopColor="hsl(225, 30%, 8%)" stopOpacity={0.95} />
+          <stop offset="0%" stopColor="hsl(230, 22%, 13%)" stopOpacity={1} />
+          <stop offset="50%" stopColor="hsl(228, 25%, 11%)" stopOpacity={1} />
+          <stop offset="80%" stopColor="hsl(225, 28%, 9%)" stopOpacity={0.97} />
           <stop offset="100%" stopColor="hsl(225, 30%, 8%)" stopOpacity={0} />
         </radialGradient>
+
+        {/* Moderate zone gradient sub-rings */}
+        <radialGradient id="signal-mod-ring-1" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="hsl(220, 20%, 16%)" stopOpacity={0.6} />
+          <stop offset="100%" stopColor="hsl(220, 20%, 14%)" stopOpacity={0.3} />
+        </radialGradient>
+        <radialGradient id="signal-mod-ring-2" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="hsl(215, 18%, 18%)" stopOpacity={0.5} />
+          <stop offset="100%" stopColor="hsl(215, 18%, 15%)" stopOpacity={0.25} />
+        </radialGradient>
+        <radialGradient id="signal-mod-ring-3" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="hsl(210, 16%, 20%)" stopOpacity={0.4} />
+          <stop offset="100%" stopColor="hsl(210, 16%, 17%)" stopOpacity={0.2} />
+        </radialGradient>
+
+        {/* Ring glow filter */}
+        <filter id="signal-ring-glow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="2" />
+        </filter>
       </defs>
 
-      {/* Warm glow layer (top-left bias) */}
+      {/* Warm glow layer (top-left bias) — extends beyond outer radius */}
       <circle cx={cx} cy={cy} r={glowRadius} fill="url(#signal-glow-warm)" />
       {/* Cool glow layer (bottom-right bias) */}
       <circle cx={cx} cy={cy} r={glowRadius} fill="url(#signal-glow-cool)" />
@@ -70,8 +97,8 @@ export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function Si
             backgroundImage: `
               radial-gradient(
                 circle closest-side,
-                hsla(43, 70%, 50%, 0.07) 0%,
-                hsla(43, 70%, 50%, 0.07) ${coreP}%,
+                hsla(43, 70%, 50%, 0.08) 0%,
+                hsla(43, 70%, 50%, 0.08) ${coreP}%,
                 hsla(90, 35%, 40%, 0.05) ${coreP}%,
                 hsla(90, 35%, 40%, 0.05) ${midP}%,
                 hsla(20, 80%, 45%, 0.06) ${midP}%,
@@ -84,36 +111,45 @@ export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function Si
         />
       </foreignObject>
 
-      {/* Concentric ripple rings with soft glow */}
-      {ringRadii.map((ringR, i) => (
-        <g key={i}>
-          {/* Glow ring */}
+      {/* 3 gradient sub-rings inside the moderate zone for depth */}
+      <circle cx={cx} cy={cy} r={modRing1} fill="none" stroke="url(#signal-mod-ring-1)" strokeWidth={modStep * 0.6} opacity={0.5} />
+      <circle cx={cx} cy={cy} r={modRing2} fill="none" stroke="url(#signal-mod-ring-2)" strokeWidth={modStep * 0.6} opacity={0.4} />
+      <circle cx={cx} cy={cy} r={yr - modStep * 0.15} fill="none" stroke="url(#signal-mod-ring-3)" strokeWidth={modStep * 0.5} opacity={0.35} />
+
+      {/* Zone boundary rings — one per border, with glow + crisp line */}
+      {[gr, yr, pr, r].map((radius, i) => (
+        <g key={`ring-${i}`}>
+          {/* Glow behind ring */}
           <circle
-            cx={cx} cy={cy} r={ringR}
+            cx={cx} cy={cy} r={radius}
             fill="none"
-            stroke="hsla(0, 0%, 100%, 0.03)"
+            stroke="hsla(0, 0%, 100%, 0.06)"
             strokeWidth={4}
+            filter="url(#signal-ring-glow)"
           />
           {/* Crisp ring */}
           <circle
-            cx={cx} cy={cy} r={ringR}
+            cx={cx} cy={cy} r={radius}
             fill="none"
-            stroke="hsla(0, 0%, 100%, 0.08)"
-            strokeWidth={0.5}
+            stroke="hsla(0, 0%, 100%, 0.15)"
+            strokeWidth={0.7}
           />
         </g>
       ))}
 
-      {/* Zone boundary circles — dashed, subtle */}
-      <circle cx={cx} cy={cy} r={config.greenRadius} fill="none" stroke="hsla(0,0%,100%,0.18)" strokeWidth={0.5} strokeDasharray="4 4" />
-      <circle cx={cx} cy={cy} r={config.yellowRadius} fill="none" stroke="hsla(0,0%,100%,0.18)" strokeWidth={0.5} strokeDasharray="4 4" />
-      <circle cx={cx} cy={cy} r={config.pinkRadius} fill="none" stroke="hsla(0,0%,100%,0.18)" strokeWidth={0.5} strokeDasharray="4 4" />
-
-      {/* Zone labels */}
-      <text x={cx} y={cy + config.greenRadius * 0.55} textAnchor="middle" fill="hsl(43, 70%, 50%)" fillOpacity={0.25} fontSize="8" fontFamily="monospace">Respektvoll</text>
-      <text x={cx} y={cy + (config.greenRadius + config.yellowRadius) / 2 + 3} textAnchor="middle" fill="hsl(90, 35%, 50%)" fillOpacity={0.20} fontSize="8" fontFamily="monospace">Moderat</text>
-      <text x={cx} y={cy + (config.yellowRadius + config.pinkRadius) / 2 + 3} textAnchor="middle" fill="hsl(20, 80%, 50%)" fillOpacity={0.20} fontSize="8" fontFamily="monospace">Extrem</text>
-      <text x={cx} y={cy + (config.pinkRadius + r) / 2 + 3} textAnchor="middle" fill="hsl(30, 10%, 50%)" fillOpacity={0.20} fontSize="8" fontFamily="monospace">Offen</text>
+      {/* Zone labels — Respectful at center, others at zone borders */}
+      <text x={cx} y={cy + 4} textAnchor="middle" fill="hsl(43, 70%, 50%)" fillOpacity={0.3} fontSize="8" fontFamily="monospace">
+        {t('zones.respectful')}
+      </text>
+      <text x={cx} y={cy + gr + 10} textAnchor="middle" fill="hsl(90, 35%, 50%)" fillOpacity={0.25} fontSize="8" fontFamily="monospace">
+        {t('zones.moderate')}
+      </text>
+      <text x={cx} y={cy + yr + 10} textAnchor="middle" fill="hsl(20, 80%, 50%)" fillOpacity={0.25} fontSize="8" fontFamily="monospace">
+        {t('zones.extreme')}
+      </text>
+      <text x={cx} y={cy + pr + 10} textAnchor="middle" fill="hsl(30, 10%, 50%)" fillOpacity={0.25} fontSize="8" fontFamily="monospace">
+        {t('zones.inactive')}
+      </text>
     </g>
   );
 });

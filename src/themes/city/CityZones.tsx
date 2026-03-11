@@ -3,6 +3,7 @@
  * No external texture files needed — renders instantly.
  */
 
+import { useTranslation } from 'react-i18next';
 import { SemanticZoneToken } from '../types';
 import { LayoutConfig } from '@/types/graph';
 
@@ -28,6 +29,7 @@ const ZONE_BOUNDARY_COLOR: Record<string, string> = {
 };
 
 export function CityZones({ zones, config }: CityZonesProps) {
+  const { t } = useTranslation();
   const cx = config.centerX;
   const cy = config.centerY;
 
@@ -128,11 +130,11 @@ export function CityZones({ zones, config }: CityZonesProps) {
         );
       })}
 
-      {/* Zone labels — placed inside each zone */}
-      <text x={cx} y={cy + config.greenRadius * 0.55} textAnchor="middle" fill="hsl(0, 0%, 95%)" fillOpacity={0.35} fontSize="8" fontFamily="sans-serif" fontWeight="bold">Respektvoll</text>
-      <text x={cx} y={cy + (config.greenRadius + config.yellowRadius) / 2 + 3} textAnchor="middle" fill="hsl(0, 0%, 95%)" fillOpacity={0.30} fontSize="8" fontFamily="sans-serif">Moderat</text>
-      <text x={cx} y={cy + (config.yellowRadius + config.pinkRadius) / 2 + 3} textAnchor="middle" fill="hsl(0, 0%, 95%)" fillOpacity={0.30} fontSize="8" fontFamily="sans-serif">Extrem</text>
-      <text x={cx} y={cy + (config.pinkRadius + config.outerRadius) / 2 + 3} textAnchor="middle" fill="hsl(30, 40%, 55%)" fillOpacity={0.30} fontSize="8" fontFamily="sans-serif">Offen</text>
+      {/* Zone labels */}
+      <text x={cx} y={cy + 4} textAnchor="middle" fill="hsl(0, 0%, 95%)" fillOpacity={0.35} fontSize="8" fontFamily="sans-serif" fontWeight="bold">{t('zones.respectful')}</text>
+      <text x={cx} y={cy + config.greenRadius + 10} textAnchor="middle" fill="hsl(0, 0%, 95%)" fillOpacity={0.30} fontSize="8" fontFamily="sans-serif">{t('zones.moderate')}</text>
+      <text x={cx} y={cy + config.yellowRadius + 10} textAnchor="middle" fill="hsl(0, 0%, 95%)" fillOpacity={0.30} fontSize="8" fontFamily="sans-serif">{t('zones.extreme')}</text>
+      <text x={cx} y={cy + config.pinkRadius + 10} textAnchor="middle" fill="hsl(30, 40%, 55%)" fillOpacity={0.30} fontSize="8" fontFamily="sans-serif">{t('zones.inactive')}</text>
 
       {/* Outer boundary — warm sand, visible on dark bg */}
       <circle
