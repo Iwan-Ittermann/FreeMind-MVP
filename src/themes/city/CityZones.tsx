@@ -3,6 +3,7 @@
  * No external texture files needed — renders instantly.
  */
 
+import { useTranslation } from 'react-i18next';
 import { SemanticZoneToken } from '../types';
 import { LayoutConfig } from '@/types/graph';
 
