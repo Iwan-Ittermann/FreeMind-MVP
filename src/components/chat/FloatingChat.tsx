@@ -83,7 +83,7 @@ export function FloatingChat({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const hasNeverRated = !(props as any).hasExistingRating && initialEmpathy == null && !preliminaryDone;
+  const hasNeverRated = !hasExistingRating && initialEmpathy == null && !preliminaryDone;
   const showPreliminaryStep = hasNeverRated && !isBotChat && !isReadOnly;
 
   // Handle input change with typing indicator
