@@ -48,6 +48,8 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
   const [empathy, setEmpathy] = useState(0);
   const [disagreement, setDisagreement] = useState(50);
   const [initialized, setInitialized] = useState(false);
+  const [preliminaryDone, setPreliminaryDone] = useState(false);
+  const [preliminaryDisagreement, setPreliminaryDisagreement] = useState(50);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -57,10 +59,12 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
       setEmpathy(existingRating.empathy);
       setDisagreement(existingRating.disagreement);
       setInitialized(true);
+      setPreliminaryDone(true);
     }
   }, [existingRating, initialized]);
 
-  const hasNeverRated = !existingRating;
+  const hasNeverRated = !existingRating && !preliminaryDone;
+  const showPreliminaryStep = hasNeverRated && !isBotChat && !readOnly;
 
   const handleInputChange = useCallback((value: string) => {
     setInputValue(value);
