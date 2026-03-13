@@ -179,6 +179,15 @@ export function FloatingChat({
     setSavedDisagreement(disagreement);
   };
 
+  const handlePreliminarySubmit = () => {
+    onSubmitRating?.(0, preliminaryDisagreement); // empathy=0 (neutral)
+    setSavedEmpathy(0);
+    setSavedDisagreement(preliminaryDisagreement);
+    setDisagreement(preliminaryDisagreement);
+    setEmpathy(0);
+    setPreliminaryDone(true);
+  };
+
   // Calculate Bridging Score: empathy × disagreement
   // empathy is -50 to +50, disagreement is 0 to 100
   // Bridging score range: -5000 to +5000
