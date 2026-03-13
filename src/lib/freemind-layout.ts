@@ -541,8 +541,16 @@ export function calculateLayout(
     return node;
   });
 
+  // Build set of pinned node IDs (bot node stays fixed)
+  const pinnedIds = new Set<string>();
+  for (const node of allNodes) {
+    if (node.opinion.authorId === BOT_USER_ID) {
+      pinnedIds.add(node.id);
+    }
+  }
+
   // Collision avoidance: push overlapping nodes apart angularly (never change radius)
-  allNodes = resolveCollisions(allNodes, config);
+  allNodes = resolveCollisions(allNodes, config, 12, pinnedIds);
 
   return { nodes: allNodes, edges, greenZoneSlots };
 }
