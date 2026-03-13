@@ -55,6 +55,7 @@ export function FloatingChat({
   initialEmpathy,
   initialDisagreement,
   averageBridgingScore,
+  hasExistingRating = false,
   isBotChat = false,
 }: FloatingChatProps) {
   const { t } = useTranslation();
