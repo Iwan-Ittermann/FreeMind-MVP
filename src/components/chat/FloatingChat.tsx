@@ -35,6 +35,7 @@ interface FloatingChatProps {
   isReadOnly?: boolean;
   initialEmpathy?: number;
   initialDisagreement?: number;
+  hasExistingRating?: boolean;
   averageBridgingScore?: number | null;
   isBotChat?: boolean;
 }
