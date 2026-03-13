@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Minus, X, Heart, HeartCrack, Swords, Handshake, Check } from 'lucide-react';
+import { Send, Minus, X, Heart, HeartCrack, Swords, Handshake, Check, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
@@ -48,6 +48,8 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
   const [empathy, setEmpathy] = useState(0);
   const [disagreement, setDisagreement] = useState(50);
   const [initialized, setInitialized] = useState(false);
+  const [preliminaryDone, setPreliminaryDone] = useState(false);
+  const [preliminaryDisagreement, setPreliminaryDisagreement] = useState(50);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -57,10 +59,12 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
       setEmpathy(existingRating.empathy);
       setDisagreement(existingRating.disagreement);
       setInitialized(true);
+      setPreliminaryDone(true);
     }
   }, [existingRating, initialized]);
 
-  const hasNeverRated = !existingRating;
+  const hasNeverRated = !existingRating && !preliminaryDone;
+  const showPreliminaryStep = hasNeverRated && !isBotChat && !readOnly;
 
   const handleInputChange = useCallback((value: string) => {
     setInputValue(value);
@@ -91,6 +95,15 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
       await saveRating(empathy, disagreement);
       // Rating saved successfully
       setIsRatingOpen(false);
+    } catch {
+      toast.error(t('chat.failedToSaveRating'));
+    }
+  };
+
+  const handlePreliminarySubmit = async () => {
+    try {
+      await saveRating(0, preliminaryDisagreement);
+      setPreliminaryDone(true);
     } catch {
       toast.error(t('chat.failedToSaveRating'));
     }
@@ -168,7 +181,53 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
       {/* Content area — toggles between messages and rating */}
       <div className="flex-1 overflow-hidden relative">
         <AnimatePresence mode="wait">
-          {isRatingOpen ? (
+          {showPreliminaryStep && !isLoading ? (
+            <motion.div
+              key="preliminary"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 p-4 overflow-y-auto flex flex-col items-center justify-center"
+            >
+              <h3 className="text-sm font-semibold text-foreground mb-3">{t('floatingChat.rateFirst')}</h3>
+              
+              <div className="w-full mb-4 p-3 rounded-lg bg-muted border border-border/40">
+                <p className="text-[10px] text-muted-foreground mb-1">{t('floatingChat.them')}</p>
+                <p className="text-xs text-foreground">"{theirOpinion?.text}"</p>
+              </div>
+
+              <div className="w-full space-y-2 mb-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Swords className="w-3.5 h-3.5 text-orange-400" />
+                    <span className="text-[10px] text-muted-foreground">{t('floatingChat.disagreement')}</span>
+                  </div>
+                  <span className="text-[10px] font-mono text-orange-400">{preliminaryDisagreement}</span>
+                </div>
+                <Slider
+                  value={[preliminaryDisagreement]}
+                  onValueChange={(v) => setPreliminaryDisagreement(v[0])}
+                  max={100}
+                  step={1}
+                  className="[&_[role=slider]]:bg-orange-400 [&_[role=slider]]:border-orange-400 [&_.bg-primary]:bg-orange-400/30"
+                />
+                <div className="flex justify-between text-[10px] text-muted-foreground">
+                  <Handshake className="w-3 h-3" />
+                  <Swords className="w-3 h-3" />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 text-[10px] text-muted-foreground mb-4">
+                <Info className="w-3 h-3" />
+                <span>{t('floatingChat.respectNeutralNote')}</span>
+              </div>
+
+              <Button onClick={handlePreliminarySubmit} disabled={isSavingRating} size="sm" className="w-full">
+                <Check className="w-3.5 h-3.5 mr-1.5" />
+                {isSavingRating ? t('floatingChat.saving') : t('floatingChat.submitAndChat')}
+              </Button>
+            </motion.div>
+          ) : isRatingOpen ? (
             <motion.div
               key="rating"
               initial={{ opacity: 0, x: 20 }}
@@ -289,8 +348,8 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
         </AnimatePresence>
       </div>
 
-      {/* Footer — input + Rate! button (hidden in read-only mode) */}
-      {!readOnly && (
+      {/* Footer — input + Rate! button (hidden in read-only mode and preliminary step) */}
+      {!readOnly && !showPreliminaryStep && (
         <div className="border-t border-border p-2 shrink-0 bg-muted/80">
           {isBlocked || isBlockedByOther ? (
             <p className="text-xs text-muted-foreground text-center py-1">

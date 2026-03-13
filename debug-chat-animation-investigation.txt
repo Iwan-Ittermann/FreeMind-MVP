@@ -1,7 +1,7 @@
 Chat Animation Bug Investigation Log
 Context ID: 8F42B1C3-5D9E-4A7B-B2E1-9C3F4D5A6E7B
 Date: 2026-03-08
-Status: Unresolved (animation still not visible)
+Status: RESOLVED (2026-03-13)
 
 ==================================================
 1) INITIAL SYMPTOM
@@ -105,40 +105,58 @@ File: src/hooks/useChatMessages.ts
 - User continued to report no visible graph animation after hardening changes.
 
 ==================================================
-9) CURRENT IMPLEMENTATION STATE
+9) ROOT CAUSE IDENTIFIED (ROUND 3)
 ==================================================
-Animation path currently in code:
-1) Message inserted via useChatMessages mutation.
-2) On success, useChatMessages emits "message-animation" broadcast with opinion IDs.
-3) useTopicData listens on topic-{topicId}-animations and pushes messageAnimations state.
-4) SignalRenderer maps messageAnimations -> eventTokens.
-5) SignalEventMarker animates circles along source/target coordinates.
-
-Known resolved warnings:
-- SignalZones ref warning addressed via forwardRef.
-- ChatBubble ref warning addressed via forwardRef.
-
-Remaining issue:
-- User still does not observe visible graph animation.
+The issue was a **channel instance collision**:
+- `useChatMessages` created a NEW ephemeral channel with the same name
+  `topic-{topicId}-animations` as the persistent listener in `useTopicData`.
+- Supabase JS client's `supabase.channel('name')` creates a NEW channel
+  instance each time — two instances with the same name do NOT share state.
+- The `self: true` flag only means "the channel instance that sent the
+  message also receives it back" — since sender and receiver were different
+  instances, this didn't help.
+- The ephemeral channel was subscribed, sent the broadcast, then immediately
+  removed — but the PERSISTENT listener channel never received the event
+  because Supabase Realtime treats them as separate subscriptions.
 
 ==================================================
-10) RECOMMENDED NEXT DEBUG STEPS (TOMORROW)
+10) FIX APPLIED (ROUND 3) — RESOLVED
 ==================================================
-1) Add temporary runtime logs at all 5 pipeline stages above (send, receive, state update, token build, SVG render) with unique message IDs.
-2) Verify source/target opinion IDs in payload exist in current graph nodeMap at render time.
-3) Confirm coordinates are non-zero and on-screen when event token is created.
-4) Increase marker radius + stroke width + duration temporarily to rule out visibility/contrast issue.
-5) Check z-order in SVG (event marker may be behind other layers in specific theme state).
-6) Confirm graph currently shown is for same topicId as broadcast payload topic.
-7) Optionally add fallback local animation trigger directly in chat sender path (for own client only) to isolate network/realtime from rendering.
+Created a shared animation channel registry:
+
+File: src/lib/animation-channel.ts (NEW)
+- Central Map<string, RealtimeChannel> registry.
+- Exports: setAnimationChannel(topicId, channel),
+           removeAnimationChannel(topicId),
+           getAnimationChannel(topicId)
+
+File: src/hooks/useTopicData.ts
+- After subscribing the animation broadcast channel, registers it via
+  setAnimationChannel(topicId, channel).
+- On cleanup, calls removeAnimationChannel(topicId).
+
+File: src/hooks/useChatMessages.ts
+- Instead of creating an ephemeral channel, calls
+  getAnimationChannel(topicId) to retrieve the existing persistent channel.
+- Sends the broadcast directly on that channel instance.
+- No channel creation/removal needed.
+
+Result: The sender and receiver now use the SAME channel instance,
+ensuring reliable delivery of `message-animation` events.
 
 ==================================================
-11) FILES TO REVIEW FIRST NEXT SESSION
+11) KEY TAKEAWAY
 ==================================================
-- src/hooks/useChatMessages.ts
-- src/hooks/useTopicData.ts
-- src/themes/signal/SignalRenderer.tsx
-- src/themes/signal/SignalEventMarker.tsx
-- src/components/chat/ChatBubble.tsx
+When using Supabase Realtime broadcast for same-tab communication:
+- NEVER create ephemeral channels with the same name as a persistent listener.
+- ALWAYS reuse the existing channel instance for sending.
+- Use a shared registry pattern to pass channel references between hooks.
+
+==================================================
+12) FILES INVOLVED IN FINAL FIX
+==================================================
+- src/lib/animation-channel.ts (new registry)
+- src/hooks/useTopicData.ts (register channel)
+- src/hooks/useChatMessages.ts (retrieve and reuse channel)
 
 End of log.

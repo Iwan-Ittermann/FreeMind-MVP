@@ -164,7 +164,11 @@
     "blockedByThem": "Dieser Nutzer hat dich blockiert",
     "unknownOpinion": "Unbekannte Meinung",
     "you": "Du",
-    "them": "Sie"
+    "them": "Sie",
+    "rateFirst": "Bewerte zuerst deine Meinungsverschiedenheit",
+    "rateDisagreementPrompt": "Wie stark unterscheidet sich deine Meinung?",
+    "respectNeutralNote": "Respekt-Bewertung auf neutral gesetzt",
+    "submitAndChat": "Absenden & Chat starten"
   },
   "about": {
     "title": "FreeMind",

@@ -253,8 +253,14 @@ export function ChatsSidebar({ open, onOpenChange, topicId, onChatOpen, unreadMe
   const content = (
     <div className="flex flex-col h-full">
       {!user ? (
-        <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm">
-          {t('sidebar.signInToSeeChats', 'Sign in to see your chats')}
+        <div className="flex-1 flex flex-col items-center justify-center gap-3 text-muted-foreground text-sm">
+          <span>{t('sidebar.signInToSeeChats', 'Sign in to see your chats')}</span>
+          <Button
+            onClick={() => window.location.href = '/auth'}
+            className="rounded-full bg-accent text-accent-foreground hover:bg-accent/90 font-semibold text-sm shadow-lg shadow-accent/25 px-6"
+          >
+            {t('common.logIn', 'Login')}
+          </Button>
         </div>
       ) : !myOpinion ? (
         <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm text-center px-4">

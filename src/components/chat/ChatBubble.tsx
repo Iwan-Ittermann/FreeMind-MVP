@@ -83,16 +83,16 @@ export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(function C
                   ? 'bg-white rounded-bl-md shadow-sm'
                   : isOpinion
                     ? 'bg-secondary/40 border border-secondary/50 rounded-bl-md'
-                    : 'bg-white/20 rounded-bl-md'
+                    : 'bg-muted rounded-bl-md'
             }`}
           >
-            <p className={`text-sm leading-relaxed ${isBotMessage && !isOwn ? 'text-black' : isOwn && !isOpinion ? 'text-white' : 'text-white/90'}`}>
+            <p className={`text-sm leading-relaxed ${isBotMessage && !isOwn ? 'text-black' : isOwn && !isOpinion ? 'text-white' : 'text-foreground'}`}>
               {content}
             </p>
           </motion.div>
 
           {/* Timestamp */}
-          <p className={`text-[10px] text-white/30 mt-1 ${isOwn ? 'text-right' : 'text-left'}`}>
+          <p className={`text-[10px] text-muted-foreground mt-1 ${isOwn ? 'text-right' : 'text-left'}`}>
             {timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </p>
 

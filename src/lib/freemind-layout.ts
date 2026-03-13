@@ -541,8 +541,16 @@ export function calculateLayout(
     return node;
   });
 
+  // Build set of pinned node IDs (bot node stays fixed)
+  const pinnedIds = new Set<string>();
+  for (const node of allNodes) {
+    if (node.opinion.authorId === BOT_USER_ID) {
+      pinnedIds.add(node.id);
+    }
+  }
+
   // Collision avoidance: push overlapping nodes apart angularly (never change radius)
-  allNodes = resolveCollisions(allNodes, config);
+  allNodes = resolveCollisions(allNodes, config, 12, pinnedIds);
 
   return { nodes: allNodes, edges, greenZoneSlots };
 }
@@ -552,7 +560,7 @@ export function calculateLayout(
  * Pushes overlapping nodes apart by adjusting angles only (never radii),
  * so nodes can never cross zone boundaries.
  */
-function resolveCollisions(nodes: GraphNode[], config: LayoutConfig, iterations: number = 12): GraphNode[] {
+function resolveCollisions(nodes: GraphNode[], config: LayoutConfig, iterations: number = 12, pinnedIds: Set<string> = new Set()): GraphNode[] {
   if (nodes.length < 2) return nodes;
 
   const VISUAL_NODE_SIZE = 48;
@@ -570,6 +578,7 @@ function resolveCollisions(nodes: GraphNode[], config: LayoutConfig, iterations:
       id: n.id,
       radius: Math.sqrt(dx * dx + dy * dy),
       angle: Math.atan2(dy, dx),
+      pinned: pinnedIds.has(n.id),
     };
   });
 
@@ -601,16 +610,27 @@ function resolveCollisions(nodes: GraphNode[], config: LayoutConfig, iterations:
 
         // Determine push direction deterministically:
         // The node with the smaller ID gets pushed in the positive angular direction
-        deltas[i] += angularPush;
-        deltas[j] -= angularPush;
+        // Pinned nodes don't move; the other node absorbs the full push
+        if (a.pinned && b.pinned) {
+          // Both pinned — no push
+        } else if (a.pinned) {
+          deltas[j] -= angularPush * 2;
+        } else if (b.pinned) {
+          deltas[i] += angularPush * 2;
+        } else {
+          deltas[i] += angularPush;
+          deltas[j] -= angularPush;
+        }
       }
     }
 
     if (!anyOverlap) break;
 
-    // Apply phase: update all angles simultaneously
+    // Apply phase: update all angles simultaneously (skip pinned nodes)
     for (let i = 0; i < polar.length; i++) {
-      polar[i].angle += deltas[i];
+      if (!polar[i].pinned) {
+        polar[i].angle += deltas[i];
+      }
     }
   }
 
