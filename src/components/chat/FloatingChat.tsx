@@ -321,6 +321,51 @@ export function FloatingChat({
         <div className="flex-1 flex flex-col min-w-0">
           {/* Messages */}
           <div className="flex-1 overflow-y-auto px-4 py-4">
+            {showPreliminaryStep ? (
+              /* Preliminary disagreement rating step */
+              <div className="max-w-lg mx-auto flex flex-col items-center justify-center h-full">
+                <h3 className="text-base font-semibold text-white mb-4">{t('floatingChat.rateFirst')}</h3>
+                
+                {/* Show their opinion */}
+                <div className="w-full mb-5 p-4 rounded-lg bg-white/5 border border-white/10">
+                  <p className="text-xs text-white/40 mb-1">{t('floatingChat.them')}</p>
+                  <p className="text-sm text-white/90">"{theirOpinion.text}"</p>
+                </div>
+
+                {/* Disagreement slider */}
+                <div className="w-full space-y-2 mb-5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Swords className="w-4 h-4 text-orange-400" />
+                      <span className="text-xs text-white/60">{t('floatingChat.disagreement')}</span>
+                    </div>
+                    <span className="text-xs font-mono text-orange-400">{preliminaryDisagreement}</span>
+                  </div>
+                  <Slider
+                    value={[preliminaryDisagreement]}
+                    onValueChange={(v) => setPreliminaryDisagreement(v[0])}
+                    max={100}
+                    step={1}
+                    className="[&_[role=slider]]:bg-orange-400 [&_[role=slider]]:border-orange-400 [&_.bg-primary]:bg-orange-400/30"
+                  />
+                  <div className="flex justify-between text-[10px] text-white/40">
+                    <Handshake className="w-3 h-3" />
+                    <Swords className="w-3 h-3" />
+                  </div>
+                </div>
+
+                {/* Neutral respect note */}
+                <div className="flex items-center gap-2 text-xs text-white/40 mb-5">
+                  <Info className="w-3.5 h-3.5" />
+                  <span>{t('floatingChat.respectNeutralNote')}</span>
+                </div>
+
+                <Button onClick={handlePreliminarySubmit} disabled={isSavingRating} className="w-full">
+                  <Check className="w-4 h-4 mr-2" />
+                  {isSavingRating ? t('floatingChat.saving') : t('floatingChat.submitAndChat')}
+                </Button>
+              </div>
+            ) : (
             <div className="max-w-lg mx-auto space-y-3">
               {/* Intro text */}
               <div className="text-center py-4">
