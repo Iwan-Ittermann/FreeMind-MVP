@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Send, ArrowLeft, Languages, Check, ChevronRight, ChevronLeft, Ban, Unlock, Swords, Handshake, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Slider } from '@/components/ui/slider';
 import { ChatBubble } from './ChatBubble';
 import { TypingIndicator } from './TypingIndicator';
 import { VerticalRatingSlider } from './VerticalRatingSlider';
