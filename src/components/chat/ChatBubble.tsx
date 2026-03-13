@@ -83,10 +83,10 @@ export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(function C
                   ? 'bg-white rounded-bl-md shadow-sm'
                   : isOpinion
                     ? 'bg-secondary/40 border border-secondary/50 rounded-bl-md'
-                    : 'bg-white/20 rounded-bl-md'
+                    : 'bg-muted rounded-bl-md'
             }`}
           >
-            <p className={`text-sm leading-relaxed ${isBotMessage && !isOwn ? 'text-black' : isOwn && !isOpinion ? 'text-white' : 'text-white/90'}`}>
+            <p className={`text-sm leading-relaxed ${isBotMessage && !isOwn ? 'text-black' : isOwn && !isOpinion ? 'text-white' : 'text-foreground'}`}>
               {content}
             </p>
           </motion.div>
