@@ -401,6 +401,7 @@ export function FloatingChat({
               
               <div ref={messagesEndRef} />
             </div>
+            )}
           </div>
 
           {/* Input Area (hidden in read-only) */}
