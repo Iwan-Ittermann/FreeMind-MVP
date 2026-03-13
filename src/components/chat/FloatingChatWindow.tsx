@@ -348,8 +348,8 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
         </AnimatePresence>
       </div>
 
-      {/* Footer — input + Rate! button (hidden in read-only mode) */}
-      {!readOnly && (
+      {/* Footer — input + Rate! button (hidden in read-only mode and preliminary step) */}
+      {!readOnly && !showPreliminaryStep && (
         <div className="border-t border-border p-2 shrink-0 bg-muted/80">
           {isBlocked || isBlockedByOther ? (
             <p className="text-xs text-muted-foreground text-center py-1">
