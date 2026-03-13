@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Minus, X, Heart, HeartCrack, Swords, Handshake, Check } from 'lucide-react';
+import { Send, Minus, X, Heart, HeartCrack, Swords, Handshake, Check, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
