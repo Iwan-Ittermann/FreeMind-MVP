@@ -383,7 +383,7 @@ const Index = () => {
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0, opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="w-full max-w-sm mt-3 px-4"
+                className="w-full max-w-sm mt-3 px-4 md:mb-14"
               >
                 <Button
                   onClick={() => setOpinionDialogOpen(true)}
