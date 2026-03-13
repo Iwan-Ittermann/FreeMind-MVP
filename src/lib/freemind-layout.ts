@@ -578,6 +578,7 @@ function resolveCollisions(nodes: GraphNode[], config: LayoutConfig, iterations:
       id: n.id,
       radius: Math.sqrt(dx * dx + dy * dy),
       angle: Math.atan2(dy, dx),
+      pinned: pinnedIds.has(n.id),
     };
   });
 
