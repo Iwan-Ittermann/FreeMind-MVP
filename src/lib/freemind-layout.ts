@@ -560,7 +560,7 @@ export function calculateLayout(
  * Pushes overlapping nodes apart by adjusting angles only (never radii),
  * so nodes can never cross zone boundaries.
  */
-function resolveCollisions(nodes: GraphNode[], config: LayoutConfig, iterations: number = 12): GraphNode[] {
+function resolveCollisions(nodes: GraphNode[], config: LayoutConfig, iterations: number = 12, pinnedIds: Set<string> = new Set()): GraphNode[] {
   if (nodes.length < 2) return nodes;
 
   const VISUAL_NODE_SIZE = 48;
