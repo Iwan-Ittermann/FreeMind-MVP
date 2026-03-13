@@ -100,6 +100,15 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
     }
   };
 
+  const handlePreliminarySubmit = async () => {
+    try {
+      await saveRating(0, preliminaryDisagreement);
+      setPreliminaryDone(true);
+    } catch {
+      toast.error(t('chat.failedToSaveRating'));
+    }
+  };
+
   // Auto-scroll
   useEffect(() => {
     if (!isRatingOpen) {
