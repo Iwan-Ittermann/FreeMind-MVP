@@ -610,8 +610,17 @@ function resolveCollisions(nodes: GraphNode[], config: LayoutConfig, iterations:
 
         // Determine push direction deterministically:
         // The node with the smaller ID gets pushed in the positive angular direction
-        deltas[i] += angularPush;
-        deltas[j] -= angularPush;
+        // Pinned nodes don't move; the other node absorbs the full push
+        if (a.pinned && b.pinned) {
+          // Both pinned — no push
+        } else if (a.pinned) {
+          deltas[j] -= angularPush * 2;
+        } else if (b.pinned) {
+          deltas[i] += angularPush * 2;
+        } else {
+          deltas[i] += angularPush;
+          deltas[j] -= angularPush;
+        }
       }
     }
 
