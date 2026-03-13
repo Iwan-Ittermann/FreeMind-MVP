@@ -92,7 +92,7 @@ export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(function C
           </motion.div>
 
           {/* Timestamp */}
-          <p className={`text-[10px] text-white/30 mt-1 ${isOwn ? 'text-right' : 'text-left'}`}>
+          <p className={`text-[10px] text-muted-foreground mt-1 ${isOwn ? 'text-right' : 'text-left'}`}>
             {timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </p>
 

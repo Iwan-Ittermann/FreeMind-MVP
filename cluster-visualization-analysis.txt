@@ -1,0 +1,108 @@
+Cluster Visualization Analysis
+Context ID: 8F42B1C3-5D9E-4A7B-B2E1-9C3F4D5A6E7B
+Date: 2026-03-13
+
+==================================================
+1) CURRENT IMPLEMENTATION
+==================================================
+
+A) Data Source: freemind-layout.ts (Mock Data Only)
+- generateMockData() creates 5 clusters of opinions with intra/inter-cluster ratings.
+- Cluster assignment is IMPLICIT via opinion grouping in the mock data generator.
+- GraphNode has an optional `cluster` field (node.cluster).
+- The tokenizer (tokenizer.ts line 78) passes it through: `clusterId: node.cluster ?? null`.
+
+B) Real Data: NO CLUSTERING
+- When real opinions/ratings are used, calculateLayout() does NOT assign clusters.
+- node.cluster is always undefined for real data.
+- This means cluster visualizations only appear with mock data.
+
+C) Theme-Level Renderers:
+
+  CityCluster.tsx:
+  - Groups SemanticNodeTokens by clusterId (skipping inactive & null).
+  - Computes bounding ellipse (centroid + max extent + 20px padding).
+  - Determines dominant zone of cluster for color theming.
+  - Renders: translucent fill ellipse + dashed stroke ellipse.
+  - Colors: green-tinted for core/middle zones, sandy/warm for outer.
+
+  ArcaneCluster.tsx:
+  - Nearly identical logic to CityCluster.
+  - Colors: gold/olive tinted for core/middle, warm brown for outer.
+
+  Signal theme: NO cluster renderer exists.
+
+D) Rendering Order:
+  - CityRenderer: renders CityCluster BEFORE nodes (behind).
+  - ArcaneRenderer: renders ArcaneCluster BEFORE nodes (behind).
+
+==================================================
+2) WHAT'S MISSING FOR REAL DATA
+==================================================
+
+A) Cluster Detection Algorithm
+- Need a clustering algorithm that runs on the computed graph layout.
+- Input: node positions (x, y) and/or disagreement-based adjacency.
+- Options:
+  1. Spatial clustering (DBSCAN-like): group nearby nodes by Euclidean distance.
+  2. Graph-based clustering: use edge weights (disagreement) to find communities.
+  3. Hybrid: combine spatial proximity + edge connectivity.
+
+B) Integration Point
+- Should be computed in calculateLayout() AFTER node positioning and
+  collision resolution, BEFORE returning the GraphData.
+- Assigns node.cluster = clusterIndex to each GraphNode.
+- The tokenizer already handles the pass-through.
+
+==================================================
+3) PROPOSED IMPLEMENTATION
+==================================================
+
+A) Algorithm: Simple Spatial DBSCAN
+- Parameters: eps (neighborhood radius), minPts (minimum cluster size).
+- Suggested defaults: eps = 60px (slightly larger than node collision distance),
+  minPts = 2 (any two nearby nodes form a cluster).
+- Runs in O(n²) which is fine for <100 nodes.
+
+B) Location: src/lib/freemind-layout.ts
+- New function: assignClusters(nodes: GraphNode[], eps: number, minPts: number): void
+- Mutates nodes in-place by setting node.cluster.
+- Called after resolveCollisions(), before returning GraphData.
+
+C) Cross-Theme Rendering:
+- Signal theme: Create SignalCluster.tsx following CityCluster pattern.
+  - Style: subtle translucent circles/ellipses with zone-appropriate colors
+    (gold-tinted for core, green for middle, orange for outer).
+  - Add to SignalRenderer rendering order (before nodes, after zones).
+
+- All themes use the SAME clusterId data from the tokenizer.
+- Each theme renders clusters in its own visual style.
+
+D) Alternative: Convex Hull Instead of Ellipse
+- Instead of bounding ellipse, compute convex hull of cluster node positions.
+- Render as a polygon with rounded corners (SVG path with curve commands).
+- More accurate shape, especially for non-circular clusters.
+- More complex to implement but visually superior.
+
+==================================================
+4) IMPLEMENTATION STEPS
+==================================================
+
+Step 1: Add assignClusters() to freemind-layout.ts
+Step 2: Call it in calculateLayout() after collision resolution
+Step 3: Create SignalCluster.tsx
+Step 4: Add SignalCluster to SignalRenderer
+Step 5: Verify CityCluster and ArcaneCluster work with real data
+Step 6: (Optional) Replace ellipse with convex hull rendering
+
+==================================================
+5) CONSIDERATIONS
+==================================================
+
+- Clustering should be deterministic (sort nodes by ID before processing).
+- Inactive nodes (no chats) should be excluded from clusters.
+- Single-node "clusters" should not be visualized.
+- Cluster colors should use semantic design tokens where possible.
+- Performance: runs once per layout computation, not per frame.
+
+End of analysis.

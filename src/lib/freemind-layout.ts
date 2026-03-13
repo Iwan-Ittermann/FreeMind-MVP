@@ -626,9 +626,11 @@ function resolveCollisions(nodes: GraphNode[], config: LayoutConfig, iterations:
 
     if (!anyOverlap) break;
 
-    // Apply phase: update all angles simultaneously
+    // Apply phase: update all angles simultaneously (skip pinned nodes)
     for (let i = 0; i < polar.length; i++) {
-      polar[i].angle += deltas[i];
+      if (!polar[i].pinned) {
+        polar[i].angle += deltas[i];
+      }
     }
   }
 
