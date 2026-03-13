@@ -77,8 +77,13 @@ export function FloatingChat({
   const [savedDisagreement, setSavedDisagreement] = useState(initialDisagreement ?? 50);
   const [mobileLeftSliderOpen, setMobileLeftSliderOpen] = useState(false);
   const [mobileRightSliderOpen, setMobileRightSliderOpen] = useState(false);
+  const [preliminaryDone, setPreliminaryDone] = useState(false);
+  const [preliminaryDisagreement, setPreliminaryDisagreement] = useState(50);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const hasNeverRated = !(props as any).hasExistingRating && initialEmpathy == null && !preliminaryDone;
+  const showPreliminaryStep = hasNeverRated && !isBotChat && !isReadOnly;
 
   // Handle input change with typing indicator
   const handleInputChange = useCallback((value: string) => {
