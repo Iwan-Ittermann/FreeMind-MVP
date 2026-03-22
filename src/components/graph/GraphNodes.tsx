@@ -14,15 +14,13 @@ interface GraphNodesProps {
 }
 
 // Determine which zone a node is in based on zone property or distance from center
-function getNodeZone(node: GraphNode, config: LayoutConfig): 'green' | 'yellow' | 'pink' | 'outer' {
-  // If node has explicit zone assignment (top 5), use it
-  if (node.zone === 'green') return 'green';
+function getNodeZone(node: GraphNode, config: LayoutConfig): 'respectful' | 'moderate' | 'extreme' | 'outer' {
+  if (node.zone === 'respectful') return 'respectful';
   
   const dist = node.distanceToCenter || config.outerRadius;
   
-  // Non-top-5 nodes can't be in green zone, even if they're close to center
-  if (dist <= config.yellowRadius) return 'yellow';
-  if (dist <= config.pinkRadius) return 'pink';
+  if (dist <= config.moderateRadius) return 'moderate';
+  if (dist <= config.extremeRadius) return 'extreme';
   return 'outer';
 }
 
