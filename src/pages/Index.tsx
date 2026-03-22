@@ -51,6 +51,9 @@ const Index = () => {
   const [graphSize, setGraphSize] = useState({ width: 600, height: 600 });
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [opinionDialogOpen, setOpinionDialogOpen] = useState(false);
+  const [welcomeShown, setWelcomeShown] = useState(() => localStorage.getItem('freemind-welcome-seen') === 'true');
+  const [inlineOpinionText, setInlineOpinionText] = useState('');
+  const [isSubmittingInline, setIsSubmittingInline] = useState(false);
   const queryClient = useQueryClient();
 
   // Mobile bottom panel state
