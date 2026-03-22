@@ -1,44 +1,37 @@
-## Plan: 5 Fixes — Label Overflow, Naming, Stale Slider, Edge Visibility, Level Rings
-
-### 1. Speech Bubble Text Overflow
-
-`**src/themes/signal/SignalNode.tsx**` line 91: The bubble rect is 140px wide with text centered at x=0, but long text overflows left. Fix: truncate `bubbleText` more aggressively (e.g., 16 chars on mobile) and use `textLength`/`lengthAdjust` or just ensure the text never exceeds the rect by measuring character count vs available width. Simplest: reduce max chars from 20 to 16 and widen rect slightly to 150px.
-
-### 2. Rename "Opinion Rating" → "Disagreement Rating", "Chat Rating" → "Respect Rating"
-
-This is mostly a naming/comment cleanup. The i18n keys already use `disagreementRating`. Changes needed:
-
-- `**src/hooks/useOpinionRating.ts**`: Rename hook to `useDisagreementRating`, update JSDoc
-- `**src/pages/Index.tsx**`: Update import/usage
-- `**src/types/graph.ts**`: Rename `OpinionRating` → `DisagreementRating`; rename `ChatRating` → `RespectRating` (or keep internal name but update comments)
-- `**src/components/chat/RatingSliders.tsx**`: Update labels/comments to say "respect rating"
-- `**src/lib/freemind-layout.ts**`: Update comments
-
-Actually, renaming types across 9+ files is risky. Cleaner approach: keep type names but update all **comments and user-facing strings** to use "disagreement rating" and "respect rating". The hook file can be renamed.
 
 
+## Plan: Fix Angular Positioning from Disagreement Ratings + Prevent Flickering
 
-### 5. Discrete Level Rings with Zone Colors
+### Problem 1: Angular position not changing
 
-`**src/themes/signal/SignalZones.tsx**`: Add thin circles at each of the 10 discrete level radii. Use the `levelToRadius` function logic (or replicate the anchor radii). Color by zone:
+**Root cause**: The `get_graph_pairs` RPC only returns pairs that have **accepted chat_requests**. When a user rates their disagreement with another opinion (via the disagreement slider in the node panel), that `opinion_ratings` row is created, but `get_graph_pairs` never includes it because there's no accepted chat request between those two opinions.
 
-- Levels 10-7 (respectful): gold/amber thin lines
-- Levels 6-4 (moderate): green thin lines  
-- Levels 3-2 (extreme): orange/red thin lines
-- Level 1: outer border (already exists)
+The angular algorithm in `calculateDeterministicAngles()` only sees `ratings` from `get_graph_pairs`, so standalone disagreement ratings are invisible to the layout.
 
-Compute radii from config using the same anchor math as `levelToRadius` in `freemind-layout.ts`.
+**Fix**: Fetch `opinion_ratings` separately and merge them into the angular calculation.
+
+1. **`useTopicData.ts`**: Add a separate query to fetch all `opinion_ratings` for the topic. Merge them into the `ratings` array used for angular positioning. For pairs that exist in both `get_graph_pairs` (chat-based) and `opinion_ratings`, use the `opinion_ratings` disagreement (since that's the single source of truth now). For pairs only in `opinion_ratings` (no chat), create a synthetic rating entry with empathy=0 and the rated disagreement.
+
+2. **`get_graph_pairs` RPC**: No change needed — it correctly provides empathy data from chats. The disagreement will be sourced directly from `opinion_ratings` in the client.
+
+### Problem 2: Flickering and cost
+
+**Root cause**: Every `opinion_ratings` INSERT/UPDATE fires a Supabase Realtime event, which triggers `queryClient.refetchQueries(['topic', topicId])` — a full graph data refetch. With the 500ms debounce on the slider, this means a DB round-trip every 500ms per user dragging a slider, plus all other users get the refetch too.
+
+**Fix — three-layer approach**:
+
+1. **Remove the `opinion_ratings` realtime listener** from `useTopicData.ts`. This table changes too frequently for realtime to be practical.
+
+2. **Keep the local `invalidateQueries` in `useDisagreementRating`** mutation `onSuccess` — this ensures the rater's own graph updates after their save completes.
+
+3. **Rely on the existing 4-second polling** (`refetchInterval: 4000`) for other users' disagreement ratings to propagate. This is already in place and provides eventual consistency without flickering.
+
+4. **Increase debounce from 500ms to 1000ms** in `useDisagreementRating` to further reduce write frequency.
 
 ### Files to Change
 
+| File | Change |
+|------|--------|
+| `src/hooks/useTopicData.ts` | Remove `opinion_ratings` realtime listener; fetch opinion_ratings separately and merge into ratings array for angular calc |
+| `src/hooks/useOpinionRating.ts` | Increase debounce to 1000ms |
 
-| File                                    | Change                                                | &nbsp; |
-| --------------------------------------- | ----------------------------------------------------- | ------ |
-| `src/themes/signal/SignalNode.tsx`      | Fix bubble text truncation and rect width             | &nbsp; |
-| `src/hooks/useOpinionRating.ts`         | &nbsp;                                                | &nbsp; |
-| `src/pages/Index.tsx`                   | Update import name                                    | &nbsp; |
-| `src/themes/signal/SignalRenderer.tsx`  | &nbsp;                                                | &nbsp; |
-| `src/themes/signal/SignalEdge.tsx`      | &nbsp;                                                | &nbsp; |
-| `src/themes/signal/SignalZones.tsx`     | Add 10 discrete level rings with zone-colored strokes | &nbsp; |
-| `src/components/chat/RatingSliders.tsx` | Update comments to say "respect rating"               | &nbsp; |
-| `src/lib/freemind-layout.ts`            | Update comments                                       | &nbsp; |
