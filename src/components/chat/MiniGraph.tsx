@@ -28,9 +28,9 @@ export function MiniGraph({
       centerX,
       centerY,
       outerRadius,
-      pinkRadius: outerRadius * 0.95,
-      yellowRadius: outerRadius * 0.75,
-      greenRadius: outerRadius * 0.45,
+      extremeRadius: outerRadius * 0.95,
+      moderateRadius: outerRadius * 0.75,
+      respectfulRadius: outerRadius * 0.45,
       nodeRadius: 3,
     };
   }, [size]);
