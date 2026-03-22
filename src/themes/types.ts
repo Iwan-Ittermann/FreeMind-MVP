@@ -9,7 +9,8 @@
 import { GraphNode, GraphEdge, LayoutConfig } from '@/types/graph';
 
 // --- Zone Types ---
-export type SemanticZone = 'core' | 'middle' | 'outer' | 'inactive';
+// Semantic zone names: core = respectful, middle = moderate, outer = extreme
+export type SemanticZone = 'core' | 'middle' | 'outer';
 
 // --- Node Token ---
 export type SemanticNodeToken = Readonly<{
