@@ -5,6 +5,11 @@ import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 
+/**
+ * Respect rating slider for chat conversations.
+ * Uses the empathy scale (-50 to +50) from the chat_ratings table.
+ * Note: Disagreement rating is handled separately via useDisagreementRating hook.
+ */
 interface RatingSlidersProps {
   initialEmpathy?: number;
   onSubmitRating?: (empathy: number) => void;

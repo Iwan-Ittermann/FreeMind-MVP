@@ -113,26 +113,36 @@ export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function Si
       <circle cx={cx} cy={cy} r={modRing2} fill="none" stroke="url(#signal-mod-ring-2)" strokeWidth={modStep * 0.6} opacity={0.4} />
       <circle cx={cx} cy={cy} r={moderateR - modStep * 0.15} fill="none" stroke="url(#signal-mod-ring-3)" strokeWidth={modStep * 0.5} opacity={0.35} />
 
-      {/* Zone boundary rings — one at each zone border */}
-      {[respectfulR, moderateR, r].map((radius, i) => (
-        <g key={`ring-${i}`}>
-          {/* Glow behind ring */}
+      {/* Discrete level rings — 10 levels, color-coded by zone */}
+      {(() => {
+        const minR = config.nodeRadius * 2;
+        const levelRadii: { level: number; radius: number; zone: 'respectful' | 'moderate' | 'extreme' }[] = [
+          { level: 10, radius: minR, zone: 'respectful' },
+          { level: 9, radius: respectfulR * 0.33, zone: 'respectful' },
+          { level: 8, radius: respectfulR * 0.66, zone: 'respectful' },
+          { level: 7, radius: respectfulR, zone: 'respectful' },
+          { level: 6, radius: respectfulR + (moderateR - respectfulR) * 0.25, zone: 'moderate' },
+          { level: 5, radius: respectfulR + (moderateR - respectfulR) * 0.50, zone: 'moderate' },
+          { level: 4, radius: respectfulR + (moderateR - respectfulR) * 0.75, zone: 'moderate' },
+          { level: 3, radius: moderateR, zone: 'moderate' },
+          { level: 2, radius: moderateR + (r - moderateR) * 0.5, zone: 'extreme' },
+          { level: 1, radius: r - config.nodeRadius, zone: 'extreme' },
+        ];
+        const zoneColors: Record<string, string> = {
+          respectful: 'hsla(43, 70%, 50%, 0.18)',
+          moderate: 'hsla(90, 35%, 50%, 0.14)',
+          extreme: 'hsla(20, 80%, 50%, 0.16)',
+        };
+        return levelRadii.map(({ level, radius, zone }) => (
           <circle
+            key={`level-${level}`}
             cx={cx} cy={cy} r={radius}
             fill="none"
-            stroke="hsla(0, 0%, 100%, 0.06)"
-            strokeWidth={4}
-            filter="url(#signal-ring-glow)"
+            stroke={zoneColors[zone]}
+            strokeWidth={0.5}
           />
-          {/* Crisp ring */}
-          <circle
-            cx={cx} cy={cy} r={radius}
-            fill="none"
-            stroke="hsla(0, 0%, 100%, 0.15)"
-            strokeWidth={0.7}
-          />
-        </g>
-      ))}
+        ));
+      })()}
 
       {/* Zone labels — Respectful at center, others at zone borders */}
       <text x={cx} y={cy + 4} textAnchor="middle" fill="hsl(43, 70%, 50%)" fillOpacity={0.3} fontSize="8" fontFamily="monospace">
