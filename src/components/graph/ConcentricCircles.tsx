@@ -5,7 +5,7 @@ interface ConcentricCirclesProps {
 }
 
 export function ConcentricCircles({ config }: ConcentricCirclesProps) {
-  const { centerX, centerY, outerRadius, pinkRadius, yellowRadius, greenRadius } = config;
+  const { centerX, centerY, outerRadius, extremeRadius, moderateRadius, respectfulRadius } = config;
 
   return (
     <g className="concentric-circles">
