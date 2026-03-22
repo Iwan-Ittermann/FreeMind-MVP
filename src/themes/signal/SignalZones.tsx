@@ -18,9 +18,9 @@ export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function Si
   const glowRadius = r * 1.4;
 
   // Zone radii
-  const gr = config.greenRadius;
-  const yr = config.yellowRadius;
-  const pr = config.pinkRadius;
+  const gr = config.respectfulRadius;
+  const yr = config.moderateRadius;
+  const pr = config.extremeRadius;
 
   // Zone boundary percentages for radial gradient
   const coreP = (gr / r) * 100;
