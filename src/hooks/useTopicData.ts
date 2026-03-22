@@ -162,8 +162,20 @@ export function useTopicData(topicId: string) {
           filter: `topic_id=eq.${topicId}`,
         },
         () => {
-          // Force immediate refetch for both chatRequests AND topic
           queryClient.refetchQueries({ queryKey: ['chatRequests', topicId] });
+          queryClient.refetchQueries({ queryKey: ['topic', topicId] });
+        }
+      )
+      // Listen for opinion_ratings changes (affects graph positions)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'opinion_ratings',
+          filter: `topic_id=eq.${topicId}`,
+        },
+        () => {
           queryClient.refetchQueries({ queryKey: ['topic', topicId] });
         }
       )

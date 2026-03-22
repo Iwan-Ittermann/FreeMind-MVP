@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, ArrowLeft, Languages, Check, ChevronRight, ChevronLeft, Ban, Unlock, Swords, Handshake, Info } from 'lucide-react';
+import { Send, ArrowLeft, Languages, Check, ChevronRight, ChevronLeft, Ban, Unlock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Slider } from '@/components/ui/slider';
 import { ChatBubble } from './ChatBubble';
 import { TypingIndicator } from './TypingIndicator';
 import { VerticalRatingSlider } from './VerticalRatingSlider';
@@ -70,52 +69,32 @@ export function FloatingChat({
   const { isBlocked, isBlockedByOther, blockUser, unblockUser, isBlocking, isUnblocking } = useUserBlocks(chatId, theirUserId || null);
   const [inputValue, setInputValue] = useState('');
   const [translateEnabled, setTranslateEnabled] = useState(false);
-  // Respect: -50 to +50, default 0
+  // Empathy only: -50 to +50
   const [empathy, setEmpathy] = useState(initialEmpathy ?? 0);
-  // Disagreement: 0 to 100, default 50
-  const [disagreement, setDisagreement] = useState(initialDisagreement ?? 50);
   const [savedEmpathy, setSavedEmpathy] = useState(initialEmpathy ?? 0);
-  const [savedDisagreement, setSavedDisagreement] = useState(initialDisagreement ?? 50);
   const [mobileLeftSliderOpen, setMobileLeftSliderOpen] = useState(false);
-  const [mobileRightSliderOpen, setMobileRightSliderOpen] = useState(false);
-  const [preliminaryDone, setPreliminaryDone] = useState(false);
-  const [preliminaryDisagreement, setPreliminaryDisagreement] = useState(50);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const hasNeverRated = !hasExistingRating && initialEmpathy == null && !preliminaryDone;
-  const showPreliminaryStep = hasNeverRated && !isBotChat && !isReadOnly;
-
-  // Handle input change with typing indicator
   const handleInputChange = useCallback((value: string) => {
     setInputValue(value);
-    
     if (!isReadOnly && value.trim()) {
       setTyping(true);
-      
-      // Clear existing timeout
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current);
-      }
-      
-      // Set new timeout to stop typing indicator
-      typingTimeoutRef.current = setTimeout(() => {
-        setTyping(false);
-      }, 2000);
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = setTimeout(() => setTyping(false), 2000);
     } else {
       setTyping(false);
     }
   }, [isReadOnly, setTyping]);
 
-  const hasUnsavedChanges = empathy !== savedEmpathy || disagreement !== savedDisagreement;
+  const hasUnsavedChanges = empathy !== savedEmpathy;
 
-  // Build display messages: opinions first, then DB messages
   const displayMessages = [
     {
       id: 'opinion-theirs',
       content: theirOpinion.visible ? theirOpinion.text : (theirOpinion.notice_text || 'This content has been hidden.'),
       isOwn: false,
-      timestamp: new Date(0), // Earliest
+      timestamp: new Date(0),
       reactions: [] as string[],
       isOpinion: true,
       visible: theirOpinion.visible,
@@ -125,7 +104,7 @@ export function FloatingChat({
       id: 'opinion-mine',
       content: myOpinion.visible ? myOpinion.text : (myOpinion.notice_text || 'This content has been hidden.'),
       isOwn: true,
-      timestamp: new Date(1), // Second earliest
+      timestamp: new Date(1),
       reactions: [] as string[],
       isOpinion: true,
       visible: myOpinion.visible,
@@ -138,68 +117,46 @@ export function FloatingChat({
       timestamp: msg.createdAt,
       reactions: [] as string[],
       isOpinion: false,
-      visible: true, // Regular messages handled separately
+      visible: true,
       noticeText: null as string | null,
     })),
   ];
 
-  // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [dbMessages]);
 
   const handleSend = async () => {
     if (!inputValue.trim() || isSending) return;
-    
     const content = inputValue;
     setInputValue('');
     setTyping(false);
-    
-    // Clear typing timeout
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-    }
-    
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     try {
       await sendMessage(content);
     } catch (err) {
       console.error('Failed to send message:', err);
-      setInputValue(content); // Restore input on error
+      setInputValue(content);
     }
   };
 
   const handleReaction = (messageId: string, reaction: string) => {
-    // TODO: Implement reactions in DB
     console.log('Reaction:', messageId, reaction);
   };
 
   const handleSaveRating = () => {
-    onSubmitRating?.(empathy, disagreement);
+    // Save empathy only; pass existing disagreement for DB compatibility
+    onSubmitRating?.(empathy, initialDisagreement ?? 50);
     setSavedEmpathy(empathy);
-    setSavedDisagreement(disagreement);
   };
 
-  const handlePreliminarySubmit = () => {
-    onSubmitRating?.(0, preliminaryDisagreement); // empathy=0 (neutral)
-    setSavedEmpathy(0);
-    setSavedDisagreement(preliminaryDisagreement);
-    setDisagreement(preliminaryDisagreement);
-    setEmpathy(0);
-    setPreliminaryDone(true);
-  };
-
-  // Calculate Bridging Score: empathy × disagreement
-  // empathy is -50 to +50, disagreement is 0 to 100
-  // Bridging score range: -5000 to +5000
-  const myBridgingScore = empathy * disagreement;
-  
-  // Use average if available, otherwise use current user's score
+  const myBridgingScore = empathy * (initialDisagreement ?? 50);
   const displayBridgingScore = averageBridgingScore ?? myBridgingScore;
 
   const getBridgingScoreColor = (score: number) => {
     if (score > 2500) return 'text-green-400';
     if (score >= 0) return 'text-orange-400';
-    return 'text-primary'; // red for negative
+    return 'text-primary';
   };
 
   const handleBlock = async () => {
@@ -234,7 +191,6 @@ export function FloatingChat({
         </Button>
         
         <div className="flex items-center gap-4">
-          {/* Mini Graph */}
           {topicId && (
             <div className="hidden sm:block" data-chat-tutorial="mini-graph">
               <MiniGraph
@@ -273,7 +229,6 @@ export function FloatingChat({
         </div>
 
         <div className="flex items-center gap-1">
-          {/* Block/Unblock button - hidden for bot chats */}
           {!isReadOnly && !isBotChat && theirUserId && (
             <Button
               variant="ghost"
@@ -298,7 +253,7 @@ export function FloatingChat({
 
       {/* Main content area */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Desktop Left rail - Empathy slider (hidden in read-only and bot chats) */}
+        {/* Desktop Left rail - Empathy slider only (hidden in read-only and bot chats) */}
         {!isReadOnly && !isBotChat && (
           <div className="hidden md:flex flex-col items-center justify-center w-20 border-r border-white/10 bg-black/50 py-6" data-chat-tutorial="rating-scales">
             <VerticalRatingSlider
@@ -321,53 +276,7 @@ export function FloatingChat({
         <div className="flex-1 flex flex-col min-w-0">
           {/* Messages */}
           <div className="flex-1 overflow-y-auto px-4 py-4">
-            {showPreliminaryStep ? (
-              /* Preliminary disagreement rating step */
-              <div className="max-w-lg mx-auto flex flex-col items-center justify-center h-full">
-                <h3 className="text-base font-semibold text-white mb-4">{t('floatingChat.rateFirst')}</h3>
-                
-                {/* Show their opinion */}
-                <div className="w-full mb-5 p-4 rounded-lg bg-white/5 border border-white/10">
-                  <p className="text-xs text-white/40 mb-1">{t('floatingChat.them')}</p>
-                  <p className="text-sm text-white/90">"{theirOpinion.text}"</p>
-                </div>
-
-                {/* Disagreement slider */}
-                <div className="w-full space-y-2 mb-5">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Swords className="w-4 h-4 text-orange-400" />
-                      <span className="text-xs text-white/60">{t('floatingChat.disagreement')}</span>
-                    </div>
-                    <span className="text-xs font-mono text-orange-400">{preliminaryDisagreement}</span>
-                  </div>
-                  <Slider
-                    value={[preliminaryDisagreement]}
-                    onValueChange={(v) => setPreliminaryDisagreement(v[0])}
-                    max={100}
-                    step={1}
-                    className="[&_[role=slider]]:bg-orange-400 [&_[role=slider]]:border-orange-400 [&_.bg-primary]:bg-orange-400/30"
-                  />
-                  <div className="flex justify-between text-[10px] text-white/40">
-                    <Handshake className="w-3 h-3" />
-                    <Swords className="w-3 h-3" />
-                  </div>
-                </div>
-
-                {/* Neutral respect note */}
-                <div className="flex items-center gap-2 text-xs text-white/40 mb-5">
-                  <Info className="w-3.5 h-3.5" />
-                  <span>{t('floatingChat.respectNeutralNote')}</span>
-                </div>
-
-                <Button onClick={handlePreliminarySubmit} disabled={isSavingRating} className="w-full">
-                  <Check className="w-4 h-4 mr-2" />
-                  {isSavingRating ? t('floatingChat.saving') : t('floatingChat.submitAndChat')}
-                </Button>
-              </div>
-            ) : (
             <div className="max-w-lg mx-auto space-y-3">
-              {/* Intro text */}
               <div className="text-center py-4">
                 <p className="text-xs text-white/40">
                   Your opinions are shown below. Start a conversation to understand each other's perspective.
@@ -392,7 +301,6 @@ export function FloatingChat({
                 ))}
               </AnimatePresence>
               
-              {/* Typing indicator */}
               <AnimatePresence>
                 {(partnerTyping.isTyping || isBotTyping) && (
                   <TypingIndicator userName={isBotTyping ? 'AI Bot' : partnerTyping.userName} />
@@ -401,13 +309,11 @@ export function FloatingChat({
               
               <div ref={messagesEndRef} />
             </div>
-            )}
           </div>
 
-          {/* Input Area (hidden in read-only) */}
+          {/* Input Area */}
           {!isReadOnly && (
             <>
-              {/* Blocked state */}
               {isBlocked ? (
                 <div className="border-t border-destructive/20 bg-destructive/5 p-4">
                   <div className="max-w-lg mx-auto text-center">
@@ -434,10 +340,9 @@ export function FloatingChat({
                 </div>
               ) : (
                 <div className="border-t border-white/10 bg-black">
-                  {/* Mobile rating buttons - above typing area (hidden for bot chats) */}
+                  {/* Mobile rating button - empathy only (hidden for bot chats) */}
                   {!isBotChat && (
-                  <div className="md:hidden flex justify-between items-center px-4 py-2 border-b border-white/5" data-chat-tutorial="rating-scales-mobile">
-                    {/* Left - Empathy */}
+                  <div className="md:hidden flex justify-center items-center px-4 py-2 border-b border-white/5" data-chat-tutorial="rating-scales-mobile">
                     <div className="relative">
                       <button
                         onClick={() => setMobileLeftSliderOpen(!mobileLeftSliderOpen)}
@@ -473,11 +378,11 @@ export function FloatingChat({
                       </AnimatePresence>
                     </div>
 
-                    {/* Save button - centered */}
+                    {/* Save button */}
                     <motion.button
                       onClick={handleSaveRating}
                       disabled={isSavingRating}
-                      className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
+                      className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-all ml-3 ${
                         hasUnsavedChanges
                           ? 'bg-primary ring-2 ring-primary ring-offset-2 ring-offset-black' 
                           : 'bg-white/10'
@@ -486,42 +391,6 @@ export function FloatingChat({
                     >
                       <Check className={`w-4 h-4 ${hasUnsavedChanges ? 'text-white' : 'text-white/40'}`} />
                     </motion.button>
-
-                    {/* Right - Disagreement */}
-                    <div className="relative">
-                      <button
-                        onClick={() => setMobileRightSliderOpen(!mobileRightSliderOpen)}
-                        className="h-10 px-2 bg-white/5 border border-white/10 rounded-lg flex items-center gap-2 flex-row-reverse"
-                      >
-                        <span className="w-2 h-6 rounded-full bg-orange-400" />
-                        <span className="text-xs text-orange-400 font-bold">{disagreement}</span>
-                      </button>
-                      <AnimatePresence>
-                        {mobileRightSliderOpen && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 320, opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                            className="absolute bottom-full right-0 mb-2 overflow-hidden"
-                          >
-                            <div className="h-80 w-16 bg-black/95 border border-white/10 rounded-lg flex items-center justify-center py-2">
-                              <VerticalRatingSlider
-                                value={disagreement}
-                                onChange={setDisagreement}
-                                label={t('floatingChat.disagreement')}
-                                color="orange"
-                                lowLabel={t('floatingChat.aligned')}
-                                highLabel={t('floatingChat.opposed')}
-                                min={0}
-                                max={100}
-                                compact
-                              />
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
                   </div>
                   )}
 
@@ -555,7 +424,6 @@ export function FloatingChat({
             </>
           )}
 
-          {/* Read-only indicator */}
           {isReadOnly && (
             <div className="border-t border-white/10 bg-black/50 p-4">
               <p className="text-center text-sm text-white/40">
@@ -565,24 +433,7 @@ export function FloatingChat({
           )}
         </div>
 
-        {/* Desktop Right rail - Disagreement slider (hidden in read-only and bot chats) */}
-        {!isReadOnly && !isBotChat && (
-          <div className="hidden md:flex flex-col items-center justify-center w-20 border-l border-white/10 bg-black/50 py-6">
-            <VerticalRatingSlider
-              value={disagreement}
-              onChange={setDisagreement}
-              label={t('floatingChat.disagreement')}
-              color="orange"
-              lowLabel={t('floatingChat.aligned')}
-              highLabel={t('floatingChat.opposed')}
-              min={0}
-              max={100}
-              hasUnsavedChanges={hasUnsavedChanges}
-              onSave={handleSaveRating}
-              isSaving={isSavingRating}
-            />
-          </div>
-        )}
+        {/* No more right rail (disagreement removed from chat) */}
       </div>
     </div>
   );
