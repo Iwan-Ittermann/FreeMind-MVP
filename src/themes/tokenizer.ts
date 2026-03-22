@@ -17,14 +17,15 @@ import {
 
 /**
  * Determine semantic zone from a GraphNode.
+ * Zone names: core = respectful, middle = moderate, outer = extreme
+ * No more 'inactive' zone — all nodes are in one of the three zones.
  */
 function resolveZone(node: GraphNode, config: LayoutConfig): SemanticZone {
-  if (node.zone === 'green' || node.isBridge) return 'core';
-  if (node.hasChats === false) return 'inactive';
+  if (node.zone === 'respectful' || node.isBridge) return 'core';
 
   const dist = node.distanceToCenter ?? config.outerRadius;
-  if (dist <= config.greenRadius) return 'core';
-  if (dist <= config.yellowRadius) return 'middle';
+  if (dist <= config.respectfulRadius) return 'core';
+  if (dist <= config.moderateRadius) return 'middle';
   return 'outer';
 }
 
@@ -144,35 +145,32 @@ export function tokenizeEdge(
   });
 }
 
+/**
+ * Tokenize zones using semantic radius names.
+ * Only 3 zones: core (respectful), middle (moderate), outer (extreme).
+ */
 export function tokenizeZones(config: LayoutConfig): readonly SemanticZoneToken[] {
   return Object.freeze([
-    Object.freeze({
-      zone: 'inactive' as const,
-      centerX: config.centerX,
-      centerY: config.centerY,
-      innerRadius: config.pinkRadius,
-      outerRadius: config.outerRadius,
-    }),
     Object.freeze({
       zone: 'outer' as const,
       centerX: config.centerX,
       centerY: config.centerY,
-      innerRadius: config.yellowRadius,
-      outerRadius: config.pinkRadius,
+      innerRadius: config.moderateRadius,
+      outerRadius: config.outerRadius,
     }),
     Object.freeze({
       zone: 'middle' as const,
       centerX: config.centerX,
       centerY: config.centerY,
-      innerRadius: config.greenRadius,
-      outerRadius: config.yellowRadius,
+      innerRadius: config.respectfulRadius,
+      outerRadius: config.moderateRadius,
     }),
     Object.freeze({
       zone: 'core' as const,
       centerX: config.centerX,
       centerY: config.centerY,
       innerRadius: 0,
-      outerRadius: config.greenRadius,
+      outerRadius: config.respectfulRadius,
     }),
   ]);
 }
