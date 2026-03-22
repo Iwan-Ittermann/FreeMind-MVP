@@ -80,7 +80,7 @@ const Index = () => {
   const { data: unreadMessageCounts } = useUnreadMessages(DEFAULT_TOPIC_ID, myOpinion?.id);
 
   // Disagreement rating for selected node
-  const { disagreement, setDisagreement, canRate: canRateDisagreement } = useOpinionRating(
+  const { disagreement, setDisagreement, canRate: canRateDisagreement } = useDisagreementRating(
     DEFAULT_TOPIC_ID,
     myOpinion?.id ?? null,
     selectedNode?.id ?? null,

@@ -108,3 +108,6 @@ export function useDisagreementRating(
     canRate: !!user && !!myOpinionId && !!targetOpinionId && myOpinionId !== targetOpinionId,
   };
 }
+
+/** @deprecated Use useDisagreementRating instead */
+export const useOpinionRating = useDisagreementRating;
