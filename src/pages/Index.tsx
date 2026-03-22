@@ -133,8 +133,38 @@ const Index = () => {
 
   const handleOpinionSubmitted = () => {
     setOpinionDialogOpen(false);
+    setInlineOpinionText('');
     queryClient.invalidateQueries({ queryKey: ['topic', DEFAULT_TOPIC_ID] });
     tutorial.onOpinionSubmitted();
+  };
+
+  const handleDismissWelcome = () => {
+    localStorage.setItem('freemind-welcome-seen', 'true');
+    setWelcomeShown(true);
+  };
+
+  const handleInlineSubmit = async () => {
+    const result = opinionSchema.safeParse({ text: inlineOpinionText });
+    if (!result.success || !user) return;
+    setIsSubmittingInline(true);
+    try {
+      const ipAddress = await getClientIP();
+      const { error } = await supabase.rpc('submit_opinion', {
+        _topic_id: DEFAULT_TOPIC_ID,
+        _text: result.data.text,
+        _ip_address: ipAddress,
+      });
+      if (error) {
+        toast.error(error.message);
+      } else {
+        handleOpinionSubmitted();
+        toast.success(t('opinion.submittedGraph'));
+      }
+    } catch {
+      toast.error(t('opinion.failedToSubmit'));
+    } finally {
+      setIsSubmittingInline(false);
+    }
   };
 
   const handleNodeClick = (node: GraphNode) => {
