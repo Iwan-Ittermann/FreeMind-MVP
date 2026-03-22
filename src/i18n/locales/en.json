@@ -273,6 +273,21 @@
     "extreme": "Extreme",
     "inactive": "Inactive"
   },
+  "welcome": {
+    "title": "Welcome to FreeMind!",
+    "message": "Here you can share your opinion and see what others think.",
+    "ok": "OK"
+  },
+  "inlineCta": {
+    "placeholder": "What's your view on this topic?",
+    "submit": "Share",
+    "submitting": "Sharing..."
+  },
+  "disagreementRating": {
+    "label": "How much do you disagree?",
+    "aligned": "Aligned",
+    "opposed": "Opposed"
+  },
   "sidebar": {
     "allOpinions": "All Opinions",
     "browseOpinions": "Browse all opinions on this topic",

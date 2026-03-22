@@ -1,13 +1,15 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, X, Send, Check, Flag, Pencil } from 'lucide-react';
+import { MessageSquare, X, Send, Check, Flag, Pencil, AlertCircle } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useTranslation } from 'react-i18next';
 import { FloatingChatManager, FloatingChatManagerHandle } from '@/components/chat/FloatingChatManager';
 import { OpinionGraph } from '@/components/graph/OpinionGraph';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Slider } from '@/components/ui/slider';
 import { Tutorial } from '@/components/Tutorial';
 import { ReportDialog } from '@/components/moderation/ReportDialog';
 import { SubmitOpinionDialog } from '@/components/SubmitOpinionDialog';
@@ -26,9 +28,16 @@ import { usePresence } from '@/hooks/usePresence';
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { useBrowserNotification } from '@/hooks/useBrowserNotification';
 import { useTutorialContext } from '@/contexts/TutorialContext';
+import { useOpinionRating } from '@/hooks/useOpinionRating';
 import { useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { getClientIP } from '@/hooks/useClientIP';
 import { toast } from 'sonner';
+import { z } from 'zod';
 
+const opinionSchema = z.object({
+  text: z.string().trim().min(10).max(500),
+});
 const DEFAULT_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
 
 const Index = () => {

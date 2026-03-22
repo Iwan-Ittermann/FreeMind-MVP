@@ -273,6 +273,21 @@
     "extreme": "Extrem",
     "inactive": "Inaktiv"
   },
+  "welcome": {
+    "title": "Willkommen zu FreeMind!",
+    "message": "Hier kannst du deine Meinung teilen und sehen, was andere denken.",
+    "ok": "OK"
+  },
+  "inlineCta": {
+    "placeholder": "Was denkst du über dieses Thema?",
+    "submit": "Teilen",
+    "submitting": "Wird geteilt..."
+  },
+  "disagreementRating": {
+    "label": "Wie stark stimmst du nicht überein?",
+    "aligned": "Übereinstimmung",
+    "opposed": "Gegensätzlich"
+  },
   "sidebar": {
     "allOpinions": "Alle Meinungen",
     "browseOpinions": "Alle Meinungen zu diesem Thema durchsuchen",
