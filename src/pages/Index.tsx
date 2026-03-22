@@ -454,7 +454,7 @@ const Index = () => {
             )}
           </motion.div>
 
-          {/* CTA */}
+          {/* Inline Opinion CTA — textarea + send */}
           <AnimatePresence>
             {user && !myOpinion && !isLoading && (
               <motion.div
@@ -464,13 +464,32 @@ const Index = () => {
                 transition={{ duration: 0.3 }}
                 className="w-full max-w-sm mt-3 px-4 md:mb-14"
               >
-                <Button
-                  onClick={() => setOpinionDialogOpen(true)}
-                  className="w-full h-11 rounded-full bg-accent text-accent-foreground hover:bg-accent/90 font-semibold text-base shadow-lg shadow-accent/25 animate-pulse-fast"
-                >
-                  <Pencil className="h-5 w-5 mr-2" />
-                  {t('header.addOpinion')}
-                </Button>
+                <div className="flex gap-2 items-end">
+                  <Textarea
+                    value={inlineOpinionText}
+                    onChange={(e) => setInlineOpinionText(e.target.value)}
+                    placeholder={t('inlineCta.placeholder')}
+                    className="min-h-[44px] max-h-[80px] resize-none rounded-full px-4 py-2.5 text-sm bg-background border-accent/40 focus:border-accent"
+                    maxLength={500}
+                    rows={1}
+                  />
+                  <Button
+                    onClick={handleInlineSubmit}
+                    disabled={isSubmittingInline || inlineOpinionText.trim().length < 10}
+                    className="h-11 w-11 rounded-full bg-accent text-accent-foreground hover:bg-accent/90 shrink-0 p-0"
+                  >
+                    {isSubmittingInline ? (
+                      <div className="w-4 h-4 border-2 border-accent-foreground border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Send className="h-5 w-5" />
+                    )}
+                  </Button>
+                </div>
+                {inlineOpinionText.length > 0 && inlineOpinionText.trim().length < 10 && (
+                  <p className="text-xs text-muted-foreground mt-1 text-center">
+                    {t('opinion.minCharacters')}
+                  </p>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
