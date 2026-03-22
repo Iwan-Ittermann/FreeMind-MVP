@@ -147,9 +147,6 @@ export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function Si
       <text x={cx} y={cy + yr + 10} textAnchor="middle" fill="hsl(20, 80%, 50%)" fillOpacity={0.25} fontSize="8" fontFamily="monospace">
         {t('zones.extreme')}
       </text>
-      <text x={cx} y={cy + pr + 10} textAnchor="middle" fill="hsl(30, 10%, 50%)" fillOpacity={0.25} fontSize="8" fontFamily="monospace">
-        {t('zones.inactive')}
-      </text>
     </g>
   );
 });

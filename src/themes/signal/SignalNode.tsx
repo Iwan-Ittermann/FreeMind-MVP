@@ -61,7 +61,6 @@ const ZONE_SHAPE: Record<SemanticZone, () => JSX.Element> = {
   core: CoreShape,
   middle: MiddleShape,
   outer: OuterShape,
-  inactive: InactiveShape,
 };
 
 interface SignalNodeProps {
