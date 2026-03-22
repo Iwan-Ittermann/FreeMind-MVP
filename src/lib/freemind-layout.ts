@@ -9,19 +9,18 @@
  *   - empathy: -50 to +50, disagreement: 0 to 100
  *   - Range: -5000 to +5000
  * - FreeMind Score (per node) = average of all chat Bridging Scores
- * - Zones based on FreeMind Score:
- *   - Respectful zone (center): > 2500
- *   - Moderate zone (middle): 0 to 2500
- *   - Extreme zone (outer): < 0
+ * - Discrete 10-level scale:
+ *   - Level 10: Center (radius ≈ 0)
+ *   - Level 9-7: Respectful zone (inside respectfulRadius)
+ *   - Level 6-4: Moderate zone (respectfulRadius → moderateRadius)
+ *   - Level 3: Default for new/unrated nodes (moderateRadius border)
+ *   - Level 2-1: Extreme zone (moderateRadius → outerRadius)
  * - Angular separation based on disagreement: high disagreement = far apart
- * - Nodes with no chats start at the moderate zone border (level 3)
+ * - Nodes with no chats start at level 3 (moderate zone border)
  */
 
 import { GraphNode, GraphEdge, GraphData, ChatRating, Opinion, LayoutConfig, RespectfulZoneSlot } from '@/types/graph';
 import { BOT_USER_ID } from '@/lib/constants';
-
-// Zone border snapping: nodes are nudged away from zone boundaries
-// so they sit fully inside one zone (no straddling).
 
 /**
  * Calculate the Bridging Score for a specific opinion in a specific chat
@@ -66,6 +65,86 @@ function isBridgeNode(freeMindScore: number): boolean {
 }
 
 /**
+ * Convert a FreeMind score (-5000 to +5000) to a discrete level (1-10).
+ * Level 10 = best (center), Level 1 = worst (outer edge).
+ * Level 3 = default for unrated nodes (moderateRadius border).
+ */
+function scoreToLevel(freeMindScore: number): number {
+  // Clamp to valid range
+  const clamped = Math.max(-5000, Math.min(5000, freeMindScore));
+
+  // Map -5000..+5000 to 1..10
+  // Level boundaries (score thresholds):
+  // Level 10: >= 4500 (exceptional bridgers)
+  // Level 9:  >= 3500
+  // Level 8:  >= 2500 (bridge threshold)
+  // Level 7:  >= 1500
+  // Level 6:  >= 750
+  // Level 5:  >= 250
+  // Level 4:  >= 0
+  // Level 3:  >= -1000 (default for new nodes with score=0)
+  // Level 2:  >= -3000
+  // Level 1:  < -3000
+
+  if (clamped >= 4500) return 10;
+  if (clamped >= 3500) return 9;
+  if (clamped >= 2500) return 8;
+  if (clamped >= 1500) return 7;
+  if (clamped >= 750) return 6;
+  if (clamped >= 250) return 5;
+  if (clamped >= 0) return 4;
+  if (clamped >= -1000) return 3;
+  if (clamped >= -3000) return 2;
+  return 1;
+}
+
+/**
+ * Convert a discrete level (1-10) to a radius in the layout.
+ *
+ * Level 10: near center
+ * Level 7: respectfulRadius boundary
+ * Level 3: moderateRadius boundary
+ * Level 1: outerRadius boundary
+ */
+function levelToRadius(level: number, config: LayoutConfig): number {
+  const minR = config.nodeRadius * 2;
+
+  // Define anchor radii for key levels
+  // Level 10 → near center
+  // Level 7  → respectfulRadius boundary
+  // Level 3  → moderateRadius boundary
+  // Level 1  → outerRadius edge
+
+  const anchors: Record<number, number> = {
+    10: minR,
+    9: config.respectfulRadius * 0.33,
+    8: config.respectfulRadius * 0.66,
+    7: config.respectfulRadius,
+    6: config.respectfulRadius + (config.moderateRadius - config.respectfulRadius) * 0.25,
+    5: config.respectfulRadius + (config.moderateRadius - config.respectfulRadius) * 0.50,
+    4: config.respectfulRadius + (config.moderateRadius - config.respectfulRadius) * 0.75,
+    3: config.moderateRadius,
+    2: config.moderateRadius + (config.outerRadius - config.moderateRadius) * 0.5,
+    1: config.outerRadius - config.nodeRadius,
+  };
+
+  const radius = anchors[level] ?? config.moderateRadius;
+
+  // Zone border snapping: nudge away from boundaries
+  const pad = config.nodeRadius + 2;
+  const boundaries = [config.respectfulRadius, config.moderateRadius];
+  let result = radius;
+
+  for (const boundary of boundaries) {
+    if (Math.abs(result - boundary) < config.nodeRadius && level !== 7 && level !== 3) {
+      result = result < boundary ? boundary - pad : boundary + pad;
+    }
+  }
+
+  return Math.max(minR, Math.min(config.outerRadius - config.nodeRadius, result));
+}
+
+/**
  * Calculate the ideal angular distance between two connected nodes
  * based on their disagreement rating.
  */
@@ -73,69 +152,6 @@ function calculateIdealAngle(disagreement: number): number {
   const minAngle = 0.2;
   const maxAngle = Math.PI;
   return minAngle + (disagreement / 100) * (maxAngle - minAngle);
-}
-
-/**
- * Angular constraint optimization using iterative relaxation
- */
-function optimizeAngularPositions(
-  nodes: GraphNode[],
-  edges: GraphEdge[],
-  config: LayoutConfig,
-  iterations: number = 100
-): GraphNode[] {
-  const updated = nodes.map(n => ({ ...n }));
-  
-  const polarPositions = updated.map(node => {
-    const dx = node.x - config.centerX;
-    const dy = node.y - config.centerY;
-    const radius = Math.sqrt(dx * dx + dy * dy);
-    const angle = Math.atan2(dy, dx);
-    return { id: node.id, radius, angle };
-  });
-  
-  const polarMap = new Map(polarPositions.map(p => [p.id, p]));
-  
-  for (let iter = 0; iter < iterations; iter++) {
-    const angularForces = new Map<string, number>();
-    polarPositions.forEach(p => angularForces.set(p.id, 0));
-    
-    edges.forEach(edge => {
-      const sourcePos = polarMap.get(edge.source);
-      const targetPos = polarMap.get(edge.target);
-      if (!sourcePos || !targetPos) return;
-      
-      const idealAngle = calculateIdealAngle(edge.disagreement);
-      let actualAngle = Math.abs(sourcePos.angle - targetPos.angle);
-      
-      if (actualAngle > Math.PI) actualAngle = 2 * Math.PI - actualAngle;
-      
-      const angleDiff = idealAngle - actualAngle;
-      const force = angleDiff * 0.1;
-      
-      const currentSourceForce = angularForces.get(edge.source) || 0;
-      const currentTargetForce = angularForces.get(edge.target) || 0;
-      
-      angularForces.set(edge.source, currentSourceForce - force);
-      angularForces.set(edge.target, currentTargetForce + force);
-    });
-    
-    polarPositions.forEach(pos => {
-      const force = angularForces.get(pos.id) || 0;
-      pos.angle += force;
-      while (pos.angle > Math.PI) pos.angle -= 2 * Math.PI;
-      while (pos.angle < -Math.PI) pos.angle += 2 * Math.PI;
-    });
-  }
-  
-  return updated.map(node => {
-    const polar = polarMap.get(node.id)!;
-    return {
-      ...node,
-      x: config.centerX + Math.cos(polar.angle) * polar.radius,
-      y: config.centerY + Math.sin(polar.angle) * polar.radius,
-    };
-  });
 }
 
 /**
@@ -317,64 +333,24 @@ function adjustForMinSeparation(
   return adjusted;
 }
 
-/**
- * Map FreeMind score to radius using the semantic zone radii.
- * 
- * Nodes without chats are placed at moderateRadius (level 3 border).
- */
-function scoreToRadius(
-  freeMindScore: number,
-  config: LayoutConfig
-): number {
-  // Normalize score: -5000 to +5000 → 0 to 1
-  const normalizedScore = (freeMindScore + 5000) / 10000;
-  
-  // Invert: high score = closer to center
-  const invertedScore = 1 - normalizedScore;
-  
-  // Map to radius: 0 → center, 1 → outer edge
-  const minRadius = config.nodeRadius * 2;
-  const maxRadius = config.outerRadius - config.nodeRadius;
-  
-  let radius = minRadius + invertedScore * (maxRadius - minRadius);
-
-  // Zone border snapping: if a node center is within nodeRadius of a
-  // zone boundary, nudge it fully into the zone where >50% of it sits.
-  const pad = config.nodeRadius + 2;
-  const boundaries = [config.respectfulRadius, config.moderateRadius, config.extremeRadius];
-
-  for (const boundary of boundaries) {
-    if (Math.abs(radius - boundary) < config.nodeRadius) {
-      radius = radius < boundary
-        ? boundary - pad
-        : boundary + pad;
-    }
-  }
-
-  // Clamp to valid range
-  return Math.max(minRadius, Math.min(maxRadius, radius));
-}
-
 // Main layout function
 export function calculateLayout(
   opinions: Opinion[],
   ratings: ChatRating[],
   config: LayoutConfig
 ): GraphData {
-  // Step 1: Calculate FreeMind scores for each node
-  const nodeScores = new Map<string, { freeMindScore: number; hasChats: boolean; chatCount: number }>();
+  // Step 1: Calculate FreeMind scores and discrete levels for each node
+  const nodeScores = new Map<string, { freeMindScore: number; hasChats: boolean; chatCount: number; level: number }>();
   opinions.forEach(op => {
-    nodeScores.set(op.id, calculateFreeMindScore(op.id, ratings));
+    const scores = calculateFreeMindScore(op.id, ratings);
+    const level = scores.hasChats ? scoreToLevel(scores.freeMindScore) : 3; // Default level 3 for new nodes
+    nodeScores.set(op.id, { ...scores, level });
   });
 
   // Respectful zone slots are no longer used (core zone uses standard layout)
   const respectfulZoneSlots: RespectfulZoneSlot[] = [];
 
-  // Step 3: Separate active (has chats) and unconnected (no chats) nodes
-  const activeOpinions = opinions.filter(op => nodeScores.get(op.id)?.hasChats);
-  const unconnectedOpinions = opinions.filter(op => !nodeScores.get(op.id)?.hasChats);
-
-  // Step 4: Create edges from ratings
+  // Step 2: Create edges from ratings
   const edges: GraphEdge[] = ratings.map(r => ({
     source: r.opinionA,
     target: r.opinionB,
@@ -384,13 +360,14 @@ export function calculateLayout(
     status: 'accepted' as const,
   }));
 
-  // Step 5: Calculate deterministic angles based on disagreement ratings
+  // Step 3: Calculate deterministic angles based on disagreement ratings
   const angleMap = calculateDeterministicAngles(opinions, ratings);
 
-  // Step 6: Position active nodes (all use linear radius + angle)
-  const activeNodes: GraphNode[] = activeOpinions.map((op) => {
+  // Step 4: Position ALL nodes using discrete level → radius
+  // No more separate "inactive" positioning — all nodes use the same system
+  let allNodes: GraphNode[] = opinions.map((op) => {
     const scores = nodeScores.get(op.id)!;
-    const targetRadius = scoreToRadius(scores.freeMindScore, config);
+    const targetRadius = levelToRadius(scores.level, config);
     const angle = angleMap.get(op.id) || 0;
     const x = config.centerX + Math.cos(angle) * targetRadius;
     const y = config.centerY + Math.sin(angle) * targetRadius;
@@ -402,30 +379,13 @@ export function calculateLayout(
       opinion: op,
       isBridge: isBridgeNode(scores.freeMindScore),
       distanceToCenter: targetRadius,
-      hasChats: true,
-      zone: isBridgeNode(scores.freeMindScore) ? 'respectful' as const : undefined,
+      hasChats: scores.hasChats,
+      level: scores.level,
+      zone: scores.level >= 7 ? 'respectful' as const
+        : scores.level >= 3 ? 'moderate' as const
+        : 'extreme' as const,
     };
   });
-
-  // Step 7: Place unconnected nodes at moderate zone border
-  // No more "inactive" zone — they start in the moderate zone
-  const unconnectedRadius = config.moderateRadius - config.nodeRadius * 2;
-  const unconnectedNodes: GraphNode[] = unconnectedOpinions.map((op) => {
-    const angle = angleMap.get(op.id) || 0;
-
-    return {
-      id: op.id,
-      x: config.centerX + Math.cos(angle) * unconnectedRadius,
-      y: config.centerY + Math.sin(angle) * unconnectedRadius,
-      opinion: op,
-      isBridge: false,
-      distanceToCenter: unconnectedRadius,
-      hasChats: false,
-    };
-  });
-
-  // Combine active and unconnected nodes
-  let allNodes = [...activeNodes, ...unconnectedNodes];
 
   // Fix bot node position BEFORE collision resolution so it participates
   allNodes = allNodes.map(node => {
@@ -437,6 +397,7 @@ export function calculateLayout(
         y: config.centerY + botRadius,
         distanceToCenter: botRadius,
         hasChats: true,
+        zone: 'moderate' as const,
       };
     }
     return node;
