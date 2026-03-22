@@ -373,9 +373,30 @@ const Index = () => {
                       </p>
                     </div>
                   ) : (
-                    <p className="text-sm text-muted-foreground mb-4 pr-8">
+                    <p className="text-sm text-muted-foreground mb-2 pr-8">
                       "{selectedNode.opinion.text}"
                     </p>
+                  )}
+
+                  {/* Disagreement slider — visible for all opinions except own */}
+                  {canRateDisagreement && selectedNode.opinion.visible !== false && actionState !== 'own' && (
+                    <div className="mb-4 space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground">{t('disagreementRating.label')}</span>
+                        <span className="text-xs font-mono text-muted-foreground">{disagreement}</span>
+                      </div>
+                      <Slider
+                        value={[disagreement]}
+                        onValueChange={(v) => setDisagreement(v[0])}
+                        max={100}
+                        step={1}
+                        className="[&_[role=slider]]:bg-accent [&_[role=slider]]:border-accent [&_.bg-primary]:bg-accent/30"
+                      />
+                      <div className="flex justify-between text-[10px] text-muted-foreground">
+                        <span>{t('disagreementRating.aligned')}</span>
+                        <span>{t('disagreementRating.opposed')}</span>
+                      </div>
+                    </div>
                   )}
 
                   {selectedNode.opinion.visible === false ? (
