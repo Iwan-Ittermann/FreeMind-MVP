@@ -14,25 +14,23 @@ interface GraphNodesProps {
 }
 
 // Determine which zone a node is in based on zone property or distance from center
-function getNodeZone(node: GraphNode, config: LayoutConfig): 'green' | 'yellow' | 'pink' | 'outer' {
-  // If node has explicit zone assignment (top 5), use it
-  if (node.zone === 'green') return 'green';
+function getNodeZone(node: GraphNode, config: LayoutConfig): 'respectful' | 'moderate' | 'extreme' | 'outer' {
+  if (node.zone === 'respectful') return 'respectful';
   
   const dist = node.distanceToCenter || config.outerRadius;
   
-  // Non-top-5 nodes can't be in green zone, even if they're close to center
-  if (dist <= config.yellowRadius) return 'yellow';
-  if (dist <= config.pinkRadius) return 'pink';
+  if (dist <= config.moderateRadius) return 'moderate';
+  if (dist <= config.extremeRadius) return 'extreme';
   return 'outer';
 }
 
 // Get size multiplier based on zone
-function getZoneSizeMultiplier(zone: 'green' | 'yellow' | 'pink' | 'outer'): number {
+function getZoneSizeMultiplier(zone: 'respectful' | 'moderate' | 'extreme' | 'outer'): number {
   switch (zone) {
-    case 'green': return 3;     // Triple size in green zone (center)
-    case 'yellow': return 2;    // Double size in yellow zone
-    case 'pink': return 1;      // Normal size in pink zone
-    case 'outer': return 0.7;   // Smaller size on outer ring
+    case 'respectful': return 3;
+    case 'moderate': return 2;
+    case 'extreme': return 1;
+    case 'outer': return 0.7;
   }
 }
 
@@ -209,7 +207,7 @@ export function GraphNodes({
             />
             
             {/* Bridge node indicator - dot for non-green-zone bridge nodes */}
-            {node.isBridge && !isHighlighted && !isHidden && zone !== 'green' && (
+            {node.isBridge && !isHighlighted && !isHidden && zone !== 'respectful' && (
               <circle
                 r={baseRadius * 0.4}
                 fill="hsl(var(--accent))"

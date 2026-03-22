@@ -27,7 +27,7 @@ export const ArcaneCluster = memo(function ArcaneCluster({ nodes }: ArcaneCluste
   const fields = useMemo(() => {
     const groups = new Map<number, SemanticNodeToken[]>();
     for (const n of nodes) {
-      if (n.clusterId == null || n.zone === 'inactive') continue;
+      if (n.clusterId == null) continue;
       const arr = groups.get(n.clusterId) ?? [];
       arr.push(n);
       groups.set(n.clusterId, arr);

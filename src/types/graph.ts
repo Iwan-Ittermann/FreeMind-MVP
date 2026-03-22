@@ -17,6 +17,12 @@ export interface ChatRating {
   disagreement: number; // 0-100 scale (internally stored as integer)
 }
 
+export interface OpinionRating {
+  raterOpinionId: string;
+  targetOpinionId: string;
+  disagreement: number; // 0-100
+}
+
 export interface ChatRequest {
   id: string;
   requesterOpinionId: string;
@@ -35,10 +41,11 @@ export interface GraphNode {
   hasPendingRequest?: boolean; // This node has a pending incoming request
   isRequester?: boolean; // This node sent a pending request to current user
   hasChats?: boolean; // Whether this node has participated in any chats
-  zone?: 'green' | 'yellow' | 'pink' | 'outer'; // Which zone the node is in
+  zone?: 'respectful' | 'moderate' | 'extreme'; // Which zone the node is in
   hasUnreadMessages?: boolean; // Has unread messages from this node
   unreadCount?: number; // Number of unread messages
   isOnline?: boolean; // Whether the user behind this opinion is currently online
+  level?: number; // Discrete scale level 1-10
 }
 
 export interface GraphEdge {
@@ -50,7 +57,7 @@ export interface GraphEdge {
   status: 'pending' | 'accepted'; // Edge type for visual styling
 }
 
-export interface GreenZoneSlot {
+export interface RespectfulZoneSlot {
   position: number;  // 1-5
   x: number;
   y: number;
@@ -61,15 +68,15 @@ export interface GreenZoneSlot {
 export interface GraphData {
   nodes: GraphNode[];
   edges: GraphEdge[];
-  greenZoneSlots: GreenZoneSlot[];
+  respectfulZoneSlots: RespectfulZoneSlot[];
 }
 
 export interface LayoutConfig {
   centerX: number;
   centerY: number;
   outerRadius: number;
-  greenRadius: number; // Inner circle (consensus zone)
-  yellowRadius: number; // Middle ring
-  pinkRadius: number; // Outer ring
+  respectfulRadius: number; // Inner circle (consensus zone) — formerly greenRadius
+  moderateRadius: number; // Middle ring — formerly yellowRadius
+  extremeRadius: number; // Outer ring — formerly pinkRadius
   nodeRadius: number;
 }

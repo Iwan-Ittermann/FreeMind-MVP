@@ -2,10 +2,9 @@ import { useState, useMemo, useCallback } from 'react';
 import { ConcentricCircles } from './ConcentricCircles';
 import { GraphEdges } from './GraphEdges';
 import { GraphNodes } from './GraphNodes';
-import { GreenZoneSlots } from './GreenZoneSlots';
 import { MessageDots } from './MessageDots';
 import { calculateLayout, generateMockData } from '@/lib/freemind-layout';
-import { GraphNode, GraphEdge, LayoutConfig, Opinion, ChatRating, ChatRequest, GreenZoneSlot } from '@/types/graph';
+import { GraphNode, GraphEdge, LayoutConfig, Opinion, ChatRating, ChatRequest } from '@/types/graph';
 import { ActiveChat, MessageAnimationData } from '@/hooks/useTopicData';
 import { useFreeMindTheme } from '@/themes/ThemeContext';
 import { CityRenderer } from '@/themes/city/CityRenderer';
@@ -51,8 +50,7 @@ export function OpinionGraph({
 }: OpinionGraphProps) {
   const [highlightedNode, setHighlightedNode] = useState<string | null>(null);
 
-  // Layout configuration based on size
-  // Adjusted zone sizes: narrower green/pink, wider yellow
+  // Layout configuration using semantic zone names
   const config: LayoutConfig = useMemo(() => {
     const size = Math.min(width, height);
     const centerX = width / 2;
@@ -63,14 +61,14 @@ export function OpinionGraph({
       centerX,
       centerY,
       outerRadius,
-      pinkRadius: outerRadius * 0.92,  // Narrower pink (was 0.95)
-      yellowRadius: outerRadius * 0.80, // Wider yellow (was 0.75)
-      greenRadius: outerRadius * 0.25,  // Core zone at 25%
+      extremeRadius: outerRadius * 0.92,
+      moderateRadius: outerRadius * 0.80,
+      respectfulRadius: outerRadius * 0.25,
       nodeRadius: Math.max(3, size * 0.012),
     };
   }, [width, height]);
 
-  // Use provided data or generate mock data (only when explicitly requested)
+  // Use provided data or generate mock data
   const { opinions, ratings } = useMemo(() => {
     if (useMockData) {
       return generateMockData(100);
@@ -88,7 +86,6 @@ export function OpinionGraph({
   const graphData = useMemo(() => {
     const baseData = calculateLayout(opinions, ratings, config);
     
-    // Add pending request edges (only show edges involving the current user)
     const pendingEdges: GraphEdge[] = chatRequests
       .filter(req => req.status === 'pending' && currentUserOpinionId && (
         req.requesterOpinionId === currentUserOpinionId || req.targetOpinionId === currentUserOpinionId
@@ -102,7 +99,6 @@ export function OpinionGraph({
         status: 'pending' as const,
       }));
 
-    // Mark nodes with request info, online status, and unread messages
     const nodesWithRequestInfo = baseData.nodes.map(node => {
       const unreadCount = unreadMessageCounts.get(node.id) || 0;
       return {
@@ -118,7 +114,6 @@ export function OpinionGraph({
       };
     });
 
-    // Combine edges, avoiding duplicates (accepted takes priority)
     const acceptedPairs = new Set(
       baseData.edges.map(e => [e.source, e.target].sort().join('-'))
     );
@@ -129,7 +124,7 @@ export function OpinionGraph({
     return {
       nodes: nodesWithRequestInfo,
       edges: [...baseData.edges, ...uniquePendingEdges],
-      greenZoneSlots: baseData.greenZoneSlots,
+      respectfulZoneSlots: baseData.respectfulZoneSlots,
     };
   }, [opinions, ratings, config, chatRequests, currentUserOpinionId, onlineOpinionIds, unreadMessageCounts]);
 
@@ -175,16 +170,8 @@ export function OpinionGraph({
         className="overflow-visible"
         style={{ filter: 'drop-shadow(0 0 40px hsl(var(--primary) / 0.2))' }}
       >
-        {/* Background */}
         <rect width={width} height={height} fill="transparent" />
-        
-        {/* Concentric colored circles */}
         <ConcentricCircles config={config} />
-        
-        {/* Green zone placeholder slots */}
-        <GreenZoneSlots slots={graphData.greenZoneSlots} config={config} />
-        
-        {/* Edges between nodes */}
         <GraphEdges 
           nodes={graphData.nodes} 
           edges={graphData.edges}
@@ -192,8 +179,6 @@ export function OpinionGraph({
           activeChats={activeChats}
           onEdgeClick={onEdgeClick}
         />
-        
-        {/* Opinion nodes */}
         <GraphNodes
           nodes={graphData.nodes}
           config={config}
@@ -203,8 +188,6 @@ export function OpinionGraph({
           onNodeClick={handleNodeClick}
           onNodeHover={handleNodeHover}
         />
-        
-        {/* Message animation dots (on top of nodes) */}
         <MessageDots 
           nodes={graphData.nodes}
           messageAnimations={messageAnimations}

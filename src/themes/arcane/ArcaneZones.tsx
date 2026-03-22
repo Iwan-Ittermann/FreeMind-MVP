@@ -57,9 +57,8 @@ export function ArcaneZones({ zones, config }: ArcaneZonesProps) {
 
       {/* Zone labels */}
       <text x={cx} y={cy + 4} textAnchor="middle" fill="hsl(45, 30%, 70%)" fillOpacity={0.35} fontSize="8" fontFamily="serif">{t('zones.respectful')}</text>
-      <text x={cx} y={cy + config.greenRadius + 10} textAnchor="middle" fill="hsl(45, 30%, 60%)" fillOpacity={0.30} fontSize="8" fontFamily="serif">{t('zones.moderate')}</text>
-      <text x={cx} y={cy + config.yellowRadius + 10} textAnchor="middle" fill="hsl(45, 30%, 50%)" fillOpacity={0.30} fontSize="8" fontFamily="serif">{t('zones.extreme')}</text>
-      <text x={cx} y={cy + config.pinkRadius + 10} textAnchor="middle" fill="hsl(45, 25%, 45%)" fillOpacity={0.30} fontSize="8" fontFamily="serif">{t('zones.inactive')}</text>
+      <text x={cx} y={cy + config.respectfulRadius + 10} textAnchor="middle" fill="hsl(45, 30%, 60%)" fillOpacity={0.30} fontSize="8" fontFamily="serif">{t('zones.moderate')}</text>
+      <text x={cx} y={cy + config.moderateRadius + 10} textAnchor="middle" fill="hsl(45, 30%, 50%)" fillOpacity={0.30} fontSize="8" fontFamily="serif">{t('zones.extreme')}</text>
 
       {/* Outer boundary ring */}
       <circle

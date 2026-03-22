@@ -18,9 +18,9 @@ export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function Si
   const glowRadius = r * 1.4;
 
   // Zone radii
-  const gr = config.greenRadius;
-  const yr = config.yellowRadius;
-  const pr = config.pinkRadius;
+  const gr = config.respectfulRadius;
+  const yr = config.moderateRadius;
+  const pr = config.extremeRadius;
 
   // Zone boundary percentages for radial gradient
   const coreP = (gr / r) * 100;
@@ -146,9 +146,6 @@ export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function Si
       </text>
       <text x={cx} y={cy + yr + 10} textAnchor="middle" fill="hsl(20, 80%, 50%)" fillOpacity={0.25} fontSize="8" fontFamily="monospace">
         {t('zones.extreme')}
-      </text>
-      <text x={cx} y={cy + pr + 10} textAnchor="middle" fill="hsl(30, 10%, 50%)" fillOpacity={0.25} fontSize="8" fontFamily="monospace">
-        {t('zones.inactive')}
       </text>
     </g>
   );

@@ -5,7 +5,7 @@ interface ConcentricCirclesProps {
 }
 
 export function ConcentricCircles({ config }: ConcentricCirclesProps) {
-  const { centerX, centerY, outerRadius, pinkRadius, yellowRadius, greenRadius } = config;
+  const { centerX, centerY, outerRadius, extremeRadius, moderateRadius, respectfulRadius } = config;
 
   return (
     <g className="concentric-circles">
@@ -20,29 +20,29 @@ export function ConcentricCircles({ config }: ConcentricCirclesProps) {
         strokeDasharray="4 4"
       />
       
-      {/* Pink/Rose ring (outer) */}
+      {/* Extreme ring (outer) */}
       <circle
         cx={centerX}
         cy={centerY}
-        r={pinkRadius}
+        r={extremeRadius}
         fill="hsl(var(--primary))"
         opacity={0.9}
       />
       
-      {/* Yellow ring (middle) */}
+      {/* Moderate ring (middle) */}
       <circle
         cx={centerX}
         cy={centerY}
-        r={yellowRadius}
+        r={moderateRadius}
         fill="hsl(var(--accent))"
         opacity={0.95}
       />
       
-      {/* Green circle (center - consensus zone) */}
+      {/* Respectful circle (center - consensus zone) */}
       <circle
         cx={centerX}
         cy={centerY}
-        r={greenRadius}
+        r={respectfulRadius}
         fill="hsl(var(--success))"
         opacity={0.9}
       />
@@ -54,7 +54,7 @@ export function ConcentricCircles({ config }: ConcentricCirclesProps) {
         textAnchor="middle"
         dominantBaseline="central"
         className="pointer-events-none"
-        style={{ fontSize: greenRadius * 0.5 }}
+        style={{ fontSize: respectfulRadius * 0.5 }}
       >
         👑
       </text>

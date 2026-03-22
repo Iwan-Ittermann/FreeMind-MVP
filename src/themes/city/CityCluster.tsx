@@ -40,7 +40,7 @@ export const CityCluster = memo(function CityCluster({ nodes }: CityClusterProps
   const fields = useMemo<ClusterField[]>(() => {
     const groups = new Map<number, SemanticNodeToken[]>();
     for (const n of nodes) {
-      if (n.clusterId == null || n.zone === 'inactive') continue;
+      if (n.clusterId == null) continue;
       const arr = groups.get(n.clusterId) ?? [];
       arr.push(n);
       groups.set(n.clusterId, arr);

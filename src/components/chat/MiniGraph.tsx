@@ -28,9 +28,9 @@ export function MiniGraph({
       centerX,
       centerY,
       outerRadius,
-      pinkRadius: outerRadius * 0.95,
-      yellowRadius: outerRadius * 0.75,
-      greenRadius: outerRadius * 0.45,
+      extremeRadius: outerRadius * 0.95,
+      moderateRadius: outerRadius * 0.75,
+      respectfulRadius: outerRadius * 0.45,
       nodeRadius: 3,
     };
   }, [size]);
@@ -69,7 +69,7 @@ export function MiniGraph({
         <circle
           cx={config.centerX}
           cy={config.centerY}
-          r={config.pinkRadius + 2}
+          r={config.extremeRadius + 2}
           fill="hsl(var(--background) / 0.8)"
         />
 
@@ -77,7 +77,7 @@ export function MiniGraph({
         <circle
           cx={config.centerX}
           cy={config.centerY}
-          r={config.pinkRadius}
+          r={config.extremeRadius}
           fill="none"
           stroke="hsl(var(--primary) / 0.3)"
           strokeWidth={1}
@@ -85,7 +85,7 @@ export function MiniGraph({
         <circle
           cx={config.centerX}
           cy={config.centerY}
-          r={config.yellowRadius}
+          r={config.moderateRadius}
           fill="none"
           stroke="hsl(var(--accent) / 0.4)"
           strokeWidth={1}
@@ -93,7 +93,7 @@ export function MiniGraph({
         <circle
           cx={config.centerX}
           cy={config.centerY}
-          r={config.greenRadius}
+          r={config.respectfulRadius}
           fill="none"
           stroke="hsl(var(--secondary) / 0.5)"
           strokeWidth={1}
