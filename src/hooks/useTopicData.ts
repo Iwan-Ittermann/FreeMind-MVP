@@ -166,19 +166,10 @@ export function useTopicData(topicId: string) {
           queryClient.refetchQueries({ queryKey: ['topic', topicId] });
         }
       )
-      // Listen for opinion_ratings changes (affects graph positions)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'opinion_ratings',
-          filter: `topic_id=eq.${topicId}`,
-        },
-        () => {
-          queryClient.refetchQueries({ queryKey: ['topic', topicId] });
-        }
-      )
+      // NOTE: opinion_ratings realtime listener intentionally removed.
+      // Disagreement ratings change too frequently (slider drags) for realtime.
+      // Instead: rater sees immediate update via invalidateQueries in useDisagreementRating,
+      // other users see updates via 4-second polling (refetchInterval: 4000).
       .subscribe();
 
     // Separate broadcast channel for animations (bypasses RLS issues)
