@@ -41,6 +41,11 @@ export function useDisagreementRating(
     enabled: !!myOpinionId && !!targetOpinionId,
   });
 
+  // Reset local state when target changes
+  useEffect(() => {
+    setLocalDisagreement(null);
+  }, [targetOpinionId]);
+
   // Initialize local state from DB
   useEffect(() => {
     if (existingRating && localDisagreement === null) {
