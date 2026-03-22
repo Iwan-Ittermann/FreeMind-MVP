@@ -395,6 +395,72 @@ export type Database = {
         }
         Relationships: []
       }
+      opinion_ratings: {
+        Row: {
+          created_at: string | null
+          disagreement: number
+          id: string
+          rater_opinion_id: string
+          target_opinion_id: string
+          topic_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          disagreement?: number
+          id?: string
+          rater_opinion_id: string
+          target_opinion_id: string
+          topic_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          disagreement?: number
+          id?: string
+          rater_opinion_id?: string
+          target_opinion_id?: string
+          topic_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "opinion_ratings_rater_opinion_id_fkey"
+            columns: ["rater_opinion_id"]
+            isOneToOne: false
+            referencedRelation: "opinions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "opinion_ratings_rater_opinion_id_fkey"
+            columns: ["rater_opinion_id"]
+            isOneToOne: false
+            referencedRelation: "opinions_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "opinion_ratings_target_opinion_id_fkey"
+            columns: ["target_opinion_id"]
+            isOneToOne: false
+            referencedRelation: "opinions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "opinion_ratings_target_opinion_id_fkey"
+            columns: ["target_opinion_id"]
+            isOneToOne: false
+            referencedRelation: "opinions_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "opinion_ratings_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       opinions: {
         Row: {
           created_at: string
