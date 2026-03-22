@@ -70,7 +70,7 @@ export const SignalNode = memo(function SignalNode({
   const opacity = isDimmed ? 0.4 : token.isHidden ? 0.3 : 1;
   const isScaled = isHighlighted && !isDimmed;
   const bubbleText = token.opinionText
-    ? (token.opinionText.length > 20 ? token.opinionText.slice(0, 20) + '…' : token.opinionText)
+    ? (token.opinionText.length > 16 ? token.opinionText.slice(0, 16) + '…' : token.opinionText)
     : '';
 
   const scaledHalf = HALF * scale;
@@ -88,9 +88,9 @@ export const SignalNode = memo(function SignalNode({
       {/* Speech bubble */}
       {showSpeechBubble && bubbleText && (
         <g transform={`translate(0, ${-scaledHalf - 14})`} opacity={token.zone === 'core' || token.zone === 'middle' ? 0.5 : 0.92}>
-          <rect x={-70} y={-18} width={140} height={28} rx={8} fill="rgba(26,26,46,0.85)" stroke="#DAA520" strokeWidth={0.5} strokeOpacity={0.3} />
+          <rect x={-75} y={-18} width={150} height={28} rx={8} fill="rgba(26,26,46,0.85)" stroke="#DAA520" strokeWidth={0.5} strokeOpacity={0.3} />
           <polygon points="-4,10 4,10 0,16" fill="rgba(26,26,46,0.85)" />
-          <text x={0} y={-3} textAnchor="middle" dominantBaseline="central" fill="#FFFFFFE6" fontSize="14" fontFamily="monospace">
+          <text x={0} y={-3} textAnchor="middle" dominantBaseline="central" fill="#FFFFFFE6" fontSize="13" fontFamily="monospace">
             {bubbleText}
           </text>
         </g>

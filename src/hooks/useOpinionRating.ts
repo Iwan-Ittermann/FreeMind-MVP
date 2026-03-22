@@ -7,8 +7,12 @@ import { useAuth } from './useAuth';
  * Hook for standalone disagreement ratings on opinions.
  * Any user can rate their disagreement (0-100) with any other opinion,
  * regardless of whether they have a chat with them.
+ *
+ * Naming convention:
+ * - "Disagreement rating" = opinion_ratings table (0-100 scale)
+ * - "Respect rating" = chat_ratings table (empathy, -50 to +50 scale)
  */
-export function useOpinionRating(
+export function useDisagreementRating(
   topicId: string | null,
   myOpinionId: string | null,
   targetOpinionId: string | null,
@@ -36,6 +40,11 @@ export function useOpinionRating(
     },
     enabled: !!myOpinionId && !!targetOpinionId,
   });
+
+  // Reset local state when target changes
+  useEffect(() => {
+    setLocalDisagreement(null);
+  }, [targetOpinionId]);
 
   // Initialize local state from DB
   useEffect(() => {
@@ -99,3 +108,6 @@ export function useOpinionRating(
     canRate: !!user && !!myOpinionId && !!targetOpinionId && myOpinionId !== targetOpinionId,
   };
 }
+
+/** @deprecated Use useDisagreementRating instead */
+export const useOpinionRating = useDisagreementRating;

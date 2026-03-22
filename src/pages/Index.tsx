@@ -28,7 +28,7 @@ import { usePresence } from '@/hooks/usePresence';
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { useBrowserNotification } from '@/hooks/useBrowserNotification';
 import { useTutorialContext } from '@/contexts/TutorialContext';
-import { useOpinionRating } from '@/hooks/useOpinionRating';
+import { useDisagreementRating } from '@/hooks/useOpinionRating';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { getClientIP } from '@/hooks/useClientIP';
@@ -80,7 +80,7 @@ const Index = () => {
   const { data: unreadMessageCounts } = useUnreadMessages(DEFAULT_TOPIC_ID, myOpinion?.id);
 
   // Disagreement rating for selected node
-  const { disagreement, setDisagreement, canRate: canRateDisagreement } = useOpinionRating(
+  const { disagreement, setDisagreement, canRate: canRateDisagreement } = useDisagreementRating(
     DEFAULT_TOPIC_ID,
     myOpinion?.id ?? null,
     selectedNode?.id ?? null,
