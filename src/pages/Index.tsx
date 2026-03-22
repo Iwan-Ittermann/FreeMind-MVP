@@ -613,6 +613,33 @@ const Index = () => {
         onSuccess={handleOpinionSubmitted}
         hasExistingOpinion={!!myOpinion}
       />
+
+      {/* Welcome popup — one-time */}
+      <AnimatePresence>
+        {!welcomeShown && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm"
+            onClick={handleDismissWelcome}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-background border border-border/40 rounded-xl p-6 mx-4 max-w-sm shadow-2xl text-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-lg font-semibold text-foreground mb-2">{t('welcome.title')}</h2>
+              <p className="text-sm text-muted-foreground mb-4">{t('welcome.message')}</p>
+              <Button onClick={handleDismissWelcome} className="bg-accent text-accent-foreground hover:bg-accent/90">
+                {t('welcome.ok')}
+              </Button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

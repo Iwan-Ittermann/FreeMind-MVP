@@ -116,4 +116,3 @@ chat_ratings.empathy × opinion_ratings.disagreement → FreeMind score → radi
 | `src/i18n/locales/en.json` | Welcome text, disagreement keys |
 | `src/i18n/locales/de.json` | Same |
 | **DB Migration** | `opinion_ratings` table + RLS + update `get_graph_pairs` RPC |
-
