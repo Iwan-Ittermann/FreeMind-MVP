@@ -90,7 +90,7 @@ export function useDisagreementRating(
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       mutation.mutate(value);
-    }, 500);
+    }, 1000);
   }, [mutation]);
 
   // Cleanup

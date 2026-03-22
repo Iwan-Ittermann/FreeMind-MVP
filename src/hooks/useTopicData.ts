@@ -166,19 +166,10 @@ export function useTopicData(topicId: string) {
           queryClient.refetchQueries({ queryKey: ['topic', topicId] });
         }
       )
-      // Listen for opinion_ratings changes (affects graph positions)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'opinion_ratings',
-          filter: `topic_id=eq.${topicId}`,
-        },
-        () => {
-          queryClient.refetchQueries({ queryKey: ['topic', topicId] });
-        }
-      )
+      // NOTE: opinion_ratings realtime listener intentionally removed.
+      // Disagreement ratings change too frequently (slider drags) for realtime.
+      // Instead: rater sees immediate update via invalidateQueries in useDisagreementRating,
+      // other users see updates via 4-second polling (refetchInterval: 4000).
       .subscribe();
 
     // Separate broadcast channel for animations (bypasses RLS issues)
@@ -282,13 +273,20 @@ export function useTopicData(topicId: string) {
 
       if (fakeNodesError) throw fakeNodesError;
 
-      // Fetch canonical graph pairs using SECURITY DEFINER function
-      // This returns only accepted chat_requests with both opinions visible
-      // All users get the same result regardless of RLS on chats table
+      // Fetch canonical graph pairs (empathy from chat_ratings via accepted chat_requests)
       const { data: ratingsData, error: ratingsError } = await supabase
         .rpc('get_graph_pairs', { topic_uuid: topicId });
 
       if (ratingsError) throw ratingsError;
+
+      // Fetch ALL standalone disagreement ratings for this topic
+      // These drive angular separation and are the single source of truth for disagreement
+      const { data: opinionRatingsData, error: opinionRatingsError } = await supabase
+        .from('opinion_ratings')
+        .select('rater_opinion_id, target_opinion_id, disagreement')
+        .eq('topic_id', topicId);
+
+      if (opinionRatingsError) throw opinionRatingsError;
 
       // Transform opinions to our graph format (including moderation fields)
       const formattedOpinions: Opinion[] = (opinions || []).map(op => ({
@@ -313,17 +311,52 @@ export function useTopicData(topicId: string) {
 
       // Combine real and fake opinions
       const allOpinions = [...formattedOpinions, ...fakeOpinions]
-        // Stable ordering across clients (helps deterministic layout)
         .sort((a, b) => a.id.localeCompare(b.id));
 
-      // Build deterministic graph edges/weights from aggregated ratings
-      // Default empathy: 0 (neutral), default disagreement: 50 (middle)
-      const formattedRatings: ChatRating[] = (ratingsData || []).map(r => ({
-        opinionA: r.opinion_a_id,
-        opinionB: r.opinion_b_id,
-        empathy: Number(r.avg_empathy ?? 0),
-        disagreement: Number(r.avg_disagreement ?? 50),
-      }));
+      // Build chat-based ratings (empathy from chats)
+      const chatRatingsMap = new Map<string, ChatRating>();
+      for (const r of (ratingsData || [])) {
+        const key = [r.opinion_a_id, r.opinion_b_id].sort().join('|');
+        chatRatingsMap.set(key, {
+          opinionA: r.opinion_a_id,
+          opinionB: r.opinion_b_id,
+          empathy: Number(r.avg_empathy ?? 0),
+          disagreement: Number(r.avg_disagreement ?? 50),
+        });
+      }
+
+      // Aggregate opinion_ratings (disagreement) per pair — average both directions
+      const disaggMap = new Map<string, number[]>();
+      for (const or of (opinionRatingsData || [])) {
+        const key = [or.rater_opinion_id, or.target_opinion_id].sort().join('|');
+        if (!disaggMap.has(key)) disaggMap.set(key, []);
+        disaggMap.get(key)!.push(or.disagreement);
+      }
+
+      // Merge: for each pair, use opinion_ratings disagreement (source of truth)
+      // and chat empathy where available. Create synthetic entries for pairs
+      // that only have disagreement ratings (no chat).
+      const mergedRatingsMap = new Map<string, ChatRating>(chatRatingsMap);
+
+      for (const [key, values] of disaggMap) {
+        const avgDisagreement = Math.round(values.reduce((a, b) => a + b, 0) / values.length);
+        const [idA, idB] = key.split('|');
+        const existing = mergedRatingsMap.get(key);
+        if (existing) {
+          // Override disagreement with opinion_ratings value
+          mergedRatingsMap.set(key, { ...existing, disagreement: avgDisagreement });
+        } else {
+          // Synthetic entry: no chat, just disagreement rating. Empathy defaults to 0.
+          mergedRatingsMap.set(key, {
+            opinionA: idA,
+            opinionB: idB,
+            empathy: 0,
+            disagreement: avgDisagreement,
+          });
+        }
+      }
+
+      const formattedRatings = Array.from(mergedRatingsMap.values());
 
       // Generate ratings for fake nodes (connections between fake nodes only)
       const fakeNodeIds = fakeOpinions.map(op => op.id).sort();
