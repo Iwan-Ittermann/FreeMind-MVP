@@ -17,20 +17,18 @@ export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function Si
   // Glow extends 40% beyond the graph circle
   const glowRadius = r * 1.4;
 
-  // Zone radii
-  const gr = config.respectfulRadius;
-  const yr = config.moderateRadius;
-  const pr = config.extremeRadius;
+  // Zone radii — semantic names
+  const respectfulR = config.respectfulRadius;
+  const moderateR = config.moderateRadius;
 
   // Zone boundary percentages for radial gradient
-  const coreP = (gr / r) * 100;
-  const midP = (yr / r) * 100;
-  const outP = (pr / r) * 100;
+  const coreP = (respectfulR / r) * 100;
+  const midP = (moderateR / r) * 100;
 
-  // 3 gradient sub-rings in the moderate zone (between greenRadius and yellowRadius)
-  const modStep = (yr - gr) / 3;
-  const modRing1 = gr + modStep;
-  const modRing2 = gr + modStep * 2;
+  // 3 gradient sub-rings in the moderate zone (between respectfulRadius and moderateRadius)
+  const modStep = (moderateR - respectfulR) / 3;
+  const modRing1 = respectfulR + modStep;
+  const modRing2 = respectfulR + modStep * 2;
 
   return (
     <g className="signal-zones" ref={ref}>
@@ -102,9 +100,8 @@ export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function Si
                 hsla(90, 35%, 40%, 0.05) ${coreP}%,
                 hsla(90, 35%, 40%, 0.05) ${midP}%,
                 hsla(20, 80%, 45%, 0.06) ${midP}%,
-                hsla(20, 80%, 45%, 0.06) ${outP}%,
-                hsla(30, 10%, 40%, 0.03) ${outP}%,
-                transparent ${outP + 8}%
+                hsla(20, 80%, 45%, 0.06) 100%,
+                transparent 100%
               )
             `,
           }}
@@ -114,10 +111,10 @@ export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function Si
       {/* 3 gradient sub-rings inside the moderate zone for depth */}
       <circle cx={cx} cy={cy} r={modRing1} fill="none" stroke="url(#signal-mod-ring-1)" strokeWidth={modStep * 0.6} opacity={0.5} />
       <circle cx={cx} cy={cy} r={modRing2} fill="none" stroke="url(#signal-mod-ring-2)" strokeWidth={modStep * 0.6} opacity={0.4} />
-      <circle cx={cx} cy={cy} r={yr - modStep * 0.15} fill="none" stroke="url(#signal-mod-ring-3)" strokeWidth={modStep * 0.5} opacity={0.35} />
+      <circle cx={cx} cy={cy} r={moderateR - modStep * 0.15} fill="none" stroke="url(#signal-mod-ring-3)" strokeWidth={modStep * 0.5} opacity={0.35} />
 
-      {/* Zone boundary rings — one per border, with glow + crisp line */}
-      {[gr, yr, pr, r].map((radius, i) => (
+      {/* Zone boundary rings — one at each zone border */}
+      {[respectfulR, moderateR, r].map((radius, i) => (
         <g key={`ring-${i}`}>
           {/* Glow behind ring */}
           <circle
@@ -141,10 +138,10 @@ export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function Si
       <text x={cx} y={cy + 4} textAnchor="middle" fill="hsl(43, 70%, 50%)" fillOpacity={0.3} fontSize="8" fontFamily="monospace">
         {t('zones.respectful')}
       </text>
-      <text x={cx} y={cy + gr + 10} textAnchor="middle" fill="hsl(90, 35%, 50%)" fillOpacity={0.25} fontSize="8" fontFamily="monospace">
+      <text x={cx} y={cy + respectfulR + 10} textAnchor="middle" fill="hsl(90, 35%, 50%)" fillOpacity={0.25} fontSize="8" fontFamily="monospace">
         {t('zones.moderate')}
       </text>
-      <text x={cx} y={cy + yr + 10} textAnchor="middle" fill="hsl(20, 80%, 50%)" fillOpacity={0.25} fontSize="8" fontFamily="monospace">
+      <text x={cx} y={cy + moderateR + 10} textAnchor="middle" fill="hsl(20, 80%, 50%)" fillOpacity={0.25} fontSize="8" fontFamily="monospace">
         {t('zones.extreme')}
       </text>
     </g>

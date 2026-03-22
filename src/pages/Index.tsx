@@ -1,13 +1,15 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, X, Send, Check, Flag, Pencil } from 'lucide-react';
+import { MessageSquare, X, Send, Check, Flag, Pencil, AlertCircle } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useTranslation } from 'react-i18next';
 import { FloatingChatManager, FloatingChatManagerHandle } from '@/components/chat/FloatingChatManager';
 import { OpinionGraph } from '@/components/graph/OpinionGraph';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Slider } from '@/components/ui/slider';
 import { Tutorial } from '@/components/Tutorial';
 import { ReportDialog } from '@/components/moderation/ReportDialog';
 import { SubmitOpinionDialog } from '@/components/SubmitOpinionDialog';
@@ -26,9 +28,16 @@ import { usePresence } from '@/hooks/usePresence';
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { useBrowserNotification } from '@/hooks/useBrowserNotification';
 import { useTutorialContext } from '@/contexts/TutorialContext';
+import { useOpinionRating } from '@/hooks/useOpinionRating';
 import { useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { getClientIP } from '@/hooks/useClientIP';
 import { toast } from 'sonner';
+import { z } from 'zod';
 
+const opinionSchema = z.object({
+  text: z.string().trim().min(10).max(500),
+});
 const DEFAULT_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
 
 const Index = () => {
@@ -42,6 +51,9 @@ const Index = () => {
   const [graphSize, setGraphSize] = useState({ width: 600, height: 600 });
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [opinionDialogOpen, setOpinionDialogOpen] = useState(false);
+  const [welcomeShown, setWelcomeShown] = useState(() => localStorage.getItem('freemind-welcome-seen') === 'true');
+  const [inlineOpinionText, setInlineOpinionText] = useState('');
+  const [isSubmittingInline, setIsSubmittingInline] = useState(false);
   const queryClient = useQueryClient();
 
   // Mobile bottom panel state
@@ -66,6 +78,13 @@ const Index = () => {
   const myOpinion = topicData?.opinions.find(op => op.authorId === user?.id);
   const { onlineOpinionIds } = usePresence(DEFAULT_TOPIC_ID, myOpinion?.id);
   const { data: unreadMessageCounts } = useUnreadMessages(DEFAULT_TOPIC_ID, myOpinion?.id);
+
+  // Disagreement rating for selected node
+  const { disagreement, setDisagreement, canRate: canRateDisagreement } = useOpinionRating(
+    DEFAULT_TOPIC_ID,
+    myOpinion?.id ?? null,
+    selectedNode?.id ?? null,
+  );
 
   const totalUnreadCount = unreadMessageCounts
     ? Array.from(unreadMessageCounts.values()).reduce((sum, count) => sum + count, 0)
@@ -114,8 +133,38 @@ const Index = () => {
 
   const handleOpinionSubmitted = () => {
     setOpinionDialogOpen(false);
+    setInlineOpinionText('');
     queryClient.invalidateQueries({ queryKey: ['topic', DEFAULT_TOPIC_ID] });
     tutorial.onOpinionSubmitted();
+  };
+
+  const handleDismissWelcome = () => {
+    localStorage.setItem('freemind-welcome-seen', 'true');
+    setWelcomeShown(true);
+  };
+
+  const handleInlineSubmit = async () => {
+    const result = opinionSchema.safeParse({ text: inlineOpinionText });
+    if (!result.success || !user) return;
+    setIsSubmittingInline(true);
+    try {
+      const ipAddress = await getClientIP();
+      const { error } = await supabase.rpc('submit_opinion', {
+        _topic_id: DEFAULT_TOPIC_ID,
+        _text: result.data.text,
+        _ip_address: ipAddress,
+      });
+      if (error) {
+        toast.error(error.message);
+      } else {
+        handleOpinionSubmitted();
+        toast.success(t('opinion.submittedGraph'));
+      }
+    } catch {
+      toast.error(t('opinion.failedToSubmit'));
+    } finally {
+      setIsSubmittingInline(false);
+    }
   };
 
   const handleNodeClick = (node: GraphNode) => {
@@ -324,9 +373,30 @@ const Index = () => {
                       </p>
                     </div>
                   ) : (
-                    <p className="text-sm text-muted-foreground mb-4 pr-8">
+                    <p className="text-sm text-muted-foreground mb-2 pr-8">
                       "{selectedNode.opinion.text}"
                     </p>
+                  )}
+
+                  {/* Disagreement slider — visible for all opinions except own */}
+                  {canRateDisagreement && selectedNode.opinion.visible !== false && actionState !== 'own' && (
+                    <div className="mb-4 space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground">{t('disagreementRating.label')}</span>
+                        <span className="text-xs font-mono text-muted-foreground">{disagreement}</span>
+                      </div>
+                      <Slider
+                        value={[disagreement]}
+                        onValueChange={(v) => setDisagreement(v[0])}
+                        max={100}
+                        step={1}
+                        className="[&_[role=slider]]:bg-accent [&_[role=slider]]:border-accent [&_.bg-primary]:bg-accent/30"
+                      />
+                      <div className="flex justify-between text-[10px] text-muted-foreground">
+                        <span>{t('disagreementRating.aligned')}</span>
+                        <span>{t('disagreementRating.opposed')}</span>
+                      </div>
+                    </div>
                   )}
 
                   {selectedNode.opinion.visible === false ? (
@@ -384,7 +454,7 @@ const Index = () => {
             )}
           </motion.div>
 
-          {/* CTA */}
+          {/* Inline Opinion CTA — textarea + send */}
           <AnimatePresence>
             {user && !myOpinion && !isLoading && (
               <motion.div
@@ -394,13 +464,32 @@ const Index = () => {
                 transition={{ duration: 0.3 }}
                 className="w-full max-w-sm mt-3 px-4 md:mb-14"
               >
-                <Button
-                  onClick={() => setOpinionDialogOpen(true)}
-                  className="w-full h-11 rounded-full bg-accent text-accent-foreground hover:bg-accent/90 font-semibold text-base shadow-lg shadow-accent/25 animate-pulse-fast"
-                >
-                  <Pencil className="h-5 w-5 mr-2" />
-                  {t('header.addOpinion')}
-                </Button>
+                <div className="flex gap-2 items-end">
+                  <Textarea
+                    value={inlineOpinionText}
+                    onChange={(e) => setInlineOpinionText(e.target.value)}
+                    placeholder={t('inlineCta.placeholder')}
+                    className="min-h-[44px] max-h-[80px] resize-none rounded-full px-4 py-2.5 text-sm bg-background border-accent/40 focus:border-accent"
+                    maxLength={500}
+                    rows={1}
+                  />
+                  <Button
+                    onClick={handleInlineSubmit}
+                    disabled={isSubmittingInline || inlineOpinionText.trim().length < 10}
+                    className="h-11 w-11 rounded-full bg-accent text-accent-foreground hover:bg-accent/90 shrink-0 p-0"
+                  >
+                    {isSubmittingInline ? (
+                      <div className="w-4 h-4 border-2 border-accent-foreground border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Send className="h-5 w-5" />
+                    )}
+                  </Button>
+                </div>
+                {inlineOpinionText.length > 0 && inlineOpinionText.trim().length < 10 && (
+                  <p className="text-xs text-muted-foreground mt-1 text-center">
+                    {t('opinion.minCharacters')}
+                  </p>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
@@ -524,6 +613,33 @@ const Index = () => {
         onSuccess={handleOpinionSubmitted}
         hasExistingOpinion={!!myOpinion}
       />
+
+      {/* Welcome popup — one-time */}
+      <AnimatePresence>
+        {!welcomeShown && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm"
+            onClick={handleDismissWelcome}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-background border border-border/40 rounded-xl p-6 mx-4 max-w-sm shadow-2xl text-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-lg font-semibold text-foreground mb-2">{t('welcome.title')}</h2>
+              <p className="text-sm text-muted-foreground mb-4">{t('welcome.message')}</p>
+              <Button onClick={handleDismissWelcome} className="bg-accent text-accent-foreground hover:bg-accent/90">
+                {t('welcome.ok')}
+              </Button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

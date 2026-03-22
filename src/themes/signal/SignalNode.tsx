@@ -25,25 +25,13 @@ function CoreShape() {
 
 function MiddleShape() {
   return (
-    <>
-      {/* Doubled size: r=12 instead of r=6 */}
-      <circle cx="20" cy="20" r="12" fill="#8FBC5E" />
-    </>
+    <circle cx="20" cy="20" r="12" fill="#8FBC5E" />
   );
 }
 
 function OuterShape() {
   return (
     <rect x="12" y="12" width="16" height="16" fill="#CC5500" stroke="none" />
-  );
-}
-
-function InactiveShape() {
-  return (
-    <>
-      <circle cx="20" cy="20" r="12" stroke="#78716C" strokeWidth="1.5" strokeDasharray="4 2" fill="none" />
-      <circle cx="20" cy="20" r="3" fill="#78716C" />
-    </>
   );
 }
 
@@ -78,7 +66,7 @@ export const SignalNode = memo(function SignalNode({
   token, isHighlighted, isDimmed, showSpeechBubble, scale = 1,
   onClick, onMouseEnter, onMouseLeave,
 }: SignalNodeProps) {
-  const Shape = token.isBot ? BotShape : (ZONE_SHAPE[token.zone] ?? InactiveShape);
+  const Shape = token.isBot ? BotShape : (ZONE_SHAPE[token.zone] ?? MiddleShape);
   const opacity = isDimmed ? 0.4 : token.isHidden ? 0.3 : 1;
   const isScaled = isHighlighted && !isDimmed;
   const bubbleText = token.opinionText
@@ -150,7 +138,7 @@ export const SignalNode = memo(function SignalNode({
         </g>
       )}
 
-      {/* Unread badge */}
+      {/* Unread badge — always shows when there are unread messages */}
       {token.hasUnread && (
         <g transform={`translate(${scaledHalf * 0.6}, ${-scaledHalf * 0.9})`}>
           <rect x={-6 * scale} y={-5 * scale} width={12 * scale} height={9 * scale} rx={1.5} fill="#1A1A2E" stroke="#DAA520" strokeWidth={0.5} />

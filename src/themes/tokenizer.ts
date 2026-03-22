@@ -18,11 +18,14 @@ import {
 /**
  * Determine semantic zone from a GraphNode.
  * Zone names: core = respectful, middle = moderate, outer = extreme
- * No more 'inactive' zone — all nodes are in one of the three zones.
+ * Uses the zone field set by the layout algorithm (based on discrete levels).
  */
 function resolveZone(node: GraphNode, config: LayoutConfig): SemanticZone {
   if (node.zone === 'respectful' || node.isBridge) return 'core';
+  if (node.zone === 'extreme') return 'outer';
+  if (node.zone === 'moderate') return 'middle';
 
+  // Fallback: distance-based
   const dist = node.distanceToCenter ?? config.outerRadius;
   if (dist <= config.respectfulRadius) return 'core';
   if (dist <= config.moderateRadius) return 'middle';
@@ -90,7 +93,7 @@ export function tokenizeNode(
 }
 
 /**
- * Tokenize all nodes. No core cap — any node with zone 'core' keeps it.
+ * Tokenize all nodes.
  */
 export function tokenizeNodes(
   nodes: GraphNode[],
