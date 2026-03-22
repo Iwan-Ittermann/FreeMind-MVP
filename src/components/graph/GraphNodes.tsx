@@ -207,7 +207,7 @@ export function GraphNodes({
             />
             
             {/* Bridge node indicator - dot for non-green-zone bridge nodes */}
-            {node.isBridge && !isHighlighted && !isHidden && zone !== 'green' && (
+            {node.isBridge && !isHighlighted && !isHidden && zone !== 'respectful' && (
               <circle
                 r={baseRadius * 0.4}
                 fill="hsl(var(--accent))"

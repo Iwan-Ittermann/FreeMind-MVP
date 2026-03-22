@@ -54,7 +54,7 @@ export function ConcentricCircles({ config }: ConcentricCirclesProps) {
         textAnchor="middle"
         dominantBaseline="central"
         className="pointer-events-none"
-        style={{ fontSize: greenRadius * 0.5 }}
+        style={{ fontSize: respectfulRadius * 0.5 }}
       >
         👑
       </text>
