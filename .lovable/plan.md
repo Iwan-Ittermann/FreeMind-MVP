@@ -1,118 +1,44 @@
+## Plan: 5 Fixes — Label Overflow, Naming, Stale Slider, Edge Visibility, Level Rings
+
+### 1. Speech Bubble Text Overflow
+
+`**src/themes/signal/SignalNode.tsx**` line 91: The bubble rect is 140px wide with text centered at x=0, but long text overflows left. Fix: truncate `bubbleText` more aggressively (e.g., 16 chars on mobile) and use `textLength`/`lengthAdjust` or just ensure the text never exceeds the rect by measuring character count vs available width. Simplest: reduce max chars from 20 to 16 and widen rect slightly to 150px.
+
+### 2. Rename "Opinion Rating" → "Disagreement Rating", "Chat Rating" → "Respect Rating"
+
+This is mostly a naming/comment cleanup. The i18n keys already use `disagreementRating`. Changes needed:
+
+- `**src/hooks/useOpinionRating.ts**`: Rename hook to `useDisagreementRating`, update JSDoc
+- `**src/pages/Index.tsx**`: Update import/usage
+- `**src/types/graph.ts**`: Rename `OpinionRating` → `DisagreementRating`; rename `ChatRating` → `RespectRating` (or keep internal name but update comments)
+- `**src/components/chat/RatingSliders.tsx**`: Update labels/comments to say "respect rating"
+- `**src/lib/freemind-layout.ts**`: Update comments
+
+Actually, renaming types across 9+ files is risky. Cleaner approach: keep type names but update all **comments and user-facing strings** to use "disagreement rating" and "respect rating". The hook file can be renamed.
 
 
-## Full Plan: Graph Refactor + UI Enhancements + Rating Architecture
 
-**Status check**: Zone naming (Addition A) is ~95% done. Discrete levels, welcome popup, inline CTA, opinion_ratings table, and chat cleanup are all NOT yet implemented.
+### 5. Discrete Level Rings with Zone Colors
 
----
+`**src/themes/signal/SignalZones.tsx**`: Add thin circles at each of the 10 discrete level radii. Use the `levelToRadius` function logic (or replicate the anchor radii). Color by zone:
 
-### 1. Welcome Popup
+- Levels 10-7 (respectful): gold/amber thin lines
+- Levels 6-4 (moderate): green thin lines  
+- Levels 3-2 (extreme): orange/red thin lines
+- Level 1: outer border (already exists)
 
-**`src/pages/Index.tsx`**: Show a one-time dialog on first visit (tracked via `localStorage` key `freemind-welcome-seen`). Content: "Willkommen zu freemind! Hier kannst du deine Meinung teilen und sehen, was andere denken." / English via i18n. Single "OK" button.
-
-### 2. Inline Opinion CTA
-
-**`src/pages/Index.tsx`**: Replace the "Add Opinion" button with a compact 2-line textarea + send icon. User types directly and submits — saves one click. Reuse submission logic from `SubmitOpinion.tsx`.
-
-### 3. Discrete Scale Levels (Graph Layout)
-
-**`src/lib/freemind-layout.ts`**: Replace continuous `scoreToRadius()` with a 10-level discrete system.
-
-```text
-Level 10: Center (radius ≈ 0)
-Level 9-7: Respectful zone (inside respectfulRadius)
-Level 6-3: Moderate zone (respectfulRadius → moderateRadius)
-Level 3:   Default for new/unrated nodes (moderateRadius border)
-Level 2-1: Extreme zone (moderateRadius → outerRadius)
-```
-
-New functions: `scoreToLevel(score)` and `levelToRadius(level, config)`. Nodes snap to discrete rings. Add `level` field to `GraphNode` (already in types).
-
-### 4. Drop Inactive Zone
-
-**`src/lib/freemind-layout.ts`**: Remove separate inactive node positioning. Nodes without chats get score=0 → Level 3 → placed at `moderateRadius`. They look and behave like moderate nodes.
-
-**`src/themes/signal/SignalZones.tsx`**: Remove inactive zone rendering. Extend extreme zone to `outerRadius`. Only 3 zone labels: Respectful, Moderate, Extreme.
-
-**`src/themes/signal/SignalNode.tsx`**: Remove `InactiveShape`. All nodes use zone-appropriate shapes.
-
-**`src/themes/tokenizer.ts`**: Remove `hasChats === false → inactive` fallback.
-
-### 5. Zone Naming Cleanup (Addition A — finish remaining 5%)
-
-Fix stale comments in `SignalZones.tsx` and `types/graph.ts` that still reference "greenRadius", "yellowRadius", "pinkRadius". Already 95% done.
-
-### 6. Clean Rating Architecture (Addition B)
-
-**Goal**: Single responsibility — `opinion_ratings` owns disagreement, `chat_ratings` owns empathy.
-
-#### 6a. DB Migration
-
-```sql
-CREATE TABLE public.opinion_ratings (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  topic_id uuid REFERENCES public.topics(id) ON DELETE CASCADE NOT NULL,
-  rater_opinion_id uuid REFERENCES public.opinions(id) ON DELETE CASCADE NOT NULL,
-  target_opinion_id uuid REFERENCES public.opinions(id) ON DELETE CASCADE NOT NULL,
-  disagreement integer NOT NULL DEFAULT 50,
-  created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now(),
-  UNIQUE (rater_opinion_id, target_opinion_id)
-);
--- RLS: all authenticated can read; users can insert/update own ratings
-```
-
-#### 6b. Update `get_graph_pairs` RPC
-
-Join `opinion_ratings` for disagreement (AVG) and `chat_ratings` for empathy (AVG). Return both. Defaults: disagreement=50, empathy=0.
-
-#### 6c. New hook: `src/hooks/useOpinionRating.ts`
-
-Upsert/fetch from `opinion_ratings`.
-
-#### 6d. Chat UI — empathy only
-
-- **`RatingSliders.tsx`**: Remove disagreement slider. `onSubmitRating` becomes `(empathy: number) => void`.
-- **`FloatingChatWindow.tsx`**, **`EmbeddedChatView.tsx`**, **`FloatingChat.tsx`**: Remove ALL preliminary disagreement step code (`preliminaryDisagreement`, `preliminaryDone`, `hasNeverRated`, `showPreliminaryStep`, the overlay UI). Chat opens directly to messaging.
-
-#### 6e. Node info panel — disagreement slider
-
-**`src/pages/Index.tsx`**: Add disagreement slider (0-100) below the opinion text in the node action panel. Visible for all opinions except user's own. Auto-saves via `useOpinionRating` (debounced). Any user can rate any opinion's disagreement without a chat.
-
-#### 6f. `useTopicData.ts`
-
-Fetch `opinion_ratings` + realtime listener for graph refetch on changes.
-
-### 7. Layout Data Flow
-
-```text
-opinion_ratings.disagreement → angular separation between nodes
-chat_ratings.empathy × opinion_ratings.disagreement → FreeMind score → radial level
-```
-
-`freemind-layout.ts` accepts `OpinionRating[]` for angles and combines both sources for bridging scores.
-
----
+Compute radii from config using the same anchor math as `levelToRadius` in `freemind-layout.ts`.
 
 ### Files to Change
 
-| File | Change |
-|------|--------|
-| `src/pages/Index.tsx` | Welcome popup, inline CTA, disagreement slider in node panel |
-| `src/lib/freemind-layout.ts` | Discrete 10-level system, drop inactive logic, use opinion_ratings for angles |
-| `src/types/graph.ts` | Clean stale comments, add `OpinionRating` type |
-| `src/themes/tokenizer.ts` | Remove inactive fallback |
-| `src/themes/signal/SignalZones.tsx` | Remove inactive zone, fix stale comments |
-| `src/themes/signal/SignalNode.tsx` | Remove InactiveShape |
-| `src/themes/city/CityZones.tsx` | Remove inactive zone |
-| `src/themes/arcane/ArcaneZones.tsx` | Remove inactive zone |
-| `src/components/graph/OpinionGraph.tsx` | Update config if needed |
-| `src/components/chat/RatingSliders.tsx` | Empathy-only (remove disagreement) |
-| `src/components/chat/FloatingChatWindow.tsx` | Remove preliminary step |
-| `src/components/chat/EmbeddedChatView.tsx` | Remove preliminary step |
-| `src/components/chat/FloatingChat.tsx` | Remove preliminary step |
-| `src/hooks/useOpinionRating.ts` | **New** — standalone disagreement CRUD |
-| `src/hooks/useTopicData.ts` | Fetch opinion_ratings, realtime listener |
-| `src/i18n/locales/en.json` | Welcome text, disagreement keys |
-| `src/i18n/locales/de.json` | Same |
-| **DB Migration** | `opinion_ratings` table + RLS + update `get_graph_pairs` RPC |
+
+| File                                    | Change                                                | &nbsp; |
+| --------------------------------------- | ----------------------------------------------------- | ------ |
+| `src/themes/signal/SignalNode.tsx`      | Fix bubble text truncation and rect width             | &nbsp; |
+| `src/hooks/useOpinionRating.ts`         | &nbsp;                                                | &nbsp; |
+| `src/pages/Index.tsx`                   | Update import name                                    | &nbsp; |
+| `src/themes/signal/SignalRenderer.tsx`  | &nbsp;                                                | &nbsp; |
+| `src/themes/signal/SignalEdge.tsx`      | &nbsp;                                                | &nbsp; |
+| `src/themes/signal/SignalZones.tsx`     | Add 10 discrete level rings with zone-colored strokes | &nbsp; |
+| `src/components/chat/RatingSliders.tsx` | Update comments to say "respect rating"               | &nbsp; |
+| `src/lib/freemind-layout.ts`            | Update comments                                       | &nbsp; |
