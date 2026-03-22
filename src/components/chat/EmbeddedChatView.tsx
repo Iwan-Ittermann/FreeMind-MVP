@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Send, Heart, HeartCrack, Swords, Handshake, Check, X, Info } from 'lucide-react';
+import { Send, Heart, HeartCrack, Check, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -40,23 +40,16 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
   const [inputValue, setInputValue] = useState('');
   const [isRatingOpen, setIsRatingOpen] = useState(false);
   const [empathy, setEmpathy] = useState(0);
-  const [disagreement, setDisagreement] = useState(50);
   const [initialized, setInitialized] = useState(false);
-  const [preliminaryDone, setPreliminaryDone] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (existingRating && !initialized) {
       setEmpathy(existingRating.empathy);
-      setDisagreement(existingRating.disagreement);
       setInitialized(true);
-      setPreliminaryDone(true);
     }
   }, [existingRating, initialized]);
-
-  const hasNeverRated = !existingRating && !preliminaryDone;
-  const showPreliminaryStep = hasNeverRated && !isBotChat;
 
   const handleInputChange = useCallback((value: string) => {
     setInputValue(value);
@@ -84,17 +77,8 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
 
   const handleSaveRating = async () => {
     try {
-      await saveRating(empathy, disagreement);
+      await saveRating(empathy, existingRating?.disagreement ?? 50);
       setIsRatingOpen(false);
-    } catch {
-      toast.error(t('chat.failedToSaveRating'));
-    }
-  };
-
-  const handlePreliminarySubmit = async () => {
-    try {
-      await saveRating(0, disagreement); // empathy=0 (neutral)
-      setPreliminaryDone(true);
     } catch {
       toast.error(t('chat.failedToSaveRating'));
     }
@@ -139,9 +123,6 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
     })),
   ];
 
-  const bridgingScore = empathy * disagreement;
-  const getBridgingColor = (s: number) => s > 2500 ? 'text-green-400' : s >= 0 ? 'text-orange-400' : 'text-primary';
-
   const isLoading = !myOpinion || !theirOpinion;
 
   return (
@@ -151,50 +132,6 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
         {isLoading ? (
           <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
             {t('common.loadingChat')}
-          </div>
-        ) : showPreliminaryStep ? (
-          /* Preliminary disagreement rating step */
-          <div className="p-3 flex flex-col items-center justify-center h-full">
-            <h3 className="text-sm font-semibold text-foreground mb-3">{t('floatingChat.rateFirst')}</h3>
-            
-            {/* Show their opinion */}
-            <div className="w-full max-w-sm mb-4 p-3 rounded-lg bg-muted border border-border/40">
-              <p className="text-xs text-muted-foreground mb-1">{t('floatingChat.them')}</p>
-              <p className="text-sm text-foreground">"{theirOpinion.text}"</p>
-            </div>
-
-            {/* Disagreement slider */}
-            <div className="w-full max-w-sm space-y-2 mb-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Swords className="w-4 h-4 text-orange-400" />
-                  <span className="text-xs text-muted-foreground">{t('floatingChat.disagreement')}</span>
-                </div>
-                <span className="text-xs font-mono text-orange-400">{disagreement}</span>
-              </div>
-              <Slider
-                value={[disagreement]}
-                onValueChange={(v) => setDisagreement(v[0])}
-                max={100}
-                step={1}
-                className="[&_[role=slider]]:bg-orange-400 [&_[role=slider]]:border-orange-400 [&_.bg-primary]:bg-orange-400/30"
-              />
-              <div className="flex justify-between text-[10px] text-muted-foreground">
-                <Handshake className="w-3 h-3" />
-                <Swords className="w-3 h-3" />
-              </div>
-            </div>
-
-            {/* Neutral respect note */}
-            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
-              <Info className="w-3.5 h-3.5" />
-              <span>{t('floatingChat.respectNeutralNote')}</span>
-            </div>
-
-            <Button onClick={handlePreliminarySubmit} disabled={isSavingRating} className="w-full max-w-sm">
-              <Check className="w-4 h-4 mr-2" />
-              {isSavingRating ? t('floatingChat.saving') : t('floatingChat.submitAndChat')}
-            </Button>
           </div>
         ) : isRatingOpen ? (
           <div className="p-3 flex flex-col">
@@ -226,32 +163,6 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
                 <HeartCrack className="w-3 h-3" />
                 <Heart className="w-3 h-3" />
               </div>
-            </div>
-            <div className="space-y-2 mb-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Swords className="w-4 h-4 text-orange-400" />
-                  <span className="text-xs text-muted-foreground">{t('floatingChat.disagreement')}</span>
-                </div>
-                <span className="text-xs font-mono text-orange-400">{disagreement}</span>
-              </div>
-              <Slider
-                value={[disagreement]}
-                onValueChange={(v) => setDisagreement(v[0])}
-                max={100}
-                step={1}
-                className="[&_[role=slider]]:bg-orange-400 [&_[role=slider]]:border-orange-400 [&_.bg-primary]:bg-orange-400/30"
-              />
-              <div className="flex justify-between text-[10px] text-muted-foreground">
-                <Handshake className="w-3 h-3" />
-                <Swords className="w-3 h-3" />
-              </div>
-            </div>
-            <div className="text-center mb-4">
-              <span className="text-xs text-muted-foreground">{t('floatingChat.bridgingScore')}</span>
-              <span className={`text-sm font-bold ml-1 ${getBridgingColor(bridgingScore)}`}>
-                {bridgingScore.toLocaleString()}
-              </span>
             </div>
             <Button onClick={handleSaveRating} disabled={isSavingRating} className="w-full">
               <Check className="w-4 h-4 mr-2" />
@@ -285,11 +196,7 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
 
       {/* Input footer */}
       <div className="border-t border-border p-2 shrink-0 bg-muted/80">
-        {showPreliminaryStep ? (
-          <p className="text-xs text-muted-foreground text-center py-1">
-            {t('floatingChat.rateDisagreementPrompt')}
-          </p>
-        ) : isBlocked || isBlockedByOther ? (
+        {isBlocked || isBlockedByOther ? (
           <p className="text-xs text-muted-foreground text-center py-1">
             {isBlocked ? t('floatingChat.blockedByYou') : t('floatingChat.blockedByThem')}
           </p>
