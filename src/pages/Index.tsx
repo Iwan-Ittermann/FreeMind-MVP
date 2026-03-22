@@ -79,6 +79,13 @@ const Index = () => {
   const { onlineOpinionIds } = usePresence(DEFAULT_TOPIC_ID, myOpinion?.id);
   const { data: unreadMessageCounts } = useUnreadMessages(DEFAULT_TOPIC_ID, myOpinion?.id);
 
+  // Disagreement rating for selected node
+  const { disagreement, setDisagreement, canRate: canRateDisagreement } = useOpinionRating(
+    DEFAULT_TOPIC_ID,
+    myOpinion?.id ?? null,
+    selectedNode?.id ?? null,
+  );
+
   const totalUnreadCount = unreadMessageCounts
     ? Array.from(unreadMessageCounts.values()).reduce((sum, count) => sum + count, 0)
     : 0;
