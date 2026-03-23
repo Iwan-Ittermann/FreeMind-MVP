@@ -8,17 +8,17 @@ function CoreShape() {
   return (
     <>
       <defs>
-        <filter id="signal-glow-gold">
+        <filter id="signal-glow-cyan">
           <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
-          <feFlood floodColor="#DAA520" floodOpacity="0.5" result="goldColor"/>
-          <feComposite in="goldColor" in2="coloredBlur" operator="in" result="goldGlow"/>
-          <feMerge><feMergeNode in="goldGlow"/><feMergeNode in="SourceGraphic"/></feMerge>
+          <feFlood floodColor="#00e5ff" floodOpacity="0.5" result="cyanColor"/>
+          <feComposite in="cyanColor" in2="coloredBlur" operator="in" result="cyanGlow"/>
+          <feMerge><feMergeNode in="cyanGlow"/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
         <filter id="signal-select-glow">
-          <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#DAA520" floodOpacity="0.7"/>
+          <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#00e5ff" floodOpacity="0.7"/>
         </filter>
       </defs>
-      <path d="M20 8 L23 17 L32 20 L23 23 L20 32 L17 23 L8 20 L17 17 Z" fill="#DAA520" filter="url(#signal-glow-gold)" />
+      <path d="M20 8 L23 17 L32 20 L23 23 L20 32 L17 23 L8 20 L17 17 Z" fill="#00e5ff" filter="url(#signal-glow-cyan)" />
     </>
   );
 }
