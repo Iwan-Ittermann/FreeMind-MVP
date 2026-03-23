@@ -390,7 +390,7 @@ const Index = () => {
                         onValueChange={(v) => setDisagreement(v[0])}
                         max={100}
                         step={1}
-                        className="[&_[role=slider]]:bg-accent [&_[role=slider]]:border-accent [&_.bg-primary]:bg-accent/30"
+                        className="[&_[role=slider]]:bg-primary [&_[role=slider]]:border-primary [&_.bg-primary]:bg-primary/30"
                       />
                       <div className="flex justify-between text-[10px] text-muted-foreground">
                         <span>{t('disagreementRating.aligned')}</span>
@@ -469,14 +469,14 @@ const Index = () => {
                     value={inlineOpinionText}
                     onChange={(e) => setInlineOpinionText(e.target.value)}
                     placeholder={t('inlineCta.placeholder')}
-                    className="min-h-[44px] max-h-[80px] resize-none rounded-full px-4 py-2.5 text-sm bg-background border-accent/40 focus:border-accent"
+                    className="min-h-[44px] max-h-[80px] resize-none rounded-full px-4 py-2.5 text-sm bg-background border-primary/40 focus:border-primary"
                     maxLength={500}
                     rows={1}
                   />
                   <Button
                     onClick={handleInlineSubmit}
                     disabled={isSubmittingInline || inlineOpinionText.trim().length < 10}
-                    className="h-11 w-11 rounded-full bg-accent text-accent-foreground hover:bg-accent/90 shrink-0 p-0"
+                    className="h-11 w-11 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 shrink-0 p-0"
                   >
                     {isSubmittingInline ? (
                       <div className="w-4 h-4 border-2 border-accent-foreground border-t-transparent rounded-full animate-spin" />

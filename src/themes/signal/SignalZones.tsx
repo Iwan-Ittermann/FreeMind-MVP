@@ -95,12 +95,12 @@ export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function Si
             backgroundImage: `
               radial-gradient(
                 circle closest-side,
-                hsla(43, 70%, 50%, 0.08) 0%,
-                hsla(43, 70%, 50%, 0.08) ${coreP}%,
-                hsla(90, 35%, 40%, 0.05) ${coreP}%,
-                hsla(90, 35%, 40%, 0.05) ${midP}%,
-                hsla(20, 80%, 45%, 0.06) ${midP}%,
-                hsla(20, 80%, 45%, 0.06) 100%,
+                rgba(0, 229, 255, 0.06) 0%,
+                rgba(0, 229, 255, 0.06) ${coreP}%,
+                rgba(20, 184, 102, 0.04) ${coreP}%,
+                rgba(20, 184, 102, 0.04) ${midP}%,
+                hsla(20, 80%, 45%, 0.05) ${midP}%,
+                hsla(20, 80%, 45%, 0.05) 100%,
                 transparent 100%
               )
             `,
@@ -129,8 +129,8 @@ export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function Si
           { level: 1, radius: r - config.nodeRadius, zone: 'extreme' },
         ];
         const zoneColors: Record<string, string> = {
-          respectful: 'hsla(43, 70%, 50%, 0.18)',
-          moderate: 'hsla(90, 35%, 50%, 0.14)',
+          respectful: 'rgba(0, 229, 255, 0.18)',
+          moderate: 'rgba(20, 184, 102, 0.14)',
           extreme: 'hsla(20, 80%, 50%, 0.16)',
         };
         return levelRadii.map(({ level, radius, zone }) => (
@@ -145,13 +145,13 @@ export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function Si
       })()}
 
       {/* Zone labels — Respectful at center, others at zone borders */}
-      <text x={cx} y={cy + 4} textAnchor="middle" fill="hsl(43, 70%, 50%)" fillOpacity={0.3} fontSize="8" fontFamily="monospace">
+      <text x={cx} y={cy + 4} textAnchor="middle" fill="white" fillOpacity={0.35} fontSize="8" fontFamily="monospace">
         {t('zones.respectful')}
       </text>
-      <text x={cx} y={cy + respectfulR + 10} textAnchor="middle" fill="hsl(90, 35%, 50%)" fillOpacity={0.25} fontSize="8" fontFamily="monospace">
+      <text x={cx} y={cy + respectfulR + 10} textAnchor="middle" fill="white" fillOpacity={0.3} fontSize="8" fontFamily="monospace">
         {t('zones.moderate')}
       </text>
-      <text x={cx} y={cy + moderateR + 10} textAnchor="middle" fill="hsl(20, 80%, 50%)" fillOpacity={0.25} fontSize="8" fontFamily="monospace">
+      <text x={cx} y={cy + moderateR + 10} textAnchor="middle" fill="white" fillOpacity={0.3} fontSize="8" fontFamily="monospace">
         {t('zones.extreme')}
       </text>
     </g>

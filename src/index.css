@@ -30,8 +30,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 0%;
     
-    /* Primary: Dogwood Rose - #D90368 -> HSL: 330 97% 43% */
-    --primary: 330 97% 43%;
+    /* Primary: Dark Emerald - #064e3b -> HSL: 160 90% 17% */
+    --primary: 160 90% 17%;
     --primary-foreground: 0 0% 100%;
     
     /* Secondary: Medium Blue - #0A03D8 -> HSL: 242 96% 43% */
@@ -42,47 +42,47 @@
     --muted: 0 0% 96%;
     --muted-foreground: 0 0% 50%;
     
-    /* Accent: Honey Yellow - #FFB400 -> HSL: 42 100% 50% */
-    --accent: 42 100% 50%;
+    /* Accent: Cyan - #00e5ff -> HSL: 187 100% 50% */
+    --accent: 187 100% 50%;
     --accent-foreground: 0 0% 0%;
     
-    /* Success/Positive: Emerald Green - #03D875 -> HSL: 153 96% 43% */
-    --success: 153 96% 43%;
+    /* Success/Positive: Moderate Green - #14B866 -> HSL: 153 80% 40% */
+    --success: 153 80% 40%;
     --success-foreground: 0 0% 100%;
     
-    /* Destructive: Using Dogwood Rose */
-    --destructive: 330 97% 43%;
+    /* Destructive: Red */
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
     
     --border: 0 0% 90%;
     --input: 0 0% 90%;
-    --ring: 330 97% 43%;
+    --ring: 160 90% 17%;
 
     --radius: 0.75rem;
 
     /* Sidebar */
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 0 0% 20%;
-    --sidebar-primary: 330 97% 43%;
+    --sidebar-primary: 160 90% 17%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 42 100% 50%;
+    --sidebar-accent: 187 100% 50%;
     --sidebar-accent-foreground: 0 0% 0%;
     --sidebar-border: 0 0% 90%;
-    --sidebar-ring: 330 97% 43%;
+    --sidebar-ring: 160 90% 17%;
     
     /* Extended brand palette */
-    --rose: 330 97% 43%;
-    --rose-light: 330 95% 71%;
-    --rose-lighter: 330 93% 91%;
+    --emerald: 160 90% 17%;
+    --emerald-light: 160 80% 35%;
+    --emerald-lighter: 160 70% 90%;
+    --cyan: 187 100% 50%;
+    --cyan-light: 187 90% 72%;
+    --cyan-lighter: 187 85% 91%;
+    --moderate-green: 153 80% 40%;
+    --moderate-green-light: 153 70% 65%;
+    --moderate-green-lighter: 153 60% 90%;
     --blue: 242 96% 43%;
     --blue-light: 242 92% 71%;
     --blue-lighter: 242 90% 91%;
-    --yellow: 42 100% 50%;
-    --yellow-light: 42 100% 75%;
-    --yellow-lighter: 42 100% 93%;
-    --green: 153 96% 43%;
-    --green-light: 153 93% 72%;
-    --green-lighter: 153 90% 91%;
   }
 
   .dark {
@@ -96,8 +96,8 @@
     --popover: 0 0% 8%;
     --popover-foreground: 0 0% 100%;
 
-    /* Primary stays Dogwood Rose */
-    --primary: 330 97% 43%;
+    /* Primary: Dark Emerald */
+    --primary: 160 90% 17%;
     --primary-foreground: 0 0% 100%;
 
     /* Secondary stays Medium Blue */
@@ -107,25 +107,25 @@
     --muted: 0 0% 15%;
     --muted-foreground: 0 0% 65%;
 
-    /* Accent stays Honey Yellow */
-    --accent: 42 100% 50%;
+    /* Accent: Cyan */
+    --accent: 187 100% 50%;
     --accent-foreground: 0 0% 0%;
 
-    --destructive: 330 97% 43%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 0 0% 20%;
     --input: 0 0% 20%;
-    --ring: 330 97% 43%;
+    --ring: 160 90% 17%;
     
     --sidebar-background: 0 0% 5%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 330 97% 43%;
+    --sidebar-primary: 160 90% 17%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 42 100% 50%;
+    --sidebar-accent: 187 100% 50%;
     --sidebar-accent-foreground: 0 0% 0%;
     --sidebar-border: 0 0% 20%;
-    --sidebar-ring: 330 97% 43%;
+    --sidebar-ring: 160 90% 17%;
   }
 }
 
