@@ -25,7 +25,7 @@ function CoreShape() {
 
 function MiddleShape() {
   return (
-    <circle cx="20" cy="20" r="12" fill="#14B866" />
+    <circle cx="20" cy="20" r="9" fill="#14B866" />
   );
 }
 
