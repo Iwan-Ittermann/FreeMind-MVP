@@ -1,37 +1,35 @@
 
 
-## Plan: Fix Angular Positioning from Disagreement Ratings + Prevent Flickering
+## Plan: Color Scheme Overhaul
 
-### Problem 1: Angular position not changing
+### New Graph Colors → Extended to Page
 
-**Root cause**: The `get_graph_pairs` RPC only returns pairs that have **accepted chat_requests**. When a user rates their disagreement with another opinion (via the disagreement slider in the node panel), that `opinion_ratings` row is created, but `get_graph_pairs` never includes it because there's no accepted chat request between those two opinions.
+| Element | Old Color | New Color |
+|---------|-----------|-----------|
+| Moderate nodes | `#8FBC5E` (green) | `#14B866` |
+| Respectful nodes | `#DAA520` (gold) | `#00e5ff` (cyan) |
+| CTA button | `bg-accent` (honey yellow) | `#064e3b` (dark emerald) |
+| Zone labels | Gold/green/orange | White for all three |
+| Level ring colors | Gold/green/orange | Updated to match new node colors |
 
-The angular algorithm in `calculateDeterministicAngles()` only sees `ratings` from `get_graph_pairs`, so standalone disagreement ratings are invisible to the layout.
+### Derived Page Theme (from graph colors)
 
-**Fix**: Fetch `opinion_ratings` separately and merge them into the angular calculation.
+The new palette is cyan (`#00e5ff`) + green (`#14B866`) + dark emerald (`#064e3b`). Update CSS variables to align:
 
-1. **`useTopicData.ts`**: Add a separate query to fetch all `opinion_ratings` for the topic. Merge them into the `ratings` array used for angular positioning. For pairs that exist in both `get_graph_pairs` (chat-based) and `opinion_ratings`, use the `opinion_ratings` disagreement (since that's the single source of truth now). For pairs only in `opinion_ratings` (no chat), create a synthetic rating entry with empathy=0 and the rated disagreement.
-
-2. **`get_graph_pairs` RPC**: No change needed — it correctly provides empathy data from chats. The disagreement will be sourced directly from `opinion_ratings` in the client.
-
-### Problem 2: Flickering and cost
-
-**Root cause**: Every `opinion_ratings` INSERT/UPDATE fires a Supabase Realtime event, which triggers `queryClient.refetchQueries(['topic', topicId])` — a full graph data refetch. With the 500ms debounce on the slider, this means a DB round-trip every 500ms per user dragging a slider, plus all other users get the refetch too.
-
-**Fix — three-layer approach**:
-
-1. **Remove the `opinion_ratings` realtime listener** from `useTopicData.ts`. This table changes too frequently for realtime to be practical.
-
-2. **Keep the local `invalidateQueries` in `useDisagreementRating`** mutation `onSuccess` — this ensures the rater's own graph updates after their save completes.
-
-3. **Rely on the existing 4-second polling** (`refetchInterval: 4000`) for other users' disagreement ratings to propagate. This is already in place and provides eventual consistency without flickering.
-
-4. **Increase debounce from 500ms to 1000ms** in `useDisagreementRating` to further reduce write frequency.
+- **`--primary`**: `#064e3b` → HSL `160 90% 17%` (dark emerald — CTAs, buttons, ring)
+- **`--primary-foreground`**: White
+- **`--accent`**: `#00e5ff` → HSL `187 100% 50%` (cyan — highlights, active states)
+- **`--accent-foreground`**: Black
+- **`--success`**: `#14B866` → HSL `153 80% 40%` (moderate green)
 
 ### Files to Change
 
 | File | Change |
 |------|--------|
-| `src/hooks/useTopicData.ts` | Remove `opinion_ratings` realtime listener; fetch opinion_ratings separately and merge into ratings array for angular calc |
-| `src/hooks/useOpinionRating.ts` | Increase debounce to 1000ms |
+| `src/index.css` | Update `--primary`, `--accent`, `--success`, `--ring`, sidebar vars, extended palette to new colors |
+| `src/themes/signal/SignalNode.tsx` | `CoreShape`: change `#DAA520` → `#00e5ff`, glow filter to cyan. `MiddleShape`: `#8FBC5E` → `#14B866` |
+| `src/themes/signal/SignalZones.tsx` | Zone labels: all `fill="white"`. Level ring colors: respectful → `rgba(0,229,255,0.18)`, moderate → `rgba(20,184,102,0.14)`, extreme stays orange-ish. Zone tint gradients updated. |
+| `src/pages/Index.tsx` | CTA send button: `bg-[#064e3b]` instead of `bg-accent`. Slider accent classes updated. |
+| `src/components/BottomTabBar.tsx` | Active glow uses new accent color (automatic via CSS var) |
+| `src/components/DesktopBottomBar.tsx` | Same — inherits from CSS vars |
 
