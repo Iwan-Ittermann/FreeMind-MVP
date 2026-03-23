@@ -113,7 +113,7 @@ export const SignalNode = memo(function SignalNode({
         <circle cx="20" cy="20" r="22" fill="transparent" />
         {/* Selection highlight — gold to match warm earth palette */}
         {isHighlighted && !isDimmed && (
-          <circle cx="20" cy="20" r="18" fill="none" stroke="#DAA520" strokeWidth={2} filter="url(#signal-select-glow)" />
+          <circle cx="20" cy="20" r="18" fill="none" stroke="#00e5ff" strokeWidth={2} filter="url(#signal-select-glow)" />
         )}
         <Shape />
       </svg>
