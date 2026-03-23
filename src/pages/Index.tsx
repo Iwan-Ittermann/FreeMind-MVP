@@ -476,7 +476,7 @@ const Index = () => {
                   <Button
                     onClick={handleInlineSubmit}
                     disabled={isSubmittingInline || inlineOpinionText.trim().length < 10}
-                    className="h-11 w-11 rounded-full bg-accent text-accent-foreground hover:bg-accent/90 shrink-0 p-0"
+                    className="h-11 w-11 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 shrink-0 p-0"
                   >
                     {isSubmittingInline ? (
                       <div className="w-4 h-4 border-2 border-accent-foreground border-t-transparent rounded-full animate-spin" />
