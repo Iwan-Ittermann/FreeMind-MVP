@@ -141,8 +141,8 @@ export const SignalNode = memo(function SignalNode({
       {/* Unread badge — always shows when there are unread messages */}
       {token.hasUnread && (
         <g transform={`translate(${scaledHalf * 0.6}, ${-scaledHalf * 0.9})`}>
-          <rect x={-6 * scale} y={-5 * scale} width={12 * scale} height={9 * scale} rx={1.5} fill="#1A1A2E" stroke="#DAA520" strokeWidth={0.5} />
-          <path d={`M${-5 * scale},${-4 * scale} L0,0 L${5 * scale},${-4 * scale}`} fill="none" stroke="#DAA520" strokeWidth={0.5} />
+          <rect x={-6 * scale} y={-5 * scale} width={12 * scale} height={9 * scale} rx={1.5} fill="#1A1A2E" stroke="#00e5ff" strokeWidth={0.5} />
+          <path d={`M${-5 * scale},${-4 * scale} L0,0 L${5 * scale},${-4 * scale}`} fill="none" stroke="#00e5ff" strokeWidth={0.5} />
           <circle cx={5 * scale} cy={-5 * scale} r={5 * scale} fill="#FF3B3B" />
           <text x={5 * scale} y={-5 * scale} textAnchor="middle" dominantBaseline="central" fill="#E0FFFF" fontSize={6 * scale} fontWeight="bold" fontFamily="monospace">
             {token.unreadCount > 9 ? '9+' : token.unreadCount}
