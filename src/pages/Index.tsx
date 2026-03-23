@@ -469,7 +469,7 @@ const Index = () => {
                     value={inlineOpinionText}
                     onChange={(e) => setInlineOpinionText(e.target.value)}
                     placeholder={t('inlineCta.placeholder')}
-                    className="min-h-[44px] max-h-[80px] resize-none rounded-full px-4 py-2.5 text-sm bg-background border-accent/40 focus:border-accent"
+                    className="min-h-[44px] max-h-[80px] resize-none rounded-full px-4 py-2.5 text-sm bg-background border-primary/40 focus:border-primary"
                     maxLength={500}
                     rows={1}
                   />
