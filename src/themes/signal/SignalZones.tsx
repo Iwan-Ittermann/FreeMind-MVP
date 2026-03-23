@@ -129,8 +129,8 @@ export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function Si
           { level: 1, radius: r - config.nodeRadius, zone: 'extreme' },
         ];
         const zoneColors: Record<string, string> = {
-          respectful: 'hsla(43, 70%, 50%, 0.18)',
-          moderate: 'hsla(90, 35%, 50%, 0.14)',
+          respectful: 'rgba(0, 229, 255, 0.18)',
+          moderate: 'rgba(20, 184, 102, 0.14)',
           extreme: 'hsla(20, 80%, 50%, 0.16)',
         };
         return levelRadii.map(({ level, radius, zone }) => (
