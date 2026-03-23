@@ -1,35 +1,33 @@
 
 
-## Plan: Color Scheme Overhaul
+## Plan: Fix Synthetic Ratings Affecting Radial Position
 
-### New Graph Colors → Extended to Page
+### Root Cause
 
-| Element | Old Color | New Color |
-|---------|-----------|-----------|
-| Moderate nodes | `#8FBC5E` (green) | `#14B866` |
-| Respectful nodes | `#DAA520` (gold) | `#00e5ff` (cyan) |
-| CTA button | `bg-accent` (honey yellow) | `#064e3b` (dark emerald) |
-| Zone labels | Gold/green/orange | White for all three |
-| Level ring colors | Gold/green/orange | Updated to match new node colors |
+When you rate your disagreement with another opinion (no chat exists), `useTopicData.ts` line 349-355 creates a **synthetic rating entry** with `empathy: 0, disagreement: <your_rating>`. This synthetic entry is merged into the same `ratings[]` array that feeds `calculateFreeMindScore()`.
 
-### Derived Page Theme (from graph colors)
+`calculateFreeMindScore()` (line 37-57) treats ALL entries in the ratings array equally — it doesn't distinguish between chat-based ratings and synthetic disagreement-only ratings. So the target node now has `nodeRatings.length > 0`, meaning:
+- `hasChats` flips to `true`
+- Its bridging score becomes `0 × disagreement = 0` averaged with any real chat ratings
+- This changes its `freeMindScore` → changes its `scoreToLevel()` → changes its radial position
 
-The new palette is cyan (`#00e5ff`) + green (`#14B866`) + dark emerald (`#064e3b`). Update CSS variables to align:
+**The fix**: Synthetic entries (disagreement-only, no chat) should only affect **angular positioning**, not radial positioning. Two approaches:
 
-- **`--primary`**: `#064e3b` → HSL `160 90% 17%` (dark emerald — CTAs, buttons, ring)
-- **`--primary-foreground`**: White
-- **`--accent`**: `#00e5ff` → HSL `187 100% 50%` (cyan — highlights, active states)
-- **`--accent-foreground`**: Black
-- **`--success`**: `#14B866` → HSL `153 80% 40%` (moderate green)
+**Option A (cleanest)**: Split the data into two separate arrays:
+- `chatRatings[]` — only from `get_graph_pairs` (with real chats) → feeds `calculateFreeMindScore` for radial position
+- `allRatings[]` — merged chat + opinion_ratings → feeds `calculateDeterministicAngles` for angular position
+
+This requires `calculateLayout` to accept two rating arrays, or we add a `synthetic` boolean flag to `ChatRating` type and filter inside `calculateFreeMindScore`.
+
+**Option B (minimal change)**: Add `isSynthetic?: boolean` field to `ChatRating`. Set it `true` for disagreement-only entries in `useTopicData.ts`. In `calculateFreeMindScore`, skip synthetic entries. Angular calculation already uses all ratings.
+
+### Recommendation: Option B (minimal diff)
 
 ### Files to Change
 
 | File | Change |
 |------|--------|
-| `src/index.css` | Update `--primary`, `--accent`, `--success`, `--ring`, sidebar vars, extended palette to new colors |
-| `src/themes/signal/SignalNode.tsx` | `CoreShape`: change `#DAA520` → `#00e5ff`, glow filter to cyan. `MiddleShape`: `#8FBC5E` → `#14B866` |
-| `src/themes/signal/SignalZones.tsx` | Zone labels: all `fill="white"`. Level ring colors: respectful → `rgba(0,229,255,0.18)`, moderate → `rgba(20,184,102,0.14)`, extreme stays orange-ish. Zone tint gradients updated. |
-| `src/pages/Index.tsx` | CTA send button: `bg-[#064e3b]` instead of `bg-accent`. Slider accent classes updated. |
-| `src/components/BottomTabBar.tsx` | Active glow uses new accent color (automatic via CSS var) |
-| `src/components/DesktopBottomBar.tsx` | Same — inherits from CSS vars |
+| `src/types/graph.ts` | Add `isSynthetic?: boolean` to `ChatRating` |
+| `src/hooks/useTopicData.ts` | Set `isSynthetic: true` on synthetic entries (line 350-355) |
+| `src/lib/freemind-layout.ts` | In `calculateFreeMindScore`, filter out `r.isSynthetic` entries before computing radial score |
 
