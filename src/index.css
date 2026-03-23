@@ -63,26 +63,26 @@
     /* Sidebar */
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 0 0% 20%;
-    --sidebar-primary: 330 97% 43%;
+    --sidebar-primary: 160 90% 17%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 42 100% 50%;
+    --sidebar-accent: 187 100% 50%;
     --sidebar-accent-foreground: 0 0% 0%;
     --sidebar-border: 0 0% 90%;
-    --sidebar-ring: 330 97% 43%;
+    --sidebar-ring: 160 90% 17%;
     
     /* Extended brand palette */
-    --rose: 330 97% 43%;
-    --rose-light: 330 95% 71%;
-    --rose-lighter: 330 93% 91%;
+    --emerald: 160 90% 17%;
+    --emerald-light: 160 80% 35%;
+    --emerald-lighter: 160 70% 90%;
+    --cyan: 187 100% 50%;
+    --cyan-light: 187 90% 72%;
+    --cyan-lighter: 187 85% 91%;
+    --moderate-green: 153 80% 40%;
+    --moderate-green-light: 153 70% 65%;
+    --moderate-green-lighter: 153 60% 90%;
     --blue: 242 96% 43%;
     --blue-light: 242 92% 71%;
     --blue-lighter: 242 90% 91%;
-    --yellow: 42 100% 50%;
-    --yellow-light: 42 100% 75%;
-    --yellow-lighter: 42 100% 93%;
-    --green: 153 96% 43%;
-    --green-light: 153 93% 72%;
-    --green-lighter: 153 90% 91%;
   }
 
   .dark {
