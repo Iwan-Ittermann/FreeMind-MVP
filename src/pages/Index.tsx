@@ -102,7 +102,7 @@ const Index = () => {
   const handleMobilePanelChange = useCallback((panel: MobilePanel) => {
     if (panel === 'menu') {
       setActiveMobilePanel(null);
-      setMobileMenuOpen(true);
+      setMobileMenuOpen(prev => !prev);
     } else {
       setMobileMenuOpen(false);
       setActiveMobilePanel(panel);
@@ -258,13 +258,13 @@ const Index = () => {
   }, [openChatWith]);
 
   // Desktop bottom bar handlers
-  const handleAbout = () => setAboutSheetOpen(true);
+  const handleAbout = () => setAboutSheetOpen(prev => !prev);
   const handleTutorial = () => {
     if (!user) { navigate('/auth'); return; }
     tutorial.resetTutorialStatus();
     setTimeout(() => tutorial.startTutorial(), 300);
   };
-  const handleSettings = () => setSettingsSheetOpen(true);
+  const handleSettings = () => setSettingsSheetOpen(prev => !prev);
 
   const getNodeActionState = () => {
     if (!selectedNode || !myOpinion) return 'none';
