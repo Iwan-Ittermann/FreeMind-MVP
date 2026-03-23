@@ -102,7 +102,7 @@ const Index = () => {
   const handleMobilePanelChange = useCallback((panel: MobilePanel) => {
     if (panel === 'menu') {
       setActiveMobilePanel(null);
-      setMobileMenuOpen(true);
+      setMobileMenuOpen(prev => !prev);
     } else {
       setMobileMenuOpen(false);
       setActiveMobilePanel(panel);
