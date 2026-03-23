@@ -38,8 +38,10 @@ function calculateFreeMindScore(
   nodeId: string,
   ratings: ChatRating[]
 ): { freeMindScore: number; hasChats: boolean; chatCount: number } {
+  // Filter out synthetic entries (disagreement-only, no chat) — they affect angular
+  // positioning but must NOT influence radial position / FreeMind score.
   const nodeRatings = ratings.filter(
-    r => r.opinionA === nodeId || r.opinionB === nodeId
+    r => (r.opinionA === nodeId || r.opinionB === nodeId) && !r.isSynthetic
   );
 
   if (nodeRatings.length === 0) {

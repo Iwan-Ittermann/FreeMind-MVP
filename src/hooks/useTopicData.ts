@@ -346,12 +346,14 @@ export function useTopicData(topicId: string) {
           // Override disagreement with opinion_ratings value
           mergedRatingsMap.set(key, { ...existing, disagreement: avgDisagreement });
         } else {
-          // Synthetic entry: no chat, just disagreement rating. Empathy defaults to 0.
+        // Synthetic entry: no chat, just disagreement rating. Empathy defaults to 0.
+          // Marked isSynthetic so it only affects angular positioning, not radial score.
           mergedRatingsMap.set(key, {
             opinionA: idA,
             opinionB: idB,
             empathy: 0,
             disagreement: avgDisagreement,
+            isSynthetic: true,
           });
         }
       }
