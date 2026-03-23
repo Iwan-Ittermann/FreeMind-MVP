@@ -30,8 +30,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 0%;
     
-    /* Primary: Dogwood Rose - #D90368 -> HSL: 330 97% 43% */
-    --primary: 330 97% 43%;
+    /* Primary: Dark Emerald - #064e3b -> HSL: 160 90% 17% */
+    --primary: 160 90% 17%;
     --primary-foreground: 0 0% 100%;
     
     /* Secondary: Medium Blue - #0A03D8 -> HSL: 242 96% 43% */
@@ -42,21 +42,21 @@
     --muted: 0 0% 96%;
     --muted-foreground: 0 0% 50%;
     
-    /* Accent: Honey Yellow - #FFB400 -> HSL: 42 100% 50% */
-    --accent: 42 100% 50%;
+    /* Accent: Cyan - #00e5ff -> HSL: 187 100% 50% */
+    --accent: 187 100% 50%;
     --accent-foreground: 0 0% 0%;
     
-    /* Success/Positive: Emerald Green - #03D875 -> HSL: 153 96% 43% */
-    --success: 153 96% 43%;
+    /* Success/Positive: Moderate Green - #14B866 -> HSL: 153 80% 40% */
+    --success: 153 80% 40%;
     --success-foreground: 0 0% 100%;
     
-    /* Destructive: Using Dogwood Rose */
-    --destructive: 330 97% 43%;
+    /* Destructive: Red */
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
     
     --border: 0 0% 90%;
     --input: 0 0% 90%;
-    --ring: 330 97% 43%;
+    --ring: 160 90% 17%;
 
     --radius: 0.75rem;
 
