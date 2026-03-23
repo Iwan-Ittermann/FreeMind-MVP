@@ -390,7 +390,7 @@ const Index = () => {
                         onValueChange={(v) => setDisagreement(v[0])}
                         max={100}
                         step={1}
-                        className="[&_[role=slider]]:bg-accent [&_[role=slider]]:border-accent [&_.bg-primary]:bg-accent/30"
+                        className="[&_[role=slider]]:bg-primary [&_[role=slider]]:border-primary [&_.bg-primary]:bg-primary/30"
                       />
                       <div className="flex justify-between text-[10px] text-muted-foreground">
                         <span>{t('disagreementRating.aligned')}</span>

@@ -155,7 +155,7 @@ export const SignalNode = memo(function SignalNode({
         <circle
           r={scaledHalf * 0.9}
           fill="none"
-          stroke="#DAA520"
+          stroke="#00e5ff"
           strokeWidth={2}
           className="animate-gentle-ring-pulse"
           style={{ transformOrigin: 'center' }}

@@ -95,12 +95,12 @@ export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function Si
             backgroundImage: `
               radial-gradient(
                 circle closest-side,
-                hsla(43, 70%, 50%, 0.08) 0%,
-                hsla(43, 70%, 50%, 0.08) ${coreP}%,
-                hsla(90, 35%, 40%, 0.05) ${coreP}%,
-                hsla(90, 35%, 40%, 0.05) ${midP}%,
-                hsla(20, 80%, 45%, 0.06) ${midP}%,
-                hsla(20, 80%, 45%, 0.06) 100%,
+                rgba(0, 229, 255, 0.06) 0%,
+                rgba(0, 229, 255, 0.06) ${coreP}%,
+                rgba(20, 184, 102, 0.04) ${coreP}%,
+                rgba(20, 184, 102, 0.04) ${midP}%,
+                hsla(20, 80%, 45%, 0.05) ${midP}%,
+                hsla(20, 80%, 45%, 0.05) 100%,
                 transparent 100%
               )
             `,
