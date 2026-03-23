@@ -72,7 +72,7 @@ export function MainMenu({ open, onOpenChange, onTutorial, onAbout }: MainMenuPr
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" hideClose className="max-h-[80vh] rounded-t-2xl flex flex-col pb-16 md:mx-auto md:max-w-[calc(100%-580px)] md:min-w-[400px]">
+      <SheetContent side="bottom" hideClose className="max-h-[80vh] rounded-t-2xl flex flex-col pb-16 md:mx-auto md:max-w-[calc(100%-580px)] md:min-w-[400px] md:bottom-12">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <Settings className="w-5 h-5" />
