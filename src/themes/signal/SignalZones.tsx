@@ -145,13 +145,13 @@ export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function Si
       })()}
 
       {/* Zone labels — Respectful at center, others at zone borders */}
-      <text x={cx} y={cy + 4} textAnchor="middle" fill="hsl(43, 70%, 50%)" fillOpacity={0.3} fontSize="8" fontFamily="monospace">
+      <text x={cx} y={cy + 4} textAnchor="middle" fill="white" fillOpacity={0.35} fontSize="8" fontFamily="monospace">
         {t('zones.respectful')}
       </text>
-      <text x={cx} y={cy + respectfulR + 10} textAnchor="middle" fill="hsl(90, 35%, 50%)" fillOpacity={0.25} fontSize="8" fontFamily="monospace">
+      <text x={cx} y={cy + respectfulR + 10} textAnchor="middle" fill="white" fillOpacity={0.3} fontSize="8" fontFamily="monospace">
         {t('zones.moderate')}
       </text>
-      <text x={cx} y={cy + moderateR + 10} textAnchor="middle" fill="hsl(20, 80%, 50%)" fillOpacity={0.25} fontSize="8" fontFamily="monospace">
+      <text x={cx} y={cy + moderateR + 10} textAnchor="middle" fill="white" fillOpacity={0.3} fontSize="8" fontFamily="monospace">
         {t('zones.extreme')}
       </text>
     </g>
