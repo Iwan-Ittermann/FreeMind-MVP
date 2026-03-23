@@ -15,6 +15,7 @@ export interface ChatRating {
   opinionB: string;
   empathy: number; // -50 to +50 scale (internally stored as integer)
   disagreement: number; // 0-100 scale (internally stored as integer)
+  isSynthetic?: boolean; // true for disagreement-only entries (no chat) — excluded from radial score
 }
 
 export interface OpinionRating {
