@@ -29,72 +29,96 @@ const staggerItem = {
   transition: { duration: 0.5 },
 };
 
-// Abstract discourse graph visualization
+// Signal & Noise themed discourse graph visualization
 function DiscourseGraph({ className = "" }: { className?: string }) {
   const nodes = [
-    { cx: 50, cy: 50, r: 4, zone: "green" },
-    { cx: 42, cy: 45, r: 3, zone: "green" },
-    { cx: 58, cy: 53, r: 3.5, zone: "green" },
-    { cx: 35, cy: 35, r: 3, zone: "orange" },
-    { cx: 65, cy: 38, r: 3, zone: "orange" },
-    { cx: 30, cy: 60, r: 2.5, zone: "orange" },
-    { cx: 70, cy: 55, r: 2.5, zone: "orange" },
-    { cx: 45, cy: 30, r: 2.5, zone: "orange" },
-    { cx: 55, cy: 68, r: 2.5, zone: "orange" },
-    { cx: 20, cy: 25, r: 2, zone: "red" },
-    { cx: 80, cy: 75, r: 2, zone: "red" },
-    { cx: 15, cy: 70, r: 2, zone: "red" },
-    { cx: 85, cy: 30, r: 2, zone: "red" },
-    { cx: 25, cy: 80, r: 1.8, zone: "red" },
-    { cx: 75, cy: 20, r: 1.8, zone: "red" },
+    { cx: 50, cy: 50, r: 3.5, zone: "respectful" },
+    { cx: 42, cy: 45, r: 3, zone: "respectful" },
+    { cx: 58, cy: 53, r: 3, zone: "respectful" },
+    { cx: 35, cy: 35, r: 2.8, zone: "moderate" },
+    { cx: 65, cy: 38, r: 2.8, zone: "moderate" },
+    { cx: 30, cy: 60, r: 2.5, zone: "moderate" },
+    { cx: 70, cy: 55, r: 2.5, zone: "moderate" },
+    { cx: 45, cy: 30, r: 2.5, zone: "moderate" },
+    { cx: 55, cy: 68, r: 2.5, zone: "moderate" },
+    { cx: 20, cy: 25, r: 2, zone: "extreme" },
+    { cx: 80, cy: 75, r: 2, zone: "extreme" },
+    { cx: 15, cy: 70, r: 2, zone: "extreme" },
+    { cx: 85, cy: 30, r: 2, zone: "extreme" },
+    { cx: 25, cy: 80, r: 1.8, zone: "extreme" },
+    { cx: 75, cy: 20, r: 1.8, zone: "extreme" },
   ];
 
   const edges = [
-    [0, 1],
-    [0, 2],
-    [1, 3],
-    [2, 4],
-    [0, 7],
-    [0, 8],
-    [3, 5],
-    [4, 6],
-    [5, 9],
-    [6, 10],
-    [7, 14],
-    [8, 13],
+    [0, 1], [0, 2], [1, 3], [2, 4], [0, 7], [0, 8],
+    [3, 5], [4, 6], [5, 9], [6, 10], [7, 14], [8, 13],
   ];
 
   const zoneColors: Record<string, string> = {
-    green: "hsl(153, 96%, 43%)",
-    orange: "hsl(42, 100%, 50%)",
-    red: "hsl(330, 97%, 43%)",
+    respectful: "#00e5ff",
+    moderate: "#14B866",
+    extreme: "#FF6B35",
   };
+
+  const ringRadii = [5, 10, 15, 20, 25, 30, 35, 40, 45];
+  const ringColors = ["#00e5ff", "#00e5ff", "#00e5ff", "#14B866", "#14B866", "#14B866", "#FF6B35", "#FF6B35", "#FF6B35"];
 
   return (
     <svg viewBox="0 0 100 100" className={className}>
-      {/* Concentric circles */}
-      <circle cx="50" cy="50" r="45" fill="none" stroke="hsl(0,0%,85%)" strokeWidth="0.3" strokeDasharray="2 2" />
-      <circle cx="50" cy="50" r="30" fill="none" stroke="hsl(0,0%,85%)" strokeWidth="0.3" strokeDasharray="2 2" />
-      <circle cx="50" cy="50" r="15" fill="none" stroke="hsl(153,96%,43%)" strokeWidth="0.4" opacity="0.4" />
+      {/* Dark background */}
+      <rect x="0" y="0" width="100" height="100" rx="8" fill="#1A1A2E" />
+
+      {/* Radial glow */}
+      <defs>
+        <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#00e5ff" stopOpacity="0.08" />
+          <stop offset="60%" stopColor="#00e5ff" stopOpacity="0.02" />
+          <stop offset="100%" stopColor="transparent" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      <circle cx="50" cy="50" r="48" fill="url(#coreGlow)" />
+
+      {/* Concentric level rings */}
+      {ringRadii.map((r, i) => (
+        <circle
+          key={i}
+          cx="50" cy="50" r={r}
+          fill="none"
+          stroke={ringColors[i]}
+          strokeWidth="0.2"
+          opacity="0.15"
+        />
+      ))}
+
+      {/* Zone boundary rings */}
+      <circle cx="50" cy="50" r="15" fill="none" stroke="#00e5ff" strokeWidth="0.4" opacity="0.3" />
+      <circle cx="50" cy="50" r="30" fill="none" stroke="#14B866" strokeWidth="0.3" opacity="0.25" />
+      <circle cx="50" cy="50" r="45" fill="none" stroke="#FF6B35" strokeWidth="0.3" opacity="0.2" strokeDasharray="2 2" />
 
       {/* Edges */}
       {edges.map(([a, b], i) => (
         <line
           key={i}
-          x1={nodes[a].cx}
-          y1={nodes[a].cy}
-          x2={nodes[b].cx}
-          y2={nodes[b].cy}
-          stroke="hsl(0,0%,75%)"
-          strokeWidth="0.4"
-          opacity="0.5"
+          x1={nodes[a].cx} y1={nodes[a].cy}
+          x2={nodes[b].cx} y2={nodes[b].cy}
+          stroke="#00D4FF"
+          strokeWidth="0.3"
+          opacity="0.2"
+          strokeLinecap="round"
         />
       ))}
 
-      {/* Nodes */}
+      {/* Nodes with glow */}
       {nodes.map((n, i) => (
-        <circle key={i} cx={n.cx} cy={n.cy} r={n.r} fill={zoneColors[n.zone]} opacity="0.8" />
+        <g key={i}>
+          <circle cx={n.cx} cy={n.cy} r={n.r * 2} fill={zoneColors[n.zone]} opacity="0.08" />
+          <circle cx={n.cx} cy={n.cy} r={n.r} fill={zoneColors[n.zone]} opacity="0.85" />
+          <circle cx={n.cx} cy={n.cy} r={n.r * 0.4} fill="white" opacity="0.3" />
+        </g>
       ))}
+
+      {/* Zone labels */}
+      <text x="50" y="50" textAnchor="middle" dominantBaseline="central" fill="white" fontSize="2.5" opacity="0.5" fontWeight="500">👑</text>
     </svg>
   );
 }

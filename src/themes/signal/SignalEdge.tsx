@@ -18,7 +18,7 @@ export const SignalEdge = memo(function SignalEdge({
   const strokeWidth = isHighlighted ? baseWidth * 2 : baseWidth;
 
   const opacity = isDimmed
-    ? 0.08
+    ? 0
     : isHighlighted
       ? 0.9
       : isPending
