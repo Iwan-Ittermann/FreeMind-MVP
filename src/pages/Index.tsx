@@ -290,16 +290,10 @@ const Index = () => {
 
   return (
     <div className="h-screen bg-white dark:bg-[#1A1A2E] text-foreground overflow-hidden flex flex-col" onClick={handleBackgroundClick}>
-      <Header title={isMobile && !activeMobilePanel ? undefined : (topicData?.title || "How to fix Climate Change?")} />
-
-      {/* Mobile title bar below header when no sidebar is open */}
-      {isMobile && !activeMobilePanel && (
-        <div className="px-3 py-1.5 border-b border-border/20 bg-white dark:bg-background flex-shrink-0">
-          <h1 className="text-sm font-semibold text-foreground text-center truncate">
-            {topicData?.title || "How to fix Climate Change?"}
-          </h1>
-        </div>
-      )}
+      <Header
+        title={topicData?.title || "How to fix Climate Change?"}
+        enlarged={isMobile && !activeMobilePanel}
+      />
 
       {/* Main layout */}
       <div className="flex-1 flex overflow-hidden min-h-0">
