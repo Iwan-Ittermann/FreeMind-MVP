@@ -22,9 +22,10 @@ interface MainMenuProps {
   topicId?: string;
   onTutorial?: () => void;
   onAbout?: () => void;
+  onSignIn?: () => void;
 }
 
-export function MainMenu({ open, onOpenChange, onTutorial, onAbout }: MainMenuProps) {
+export function MainMenu({ open, onOpenChange, onTutorial, onAbout, onSignIn }: MainMenuProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
@@ -146,7 +147,7 @@ export function MainMenu({ open, onOpenChange, onTutorial, onAbout }: MainMenuPr
               <span>{t('common.signOut', 'Logout')}</span>
             </button>
           ) : (
-            <button onClick={() => { onOpenChange(false); navigate('/auth'); }} className="flex items-center gap-3 w-full p-3 rounded-lg hover:bg-muted transition-colors text-foreground">
+            <button onClick={() => { onOpenChange(false); if (onSignIn) onSignIn(); else navigate('/auth'); }} className="flex items-center gap-3 w-full p-3 rounded-lg hover:bg-muted transition-colors text-foreground">
               <LogIn className="w-5 h-5 text-muted-foreground" />
               <span>{t('common.signIn', 'Sign In')}</span>
             </button>

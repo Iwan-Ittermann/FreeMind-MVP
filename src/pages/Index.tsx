@@ -20,6 +20,7 @@ import { BottomPanel } from '@/components/BottomPanel';
 import { DesktopBottomBar } from '@/components/DesktopBottomBar';
 import { MainMenu } from '@/components/MainMenu';
 import { AboutSidebar } from '@/components/AboutSidebar';
+import { AuthDialog } from '@/components/AuthDialog';
 import { GraphNode, GraphEdge, ChatRequest } from '@/types/graph';
 import { useTopicData } from '@/hooks/useTopicData';
 import { useChatRequests } from '@/hooks/useChatRequests';
@@ -59,6 +60,7 @@ const Index = () => {
   // Mobile bottom panel state
   const [activeMobilePanel, setActiveMobilePanel] = useState<MobilePanel>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
 
   // Desktop sidebar state
   const [leftOpen, setLeftOpen] = useState(true);
@@ -98,14 +100,20 @@ const Index = () => {
     status: r.status as 'pending' | 'accepted' | 'declined',
   }));
 
+  // Close menu when switching to another mobile panel
+  useEffect(() => {
+    if (activeMobilePanel !== null) {
+      setMobileMenuOpen(false);
+    }
+  }, [activeMobilePanel]);
+
   // Handle mobile panel changes
   const handleMobilePanelChange = useCallback((panel: MobilePanel) => {
     if (panel === 'menu') {
       setActiveMobilePanel(null);
       setMobileMenuOpen(prev => !prev);
     } else {
-      setMobileMenuOpen(false);
-      setActiveMobilePanel(panel);
+      setActiveMobilePanel(prev => prev === panel ? null : panel);
     }
   }, []);
 
@@ -260,7 +268,7 @@ const Index = () => {
   // Desktop bottom bar handlers
   const handleAbout = () => setAboutSheetOpen(prev => !prev);
   const handleTutorial = () => {
-    if (!user) { navigate('/auth'); return; }
+    if (!user) { setAuthDialogOpen(true); return; }
     tutorial.resetTutorialStatus();
     setTimeout(() => tutorial.startTutorial(), 300);
   };
@@ -288,12 +296,21 @@ const Index = () => {
     ? { height: 'calc(100vh - 56px - 64px)' }
     : undefined;
 
+  const topicTitle = topicData?.title || "How to fix Climate Change?";
+
   return (
     <div className="h-screen bg-white dark:bg-[#1A1A2E] text-foreground overflow-hidden flex flex-col" onClick={handleBackgroundClick}>
       <Header
-        title={topicData?.title || "How to fix Climate Change?"}
+        title={topicTitle}
         enlarged={isMobile && !activeMobilePanel}
       />
+
+      {/* Standalone mobile title when no panel open */}
+      {isMobile && !activeMobilePanel && (
+        <div className="px-4 py-2 text-center">
+          <h1 className="text-lg font-semibold text-foreground truncate">{topicTitle}</h1>
+        </div>
+      )}
 
       {/* Main layout */}
       <div className="flex-1 flex overflow-hidden min-h-0">
@@ -396,7 +413,7 @@ const Index = () => {
                   {selectedNode.opinion.visible === false ? (
                     <p className="text-sm text-muted-foreground italic text-center py-2">Interaction with this content is disabled</p>
                   ) : !user ? (
-                    <Button onClick={() => navigate('/auth')} variant="outline" className="w-full border-border/40 h-12 text-base">
+                    <Button onClick={() => setAuthDialogOpen(true)} variant="outline" className="w-full border-border/40 h-12 text-base">
                       Sign In to Chat
                     </Button>
                   ) : actionState === 'own' ? (
@@ -553,6 +570,7 @@ const Index = () => {
             topicId={DEFAULT_TOPIC_ID}
             onTutorial={handleTutorial}
             onAbout={handleAbout}
+            onSignIn={() => setAuthDialogOpen(true)}
           />
 
           <BottomTabBar
@@ -570,8 +588,12 @@ const Index = () => {
           open={settingsSheetOpen}
           onOpenChange={setSettingsSheetOpen}
           topicId={DEFAULT_TOPIC_ID}
+          onSignIn={() => setAuthDialogOpen(true)}
         />
       )}
+
+      {/* Inline Auth Dialog */}
+      <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
 
       {/* About sidebar (bottom sheet) */}
       <AboutSidebar open={aboutSheetOpen} onOpenChange={setAboutSheetOpen} />
