@@ -100,14 +100,20 @@ const Index = () => {
     status: r.status as 'pending' | 'accepted' | 'declined',
   }));
 
+  // Close menu when switching to another mobile panel
+  useEffect(() => {
+    if (activeMobilePanel !== null) {
+      setMobileMenuOpen(false);
+    }
+  }, [activeMobilePanel]);
+
   // Handle mobile panel changes
   const handleMobilePanelChange = useCallback((panel: MobilePanel) => {
     if (panel === 'menu') {
       setActiveMobilePanel(null);
       setMobileMenuOpen(prev => !prev);
     } else {
-      setMobileMenuOpen(false);
-      setActiveMobilePanel(panel);
+      setActiveMobilePanel(prev => prev === panel ? null : panel);
     }
   }, []);
 
