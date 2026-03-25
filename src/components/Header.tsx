@@ -20,8 +20,8 @@ export function Header({ title, enlarged }: HeaderProps) {
           </motion.span>
         </Link>
 
-        {title && (
-          <h1 className={`absolute left-1/2 -translate-x-1/2 max-w-[65%] ${enlarged ? 'text-base' : 'text-sm lg:text-lg'} font-semibold text-foreground truncate text-center`}>
+        {title && !enlarged && (
+          <h1 className={`absolute left-1/2 -translate-x-1/2 max-w-[65%] text-sm lg:text-lg font-semibold text-foreground truncate text-center`}>
             {title}
           </h1>
         )}

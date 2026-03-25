@@ -111,13 +111,13 @@ export function SignalRenderer({
     <svg width={width} height={height} className="overflow-visible">
       <rect width={width} height={height} fill="transparent" onClick={() => onNodeClick(null as unknown as GraphNode)} />
       <SignalZones zones={zoneTokens} config={config} />
-      <g className="signal-edges" style={{ opacity: highlightedNode ? 1 : 0, transition: 'opacity 0.2s ease' }}>
+      <g className="signal-edges">
         {edgeTokens.map((et, i) => (
           <SignalEdge
             key={i}
             token={et}
             isHighlighted={!!(highlightedNode && (et.sourceId === highlightedNode || et.targetId === highlightedNode))}
-            isDimmed={!!(highlightedNode && et.sourceId !== highlightedNode && et.targetId !== highlightedNode)}
+            isDimmed={!highlightedNode || (et.sourceId !== highlightedNode && et.targetId !== highlightedNode)}
             onClick={() => handleEdgeClick(et.sourceId, et.targetId)}
           />
         ))}
