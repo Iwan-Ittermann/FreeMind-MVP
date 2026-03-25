@@ -1,36 +1,63 @@
 
 
-## Plan: Fix Inline CTA, Edge Visibility, and Landing Page Graphs
+## Plan: Rework User Flow, Fix Non-Determinism, and UI Polish
 
-### 1. Inline CTA Not Working (Can't Type)
+### 1. Drop Landing Page — Make `/home` the new `/`
 
-**Root cause**: The graph SVG uses `overflow-visible` and the parent `motion.div` overlaps the textarea below it. The SVG's transparent `<rect>` with an `onClick` handler intercepts pointer events over the textarea area.
+**Route changes** (`src/App.tsx`):
+- Change `<Route path="/" element={<Landing />} />` to `<Route path="/" element={<Index />} />`
+- Remove the `/home` route (or redirect `/home` → `/` for backward compat)
+- Keep Landing.tsx file but it won't be routed
 
-**Fix** (`src/pages/Index.tsx`): Add `relative z-10` to the inline CTA container (line 465) so it sits above the graph's overflow. This ensures the textarea receives focus and input events.
+**Auth redirect updates**:
+- `src/hooks/useAuth.ts`: Change `emailRedirectTo` from `/home` to `/`
+- Any `navigate('/home')` calls across the codebase → `navigate('/')`
+- Login flow stays the same: unauthenticated users see the graph with an inline "Sign In" CTA already present. The `/auth` page remains for login/signup.
 
-### 2. Non-Connected Edges Showing on Hover
+### 2. Fix Graph Non-Determinism
 
-**Root cause**: In `SignalRenderer.tsx` line 114, when `highlightedNode` is set, the entire edges group gets `opacity: 1`. The `isDimmed` prop in `SignalEdge` only reduces opacity to `0.08` — still visible.
+**Root cause**: `adjustForMinSeparation()` in `freemind-layout.ts` line 325 picks push direction via `adjusted > normalizeAngle(placedAngle)` — this is unstable near equal angles. Tiny floating-point variations across refetches cause nodes to flip direction and oscillate.
 
-**Fix** (`src/themes/signal/SignalEdge.tsx`): Change the `isDimmed` opacity from `0.08` to `0`, so only edges connected to the highlighted node are visible. This matches the documented behavior: "edges are only displayed when a node is hovered, showing only the connections for that specific node."
+**Fix** (`src/lib/freemind-layout.ts`):
+- In `adjustForMinSeparation`, use a **deterministic tiebreaker** instead of comparing angles: always push in the direction away from the nearest placed node using the node's ID or a consistent positive direction. Specifically, when `dist < minSep`, always push in the **positive** (clockwise) direction rather than comparing angle magnitudes. This removes the non-deterministic flip.
+- Same fix in `resolveCollisions`: when two non-pinned nodes overlap with equal radii, the push direction is already deterministic (sorted by ID, `deltas[i] += push` / `deltas[j] -= push`), so that's fine.
 
-### 3. Landing Page Graphs → Signal & Noise Style
+### 3. Mobile: Bigger Title, Logo, and Bottom Bar When No Sidebar Open
 
-**Current**: The `DiscourseGraph` component uses a light-mode style with green/orange/red fill colors and grey strokes on a transparent background.
+**Header** (`src/components/Header.tsx`):
+- Accept an `enlarged` prop (boolean). When true, use `text-lg md:text-sm` for the logo and `text-lg md:text-lg` for the title.
 
-**Fix** (`src/pages/Landing.tsx`): Redesign the `DiscourseGraph` component to match the Signal & Noise theme:
-- Dark charcoal background (`#1A1A2E`)
-- Concentric level rings with faint cyan/green/orange strokes
-- Node colors: cyan (`#00e5ff`) for core/respectful, green (`#14B866`) for moderate, orange for extreme
-- Edge color: faint cyan (`#00D4FF`) lines
-- Subtle radial glow effects
-- Zone labels in white (Respectful, Moderate, Extreme) — optional, may be too small
+**Index.tsx**:
+- Pass `enlarged={isMobile && !activeMobilePanel}` to `<Header />`.
+- When no panel is open on mobile, show the title inside the Header itself (already done via the prop) and remove the separate mobile title bar div (lines 296-302).
+
+**Bottom Tab Bar** (`src/components/BottomTabBar.tsx`):
+- Increase height from `h-14` to `h-16` (64px).
+- Increase icon size from `h-5 w-5` to `h-6 w-6`.
+- Increase text from `text-[10px]` to `text-xs`.
+
+### 4. Remove "Change Opinion" Placeholder
+
+**MainMenu.tsx** (lines 130-143): Delete the entire "Change Opinion" section including the surrounding `<div className="border-t">` separator.
+
+### 5. Tablet UI → Use Mobile Layout
+
+**`src/hooks/use-mobile.tsx`**: Increase `MOBILE_BREAKPOINT` from `768` to `1024`. This forces iPads and tablets (up to 1024px) to use the mobile layout with bottom tab bar, bottom panels, etc. instead of the desktop 3-column layout.
+
+Update `BottomTabBar.tsx` `md:hidden` → `lg:hidden` and `DesktopBottomBar.tsx` `hidden md:flex` → `hidden lg:flex` to match the new breakpoint. Similarly, update any `md:` responsive prefixes in Index.tsx that control sidebar visibility.
 
 ### Files to Change
 
 | File | Change |
 |------|--------|
-| `src/pages/Index.tsx` | Add `relative z-10` to inline CTA wrapper |
-| `src/themes/signal/SignalEdge.tsx` | Set `isDimmed` opacity to `0` |
-| `src/pages/Landing.tsx` | Redesign `DiscourseGraph` to Signal & Noise dark theme |
+| `src/App.tsx` | Reroute `/` → Index, redirect `/home` → `/` |
+| `src/hooks/useAuth.ts` | Update `emailRedirectTo` to `/` |
+| `src/lib/freemind-layout.ts` | Fix `adjustForMinSeparation` direction to always push positive |
+| `src/components/Header.tsx` | Add `enlarged` prop for bigger logo/title |
+| `src/pages/Index.tsx` | Pass `enlarged` to Header, remove separate mobile title bar, update `/home` refs, adjust `md:` → `lg:` breakpoints |
+| `src/components/BottomTabBar.tsx` | Increase height/icons/text, change `md:hidden` → `lg:hidden` |
+| `src/components/DesktopBottomBar.tsx` | Change `hidden md:flex` → `hidden lg:flex` |
+| `src/components/MainMenu.tsx` | Remove "Change Opinion" placeholder block |
+| `src/hooks/use-mobile.tsx` | Increase breakpoint from 768 to 1024 |
+| Various files | Replace `navigate('/home')` with `navigate('/')` |
 
