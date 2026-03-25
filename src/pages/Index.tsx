@@ -588,8 +588,12 @@ const Index = () => {
           open={settingsSheetOpen}
           onOpenChange={setSettingsSheetOpen}
           topicId={DEFAULT_TOPIC_ID}
+          onSignIn={() => setAuthDialogOpen(true)}
         />
       )}
+
+      {/* Inline Auth Dialog */}
+      <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
 
       {/* About sidebar (bottom sheet) */}
       <AboutSidebar open={aboutSheetOpen} onOpenChange={setAboutSheetOpen} />
