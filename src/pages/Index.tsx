@@ -283,23 +283,17 @@ const Index = () => {
 
   // Mobile graph height when panel is open
   const mobileGraphStyle = isMobile && activeMobilePanel
-    ? { height: 'calc(100vh - 56px - 55vh - 56px)' }
+    ? { height: 'calc(100vh - 56px - 55vh - 64px)' }
     : isMobile
-    ? { height: 'calc(100vh - 56px - 56px)' }
+    ? { height: 'calc(100vh - 56px - 64px)' }
     : undefined;
 
   return (
     <div className="h-screen bg-white dark:bg-[#1A1A2E] text-foreground overflow-hidden flex flex-col" onClick={handleBackgroundClick}>
-      <Header title={isMobile && !activeMobilePanel ? undefined : (topicData?.title || "How to fix Climate Change?")} />
-
-      {/* Mobile title bar below header when no sidebar is open */}
-      {isMobile && !activeMobilePanel && (
-        <div className="px-3 py-1.5 border-b border-border/20 bg-white dark:bg-background flex-shrink-0">
-          <h1 className="text-sm font-semibold text-foreground text-center truncate">
-            {topicData?.title || "How to fix Climate Change?"}
-          </h1>
-        </div>
-      )}
+      <Header
+        title={topicData?.title || "How to fix Climate Change?"}
+        enlarged={isMobile && !activeMobilePanel}
+      />
 
       {/* Main layout */}
       <div className="flex-1 flex overflow-hidden min-h-0">
@@ -321,7 +315,7 @@ const Index = () => {
 
         {/* Center — Graph + CTA */}
         <div
-          className="flex-1 flex flex-col items-center justify-center px-0.5 md:px-4 min-h-0"
+          className="flex-1 flex flex-col items-center justify-center px-0.5 lg:px-4 min-h-0"
           style={mobileGraphStyle}
         >
           <motion.div
@@ -356,7 +350,7 @@ const Index = () => {
                   initial={{ opacity: 0, y: 20, scale: 0.9 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 20, scale: 0.9 }}
-                  className="fixed md:absolute bottom-20 md:bottom-4 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-[calc(100%-2rem)] md:max-w-sm bg-background/95 backdrop-blur-sm border border-border/40 rounded-xl p-4 shadow-2xl z-50"
+                  className="fixed lg:absolute bottom-20 lg:bottom-4 left-4 right-4 lg:left-1/2 lg:-translate-x-1/2 lg:w-[calc(100%-2rem)] lg:max-w-sm bg-background/95 backdrop-blur-sm border border-border/40 rounded-xl p-4 shadow-2xl z-50"
                   data-opinion-panel
                 >
                   <button
@@ -462,7 +456,7 @@ const Index = () => {
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0, opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="w-full max-w-sm mt-3 px-4 md:mb-14 relative z-10"
+                className="w-full max-w-sm mt-3 px-4 lg:mb-14 relative z-10"
               >
                 <div className="flex gap-2 items-end">
                   <Textarea

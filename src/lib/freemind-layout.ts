@@ -322,7 +322,7 @@ function adjustForMinSeparation(
       let dist = Math.abs(adjusted - normalizeAngle(placedAngle));
       if (dist > Math.PI) dist = 2 * Math.PI - dist;
       if (dist < minSep) {
-        const direction = adjusted > normalizeAngle(placedAngle) ? 1 : -1;
+        const direction = 1; // Always push clockwise for determinism
         adjusted = normalizeAngle(adjusted + direction * 0.15);
         tooClose = true;
         break;

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Settings, LogOut, LogIn, Copy, Check, Download, Globe, Pencil, GraduationCap, Info } from 'lucide-react';
+import { Settings, LogOut, LogIn, Copy, Check, Download, Globe, GraduationCap, Info } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
@@ -72,7 +72,7 @@ export function MainMenu({ open, onOpenChange, onTutorial, onAbout }: MainMenuPr
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" hideClose className="max-h-[80vh] rounded-t-2xl flex flex-col pb-16 md:mx-auto md:max-w-[calc(100%-580px)] md:min-w-[400px] md:bottom-12">
+      <SheetContent side="bottom" hideClose className="max-h-[80vh] rounded-t-2xl flex flex-col pb-16 lg:mx-auto lg:max-w-[calc(100%-580px)] lg:min-w-[400px] lg:bottom-12">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <Settings className="w-5 h-5" />
@@ -126,19 +126,6 @@ export function MainMenu({ open, onOpenChange, onTutorial, onAbout }: MainMenuPr
               <p className="text-xs text-muted-foreground">{t('config.savePassphraseNote')}</p>
             </div>
           )}
-
-          <div className="border-t border-border" />
-
-          {/* Change Opinion (placeholder) */}
-          <div className="space-y-2">
-            <button disabled className="flex items-center gap-3 w-full p-3 rounded-lg bg-muted/50 text-muted-foreground cursor-not-allowed">
-              <Pencil className="w-5 h-5" />
-              <div className="flex-1 text-left">
-                <span className="text-sm">{t('config.changeOpinion', 'Change Opinion')}</span>
-                <p className="text-xs opacity-60">{t('common.comingSoon', 'Coming soon')}</p>
-              </div>
-            </button>
-          </div>
 
           <div className="border-t border-border" />
 

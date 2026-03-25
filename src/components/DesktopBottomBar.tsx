@@ -25,7 +25,7 @@ export function DesktopBottomBar({
   const activeGlow = "after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-10 after:h-[2px] after:rounded-full after:bg-accent after:shadow-[0_0_8px_2px_hsla(var(--accent)/0.5)]";
 
   return (
-    <div className="hidden md:flex h-12 border-t border-border/20 bg-background/60 backdrop-blur-xl flex-shrink-0 relative z-[51]">
+    <div className="hidden lg:flex h-12 border-t border-border/20 bg-background/60 backdrop-blur-xl flex-shrink-0 relative z-[51]">
       <button
         onClick={onToggleLeft}
         className={`${btnBase} flex-[2] ${leftOpen ? `text-foreground bg-muted/30 ${activeGlow}` : 'text-muted-foreground hover:text-foreground hover:bg-muted/20'}`}

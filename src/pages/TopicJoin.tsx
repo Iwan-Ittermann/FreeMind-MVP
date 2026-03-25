@@ -63,7 +63,7 @@ export default function TopicJoin() {
             <p className="text-muted-foreground mb-6">
               This topic doesn't exist or is no longer active.
             </p>
-            <Button onClick={() => navigate('/home')} variant="outline">
+            <Button onClick={() => navigate('/')} variant="outline">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Go Home
             </Button>

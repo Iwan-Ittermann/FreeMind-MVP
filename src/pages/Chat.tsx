@@ -33,7 +33,7 @@ export default function Chat() {
     isBotChat,
   } = useChatSession(theirOpinionIdParam, isReadOnly ? sourceOpinionIdParam : undefined);
 
-  const handleClose = () => { navigate('/home'); };
+  const handleClose = () => { navigate('/'); };
 
   const handleSubmitRating = async (empathy: number, disagreement: number) => {
     try {
@@ -64,7 +64,7 @@ export default function Chat() {
         <div className="min-h-screen bg-black flex items-center justify-center p-4">
           <div className="text-center">
             <p className="text-white/60 mb-4 text-sm md:text-base">Chat not found.</p>
-            <button onClick={() => navigate('/home')} className="text-primary hover:underline py-2 px-4 text-base">Go Back</button>
+            <button onClick={() => navigate('/')} className="text-primary hover:underline py-2 px-4 text-base">Go Back</button>
           </div>
         </div>
       );
@@ -109,7 +109,7 @@ export default function Chat() {
           <p className="text-white/60 mb-4 text-sm md:text-base">
             {error || "You need to submit your own opinion first before chatting with others."}
           </p>
-          <button onClick={() => navigate('/home')} className="text-primary hover:underline py-2 px-4 text-base">Go Back</button>
+          <button onClick={() => navigate('/')} className="text-primary hover:underline py-2 px-4 text-base">Go Back</button>
         </div>
       </div>
     );
@@ -120,7 +120,7 @@ export default function Chat() {
       <div className="min-h-screen bg-black flex items-center justify-center p-4">
         <div className="text-center">
           <p className="text-white/60 mb-4 text-sm md:text-base">Opinion not found.</p>
-          <button onClick={() => navigate('/home')} className="text-primary hover:underline py-2 px-4 text-base">Go Back</button>
+          <button onClick={() => navigate('/')} className="text-primary hover:underline py-2 px-4 text-base">Go Back</button>
         </div>
       </div>
     );
