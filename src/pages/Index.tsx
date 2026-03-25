@@ -315,7 +315,7 @@ const Index = () => {
 
         {/* Center — Graph + CTA */}
         <div
-          className="flex-1 flex flex-col items-center justify-center px-0.5 md:px-4 min-h-0"
+          className="flex-1 flex flex-col items-center justify-center px-0.5 lg:px-4 min-h-0"
           style={mobileGraphStyle}
         >
           <motion.div
