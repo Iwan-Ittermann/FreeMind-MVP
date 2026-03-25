@@ -26,8 +26,8 @@ export function BottomTabBar({ activePanel, onPanelChange, totalUnread = 0 }: Bo
   return (
     <div className="fixed bottom-0 left-0 right-0 z-[60] h-16 border-t border-border/20 bg-background/60 backdrop-blur-xl flex items-stretch lg:hidden">
       <button className={btnClass('opinions')} onClick={() => handleTap('opinions')}>
-        <List className="h-5 w-5" />
-        <span className="text-[10px] font-medium">{t('sidebar.allOpinions', 'Opinions')}</span>
+        <List className="h-6 w-6" />
+        <span className="text-xs font-medium">{t('sidebar.allOpinions', 'Opinions')}</span>
         {isActive('opinions') && (
           <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[2px] rounded-full bg-accent shadow-[0_0_8px_2px_hsla(var(--accent)/0.5)]" />
         )}
