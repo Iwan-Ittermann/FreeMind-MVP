@@ -296,12 +296,21 @@ const Index = () => {
     ? { height: 'calc(100vh - 56px - 64px)' }
     : undefined;
 
+  const topicTitle = topicData?.title || "How to fix Climate Change?";
+
   return (
     <div className="h-screen bg-white dark:bg-[#1A1A2E] text-foreground overflow-hidden flex flex-col" onClick={handleBackgroundClick}>
       <Header
-        title={topicData?.title || "How to fix Climate Change?"}
+        title={topicTitle}
         enlarged={isMobile && !activeMobilePanel}
       />
+
+      {/* Standalone mobile title when no panel open */}
+      {isMobile && !activeMobilePanel && (
+        <div className="px-4 py-2 text-center">
+          <h1 className="text-lg font-semibold text-foreground truncate">{topicTitle}</h1>
+        </div>
+      )}
 
       {/* Main layout */}
       <div className="flex-1 flex overflow-hidden min-h-0">
