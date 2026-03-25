@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Settings, LogOut, LogIn, Copy, Check, Download, Globe, Pencil, GraduationCap, Info } from 'lucide-react';
+import { Settings, LogOut, LogIn, Copy, Check, Download, Globe, GraduationCap, Info } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
