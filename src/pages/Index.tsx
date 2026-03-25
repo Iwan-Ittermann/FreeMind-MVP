@@ -268,7 +268,7 @@ const Index = () => {
   // Desktop bottom bar handlers
   const handleAbout = () => setAboutSheetOpen(prev => !prev);
   const handleTutorial = () => {
-    if (!user) { navigate('/auth'); return; }
+    if (!user) { setAuthDialogOpen(true); return; }
     tutorial.resetTutorialStatus();
     setTimeout(() => tutorial.startTutorial(), 300);
   };
