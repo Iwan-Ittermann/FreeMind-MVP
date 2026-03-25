@@ -22,6 +22,7 @@ interface MainMenuProps {
   topicId?: string;
   onTutorial?: () => void;
   onAbout?: () => void;
+  onSignIn?: () => void;
 }
 
 export function MainMenu({ open, onOpenChange, onTutorial, onAbout }: MainMenuProps) {
