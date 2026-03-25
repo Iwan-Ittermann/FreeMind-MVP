@@ -129,19 +129,6 @@ export function MainMenu({ open, onOpenChange, onTutorial, onAbout }: MainMenuPr
 
           <div className="border-t border-border" />
 
-          {/* Change Opinion (placeholder) */}
-          <div className="space-y-2">
-            <button disabled className="flex items-center gap-3 w-full p-3 rounded-lg bg-muted/50 text-muted-foreground cursor-not-allowed">
-              <Pencil className="w-5 h-5" />
-              <div className="flex-1 text-left">
-                <span className="text-sm">{t('config.changeOpinion', 'Change Opinion')}</span>
-                <p className="text-xs opacity-60">{t('common.comingSoon', 'Coming soon')}</p>
-              </div>
-            </button>
-          </div>
-
-          <div className="border-t border-border" />
-
           {/* Language */}
           <div className="space-y-3">
             <label className="text-sm font-medium text-foreground flex items-center gap-2">

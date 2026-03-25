@@ -283,9 +283,9 @@ const Index = () => {
 
   // Mobile graph height when panel is open
   const mobileGraphStyle = isMobile && activeMobilePanel
-    ? { height: 'calc(100vh - 56px - 55vh - 56px)' }
+    ? { height: 'calc(100vh - 56px - 55vh - 64px)' }
     : isMobile
-    ? { height: 'calc(100vh - 56px - 56px)' }
+    ? { height: 'calc(100vh - 56px - 64px)' }
     : undefined;
 
   return (

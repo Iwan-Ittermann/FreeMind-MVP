@@ -44,9 +44,9 @@ function AppRoutes() {
     <Routes>
       <Route path="/eching" element={<Splash />} />
       <Route path="/old-lp" element={<OldLanding />} />
-      <Route path="/" element={<Landing />} />
+      <Route path="/" element={<Index />} />
       <Route path="/about" element={<About />} />
-      <Route path="/home" element={<Index />} />
+      <Route path="/home" element={<Navigate to="/" replace />} />
       <Route path="/auth" element={<Auth />} />
       <Route path="/chat" element={<Navigate to="/home" replace />} />
       <Route path="/admin" element={<Admin />} />
