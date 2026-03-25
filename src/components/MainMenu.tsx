@@ -25,7 +25,7 @@ interface MainMenuProps {
   onSignIn?: () => void;
 }
 
-export function MainMenu({ open, onOpenChange, onTutorial, onAbout }: MainMenuProps) {
+export function MainMenu({ open, onOpenChange, onTutorial, onAbout, onSignIn }: MainMenuProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
