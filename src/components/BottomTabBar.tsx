@@ -34,8 +34,8 @@ export function BottomTabBar({ activePanel, onPanelChange, totalUnread = 0 }: Bo
       </button>
 
       <button className={btnClass('menu')} onClick={() => handleTap('menu')}>
-        <MoreHorizontal className="h-5 w-5" />
-        <span className="text-[10px] font-medium">{t('common.menu', 'Menu')}</span>
+        <MoreHorizontal className="h-6 w-6" />
+        <span className="text-xs font-medium">{t('common.menu', 'Menu')}</span>
         {isActive('menu') && (
           <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[2px] rounded-full bg-accent shadow-[0_0_8px_2px_hsla(var(--accent)/0.5)]" />
         )}
