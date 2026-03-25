@@ -1,63 +1,53 @@
 
 
-## Plan: Rework User Flow, Fix Non-Determinism, and UI Polish
+## Plan: Inline Auth, Mobile Title, Edge Flash Fix, Settings Sidebar
 
-### 1. Drop Landing Page — Make `/home` the new `/`
+### 1. Inline Auth — Replace `/auth` with Dialog on `/`
 
-**Route changes** (`src/App.tsx`):
-- Change `<Route path="/" element={<Landing />} />` to `<Route path="/" element={<Index />} />`
-- Remove the `/home` route (or redirect `/home` → `/` for backward compat)
-- Keep Landing.tsx file but it won't be routed
+Instead of navigating to a separate `/auth` page, show the auth form as a **modal dialog** on the home page. This keeps users in context.
 
-**Auth redirect updates**:
-- `src/hooks/useAuth.ts`: Change `emailRedirectTo` from `/home` to `/`
-- Any `navigate('/home')` calls across the codebase → `navigate('/')`
-- Login flow stays the same: unauthenticated users see the graph with an inline "Sign In" CTA already present. The `/auth` page remains for login/signup.
+**Changes:**
+- Extract the auth form from `Auth.tsx` into a reusable `AuthDialog` component that accepts `open`/`onOpenChange` props and wraps the form in a Dialog/Sheet
+- In `Index.tsx`: add `authDialogOpen` state, replace all `navigate('/auth')` calls with `setAuthDialogOpen(true)`, render `<AuthDialog>`
+- In `MainMenu.tsx`: accept an `onSignIn` callback prop instead of navigating to `/auth`
+- Keep `/auth` route working (redirect to `/` or render the dialog standalone) for backward compat
+- Remove the redirect logic from Auth.tsx since auth now happens inline
 
-### 2. Fix Graph Non-Determinism
+### 2. Mobile Title — Show Below Header, Not Inside It
 
-**Root cause**: `adjustForMinSeparation()` in `freemind-layout.ts` line 325 picks push direction via `adjusted > normalizeAngle(placedAngle)` — this is unstable near equal angles. Tiny floating-point variations across refetches cause nodes to flip direction and oscillate.
+When no sidebar is expanded on mobile, the title should be a **standalone line below the header**, not crammed inside it. This uses whitespace more efficiently.
 
-**Fix** (`src/lib/freemind-layout.ts`):
-- In `adjustForMinSeparation`, use a **deterministic tiebreaker** instead of comparing angles: always push in the direction away from the nearest placed node using the node's ID or a consistent positive direction. Specifically, when `dist < minSep`, always push in the **positive** (clockwise) direction rather than comparing angle magnitudes. This removes the non-deterministic flip.
-- Same fix in `resolveCollisions`: when two non-pinned nodes overlap with equal radii, the push direction is already deterministic (sorted by ID, `deltas[i] += push` / `deltas[j] -= push`), so that's fine.
+**Changes** (`Header.tsx` + `Index.tsx`):
+- `Header.tsx`: When `enlarged` is true, do NOT render the title in the header — only show the logo (bigger)
+- `Index.tsx`: Add a standalone title section below the Header when `isMobile && !activeMobilePanel`, displayed as a centered text above the graph
 
-### 3. Mobile: Bigger Title, Logo, and Bottom Bar When No Sidebar Open
+### 3. Edge Flash Fix — All Edges Briefly Visible on Un-hover
 
-**Header** (`src/components/Header.tsx`):
-- Accept an `enlarged` prop (boolean). When true, use `text-lg md:text-sm` for the logo and `text-lg md:text-lg` for the title.
+**Root cause**: `SignalRenderer.tsx` line 114 uses a parent `<g>` with `opacity: highlightedNode ? 1 : 0` and a CSS transition. When `highlightedNode` becomes null, ALL edges momentarily have `isDimmed = false` (since there's no highlighted node), so they all compute non-zero opacity. During the group's fade-out transition, all edges "flash" visible.
 
-**Index.tsx**:
-- Pass `enlarged={isMobile && !activeMobilePanel}` to `<Header />`.
-- When no panel is open on mobile, show the title inside the Header itself (already done via the prop) and remove the separate mobile title bar div (lines 296-302).
+**Fix** (`SignalRenderer.tsx`): Remove the group-level opacity transition. Instead, always render the group at full opacity and have each `SignalEdge` handle visibility: when `highlightedNode` is null, pass a new prop `hidden={true}` (or set `isDimmed` for all edges). Simplest: change the `isDimmed` logic so that when `highlightedNode` is null, all edges are dimmed (opacity 0).
 
-**Bottom Tab Bar** (`src/components/BottomTabBar.tsx`):
-- Increase height from `h-14` to `h-16` (64px).
-- Increase icon size from `h-5 w-5` to `h-6 w-6`.
-- Increase text from `text-[10px]` to `text-xs`.
+Change line 114: `style={{ opacity: highlightedNode ? 1 : 0, transition: 'opacity 0.2s ease' }}` → remove this entirely.
 
-### 4. Remove "Change Opinion" Placeholder
+Change line 120: `isDimmed={!!(highlightedNode && ...)}` → `isDimmed={!highlightedNode || (et.sourceId !== highlightedNode && et.targetId !== highlightedNode)}`
 
-**MainMenu.tsx** (lines 130-143): Delete the entire "Change Opinion" section including the surrounding `<div className="border-t">` separator.
+This way: no highlighted node = all edges dimmed (opacity 0). Highlighted node = only connected edges visible. No flash.
 
-### 5. Tablet UI → Use Mobile Layout
+### 4. Settings Sidebar Close on Mobile Tab Switch
 
-**`src/hooks/use-mobile.tsx`**: Increase `MOBILE_BREAKPOINT` from `768` to `1024`. This forces iPads and tablets (up to 1024px) to use the mobile layout with bottom tab bar, bottom panels, etc. instead of the desktop 3-column layout.
+**Root cause**: The `handleMobilePanelChange` function (line 102-110) correctly sets `mobileMenuOpen(false)` when switching to another panel. However the `MainMenu` uses a `Sheet` component which may have animation timing issues.
 
-Update `BottomTabBar.tsx` `md:hidden` → `lg:hidden` and `DesktopBottomBar.tsx` `hidden md:flex` → `hidden lg:flex` to match the new breakpoint. Similarly, update any `md:` responsive prefixes in Index.tsx that control sidebar visibility.
+**Fix** (`Index.tsx`): Make the menu behave like other panels by integrating it into the `activeMobilePanel` state instead of using separate `mobileMenuOpen` state. When `activeMobilePanel` changes, force-close the menu sheet. Add a `useEffect` that sets `mobileMenuOpen(false)` whenever `activeMobilePanel` changes to a non-null value.
 
 ### Files to Change
 
 | File | Change |
 |------|--------|
-| `src/App.tsx` | Reroute `/` → Index, redirect `/home` → `/` |
-| `src/hooks/useAuth.ts` | Update `emailRedirectTo` to `/` |
-| `src/lib/freemind-layout.ts` | Fix `adjustForMinSeparation` direction to always push positive |
-| `src/components/Header.tsx` | Add `enlarged` prop for bigger logo/title |
-| `src/pages/Index.tsx` | Pass `enlarged` to Header, remove separate mobile title bar, update `/home` refs, adjust `md:` → `lg:` breakpoints |
-| `src/components/BottomTabBar.tsx` | Increase height/icons/text, change `md:hidden` → `lg:hidden` |
-| `src/components/DesktopBottomBar.tsx` | Change `hidden md:flex` → `hidden lg:flex` |
-| `src/components/MainMenu.tsx` | Remove "Change Opinion" placeholder block |
-| `src/hooks/use-mobile.tsx` | Increase breakpoint from 768 to 1024 |
-| Various files | Replace `navigate('/home')` with `navigate('/')` |
+| `src/components/AuthDialog.tsx` | **New** — Extract auth form as dialog component |
+| `src/pages/Index.tsx` | Add AuthDialog, standalone mobile title, fix menu close, update auth navigation |
+| `src/pages/Auth.tsx` | Redirect to `/` or keep as thin wrapper |
+| `src/App.tsx` | Update `/auth` route |
+| `src/components/Header.tsx` | When `enlarged`, only show logo (no title) |
+| `src/components/MainMenu.tsx` | Accept `onSignIn` prop instead of navigating |
+| `src/themes/signal/SignalRenderer.tsx` | Remove group opacity, fix isDimmed logic |
 
