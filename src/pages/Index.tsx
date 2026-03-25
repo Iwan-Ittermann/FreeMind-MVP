@@ -350,7 +350,7 @@ const Index = () => {
                   initial={{ opacity: 0, y: 20, scale: 0.9 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 20, scale: 0.9 }}
-                  className="fixed md:absolute bottom-20 md:bottom-4 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-[calc(100%-2rem)] md:max-w-sm bg-background/95 backdrop-blur-sm border border-border/40 rounded-xl p-4 shadow-2xl z-50"
+                  className="fixed lg:absolute bottom-20 lg:bottom-4 left-4 right-4 lg:left-1/2 lg:-translate-x-1/2 lg:w-[calc(100%-2rem)] lg:max-w-sm bg-background/95 backdrop-blur-sm border border-border/40 rounded-xl p-4 shadow-2xl z-50"
                   data-opinion-panel
                 >
                   <button
