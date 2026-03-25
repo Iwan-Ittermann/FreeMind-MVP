@@ -60,6 +60,7 @@ const Index = () => {
   // Mobile bottom panel state
   const [activeMobilePanel, setActiveMobilePanel] = useState<MobilePanel>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
 
   // Desktop sidebar state
   const [leftOpen, setLeftOpen] = useState(true);
