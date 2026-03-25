@@ -570,6 +570,7 @@ const Index = () => {
             topicId={DEFAULT_TOPIC_ID}
             onTutorial={handleTutorial}
             onAbout={handleAbout}
+            onSignIn={() => setAuthDialogOpen(true)}
           />
 
           <BottomTabBar
