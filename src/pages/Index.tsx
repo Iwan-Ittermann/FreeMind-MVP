@@ -404,7 +404,7 @@ const Index = () => {
                   {selectedNode.opinion.visible === false ? (
                     <p className="text-sm text-muted-foreground italic text-center py-2">Interaction with this content is disabled</p>
                   ) : !user ? (
-                    <Button onClick={() => navigate('/auth')} variant="outline" className="w-full border-border/40 h-12 text-base">
+                    <Button onClick={() => setAuthDialogOpen(true)} variant="outline" className="w-full border-border/40 h-12 text-base">
                       Sign In to Chat
                     </Button>
                   ) : actionState === 'own' ? (
