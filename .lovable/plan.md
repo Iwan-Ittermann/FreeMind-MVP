@@ -1,53 +1,87 @@
 
 
-## Plan: Inline Auth, Mobile Title, Edge Flash Fix, Settings Sidebar
+## Plan: Admin Node Deletion, Login Fix, Welcome Tooltips
 
-### 1. Inline Auth — Replace `/auth` with Dialog on `/`
+### 1. Admin: Delete Opinion Node (with cascading cleanup)
 
-Instead of navigating to a separate `/auth` page, show the auth form as a **modal dialog** on the home page. This keeps users in context.
+Since the database has **no foreign keys**, deletion must be done via a new SECURITY DEFINER database function that manually cascades in the correct order.
 
-**Changes:**
-- Extract the auth form from `Auth.tsx` into a reusable `AuthDialog` component that accepts `open`/`onOpenChange` props and wraps the form in a Dialog/Sheet
-- In `Index.tsx`: add `authDialogOpen` state, replace all `navigate('/auth')` calls with `setAuthDialogOpen(true)`, render `<AuthDialog>`
-- In `MainMenu.tsx`: accept an `onSignIn` callback prop instead of navigating to `/auth`
-- Keep `/auth` route working (redirect to `/` or render the dialog standalone) for backward compat
-- Remove the redirect logic from Auth.tsx since auth now happens inline
+**New DB migration** — `delete_opinion_cascade(opinion_id)`:
+```sql
+1. Delete chat_ratings where chat_id in chats involving the opinion
+2. Delete chat_messages where chat_id in chats involving the opinion
+3. Delete chats where opinion_a_id or opinion_b_id = opinion_id
+4. Delete chat_requests where requester_opinion_id or target_opinion_id = opinion_id
+5. Delete opinion_ratings where rater_opinion_id or target_opinion_id = opinion_id
+6. Delete the opinion itself
+7. Log audit
+```
+Only admins can call this (checked via `has_role`).
 
-### 2. Mobile Title — Show Below Header, Not Inside It
+**New admin panel** — Add a "Nodes" tab in `Admin.tsx` with a `NodeManagementPanel` component that:
+- Lists all real opinions (from `opinions_public` view)
+- Shows opinion text, created_at
+- Delete button per row that calls the RPC
 
-When no sidebar is expanded on mobile, the title should be a **standalone line below the header**, not crammed inside it. This uses whitespace more efficiently.
+**Files:**
+- New migration: `delete_opinion_cascade` function
+- New: `src/components/admin/NodeManagementPanel.tsx`
+- Edit: `src/pages/Admin.tsx` — add "Nodes" tab
 
-**Changes** (`Header.tsx` + `Index.tsx`):
-- `Header.tsx`: When `enlarged` is true, do NOT render the title in the header — only show the logo (bigger)
-- `Index.tsx`: Add a standalone title section below the Header when `isMobile && !activeMobilePanel`, displayed as a centered text above the graph
+### 2. Fix Login Button — Replace remaining `navigate('/auth')` calls
 
-### 3. Edge Flash Fix — All Edges Briefly Visible on Un-hover
+The Auth page now just redirects to `/`, so clicking login navigates to `/auth` → redirects back to `/` → no dialog opens. Fix: replace all remaining `navigate('/auth')` with inline auth dialog triggers.
 
-**Root cause**: `SignalRenderer.tsx` line 114 uses a parent `<g>` with `opacity: highlightedNode ? 1 : 0` and a CSS transition. When `highlightedNode` becomes null, ALL edges momentarily have `isDimmed = false` (since there's no highlighted node), so they all compute non-zero opacity. During the group's fade-out transition, all edges "flash" visible.
+**Files to fix:**
+- `src/pages/Admin.tsx` line 36: redirect to `/` instead of `/auth` (admin needs login, use `/` since auth dialog lives there)
+- `src/pages/Chat.tsx` line 88: replace `navigate('/auth')` with `navigate('/')` (or add AuthDialog)
+- `src/components/ConfigPanel.tsx` line 78: replace `navigate('/auth')` with `navigate('/')`
+- `src/pages/TopicView.tsx` line 287: replace with `navigate('/')`
+- `src/pages/TopicJoin.tsx` line 103: replace with `navigate('/')`
 
-**Fix** (`SignalRenderer.tsx`): Remove the group-level opacity transition. Instead, always render the group at full opacity and have each `SignalEdge` handle visibility: when `highlightedNode` is null, pass a new prop `hidden={true}` (or set `isDimmed` for all edges). Simplest: change the `isDimmed` logic so that when `highlightedNode` is null, all edges are dimmed (opacity 0).
+### 3. Multi-step Welcome Tooltips (3 pages)
 
-Change line 114: `style={{ opacity: highlightedNode ? 1 : 0, transition: 'opacity 0.2s ease' }}` → remove this entirely.
+Replace the current single-popup welcome with a **3-step tooltip walkthrough** tracked via localStorage key `freemind-welcome-step`.
 
-Change line 120: `isDimmed={!!(highlightedNode && ...)}` → `isDimmed={!highlightedNode || (et.sourceId !== highlightedNode && et.targetId !== highlightedNode)}`
+**Step 1** — "Willkommen bei FreeMind" (centered overlay, like current)
+**Step 2** — "Der Meinungskreis" (overlay pointing at graph area)
+**Step 3** — "Die Mitte" (overlay pointing at center of graph)
 
-This way: no highlighted node = all edges dimmed (opacity 0). Highlighted node = only connected edges visible. No flash.
+Each step has Next/Skip buttons. After step 3 (or Skip), set `freemind-welcome-seen` in localStorage.
 
-### 4. Settings Sidebar Close on Mobile Tab Switch
+**i18n keys** (de.json):
+```json
+"welcome": {
+  "title": "Willkommen bei FreeMind",
+  "message": "Hier kannst du deine Meinung teilen und sehen, was andere denken.",
+  "step2Title": "Der Meinungskreis",
+  "step2Message": "Jeder Punkt ist eine Meinung.\nDer Kreis ist geordnet nach Zustimmung oder Widerspruch.\nBewerte Meinungen, um deine Position einzuordnen.",
+  "step3Title": "Die Mitte",
+  "step3Message": "Führe Chats und erhalte gute Respektwertungen von gegenüberliegenden Meinungen, um näher zur Mitte zu kommen.",
+  "next": "Weiter",
+  "skip": "Überspringen",
+  "ok": "Los geht's"
+}
+```
 
-**Root cause**: The `handleMobilePanelChange` function (line 102-110) correctly sets `mobileMenuOpen(false)` when switching to another panel. However the `MainMenu` uses a `Sheet` component which may have animation timing issues.
+**Files:**
+- Edit: `src/pages/Index.tsx` — replace welcome popup with 3-step flow
+- Edit: `src/i18n/locales/de.json` — add new welcome keys
+- Edit: `src/i18n/locales/en.json` — add English equivalents
 
-**Fix** (`Index.tsx`): Make the menu behave like other panels by integrating it into the `activeMobilePanel` state instead of using separate `mobileMenuOpen` state. When `activeMobilePanel` changes, force-close the menu sheet. Add a `useEffect` that sets `mobileMenuOpen(false)` whenever `activeMobilePanel` changes to a non-null value.
-
-### Files to Change
+### Files Summary
 
 | File | Change |
 |------|--------|
-| `src/components/AuthDialog.tsx` | **New** — Extract auth form as dialog component |
-| `src/pages/Index.tsx` | Add AuthDialog, standalone mobile title, fix menu close, update auth navigation |
-| `src/pages/Auth.tsx` | Redirect to `/` or keep as thin wrapper |
-| `src/App.tsx` | Update `/auth` route |
-| `src/components/Header.tsx` | When `enlarged`, only show logo (no title) |
-| `src/components/MainMenu.tsx` | Accept `onSignIn` prop instead of navigating |
-| `src/themes/signal/SignalRenderer.tsx` | Remove group opacity, fix isDimmed logic |
+| New migration | `delete_opinion_cascade` SECURITY DEFINER function |
+| `src/components/admin/NodeManagementPanel.tsx` | New — list + delete opinions |
+| `src/pages/Admin.tsx` | Add "Nodes" tab |
+| `src/pages/Admin.tsx` | Fix `navigate('/auth')` → `navigate('/')` |
+| `src/pages/Chat.tsx` | Fix `navigate('/auth')` → `navigate('/')` |
+| `src/components/ConfigPanel.tsx` | Fix `navigate('/auth')` → `navigate('/')` |
+| `src/pages/TopicView.tsx` | Fix `navigate('/auth')` → `navigate('/')` |
+| `src/pages/TopicJoin.tsx` | Fix `navigate('/auth')` → `navigate('/')` |
+| `src/pages/Index.tsx` | Replace welcome popup with 3-step walkthrough |
+| `src/i18n/locales/de.json` | Add welcome step keys |
+| `src/i18n/locales/en.json` | Add welcome step keys |
 
