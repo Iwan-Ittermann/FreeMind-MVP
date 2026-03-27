@@ -18,7 +18,8 @@
     "loadingChat": "Loading chat...",
     "opinions": "opinions",
     "opinionsShared": "opinions shared",
-    "characters": "characters"
+    "characters": "characters",
+    "signInOrSignUp": "Sign In / Sign Up"
   },
   "header": {
     "addOpinion": "Add Opinion"
