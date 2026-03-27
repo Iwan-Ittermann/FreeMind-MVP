@@ -52,7 +52,9 @@ const Index = () => {
   const [graphSize, setGraphSize] = useState({ width: 600, height: 600 });
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [opinionDialogOpen, setOpinionDialogOpen] = useState(false);
-  const [welcomeShown, setWelcomeShown] = useState(() => localStorage.getItem('freemind-welcome-seen') === 'true');
+  const [welcomeStep, setWelcomeStep] = useState<number>(() => {
+    return localStorage.getItem('freemind-welcome-seen') === 'true' ? -1 : 0;
+  });
   const [inlineOpinionText, setInlineOpinionText] = useState('');
   const [isSubmittingInline, setIsSubmittingInline] = useState(false);
   const queryClient = useQueryClient();
