@@ -18,7 +18,8 @@
     "loadingChat": "Chat wird geladen...",
     "opinions": "Meinungen",
     "opinionsShared": "Meinungen geteilt",
-    "characters": "Zeichen"
+    "characters": "Zeichen",
+    "signInOrSignUp": "Einloggen / Anmelden"
   },
   "header": {
     "addOpinion": "Meinung hinzufügen"
@@ -293,6 +294,11 @@
     "label": "Wie stark stimmst du nicht überein?",
     "aligned": "Übereinstimmung",
     "opposed": "Gegensätzlich"
+  },
+  "agreementRating": {
+    "label": "Wie sehr stimmst du dieser Meinung zu?",
+    "disagree": "Widerspruch",
+    "agree": "Zustimmung"
   },
   "sidebar": {
     "allOpinions": "Alle Meinungen",

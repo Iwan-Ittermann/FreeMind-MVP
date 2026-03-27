@@ -147,9 +147,9 @@ export function MainMenu({ open, onOpenChange, onTutorial, onAbout, onSignIn }: 
               <span>{t('common.signOut', 'Logout')}</span>
             </button>
           ) : (
-            <button onClick={() => { onOpenChange(false); if (onSignIn) onSignIn(); else navigate('/auth'); }} className="flex items-center gap-3 w-full p-3 rounded-lg hover:bg-muted transition-colors text-foreground">
+            <button onClick={() => { onOpenChange(false); onSignIn?.(); }} className="flex items-center gap-3 w-full p-3 rounded-lg hover:bg-muted transition-colors text-foreground">
               <LogIn className="w-5 h-5 text-muted-foreground" />
-              <span>{t('common.signIn', 'Sign In')}</span>
+              <span>{t('common.signInOrSignUp', 'Sign In / Sign Up')}</span>
             </button>
           )}
         </div>

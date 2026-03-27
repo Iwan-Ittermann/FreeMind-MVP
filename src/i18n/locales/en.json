@@ -18,7 +18,8 @@
     "loadingChat": "Loading chat...",
     "opinions": "opinions",
     "opinionsShared": "opinions shared",
-    "characters": "characters"
+    "characters": "characters",
+    "signInOrSignUp": "Sign In / Sign Up"
   },
   "header": {
     "addOpinion": "Add Opinion"
@@ -293,6 +294,11 @@
     "label": "How much do you disagree?",
     "aligned": "Aligned",
     "opposed": "Opposed"
+  },
+  "agreementRating": {
+    "label": "How much do you agree with this opinion?",
+    "disagree": "Disagree",
+    "agree": "Agree"
   },
   "sidebar": {
     "allOpinions": "All Opinions",
