@@ -257,10 +257,10 @@ export function ChatsSidebar({ open, onOpenChange, topicId, onChatOpen, unreadMe
         <div className="flex-1 flex flex-col items-center justify-center gap-3 text-muted-foreground text-sm">
           <span>{t('sidebar.signInToSeeChats', 'Sign in to see your chats')}</span>
           <Button
-            onClick={() => window.location.href = '/auth'}
+            onClick={() => onSignIn?.()}
             className="rounded-full bg-accent text-accent-foreground hover:bg-accent/90 font-semibold text-sm shadow-lg shadow-accent/25 px-6"
           >
-            {t('common.logIn', 'Login')}
+            {t('common.signInOrSignUp', 'Sign In / Sign Up')}
           </Button>
         </div>
       ) : !myOpinion ? (

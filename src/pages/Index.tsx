@@ -399,23 +399,23 @@ const Index = () => {
                     </p>
                   )}
 
-                  {/* Disagreement slider — visible for all opinions except own */}
+                  {/* Agreement slider — visible for all opinions except own */}
                   {canRateDisagreement && selectedNode.opinion.visible !== false && actionState !== 'own' && (
                     <div className="mb-4 space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground">{t('disagreementRating.label')}</span>
-                        <span className="text-xs font-mono text-muted-foreground">{disagreement}</span>
+                        <span className="text-xs text-muted-foreground">{t('agreementRating.label')}</span>
+                        <span className="text-xs font-mono text-muted-foreground">{100 - disagreement}</span>
                       </div>
                       <Slider
-                        value={[disagreement]}
-                        onValueChange={(v) => setDisagreement(v[0])}
+                        value={[100 - disagreement]}
+                        onValueChange={(v) => setDisagreement(100 - v[0])}
                         max={100}
                         step={1}
                         className="[&_[role=slider]]:bg-primary [&_[role=slider]]:border-primary [&_.bg-primary]:bg-primary/30"
                       />
                       <div className="flex justify-between text-[10px] text-muted-foreground">
-                        <span>{t('disagreementRating.aligned')}</span>
-                        <span>{t('disagreementRating.opposed')}</span>
+                        <span>{t('agreementRating.disagree')}</span>
+                        <span>{t('agreementRating.agree')}</span>
                       </div>
                     </div>
                   )}

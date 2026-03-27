@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Shield, FileText, History, AlertTriangle, ArrowLeft, Loader2, Layers, Trash2, GraduationCap, Bot, Palette, CircleDot } from 'lucide-react';
+import { Lock, Shield, FileText, History, AlertTriangle, ArrowLeft, Loader2, Layers, Trash2, GraduationCap, Bot, Palette, CircleDot, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -14,8 +14,9 @@ import { FakeNodesPanel } from '@/components/admin/FakeNodesPanel';
 import { NodeManagementPanel } from '@/components/admin/NodeManagementPanel';
 import { ThemePanel } from '@/components/admin/ThemePanel';
 import { AIBotPanel } from '@/components/admin/AIBotPanel';
+import { AuthDialog } from '@/components/AuthDialog';
 import { useReports } from '@/hooks/useReports';
-import { useGrantAdminRole } from '@/hooks/useAdminRole';
+import { useGrantAdminRole, useIsAdmin } from '@/hooks/useAdminRole';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
@@ -25,26 +26,21 @@ import { toast } from 'sonner';
 export default function Admin() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
-  const [isUnlocked, setIsUnlocked] = useState(false);
+  const { data: isAdmin, isLoading: isAdminLoading } = useIsAdmin();
   const [password, setPassword] = useState('');
   const [isResetting, setIsResetting] = useState(false);
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const grantAdminRole = useGrantAdminRole();
   const queryClient = useQueryClient();
 
-  // Redirect to auth if not logged in
-  useEffect(() => {
-    if (!authLoading && !user) {
-      navigate('/');
-    }
-  }, [user, authLoading, navigate]);
+  // Determine unlock state: use persisted admin role
+  const isUnlocked = !!isAdmin;
 
   const { data: reports = [], isLoading: reportsLoading } = useReports(isUnlocked);
 
   const handleUnlock = async () => {
     try {
-      // Grant admin role to the user using password verification
       await grantAdminRole.mutateAsync(password);
-      setIsUnlocked(true);
       setPassword('');
       toast.success('Admin-Dashboard freigeschaltet');
     } catch (err: any) {
@@ -54,7 +50,6 @@ export default function Admin() {
   };
 
   const handleResetDatabase = async () => {
-    // Prompt for password instead of hardcoding
     const enteredPassword = prompt('Enter admin password to confirm database reset:');
     if (!enteredPassword) return;
     
@@ -82,7 +77,7 @@ export default function Admin() {
   const pendingReports = reports.filter((r) => r.status === 'Unreviewed' || r.status === 'In-Review');
   const reviewedReports = reports.filter((r) => r.status === 'No-Suspicion' || r.status === 'Suspicion');
 
-  if (authLoading) {
+  if (authLoading || isAdminLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
@@ -96,11 +91,7 @@ export default function Admin() {
       <header className="border-b border-border bg-card">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate('/')}
-            >
+            <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <div className="flex items-center gap-2">
@@ -119,7 +110,32 @@ export default function Admin() {
 
       <main className="container mx-auto px-4 py-8">
         <AnimatePresence mode="wait">
-          {!isUnlocked ? (
+          {!user ? (
+            /* State 1: Not signed in */
+            <motion.div
+              key="signed-out"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="max-w-md mx-auto"
+            >
+              <div className="bg-card border border-border rounded-lg p-6 text-center space-y-4">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+                  <LogIn className="w-6 h-6 text-primary" />
+                </div>
+                <h2 className="text-lg font-semibold text-foreground">Anmeldung erforderlich</h2>
+                <p className="text-sm text-muted-foreground">
+                  Bitte melde dich an, um auf das Admin-Dashboard zuzugreifen.
+                </p>
+                <Button onClick={() => setAuthDialogOpen(true)} className="w-full">
+                  <LogIn className="w-4 h-4 mr-2" />
+                  Einloggen / Anmelden
+                </Button>
+              </div>
+              <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
+            </motion.div>
+          ) : !isUnlocked ? (
+            /* State 2: Signed in, needs password */
             <motion.div
               key="locked"
               initial={{ opacity: 0, y: 20 }}
@@ -165,6 +181,7 @@ export default function Admin() {
               </div>
             </motion.div>
           ) : (
+            /* State 3: Admin unlocked */
             <motion.div
               key="unlocked"
               initial={{ opacity: 0, y: 20 }}

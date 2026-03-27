@@ -295,6 +295,11 @@
     "aligned": "Übereinstimmung",
     "opposed": "Gegensätzlich"
   },
+  "agreementRating": {
+    "label": "Wie sehr stimmst du dieser Meinung zu?",
+    "disagree": "Widerspruch",
+    "agree": "Zustimmung"
+  },
   "sidebar": {
     "allOpinions": "Alle Meinungen",
     "browseOpinions": "Alle Meinungen zu diesem Thema durchsuchen",
