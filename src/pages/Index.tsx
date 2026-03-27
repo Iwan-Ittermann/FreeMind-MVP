@@ -572,6 +572,7 @@ const Index = () => {
               unreadMessageCounts={unreadMessageCounts}
               variant="inline"
               onChatClick={handleSidebarChatClick}
+              onSignIn={() => setAuthDialogOpen(true)}
             />
           </BottomPanel>
 
