@@ -52,7 +52,9 @@ const Index = () => {
   const [graphSize, setGraphSize] = useState({ width: 600, height: 600 });
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [opinionDialogOpen, setOpinionDialogOpen] = useState(false);
-  const [welcomeShown, setWelcomeShown] = useState(() => localStorage.getItem('freemind-welcome-seen') === 'true');
+  const [welcomeStep, setWelcomeStep] = useState<number>(() => {
+    return localStorage.getItem('freemind-welcome-seen') === 'true' ? -1 : 0;
+  });
   const [inlineOpinionText, setInlineOpinionText] = useState('');
   const [isSubmittingInline, setIsSubmittingInline] = useState(false);
   const queryClient = useQueryClient();
@@ -148,7 +150,15 @@ const Index = () => {
 
   const handleDismissWelcome = () => {
     localStorage.setItem('freemind-welcome-seen', 'true');
-    setWelcomeShown(true);
+    setWelcomeStep(-1);
+  };
+
+  const handleNextWelcome = () => {
+    if (welcomeStep >= 2) {
+      handleDismissWelcome();
+    } else {
+      setWelcomeStep(prev => prev + 1);
+    }
   };
 
   const handleInlineSubmit = async () => {
@@ -630,9 +640,9 @@ const Index = () => {
         hasExistingOpinion={!!myOpinion}
       />
 
-      {/* Welcome popup — one-time */}
+      {/* Welcome walkthrough — 3 steps */}
       <AnimatePresence>
-        {!welcomeShown && (
+        {welcomeStep >= 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -641,17 +651,35 @@ const Index = () => {
             onClick={handleDismissWelcome}
           >
             <motion.div
+              key={welcomeStep}
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               className="bg-background border border-border/40 rounded-xl p-6 mx-4 max-w-sm shadow-2xl text-center"
               onClick={(e) => e.stopPropagation()}
             >
-              <h2 className="text-lg font-semibold text-foreground mb-2">{t('welcome.title')}</h2>
-              <p className="text-sm text-muted-foreground mb-4">{t('welcome.message')}</p>
-              <Button onClick={handleDismissWelcome} className="bg-accent text-accent-foreground hover:bg-accent/90">
-                {t('welcome.ok')}
-              </Button>
+              <h2 className="text-lg font-semibold text-foreground mb-2">
+                {welcomeStep === 0 ? t('welcome.title') : welcomeStep === 1 ? t('welcome.step2Title') : t('welcome.step3Title')}
+              </h2>
+              <p className="text-sm text-muted-foreground mb-4 whitespace-pre-line">
+                {welcomeStep === 0 ? t('welcome.message') : welcomeStep === 1 ? t('welcome.step2Message') : t('welcome.step3Message')}
+              </p>
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={handleDismissWelcome}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {t('welcome.skip')}
+                </button>
+                <div className="flex gap-1.5">
+                  {[0, 1, 2].map(i => (
+                    <div key={i} className={`w-2 h-2 rounded-full ${i === welcomeStep ? 'bg-primary' : 'bg-muted-foreground/30'}`} />
+                  ))}
+                </div>
+                <Button onClick={handleNextWelcome} size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                  {welcomeStep === 2 ? t('welcome.ok') : t('welcome.next')}
+                </Button>
+              </div>
             </motion.div>
           </motion.div>
         )}

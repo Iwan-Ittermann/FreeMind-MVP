@@ -85,7 +85,7 @@ export default function Chat() {
       <div className="min-h-screen bg-black flex items-center justify-center p-4">
         <div className="text-center">
           <p className="text-white/60 mb-4 text-sm md:text-base">You need to be signed in to chat.</p>
-          <button onClick={() => navigate('/auth')} className="text-primary hover:underline py-2 px-4 text-base">Sign In</button>
+          <button onClick={() => navigate('/')} className="text-primary hover:underline py-2 px-4 text-base">Sign In</button>
         </div>
       </div>
     );

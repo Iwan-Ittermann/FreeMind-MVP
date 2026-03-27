@@ -274,9 +274,15 @@
     "inactive": "Inaktiv"
   },
   "welcome": {
-    "title": "Willkommen zu FreeMind!",
+    "title": "Willkommen bei FreeMind",
     "message": "Hier kannst du deine Meinung teilen und sehen, was andere denken.",
-    "ok": "OK"
+    "step2Title": "Der Meinungskreis",
+    "step2Message": "Jeder Punkt ist eine Meinung.\nDer Kreis ist geordnet nach Zustimmung oder Widerspruch.\nBewerte Meinungen, um deine Position einzuordnen.",
+    "step3Title": "Die Mitte",
+    "step3Message": "Führe Chats und erhalte gute Respektwertungen von gegenüberliegenden Meinungen, um näher zur Mitte zu kommen.",
+    "next": "Weiter",
+    "skip": "Überspringen",
+    "ok": "Los geht's"
   },
   "inlineCta": {
     "placeholder": "Was denkst du über dieses Thema?",

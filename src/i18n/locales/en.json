@@ -274,9 +274,15 @@
     "inactive": "Inactive"
   },
   "welcome": {
-    "title": "Welcome to FreeMind!",
+    "title": "Welcome to FreeMind",
     "message": "Here you can share your opinion and see what others think.",
-    "ok": "OK"
+    "step2Title": "The Opinion Circle",
+    "step2Message": "Each dot is an opinion.\nThe circle is ordered by agreement or disagreement.\nRate opinions to find your position.",
+    "step3Title": "The Center",
+    "step3Message": "Chat and receive good respect ratings from opposing opinions to move closer to the center.",
+    "next": "Next",
+    "skip": "Skip",
+    "ok": "Let's go!"
   },
   "inlineCta": {
     "placeholder": "What's your view on this topic?",

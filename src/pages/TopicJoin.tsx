@@ -100,7 +100,7 @@ export default function TopicJoin() {
               <p className="text-sm text-muted-foreground text-center">
                 Sign in to join this discussion topic.
               </p>
-              <Button onClick={() => navigate('/auth')} className="w-full">
+              <Button onClick={() => navigate('/')} className="w-full">
                 <LogIn className="w-4 h-4 mr-2" />
                 Sign In to Join
               </Button>

@@ -284,7 +284,7 @@ export default function TopicView() {
                     </p>
                   ) : !user ? (
                     <Button
-                      onClick={() => navigate('/auth')}
+                      onClick={() => navigate('/')}
                       variant="outline"
                       className="w-full border-white/20 text-white hover:bg-white/10 h-12 text-base"
                     >

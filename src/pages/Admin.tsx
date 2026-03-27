@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Shield, FileText, History, AlertTriangle, ArrowLeft, Loader2, Layers, Trash2, GraduationCap, Bot, Palette } from 'lucide-react';
+import { Lock, Shield, FileText, History, AlertTriangle, ArrowLeft, Loader2, Layers, Trash2, GraduationCap, Bot, Palette, CircleDot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -11,6 +11,7 @@ import { AuditLogTable } from '@/components/moderation/AuditLogTable';
 import { TopicPanel } from '@/components/admin/TopicPanel';
 import { TutorialSettingsPanel } from '@/components/admin/TutorialSettingsPanel';
 import { FakeNodesPanel } from '@/components/admin/FakeNodesPanel';
+import { NodeManagementPanel } from '@/components/admin/NodeManagementPanel';
 import { ThemePanel } from '@/components/admin/ThemePanel';
 import { AIBotPanel } from '@/components/admin/AIBotPanel';
 import { useReports } from '@/hooks/useReports';
@@ -33,7 +34,7 @@ export default function Admin() {
   // Redirect to auth if not logged in
   useEffect(() => {
     if (!authLoading && !user) {
-      navigate('/auth');
+      navigate('/');
     }
   }, [user, authLoading, navigate]);
 
@@ -171,10 +172,14 @@ export default function Admin() {
               exit={{ opacity: 0, y: -20 }}
             >
               <Tabs defaultValue="topics" className="w-full">
-                <TabsList className="grid w-full max-w-4xl grid-cols-9 mb-6">
+                <TabsList className="grid w-full max-w-4xl grid-cols-10 mb-6">
                   <TabsTrigger value="topics">
                     <Layers className="w-4 h-4 mr-2" />
                     Topics
+                  </TabsTrigger>
+                  <TabsTrigger value="nodes">
+                    <CircleDot className="w-4 h-4 mr-2" />
+                    Nodes
                   </TabsTrigger>
                   <TabsTrigger value="fake-nodes">
                     <Bot className="w-4 h-4 mr-2" />
@@ -220,6 +225,10 @@ export default function Admin() {
 
                 <TabsContent value="topics">
                   <TopicPanel />
+                </TabsContent>
+
+                <TabsContent value="nodes">
+                  <NodeManagementPanel />
                 </TabsContent>
 
                 <TabsContent value="fake-nodes">
