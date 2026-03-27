@@ -150,7 +150,15 @@ const Index = () => {
 
   const handleDismissWelcome = () => {
     localStorage.setItem('freemind-welcome-seen', 'true');
-    setWelcomeShown(true);
+    setWelcomeStep(-1);
+  };
+
+  const handleNextWelcome = () => {
+    if (welcomeStep >= 2) {
+      handleDismissWelcome();
+    } else {
+      setWelcomeStep(prev => prev + 1);
+    }
   };
 
   const handleInlineSubmit = async () => {
