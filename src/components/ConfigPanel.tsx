@@ -75,7 +75,7 @@ export function ConfigPanel({ open, onOpenChange }: ConfigPanelProps) {
   const handleRestartTutorial = () => {
     if (!user) {
       onOpenChange(false);
-      navigate('/auth');
+      navigate('/');
       return;
     }
     onOpenChange(false);
