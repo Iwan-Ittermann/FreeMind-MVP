@@ -11,6 +11,7 @@ import { AuditLogTable } from '@/components/moderation/AuditLogTable';
 import { TopicPanel } from '@/components/admin/TopicPanel';
 import { TutorialSettingsPanel } from '@/components/admin/TutorialSettingsPanel';
 import { FakeNodesPanel } from '@/components/admin/FakeNodesPanel';
+import { NodeManagementPanel } from '@/components/admin/NodeManagementPanel';
 import { ThemePanel } from '@/components/admin/ThemePanel';
 import { AIBotPanel } from '@/components/admin/AIBotPanel';
 import { useReports } from '@/hooks/useReports';

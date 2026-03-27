@@ -167,12 +167,10 @@ export function ConfigPanel({ open, onOpenChange }: ConfigPanelProps) {
                 {t('common.signOut')}
               </Button>
             ) : (
-              <Link to="/auth" onClick={() => onOpenChange(false)}>
-                <Button className="w-full justify-start bg-primary hover:bg-primary/90">
-                  <LogIn className="w-4 h-4 mr-2" />
-                  {t('common.signIn')}
-                </Button>
-              </Link>
+              <Button onClick={() => { onOpenChange(false); navigate('/'); }} className="w-full justify-start bg-primary hover:bg-primary/90">
+                <LogIn className="w-4 h-4 mr-2" />
+                {t('common.signIn')}
+              </Button>
             )}
           </div>
         </div>
