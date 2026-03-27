@@ -18,7 +18,8 @@
     "loadingChat": "Chat wird geladen...",
     "opinions": "Meinungen",
     "opinionsShared": "Meinungen geteilt",
-    "characters": "Zeichen"
+    "characters": "Zeichen",
+    "signInOrSignUp": "Einloggen / Anmelden"
   },
   "header": {
     "addOpinion": "Meinung hinzufügen"
