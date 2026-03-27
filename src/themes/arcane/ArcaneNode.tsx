@@ -1,13 +1,6 @@
 import { memo } from 'react';
 import { SemanticNodeToken } from '../types';
 
-// Sprite sheet imports (each 1024x1024, 3x3 grid)
-import coreSpriteUrl from '@/assets/arcane/nodes/core.svg';
-import middleSpriteUrl from '@/assets/arcane/nodes/middle.svg';
-import outerSpriteUrl from '@/assets/arcane/nodes/outer.svg';
-import inactiveSpriteUrl from '@/assets/arcane/nodes/inactive.svg';
-
-const GRID = 341; // ~1024/3
 const NODE_SIZE = 48;
 const HALF = NODE_SIZE / 2;
 
@@ -19,12 +12,32 @@ function hashToIndex(id: string, count: number): number {
   return (h >>> 0) % count;
 }
 
-const ZONE_SPRITES: Record<string, string> = {
-  core: coreSpriteUrl,
-  middle: middleSpriteUrl,
-  outer: outerSpriteUrl,
-  inactive: inactiveSpriteUrl,
+// Zone color palettes
+const ZONE_STYLES: Record<string, { fill: string; glow: string; stroke: string }> = {
+  core: { fill: 'hsl(270, 60%, 30%)', glow: 'hsl(45, 80%, 55%)', stroke: 'hsl(45, 70%, 50%)' },
+  middle: { fill: 'hsl(240, 50%, 25%)', glow: 'hsl(180, 60%, 45%)', stroke: 'hsl(180, 50%, 40%)' },
+  outer: { fill: 'hsl(200, 40%, 20%)', glow: 'hsl(200, 30%, 35%)', stroke: 'hsl(200, 25%, 35%)' },
+  inactive: { fill: 'hsl(260, 10%, 30%)', glow: 'hsl(260, 10%, 40%)', stroke: 'hsl(260, 8%, 35%)' },
 };
+
+// Generate rune-like inner lines from node id
+function getRuneLines(id: string): { x1: number; y1: number; x2: number; y2: number }[] {
+  const idx = hashToIndex(id, 12);
+  const r = HALF * 0.6;
+  const lines: { x1: number; y1: number; x2: number; y2: number }[] = [];
+  const count = 2 + (idx % 2);
+  for (let i = 0; i < count; i++) {
+    const angle = ((idx + i * 5) % 12) * (Math.PI / 6);
+    const angle2 = ((idx + i * 5 + 4) % 12) * (Math.PI / 6);
+    lines.push({
+      x1: Math.cos(angle) * r * 0.3,
+      y1: Math.sin(angle) * r * 0.3,
+      x2: Math.cos(angle2) * r,
+      y2: Math.sin(angle2) * r,
+    });
+  }
+  return lines;
+}
 
 interface ArcaneNodeProps {
   token: SemanticNodeToken;
@@ -45,12 +58,8 @@ export const ArcaneNode = memo(function ArcaneNode({
   onMouseEnter,
   onMouseLeave,
 }: ArcaneNodeProps) {
-  const spriteUrl = ZONE_SPRITES[token.zone] ?? inactiveSpriteUrl;
-  const idx = hashToIndex(token.id, 9);
-  const col = idx % 3;
-  const row = Math.floor(idx / 3);
-  const vx = col * GRID;
-  const vy = row * GRID;
+  const style = ZONE_STYLES[token.zone] ?? ZONE_STYLES.inactive;
+  const runeLines = getRuneLines(token.id);
 
   const opacity = isDimmed ? 0.4 : token.isHidden ? 0.3 : 1;
   const bubbleText = token.opinionText
@@ -76,21 +85,45 @@ export const ArcaneNode = memo(function ArcaneNode({
         </g>
       )}
 
-      {/* Sprite-sheet cropped building */}
+      {/* Glow filter */}
       <defs>
-        <clipPath id={`arcane-clip-${token.id}`}>
-          <circle r={HALF} />
-        </clipPath>
+        <radialGradient id={`arcane-grad-${token.id}`} cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor={style.fill} stopOpacity={1} />
+          <stop offset="80%" stopColor={style.fill} stopOpacity={0.9} />
+          <stop offset="100%" stopColor={style.glow} stopOpacity={0.6} />
+        </radialGradient>
+        <filter id={`arcane-glow-${token.id}`} x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="2" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
       </defs>
-      <g clipPath={`url(#arcane-clip-${token.id})`}>
-        <image
-          href={spriteUrl}
-          x={-HALF - vx * (NODE_SIZE / GRID)}
-          y={-HALF - vy * (NODE_SIZE / GRID)}
-          width={1024 * (NODE_SIZE / GRID)}
-          height={1024 * (NODE_SIZE / GRID)}
+
+      {/* Main circle with gradient */}
+      <circle
+        r={HALF}
+        fill={`url(#arcane-grad-${token.id})`}
+        stroke={style.stroke}
+        strokeWidth={isHighlighted ? 2.5 : 1.5}
+        filter={`url(#arcane-glow-${token.id})`}
+      />
+
+      {/* Rune-like inner decorations */}
+      {runeLines.map((line, i) => (
+        <line
+          key={i}
+          x1={line.x1}
+          y1={line.y1}
+          x2={line.x2}
+          y2={line.y2}
+          stroke={style.glow}
+          strokeWidth={0.8}
+          strokeOpacity={0.5}
+          strokeLinecap="round"
         />
-      </g>
+      ))}
 
       {/* "YOU" flag */}
       {token.isCurrentUser && (
