@@ -53,7 +53,7 @@ const Index = () => {
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [opinionDialogOpen, setOpinionDialogOpen] = useState(false);
   const [welcomeStep, setWelcomeStep] = useState<number>(() => {
-    return localStorage.getItem('freemind-welcome-seen') === 'true' ? -1 : 0;
+    return localStorage.getItem('freemind-walkthrough-seen') === 'true' ? -1 : 0;
   });
   const [inlineOpinionText, setInlineOpinionText] = useState('');
   const [isSubmittingInline, setIsSubmittingInline] = useState(false);
@@ -149,7 +149,7 @@ const Index = () => {
   };
 
   const handleDismissWelcome = () => {
-    localStorage.setItem('freemind-welcome-seen', 'true');
+    localStorage.setItem('freemind-walkthrough-seen', 'true');
     setWelcomeStep(-1);
   };
 
