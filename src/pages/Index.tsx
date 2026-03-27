@@ -149,7 +149,7 @@ const Index = () => {
   };
 
   const handleDismissWelcome = () => {
-    localStorage.setItem('freemind-welcome-seen', 'true');
+    localStorage.setItem('freemind-walkthrough-seen', 'true');
     setWelcomeStep(-1);
   };
 
