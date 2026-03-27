@@ -77,16 +77,18 @@ export const ArcaneNode = memo(function ArcaneNode({
       )}
 
       {/* Sprite-sheet cropped building */}
-      <svg
-        x={-HALF}
-        y={-HALF}
-        width={NODE_SIZE}
-        height={NODE_SIZE}
-        viewBox={`${vx} ${vy} ${GRID} ${GRID}`}
-        overflow="hidden"
-      >
-        <image href={spriteUrl} width={1024} height={1024} />
-      </svg>
+      <clipPath id={`arcane-clip-${token.id}`}>
+        <rect x={-HALF} y={-HALF} width={NODE_SIZE} height={NODE_SIZE} />
+      </clipPath>
+      <g clipPath={`url(#arcane-clip-${token.id})`}>
+        <image
+          href={spriteUrl}
+          x={-HALF - vx * (NODE_SIZE / GRID)}
+          y={-HALF - vy * (NODE_SIZE / GRID)}
+          width={1024 * (NODE_SIZE / GRID)}
+          height={1024 * (NODE_SIZE / GRID)}
+        />
+      </g>
 
       {/* "YOU" flag */}
       {token.isCurrentUser && (
