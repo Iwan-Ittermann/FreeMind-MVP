@@ -790,6 +790,10 @@ export type Database = {
         Returns: string
       }
       delete_bot_opinion: { Args: { _topic_id: string }; Returns: undefined }
+      delete_opinion_cascade: {
+        Args: { _opinion_id: string }
+        Returns: undefined
+      }
       get_graph_pairs: {
         Args: { topic_uuid: string }
         Returns: {
