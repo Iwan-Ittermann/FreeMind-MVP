@@ -27,6 +27,7 @@ interface ChatsSidebarProps {
   unreadMessageCounts?: Map<string, number>;
   variant?: 'sheet' | 'inline';
   onChatClick?: (theirOpinionId: string) => void;
+  onSignIn?: () => void;
 }
 
 interface ChatItem {
