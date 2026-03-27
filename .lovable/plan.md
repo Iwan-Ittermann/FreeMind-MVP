@@ -1,36 +1,38 @@
 
 
-## Plan: Fix Arcane Node Transparent Rectangles
+## Fix: Arcane Theme Transparency Grid on Nodes
 
 ### Problem
-The nested `<svg>` element used to crop sprite sheets in `ArcaneNode.tsx` (line 80-89) creates a visible rectangular viewport boundary. Even with `overflow="hidden"`, the `<svg>` element itself is a block-level container that shows as a rectangle on the graph.
+The Arcane theme uses 1024×1024 sprite sheets (3×3 grid) for node graphics. The areas between sprite cells are transparent, and the `<image>` element renders that transparency as a visible checkerboard/rectangle — this is inherent to how SVG `<image>` handles transparency over backgrounds.
 
-### Fix
-Replace the nested `<svg>` + `<image>` pattern with a `<g>` + `<clipPath>` + `<image>` approach. This clips the sprite to the correct cell without creating a rectangular viewport element.
+Clipping alone can't fully fix this because the individual sprite cells themselves likely have transparent backgrounds (they were exported from an image editor with transparency preserved).
 
-**File: `src/themes/arcane/ArcaneNode.tsx`**
+### Solution: Replace sprite sheets with inline SVG shapes
 
-Replace lines 79-89:
-```tsx
-{/* Sprite-sheet cropped building */}
-<clipPath id={`arcane-clip-${token.id}`}>
-  <rect x={-HALF} y={-HALF} width={NODE_SIZE} height={NODE_SIZE} />
-</clipPath>
-<g clipPath={`url(#arcane-clip-${token.id})`}>
-  <image
-    href={spriteUrl}
-    x={-HALF - vx * (NODE_SIZE / GRID)}
-    y={-HALF - vy * (NODE_SIZE / GRID)}
-    width={1024 * (NODE_SIZE / GRID)}
-    height={1024 * (NODE_SIZE / GRID)}
-  />
-</g>
-```
+Instead of fighting with sprite-sheet cropping, render Arcane nodes as **styled SVG circles with zone-specific arcane colors and a subtle glow effect** — no external image assets needed.
 
-This scales the full sprite sheet so each cell is exactly `NODE_SIZE` pixels, positions it so the correct cell aligns within the clip rect, and clips away the rest — no rectangular background artifact.
+Each zone gets a distinct visual identity:
+- **Core**: Deep purple with golden glow (`hsl(270, 60%, 30%)` + gold stroke)
+- **Middle**: Dark blue-purple (`hsl(240, 50%, 25%)` + teal stroke)  
+- **Outer**: Dark teal (`hsl(200, 40%, 20%)` + dim stroke)
+- **Inactive**: Muted gray-purple (`hsl(260, 10%, 30%)`)
 
-### Files
-| File | Change |
-|------|--------|
-| `src/themes/arcane/ArcaneNode.tsx` | Replace nested `<svg>` with `<clipPath>` + `<image>` |
+Each node gets a unique inner pattern (rune-like lines) based on its ID hash for visual variety.
+
+### File changes
+
+**`src/themes/arcane/ArcaneNode.tsx`**
+- Remove all sprite sheet imports (`core.svg`, `middle.svg`, `outer.svg`, `inactive.svg`)
+- Remove `GRID`, `ZONE_SPRITES`, sprite positioning math
+- Replace the `<defs>/<clipPath>/<image>` block with:
+  - A filled `<circle>` with zone-colored radial gradient
+  - A subtle glowing stroke
+  - A decorative inner pattern (2-3 lines based on hash) for visual variety
+- Keep all existing badges, speech bubbles, YOU flag, online/unread indicators unchanged
+
+This approach:
+- Eliminates all transparency artifacts permanently
+- Removes 4 large SVG asset dependencies (~7000 lines each)
+- Fits the "arcane/mystical" aesthetic with glowing circles
+- Is simpler and more performant than sprite sheet cropping
 
