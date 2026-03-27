@@ -177,6 +177,10 @@ export default function Admin() {
                     <Layers className="w-4 h-4 mr-2" />
                     Topics
                   </TabsTrigger>
+                  <TabsTrigger value="nodes">
+                    <CircleDot className="w-4 h-4 mr-2" />
+                    Nodes
+                  </TabsTrigger>
                   <TabsTrigger value="fake-nodes">
                     <Bot className="w-4 h-4 mr-2" />
                     Fake Nodes
