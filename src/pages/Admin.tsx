@@ -171,7 +171,7 @@ export default function Admin() {
               exit={{ opacity: 0, y: -20 }}
             >
               <Tabs defaultValue="topics" className="w-full">
-                <TabsList className="grid w-full max-w-4xl grid-cols-9 mb-6">
+                <TabsList className="grid w-full max-w-4xl grid-cols-10 mb-6">
                   <TabsTrigger value="topics">
                     <Layers className="w-4 h-4 mr-2" />
                     Topics
