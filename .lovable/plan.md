@@ -1,87 +1,109 @@
 
+## Plan
 
-## Plan: Admin Node Deletion, Login Fix, Welcome Tooltips
+### What I found
+- The auth flow is currently split across two paradigms:
+  1. inline `AuthDialog` on `/`
+  2. leftover route-based auth (`/auth`, `window.location.href = '/auth'`, `navigate('/')` without opening the dialog)
+- That mismatch explains the “reload but no dialog” behavior: some entry points still jump routes instead of opening the inline dialog.
+- `/admin` currently redirects signed-out users away immediately, so it cannot reliably open its dashboard/auth flow anymore.
+- The opinion rating still stores and displays **disagreement** directly, while you now want the UI to ask for **agreement**.
 
-### 1. Admin: Delete Opinion Node (with cascading cleanup)
+### 1. Fix login so every login CTA uses one single pattern
+Use one auth-opening paradigm everywhere: reusable inline `AuthDialog`.
 
-Since the database has **no foreign keys**, deletion must be done via a new SECURITY DEFINER database function that manually cascades in the correct order.
+**Implementation**
+- Make `AuthDialog` accept an initial mode, so it can open directly in login mode.
+- On `/`, keep the dialog inline and open it from all local buttons.
+- Replace remaining old auth triggers:
+  - `src/components/ChatsSidebar.tsx` (`window.location.href = '/auth'`)
+  - `src/components/MainMenu.tsx` fallback `/auth`
+  - any remaining `navigate('/')` buttons that are meant to log in, but currently just move pages without opening auth
+- For pages outside `/` (especially `/admin`), render the same `AuthDialog` locally instead of bouncing the user away.
 
-**New DB migration** — `delete_opinion_cascade(opinion_id)`:
-```sql
-1. Delete chat_ratings where chat_id in chats involving the opinion
-2. Delete chat_messages where chat_id in chats involving the opinion
-3. Delete chats where opinion_a_id or opinion_b_id = opinion_id
-4. Delete chat_requests where requester_opinion_id or target_opinion_id = opinion_id
-5. Delete opinion_ratings where rater_opinion_id or target_opinion_id = opinion_id
-6. Delete the opinion itself
-7. Log audit
-```
-Only admins can call this (checked via `has_role`).
+**Result**
+- No more page reload / redirect loop.
+- Every “log in” button behaves consistently.
 
-**New admin panel** — Add a "Nodes" tab in `Admin.tsx` with a `NodeManagementPanel` component that:
-- Lists all real opinions (from `opinions_public` view)
-- Shows opinion text, created_at
-- Delete button per row that calls the RPC
+### 2. Change login CTA copy to “Einloggen / Anmelden” with i18n
+**Implementation**
+- Add a dedicated i18n key for the combined CTA, e.g. `common.signInOrSignUp`
+- Use it for auth-entry buttons:
+  - main menu
+  - chats sidebar empty state
+  - other CTA buttons that open auth
+- Keep mode-specific labels inside the dialog (`Einloggen`, `Loslegen` / signup) unless you want those unified too.
 
-**Files:**
-- New migration: `delete_opinion_cascade` function
-- New: `src/components/admin/NodeManagementPanel.tsx`
-- Edit: `src/pages/Admin.tsx` — add "Nodes" tab
+**Files**
+- `src/i18n/locales/de.json`
+- `src/i18n/locales/en.json`
+- `src/components/MainMenu.tsx`
+- `src/components/ChatsSidebar.tsx`
+- any other auth CTA surfaces found during implementation
 
-### 2. Fix Login Button — Replace remaining `navigate('/auth')` calls
+### 3. Switch the opinion scale from “disagreement” UI to “agreement” UI
+Keep the backend data model unchanged, but invert the UI mapping.
 
-The Auth page now just redirects to `/`, so clicking login navigates to `/auth` → redirects back to `/` → no dialog opens. Fix: replace all remaining `navigate('/auth')` with inline auth dialog triggers.
+**Implementation**
+- Keep storing `opinion_ratings.disagreement` in the database
+- In the UI/hook layer, expose:
+  - `agreement = 100 - disagreement`
+  - when user moves the slider, save `disagreement = 100 - agreement`
+- Update the question text to:
+  - DE: `Wie sehr stimmst du dieser Meinung zu?`
+  - EN equivalent
+- Update endpoints to:
+  - left = Disagreement / Widerspruch
+  - right = Agreement / Zustimmung
 
-**Files to fix:**
-- `src/pages/Admin.tsx` line 36: redirect to `/` instead of `/auth` (admin needs login, use `/` since auth dialog lives there)
-- `src/pages/Chat.tsx` line 88: replace `navigate('/auth')` with `navigate('/')` (or add AuthDialog)
-- `src/components/ConfigPanel.tsx` line 78: replace `navigate('/auth')` with `navigate('/')`
-- `src/pages/TopicView.tsx` line 287: replace with `navigate('/')`
-- `src/pages/TopicJoin.tsx` line 103: replace with `navigate('/')`
+**Why this is the safe approach**
+- The graph/layout logic already depends on stored disagreement values.
+- By only inverting at the UI boundary, the graph math, layout, and existing ratings stay correct.
 
-### 3. Multi-step Welcome Tooltips (3 pages)
+**Files**
+- `src/hooks/useOpinionRating.ts`
+- `src/pages/Index.tsx`
+- `src/i18n/locales/de.json`
+- `src/i18n/locales/en.json`
 
-Replace the current single-popup welcome with a **3-step tooltip walkthrough** tracked via localStorage key `freemind-welcome-step`.
+### 4. Make `/admin` open the admin dashboard flow again
+**Current issue**
+- `src/pages/Admin.tsx` redirects unauthenticated users straight to `/`, so `/admin` cannot act as an entry point.
 
-**Step 1** — "Willkommen bei FreeMind" (centered overlay, like current)
-**Step 2** — "Der Meinungskreis" (overlay pointing at graph area)
-**Step 3** — "Die Mitte" (overlay pointing at center of graph)
+**Implementation**
+- Remove the forced redirect for signed-out users.
+- Give `/admin` 3 explicit states:
+  1. **signed out** → show admin page shell + login CTA that opens `AuthDialog`
+  2. **signed in, not admin yet** → show password unlock form
+  3. **already admin** → open dashboard immediately
+- Use `useIsAdmin()` so admin access persists across reloads and doesn’t rely on local component state.
+- Keep the existing server-side password verification flow for granting admin role.
 
-Each step has Next/Skip buttons. After step 3 (or Skip), set `freemind-welcome-seen` in localStorage.
+**Files**
+- `src/pages/Admin.tsx`
+- `src/hooks/useAdminRole.ts`
+- `src/components/AuthDialog.tsx`
 
-**i18n keys** (de.json):
-```json
-"welcome": {
-  "title": "Willkommen bei FreeMind",
-  "message": "Hier kannst du deine Meinung teilen und sehen, was andere denken.",
-  "step2Title": "Der Meinungskreis",
-  "step2Message": "Jeder Punkt ist eine Meinung.\nDer Kreis ist geordnet nach Zustimmung oder Widerspruch.\nBewerte Meinungen, um deine Position einzuordnen.",
-  "step3Title": "Die Mitte",
-  "step3Message": "Führe Chats und erhalte gute Respektwertungen von gegenüberliegenden Meinungen, um näher zur Mitte zu kommen.",
-  "next": "Weiter",
-  "skip": "Überspringen",
-  "ok": "Los geht's"
-}
-```
+### 5. Small cleanup to prevent more auth regressions
+- Audit remaining `/auth` links in legacy/secondary pages and either:
+  - keep them only on unused legacy pages, or
+  - reroute them into the new inline auth pattern
+- Also fix stale route redirects like `/chat -> /home` while touching routing, since `/home` is no longer the primary entry.
 
-**Files:**
-- Edit: `src/pages/Index.tsx` — replace welcome popup with 3-step flow
-- Edit: `src/i18n/locales/de.json` — add new welcome keys
-- Edit: `src/i18n/locales/en.json` — add English equivalents
+### Files likely involved
+- `src/components/AuthDialog.tsx`
+- `src/components/MainMenu.tsx`
+- `src/components/ChatsSidebar.tsx`
+- `src/pages/Index.tsx`
+- `src/pages/Admin.tsx`
+- `src/hooks/useAdminRole.ts`
+- `src/hooks/useOpinionRating.ts`
+- `src/App.tsx`
+- `src/i18n/locales/de.json`
+- `src/i18n/locales/en.json`
 
-### Files Summary
-
-| File | Change |
-|------|--------|
-| New migration | `delete_opinion_cascade` SECURITY DEFINER function |
-| `src/components/admin/NodeManagementPanel.tsx` | New — list + delete opinions |
-| `src/pages/Admin.tsx` | Add "Nodes" tab |
-| `src/pages/Admin.tsx` | Fix `navigate('/auth')` → `navigate('/')` |
-| `src/pages/Chat.tsx` | Fix `navigate('/auth')` → `navigate('/')` |
-| `src/components/ConfigPanel.tsx` | Fix `navigate('/auth')` → `navigate('/')` |
-| `src/pages/TopicView.tsx` | Fix `navigate('/auth')` → `navigate('/')` |
-| `src/pages/TopicJoin.tsx` | Fix `navigate('/auth')` → `navigate('/')` |
-| `src/pages/Index.tsx` | Replace welcome popup with 3-step walkthrough |
-| `src/i18n/locales/de.json` | Add welcome step keys |
-| `src/i18n/locales/en.json` | Add welcome step keys |
-
+### Expected outcome
+- Login buttons actually open auth instead of reloading.
+- CTA copy becomes `Einloggen / Anmelden`.
+- The opinion slider asks for **agreement** while preserving existing backend logic.
+- `/admin` works again as a proper entry point and opens the dashboard flow reliably.
