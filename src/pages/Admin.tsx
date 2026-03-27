@@ -222,6 +222,10 @@ export default function Admin() {
                   <TopicPanel />
                 </TabsContent>
 
+                <TabsContent value="nodes">
+                  <NodeManagementPanel />
+                </TabsContent>
+
                 <TabsContent value="fake-nodes">
                   <div className="max-w-2xl">
                     <FakeNodesPanel />
