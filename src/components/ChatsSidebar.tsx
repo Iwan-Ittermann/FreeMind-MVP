@@ -49,7 +49,7 @@ interface PendingRequestItem {
   direction: 'incoming' | 'outgoing';
 }
 
-export function ChatsSidebar({ open, onOpenChange, topicId, onChatOpen, unreadMessageCounts, variant = 'sheet', onChatClick }: ChatsSidebarProps) {
+export function ChatsSidebar({ open, onOpenChange, topicId, onChatOpen, unreadMessageCounts, variant = 'sheet', onChatClick, onSignIn }: ChatsSidebarProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const isMobile = useIsMobile();
