@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Shield, FileText, History, AlertTriangle, ArrowLeft, Loader2, Layers, Trash2, GraduationCap, Bot, Palette, CircleDot, LogIn } from 'lucide-react';
+import { Lock, Shield, FileText, History, AlertTriangle, ArrowLeft, Loader2, Layers, Trash2, GraduationCap, Bot, Palette, CircleDot, LogIn, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -189,29 +189,29 @@ export default function Admin() {
               exit={{ opacity: 0, y: -20 }}
             >
               <Tabs defaultValue="topics" className="w-full">
-                <TabsList className="grid w-full max-w-4xl grid-cols-10 mb-6">
-                  <TabsTrigger value="topics">
-                    <Layers className="w-4 h-4 mr-2" />
+                <TabsList className="flex flex-wrap h-auto gap-1 w-full max-w-4xl mb-6">
+                  <TabsTrigger value="topics" className="flex-shrink-0">
+                    <Layers className="w-4 h-4 mr-1" />
                     Topics
                   </TabsTrigger>
-                  <TabsTrigger value="nodes">
-                    <CircleDot className="w-4 h-4 mr-2" />
+                  <TabsTrigger value="nodes" className="flex-shrink-0">
+                    <CircleDot className="w-4 h-4 mr-1" />
                     Nodes
                   </TabsTrigger>
-                  <TabsTrigger value="fake-nodes">
-                    <Bot className="w-4 h-4 mr-2" />
-                    Fake Nodes
+                  <TabsTrigger value="fake-nodes" className="flex-shrink-0">
+                    <Bot className="w-4 h-4 mr-1" />
+                    Fake
                   </TabsTrigger>
-                  <TabsTrigger value="theme">
-                    <Palette className="w-4 h-4 mr-2" />
+                  <TabsTrigger value="theme" className="flex-shrink-0">
+                    <Palette className="w-4 h-4 mr-1" />
                     Theme
                   </TabsTrigger>
-                  <TabsTrigger value="tutorials">
-                    <GraduationCap className="w-4 h-4 mr-2" />
+                  <TabsTrigger value="tutorials" className="flex-shrink-0">
+                    <GraduationCap className="w-4 h-4 mr-1" />
                     Tutorials
                   </TabsTrigger>
-                  <TabsTrigger value="pending" className="relative">
-                    <AlertTriangle className="w-4 h-4 mr-2" />
+                  <TabsTrigger value="pending" className="relative flex-shrink-0">
+                    <AlertTriangle className="w-4 h-4 mr-1" />
                     Offen
                     {pendingReports.length > 0 && (
                       <Badge 
@@ -222,20 +222,24 @@ export default function Admin() {
                       </Badge>
                     )}
                   </TabsTrigger>
-                  <TabsTrigger value="reviewed">
-                    <FileText className="w-4 h-4 mr-2" />
+                  <TabsTrigger value="reviewed" className="flex-shrink-0">
+                    <FileText className="w-4 h-4 mr-1" />
                     Geprüft
                   </TabsTrigger>
-                  <TabsTrigger value="audit">
-                    <History className="w-4 h-4 mr-2" />
-                    Audit-Log
+                  <TabsTrigger value="audit" className="flex-shrink-0">
+                    <History className="w-4 h-4 mr-1" />
+                    Audit
                   </TabsTrigger>
-                  <TabsTrigger value="ai-bot">
-                    <Bot className="w-4 h-4 mr-2" />
+                  <TabsTrigger value="ai-bot" className="flex-shrink-0">
+                    <Bot className="w-4 h-4 mr-1" />
                     AI Bot
                   </TabsTrigger>
-                  <TabsTrigger value="danger" className="text-destructive">
-                    <Trash2 className="w-4 h-4 mr-2" />
+                  <TabsTrigger value="survey" className="flex-shrink-0">
+                    <FileText className="w-4 h-4 mr-1" />
+                    Umfrage
+                  </TabsTrigger>
+                  <TabsTrigger value="danger" className="text-destructive flex-shrink-0">
+                    <Trash2 className="w-4 h-4 mr-1" />
                     Danger
                   </TabsTrigger>
                 </TabsList>
@@ -306,6 +310,45 @@ export default function Admin() {
 
                 <TabsContent value="ai-bot">
                   <AIBotPanel />
+                </TabsContent>
+
+                <TabsContent value="survey">
+                  <div className="max-w-md space-y-4">
+                    <h3 className="text-lg font-semibold">Test-Diskussion Umfrage</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Alle eingegangenen Antworten der Umfrage als CSV-Datei herunterladen.
+                    </p>
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={async () => {
+                        const { data, error } = await supabase
+                          .from('test_diskussion_replies')
+                          .select('*')
+                          .order('created_at', { ascending: true });
+                        if (error || !data) return;
+                        const headers = ['id', 'created_at', 'email', 'warmth', 'understanding', 'sincerity'];
+                        const csvRows = [
+                          headers.join(','),
+                          ...data.map(row =>
+                            headers.map(h => `"${String((row as any)[h] ?? '').replace(/"/g, '""')}"`).join(',')
+                          ),
+                        ];
+                        const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `test-diskussion-replies-${Date.now()}.csv`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                      }}
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Antworten als CSV herunterladen
+                    </Button>
+                  </div>
                 </TabsContent>
 
                 <TabsContent value="danger">
