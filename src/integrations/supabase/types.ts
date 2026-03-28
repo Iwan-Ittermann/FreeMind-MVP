@@ -556,6 +556,30 @@ export type Database = {
         }
         Relationships: []
       }
+      test_diskussion_replies: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+        }
+        Relationships: []
+      }
       topics: {
         Row: {
           created_at: string

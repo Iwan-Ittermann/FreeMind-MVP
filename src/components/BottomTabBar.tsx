@@ -7,9 +7,10 @@ interface BottomTabBarProps {
   activePanel: MobilePanel;
   onPanelChange: (panel: MobilePanel) => void;
   totalUnread?: number;
+  menuOpen?: boolean;
 }
 
-export function BottomTabBar({ activePanel, onPanelChange, totalUnread = 0 }: BottomTabBarProps) {
+export function BottomTabBar({ activePanel, onPanelChange, totalUnread = 0, menuOpen = false }: BottomTabBarProps) {
   const { t } = useTranslation();
 
   const handleTap = (panel: MobilePanel) => {
@@ -33,10 +34,12 @@ export function BottomTabBar({ activePanel, onPanelChange, totalUnread = 0 }: Bo
         )}
       </button>
 
-      <button className={btnClass('menu')} onClick={() => handleTap('menu')}>
+      <button className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-1 transition-colors relative ${
+        menuOpen ? 'text-accent' : 'text-muted-foreground'
+      }`} onClick={() => handleTap('menu')}>
         <MoreHorizontal className="h-6 w-6" />
         <span className="text-xs font-medium">{t('common.menu', 'Menu')}</span>
-        {isActive('menu') && (
+        {menuOpen && (
           <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[2px] rounded-full bg-accent shadow-[0_0_8px_2px_hsla(var(--accent)/0.5)]" />
         )}
       </button>

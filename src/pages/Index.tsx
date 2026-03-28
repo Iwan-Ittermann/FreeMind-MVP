@@ -313,6 +313,8 @@ const Index = () => {
       <Header
         title={topicTitle}
         enlarged={isMobile && !activeMobilePanel}
+        user={user ?? null}
+        onSignIn={() => setAuthDialogOpen(true)}
       />
 
       {/* Standalone mobile title when no panel open */}
@@ -483,7 +485,7 @@ const Index = () => {
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0, opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="w-full max-w-sm mt-3 px-4 lg:mb-14 relative z-10"
+                className="w-full max-w-sm mt-3 px-4 mb-20 lg:mb-14 relative z-10"
               >
                 <div className="flex gap-2 items-end">
                   <Textarea
@@ -589,7 +591,7 @@ const Index = () => {
             activePanel={activeMobilePanel}
             onPanelChange={handleMobilePanelChange}
             totalUnread={totalUnreadCount}
-            
+            menuOpen={mobileMenuOpen}
           />
         </>
       )}

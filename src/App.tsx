@@ -20,6 +20,7 @@ import Legal from "./pages/Legal";
 import Landing from "./pages/Landing";
 import OldLanding from "./pages/OldLanding";
 import NotFound from "./pages/NotFound";
+import TestDiskussion from "./pages/TestDiskussion";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +54,7 @@ function AppRoutes() {
       <Route path="/legal" element={<Legal />} />
       <Route path="/t/:slug" element={<TopicJoin />} />
       <Route path="/topic/:topicId" element={<TopicView />} />
+      <Route path="/test-diskussion" element={<TestDiskussion />} />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
     </Routes>
