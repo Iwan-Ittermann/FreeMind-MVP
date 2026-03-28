@@ -7,9 +7,10 @@ interface BottomTabBarProps {
   activePanel: MobilePanel;
   onPanelChange: (panel: MobilePanel) => void;
   totalUnread?: number;
+  menuOpen?: boolean;
 }
 
-export function BottomTabBar({ activePanel, onPanelChange, totalUnread = 0 }: BottomTabBarProps) {
+export function BottomTabBar({ activePanel, onPanelChange, totalUnread = 0, menuOpen = false }: BottomTabBarProps) {
   const { t } = useTranslation();
 
   const handleTap = (panel: MobilePanel) => {
