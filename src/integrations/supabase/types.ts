@@ -561,22 +561,31 @@ export type Database = {
           created_at: string
           email: string
           id: string
-          message: string
-          name: string
+          message: string | null
+          name: string | null
+          sincerity: number | null
+          understanding: number | null
+          warmth: number | null
         }
         Insert: {
           created_at?: string
           email: string
           id?: string
-          message: string
-          name: string
+          message?: string | null
+          name?: string | null
+          sincerity?: number | null
+          understanding?: number | null
+          warmth?: number | null
         }
         Update: {
           created_at?: string
           email?: string
           id?: string
-          message?: string
-          name?: string
+          message?: string | null
+          name?: string | null
+          sincerity?: number | null
+          understanding?: number | null
+          warmth?: number | null
         }
         Relationships: []
       }
