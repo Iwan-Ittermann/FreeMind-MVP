@@ -351,6 +351,7 @@ export default function Admin() {
                   </div>
                 </TabsContent>
 
+                <TabsContent value="danger">
                   <div className="max-w-md">
                     <div className="bg-destructive/5 border border-destructive/20 rounded-lg p-6">
                       <div className="flex items-center gap-3 mb-4">
