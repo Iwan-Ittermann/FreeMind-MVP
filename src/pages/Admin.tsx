@@ -312,7 +312,45 @@ export default function Admin() {
                   <AIBotPanel />
                 </TabsContent>
 
-                <TabsContent value="danger">
+                <TabsContent value="survey">
+                  <div className="max-w-md space-y-4">
+                    <h3 className="text-lg font-semibold">Test-Diskussion Umfrage</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Alle eingegangenen Antworten der Umfrage als CSV-Datei herunterladen.
+                    </p>
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={async () => {
+                        const { data, error } = await supabase
+                          .from('test_diskussion_replies')
+                          .select('*')
+                          .order('created_at', { ascending: true });
+                        if (error || !data) return;
+                        const headers = ['id', 'created_at', 'email', 'warmth', 'understanding', 'sincerity'];
+                        const csvRows = [
+                          headers.join(','),
+                          ...data.map(row =>
+                            headers.map(h => `"${String((row as any)[h] ?? '').replace(/"/g, '""')}"`).join(',')
+                          ),
+                        ];
+                        const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `test-diskussion-replies-${Date.now()}.csv`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                      }}
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Antworten als CSV herunterladen
+                    </Button>
+                  </div>
+                </TabsContent>
+
                   <div className="max-w-md">
                     <div className="bg-destructive/5 border border-destructive/20 rounded-lg p-6">
                       <div className="flex items-center gap-3 mb-4">
