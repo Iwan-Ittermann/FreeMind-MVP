@@ -17,7 +17,7 @@ const replySchema = z.object({
 
 export default function TestDiskussion() {
   const { t } = useTranslation();
-  const { isAdmin } = useAdminRole();
+  const { data: isAdmin } = useIsAdmin();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
