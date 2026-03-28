@@ -591,7 +591,7 @@ const Index = () => {
             activePanel={activeMobilePanel}
             onPanelChange={handleMobilePanelChange}
             totalUnread={totalUnreadCount}
-            
+            menuOpen={mobileMenuOpen}
           />
         </>
       )}
