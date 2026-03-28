@@ -313,6 +313,8 @@ const Index = () => {
       <Header
         title={topicTitle}
         enlarged={isMobile && !activeMobilePanel}
+        user={user ?? null}
+        onSignIn={() => setAuthDialogOpen(true)}
       />
 
       {/* Standalone mobile title when no panel open */}
