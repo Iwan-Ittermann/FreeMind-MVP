@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
-import { useAdminRole } from '@/hooks/useAdminRole';
+import { useIsAdmin } from '@/hooks/useAdminRole';
 import { Download, Send, CheckCircle } from 'lucide-react';
 import { z } from 'zod';
 
