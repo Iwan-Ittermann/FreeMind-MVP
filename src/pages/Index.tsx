@@ -598,6 +598,7 @@ const Index = () => {
               variant="inline"
               onChatClick={handleSidebarChatClick}
               onSignIn={() => setAuthDialogOpen(true)}
+              opinionCtaNode={inlineOpinionCta}
             />
           </BottomPanel>
 
