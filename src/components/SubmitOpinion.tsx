@@ -133,7 +133,7 @@ export function SubmitOpinion({ topicId, onSuccess, hasExistingOpinion = false }
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 placeholder="What's your view on this topic? Be clear and concise..."
-                className="bg-white/5 border-white/10 text-white placeholder:text-white/30 min-h-[120px] md:min-h-[100px] resize-none text-base"
+                className="bg-white/5 border-white/10 text-white placeholder:text-white/30 min-h-[80px] sm:min-h-[100px] md:min-h-[100px] resize-none text-sm sm:text-base"
                 maxLength={500}
               />
               
