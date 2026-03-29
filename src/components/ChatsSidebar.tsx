@@ -265,9 +265,19 @@ export function ChatsSidebar({ open, onOpenChange, topicId, onChatOpen, unreadMe
           </Button>
         </div>
       ) : !myOpinion ? (
-        <div className="flex-1 flex flex-col items-center justify-center gap-3 text-muted-foreground text-sm text-center px-4">
-          <span>{t('sidebar.submitOpinionFirst', 'Submit your opinion first to start chatting')}</span>
-          {opinionCtaNode}
+        <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center px-2">
+          <div className="flex flex-col items-center gap-2">
+            <MessagesSquare className="h-10 w-10 text-muted-foreground/40" />
+            <h3 className="text-base font-semibold text-foreground">{t('sidebar.joinTheConversation', 'Join the conversation')}</h3>
+            <p className="text-sm text-muted-foreground max-w-[260px]">
+              {t('sidebar.submitOpinionFirst', 'Submit your opinion first to start chatting')}
+            </p>
+          </div>
+          {opinionCtaNode && (
+            <div className="w-full max-w-xs">
+              {opinionCtaNode}
+            </div>
+          )}
         </div>
       ) : (
         <>
