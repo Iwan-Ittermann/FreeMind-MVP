@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, X, Send, Check, Flag, Pencil, AlertCircle } from 'lucide-react';
+import { MessageSquare, X, Send, Check, Flag, Pencil, AlertCircle, LogIn } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useTranslation } from 'react-i18next';
 import { FloatingChatManager, FloatingChatManagerHandle } from '@/components/chat/FloatingChatManager';
@@ -18,7 +18,7 @@ import { ChatsSidebar } from '@/components/ChatsSidebar';
 import { BottomTabBar, MobilePanel } from '@/components/BottomTabBar';
 import { BottomPanel } from '@/components/BottomPanel';
 import { DesktopBottomBar } from '@/components/DesktopBottomBar';
-import { MainMenu } from '@/components/MainMenu';
+import { MainMenu, MenuContent } from '@/components/MainMenu';
 import { AboutSidebar } from '@/components/AboutSidebar';
 import { AuthDialog } from '@/components/AuthDialog';
 import { GraphNode, GraphEdge, ChatRequest } from '@/types/graph';
@@ -59,9 +59,8 @@ const Index = () => {
   const [isSubmittingInline, setIsSubmittingInline] = useState(false);
   const queryClient = useQueryClient();
 
-  // Mobile bottom panel state
+  // Unified mobile panel state — menu is now part of this
   const [activeMobilePanel, setActiveMobilePanel] = useState<MobilePanel>(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
 
   // Desktop sidebar state
@@ -102,24 +101,12 @@ const Index = () => {
     status: r.status as 'pending' | 'accepted' | 'declined',
   }));
 
-  // Close menu when switching to another mobile panel
-  useEffect(() => {
-    if (activeMobilePanel !== null) {
-      setMobileMenuOpen(false);
-    }
-  }, [activeMobilePanel]);
-
-  // Handle mobile panel changes
+  // Unified mobile panel toggle — all panels use the same path
   const handleMobilePanelChange = useCallback((panel: MobilePanel) => {
-    if (panel === 'menu') {
-      setActiveMobilePanel(null);
-      setMobileMenuOpen(prev => !prev);
-    } else {
-      setActiveMobilePanel(prev => prev === panel ? null : panel);
-    }
+    setActiveMobilePanel(prev => prev === panel ? null : panel);
   }, []);
 
-  // Graph sizing
+  // Graph sizing — accounts for ANY active panel including menu
   useEffect(() => {
     const updateSize = () => {
       const mobile = window.innerWidth < 768;
@@ -299,26 +286,74 @@ const Index = () => {
   const actionState = getNodeActionState();
   const hasRealData = topicData && topicData.opinions.length > 0;
 
-  // Mobile graph height when panel is open
+  // Mobile: should we hide the below-graph CTA and show it in menu instead?
+  const mobileChatsOpen = isMobile && activeMobilePanel === 'chats';
+  const showCtaBelowGraph = !mobileChatsOpen;
+
+  // Mobile graph height when any panel is open
   const mobileGraphStyle = isMobile && activeMobilePanel
     ? { height: 'calc(100vh - 56px - 55vh - 64px)' }
     : isMobile
     ? { height: 'calc(100vh - 56px - 64px)' }
     : undefined;
 
-  const topicTitle = topicData?.title || "How to fix Climate Change?";
+  // No hardcoded fallback — show empty until data loads
+  const topicTitle = topicData?.title || '';
+
+  // Inline opinion CTA component (reusable in menu)
+  const inlineOpinionCta = user && !myOpinion && !isLoading ? (
+    <div className="w-full max-w-sm px-4">
+      <div className="flex gap-2 items-end">
+        <Textarea
+          value={inlineOpinionText}
+          onChange={(e) => setInlineOpinionText(e.target.value)}
+          placeholder={t('inlineCta.placeholder')}
+          className="min-h-[44px] max-h-[80px] resize-none rounded-full px-4 py-2.5 text-sm bg-background border-primary/40 focus:border-primary"
+          maxLength={500}
+          rows={1}
+        />
+        <Button
+          onClick={handleInlineSubmit}
+          disabled={isSubmittingInline || inlineOpinionText.trim().length < 10}
+          className="h-11 w-11 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 shrink-0 p-0"
+        >
+          {isSubmittingInline ? (
+            <div className="w-4 h-4 border-2 border-accent-foreground border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <Send className="h-5 w-5" />
+          )}
+        </Button>
+      </div>
+      {inlineOpinionText.length > 0 && inlineOpinionText.trim().length < 10 && (
+        <p className="text-xs text-muted-foreground mt-1 text-center">
+          {t('opinion.minCharacters')}
+        </p>
+      )}
+    </div>
+  ) : null;
+
+  // Auth CTA for unauthenticated users (below graph in CTA slot)
+  const authCta = !user ? (
+    <div className="w-full max-w-sm px-4">
+      <Button
+        onClick={() => setAuthDialogOpen(true)}
+        className="w-full h-12 text-base bg-accent text-accent-foreground hover:bg-accent/90 rounded-full"
+      >
+        <LogIn className="w-5 h-5 mr-2" />
+        {t('common.signInOrSignUp', 'Einloggen / Loslegen')}
+      </Button>
+    </div>
+  ) : null;
 
   return (
     <div className="h-screen bg-white dark:bg-[#1A1A2E] text-foreground overflow-hidden flex flex-col" onClick={handleBackgroundClick}>
       <Header
         title={topicTitle}
         enlarged={isMobile && !activeMobilePanel}
-        user={user ?? null}
-        onSignIn={() => setAuthDialogOpen(true)}
       />
 
       {/* Standalone mobile title when no panel open */}
-      {isMobile && !activeMobilePanel && (
+      {isMobile && !activeMobilePanel && topicTitle && (
         <div className="px-4 py-2 text-center">
           <h1 className="text-lg font-semibold text-foreground truncate">{topicTitle}</h1>
         </div>
@@ -477,45 +512,33 @@ const Index = () => {
             )}
           </motion.div>
 
-          {/* Inline Opinion CTA — textarea + send */}
-          <AnimatePresence>
-            {user && !myOpinion && !isLoading && (
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="w-full max-w-sm mt-3 px-4 mb-20 lg:mb-14 relative z-10"
-              >
-                <div className="flex gap-2 items-end">
-                  <Textarea
-                    value={inlineOpinionText}
-                    onChange={(e) => setInlineOpinionText(e.target.value)}
-                    placeholder={t('inlineCta.placeholder')}
-                    className="min-h-[44px] max-h-[80px] resize-none rounded-full px-4 py-2.5 text-sm bg-background border-primary/40 focus:border-primary"
-                    maxLength={500}
-                    rows={1}
-                  />
-                  <Button
-                    onClick={handleInlineSubmit}
-                    disabled={isSubmittingInline || inlineOpinionText.trim().length < 10}
-                    className="h-11 w-11 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 shrink-0 p-0"
-                  >
-                    {isSubmittingInline ? (
-                      <div className="w-4 h-4 border-2 border-accent-foreground border-t-transparent rounded-full animate-spin" />
-                    ) : (
-                      <Send className="h-5 w-5" />
-                    )}
-                  </Button>
-                </div>
-                {inlineOpinionText.length > 0 && inlineOpinionText.trim().length < 10 && (
-                  <p className="text-xs text-muted-foreground mt-1 text-center">
-                    {t('opinion.minCharacters')}
-                  </p>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* CTA slot below graph — auth CTA or opinion CTA */}
+          {showCtaBelowGraph && (
+            <AnimatePresence>
+              {authCta && (
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="mt-3 mb-20 lg:mb-14 relative z-10 flex justify-center"
+                >
+                  {authCta}
+                </motion.div>
+              )}
+              {!authCta && inlineOpinionCta && (
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="w-full max-w-sm mt-3 mb-20 lg:mb-14 relative z-10 flex justify-center"
+                >
+                  {inlineOpinionCta}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          )}
         </div>
 
         {/* Desktop right panel — Chats + Requests */}
@@ -551,7 +574,7 @@ const Index = () => {
         />
       )}
 
-      {/* Mobile: Bottom panels */}
+      {/* Mobile: Bottom panels — all three use the same BottomPanel shell */}
       {isMobile && (
         <>
           <BottomPanel open={activeMobilePanel === 'opinions'}>
@@ -578,25 +601,27 @@ const Index = () => {
             />
           </BottomPanel>
 
-          <MainMenu
-            open={mobileMenuOpen}
-            onOpenChange={setMobileMenuOpen}
-            topicId={DEFAULT_TOPIC_ID}
-            onTutorial={handleTutorial}
-            onAbout={handleAbout}
-            onSignIn={() => setAuthDialogOpen(true)}
-          />
+          {/* Menu now uses BottomPanel — same as opinions/chats */}
+          <BottomPanel open={activeMobilePanel === 'menu'}>
+            <MenuContent
+              onClose={() => setActiveMobilePanel(null)}
+              onTutorial={handleTutorial}
+              onAbout={handleAbout}
+              onSignIn={() => setAuthDialogOpen(true)}
+              showOpinionCta={mobileChatsOpen || (!showCtaBelowGraph && !!inlineOpinionCta)}
+              opinionCtaNode={inlineOpinionCta}
+            />
+          </BottomPanel>
 
           <BottomTabBar
             activePanel={activeMobilePanel}
             onPanelChange={handleMobilePanelChange}
             totalUnread={totalUnreadCount}
-            menuOpen={mobileMenuOpen}
           />
         </>
       )}
 
-      {/* Desktop settings sheet (reuse MainMenu settings) */}
+      {/* Desktop settings sheet */}
       {!isMobile && (
         <MainMenu
           open={settingsSheetOpen}
