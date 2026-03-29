@@ -28,6 +28,7 @@ interface ChatsSidebarProps {
   variant?: 'sheet' | 'inline';
   onChatClick?: (theirOpinionId: string) => void;
   onSignIn?: () => void;
+  opinionCtaNode?: React.ReactNode;
 }
 
 interface ChatItem {
@@ -49,7 +50,7 @@ interface PendingRequestItem {
   direction: 'incoming' | 'outgoing';
 }
 
-export function ChatsSidebar({ open, onOpenChange, topicId, onChatOpen, unreadMessageCounts, variant = 'sheet', onChatClick, onSignIn }: ChatsSidebarProps) {
+export function ChatsSidebar({ open, onOpenChange, topicId, onChatOpen, unreadMessageCounts, variant = 'sheet', onChatClick, onSignIn, opinionCtaNode }: ChatsSidebarProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const isMobile = useIsMobile();
@@ -264,8 +265,9 @@ export function ChatsSidebar({ open, onOpenChange, topicId, onChatOpen, unreadMe
           </Button>
         </div>
       ) : !myOpinion ? (
-        <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm text-center px-4">
-          {t('sidebar.submitOpinionFirst', 'Submit your opinion first to start chatting')}
+        <div className="flex-1 flex flex-col items-center justify-center gap-3 text-muted-foreground text-sm text-center px-4">
+          <span>{t('sidebar.submitOpinionFirst', 'Submit your opinion first to start chatting')}</span>
+          {opinionCtaNode}
         </div>
       ) : (
         <>
