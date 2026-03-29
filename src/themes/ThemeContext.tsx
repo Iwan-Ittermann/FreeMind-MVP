@@ -41,7 +41,8 @@ export function FreeMindThemeProvider({ children }: { children: ReactNode }) {
     return () => { supabase.removeChannel(channel); };
   }, [queryClient]);
 
-  const theme: ThemeName = (setting?.value === 'city') ? 'city' : (setting?.value === 'arcane') ? 'arcane' : (setting?.value === 'signal') ? 'signal' : 'classic';
+  // Default to 'signal' while loading to avoid flash (backend value is 'signal')
+  const theme: ThemeName = !setting ? 'signal' : (setting.value === 'city') ? 'city' : (setting.value === 'arcane') ? 'arcane' : (setting.value === 'signal') ? 'signal' : 'classic';
 
   const value = useMemo<ThemeContextValue>(() => ({ theme, hidePendingEdges, setHidePendingEdges }), [theme, hidePendingEdges, setHidePendingEdges]);
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

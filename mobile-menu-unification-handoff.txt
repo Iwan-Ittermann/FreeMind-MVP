@@ -1,0 +1,43 @@
+Mobile Menu Unification — Handoff / Debug Notes
+================================================
+Date: 2026-03-29
+
+WHAT WAS ALREADY DONE
+---------------------
+- BottomTabBar has 3 buttons: Opinions, Menu, Chats
+- Opinions and Chats use `activeMobilePanel` state + `<BottomPanel>` (framer-motion spring slide-up)
+- Menu uses SEPARATE `mobileMenuOpen` state + `<MainMenu>` (shadcn Sheet side="bottom")
+- This causes different animation, different height, different stacking behavior
+- Header login button existed for unauthenticated users
+- Inline opinion CTA shown below graph for logged-in users without opinion
+
+ROOT CAUSES OF BUGS
+--------------------
+1. Menu uses Sheet (separate from BottomPanel) → different behavior than chats/opinions
+2. `handleMobilePanelChange` special-cases 'menu' to toggle separate state
+3. Graph sizing only accounts for `activeMobilePanel`, not `mobileMenuOpen`
+4. Header enlargement only checks `activeMobilePanel`, not menu
+5. Title fallback hardcoded to "How to fix Climate Change?"
+6. ThemeContext defaults to 'classic' before DB load (real value: 'signal')
+7. index.html missing body background color for anti-flash
+
+FIXES APPLIED NOW
+-----------------
+1. Eliminated `mobileMenuOpen` — menu now uses `activeMobilePanel === 'menu'`
+2. Extracted `<MenuContent>` from MainMenu so it can render inside BottomPanel on mobile
+3. MainMenu Sheet only used on desktop; mobile renders MenuContent inside BottomPanel
+4. All three BottomTabBar buttons use identical `btnClass` helper
+5. Graph sizing accounts for any activeMobilePanel including 'menu'
+6. Header enlarged only when activeMobilePanel is null (covers menu too)
+7. Removed login button from Header
+8. Auth CTA placed in same slot as opinion CTA (below graph)
+9. On mobile + chats open, opinion CTA hidden from graph area (shown in menu instead)
+10. Topic title defaults to empty string (no flash)
+11. ThemeContext defaults to null/loading state until DB value arrives
+12. index.html body gets background-color: #000000 for anti-flash
+
+ROLLBACK
+--------
+If this doesn't work, revert to the commit before this change.
+Key files changed: Index.tsx, BottomTabBar.tsx, BottomPanel.tsx, MainMenu.tsx,
+Header.tsx, ThemeContext.tsx, index.html
