@@ -1,63 +1,82 @@
 
+Goal: make the mobile menu behave exactly like the chats/opinions panels, move auth CTA into the main CTA slot, move the add-opinion CTA into the menu when chat is open on mobile, and remove the startup flash of default topic/theme. I’ll also add a persistent handoff `.txt` note in the repo.
 
-## Plan: Five Changes
+1. Create a handoff/debug text file
+- Add a small `.txt` file in the repo summarizing:
+  - what was already changed before
+  - what is still broken
+  - the root causes I found now
+  - the exact fixes being applied next
+- This gives you a restart point if needed.
 
-### 1. Create `/test-diskussion` page with form + spreadsheet export
+2. Unify mobile bottom-bar behavior
+- Refactor mobile panel state so settings/menu is treated as the same kind of mobile panel as `opinions` and `chats`, instead of being controlled by a separate `mobileMenuOpen` state.
+- Update `BottomTabBar` so all three buttons use the same button class helper and same active-state logic.
+- Replace the current special-case menu toggle with one shared toggle path.
+- Make graph height, header enlargement, title placement, and panel-open logic all depend on one unified mobile panel state.
 
-**New file**: `src/pages/TestDiskussion.tsx`
-- A simple form page with fields (e.g. name, email, message/opinion) using existing shadcn components
-- On submit, save replies to the database in a new `test_diskussion_replies` table
-- Add route in `src/App.tsx`
+Files:
+- `src/pages/Index.tsx`
+- `src/components/BottomTabBar.tsx`
+- likely `src/components/BottomPanel.tsx`
+- `src/components/MainMenu.tsx`
 
-**Database migration**: Create `test_diskussion_replies` table with columns: `id`, `created_at`, `name`, `email`, `message`. Public insert, admin-only select. No auth required for submissions.
+3. Make settings/menu panel match the other mobile panels
+- Stop rendering the mobile settings menu as a different bottom `Sheet` behavior if that is what keeps making it feel different.
+- Render mobile settings content in the same bottom-panel shell used by opinions/chats, so opening/closing/height/animation/stacking all match.
+- Keep desktop settings behavior unchanged.
 
-**Spreadsheet download**: Add an admin-visible "Download CSV" button that fetches all replies and triggers a CSV download in-browser.
+Files:
+- `src/components/MainMenu.tsx`
+- `src/pages/Index.tsx`
+- maybe extract shared menu content if needed
 
-### 2. Fix mobile menu toggle + highlight the menu button
+4. Move login/signup CTA out of header and into CTA slot
+- Remove the unauthenticated login button from `Header`.
+- Reuse the same graph-bottom CTA position currently used by the add-opinion composer.
+- When logged out: show colored `Einloggen / Loslegen` CTA there even when inactive.
+- When logged in and no opinion: show add-opinion CTA there.
+- Keep only one prominent CTA in that area at a time.
 
-**Problem**: In `BottomTabBar`, tapping "Menu" calls `handleMobilePanelChange('menu')` which sets `activeMobilePanel(null)` and toggles `mobileMenuOpen`. But `BottomTabBar` only highlights based on `activePanel` — since menu sets activePanel to null, it never highlights.
+Files:
+- `src/components/Header.tsx`
+- `src/pages/Index.tsx`
 
-**Fix in `src/components/BottomTabBar.tsx`**:
-- Add a new prop `menuOpen: boolean`
-- Use `menuOpen` for the menu button's active styling instead of `isActive('menu')`
+5. Move add-opinion CTA into menu when chats are open on mobile
+- On mobile + chat panel open + logged in + no opinion:
+  - hide the floating/below-graph add-opinion CTA
+  - show the CTA inside the menu/settings panel instead
+- This prevents the CTA from sitting below the graph while chat is active.
+- If logged out, show the colored auth CTA inside the menu as appropriate.
 
-**Fix in `src/pages/Index.tsx`**:
-- Pass `menuOpen={mobileMenuOpen}` to `BottomTabBar`
+Files:
+- `src/pages/Index.tsx`
+- `src/components/MainMenu.tsx`
 
-### 3. Move signup/login button to be always one-click accessible
+6. Fix the default-data flashing on reload
+Root causes found:
+- `Index.tsx` hardcodes `How to fix Climate Change?` as fallback title
+- `ThemeContext` defaults to `classic` before settings load, while backend value is actually `signal`
+- `index.html` currently lacks the documented first-paint background stabilization
+- `useAuth` still uses the old listener-first initialization pattern
 
-**Current**: Login button is buried inside MainMenu (settings sheet) or ChatsSidebar.
+Planned fix:
+- Remove the hardcoded topic fallback from `Index.tsx`; render empty/loading-safe title until real data arrives.
+- Add a startup-safe theme strategy in `ThemeContext` so it does not briefly render `classic` before the saved theme loads.
+- Restore first-paint background protection in `index.html`.
+- Update auth readiness flow so initial session restoration completes before dependent UI assumes unauthenticated/default state.
+- If needed, gate initial render of theme/title-sensitive UI behind a lightweight ready state.
 
-**Fix**: When user is not logged in, show a persistent login button in the `Header` component on all screen sizes. One tap opens `AuthDialog`.
+Files:
+- `src/pages/Index.tsx`
+- `src/themes/ThemeContext.tsx`
+- `src/hooks/useAuth.ts`
+- `index.html`
+- possibly `src/App.tsx`
 
-**Files**:
-- `src/components/Header.tsx` — add `user`, `onSignIn` props; render a small login button when `!user`
-- `src/pages/Index.tsx` — pass `user` and `onSignIn={() => setAuthDialogOpen(true)}` to Header
-
-### 4. Deactivate all toasts on mobile
-
-**Fix in `src/components/ui/sonner.tsx`**:
-- Import `useIsMobile` and conditionally render the `<Sonner>` component only when not mobile. Return `null` on mobile.
-- This silences all `toast()` calls on mobile since the Toaster isn't mounted.
-
-Also hide the shadcn `<Toaster>` on mobile in `src/App.tsx` or its component file.
-
-### 5. Ensure Add Opinion CTA is never behind the bottom bar
-
-**Current**: The inline CTA has `lg:mb-14` but no mobile bottom margin, so it can hide behind the 64px bottom tab bar.
-
-**Fix in `src/pages/Index.tsx`**:
-- Add `mb-20` (80px) to the CTA wrapper on mobile to clear the bottom bar: change class from `"w-full max-w-sm mt-3 px-4 lg:mb-14 relative z-10"` to `"w-full max-w-sm mt-3 px-4 mb-20 lg:mb-14 relative z-10"`
-- Also ensure the selected-node action panel's `bottom-20` is sufficient (currently correct at 80px).
-
-### Files involved
-| File | Changes |
-|------|---------|
-| `src/pages/TestDiskussion.tsx` | New page with form |
-| `src/App.tsx` | Add route, conditionally hide Toaster on mobile |
-| `src/components/BottomTabBar.tsx` | Add `menuOpen` prop for highlight |
-| `src/pages/Index.tsx` | Pass menuOpen, user/onSignIn to Header, fix CTA margin |
-| `src/components/Header.tsx` | Add login button for unauthenticated users |
-| `src/components/ui/sonner.tsx` | Hide on mobile |
-| Database migration | `test_diskussion_replies` table |
-
+Technical notes
+- The mobile inconsistency is not just CSS: the settings button uses separate state and a different container than chats/opinions, so it cannot truly behave the same until the state model and panel shell are unified.
+- The title/theme flash is real and reproducible from code inspection, not just a caching issue.
+- Backend values currently confirm the real startup state should be:
+  - topic title: `Warum sollte der Bundestag ein Verbotsverfahren gegen die AfD prüfen lassen?`
+  - theme: `signal`
