@@ -28,6 +28,7 @@ interface ChatsSidebarProps {
   variant?: 'sheet' | 'inline';
   onChatClick?: (theirOpinionId: string) => void;
   onSignIn?: () => void;
+  opinionCtaNode?: React.ReactNode;
 }
 
 interface ChatItem {
