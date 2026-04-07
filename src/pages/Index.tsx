@@ -312,7 +312,7 @@ const Index = () => {
   };
 
   const actionState = getNodeActionState();
-  const hasRealData = topicData && topicData.opinions.length > 0;
+  const hasRealData = stableOpinions.length > 0;
 
   // Mobile: should we hide the below-graph CTA and show it in menu instead?
   const mobileChatsOpen = isMobile && activeMobilePanel === 'chats';
