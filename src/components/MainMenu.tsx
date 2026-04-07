@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Settings, LogOut, LogIn, Copy, Check, Download, Globe, GraduationCap, Info, Send } from 'lucide-react';
+import { Settings, LogOut, LogIn, Copy, Check, Download, Globe, GraduationCap, Info, Send, Filter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
@@ -24,9 +24,12 @@ interface MenuContentProps {
   /** Show inline opinion CTA inside menu (mobile + chats open) */
   showOpinionCta?: boolean;
   opinionCtaNode?: React.ReactNode;
+  /** Chat activity filter: 0 = show all, 1-4 = last N weeks */
+  chatAgeFilterWeeks?: number;
+  onChatAgeFilterChange?: (weeks: number) => void;
 }
 
-export function MenuContent({ onClose, onTutorial, onAbout, onSignIn, showOpinionCta, opinionCtaNode }: MenuContentProps) {
+export function MenuContent({ onClose, onTutorial, onAbout, onSignIn, showOpinionCta, opinionCtaNode, chatAgeFilterWeeks = 0, onChatAgeFilterChange }: MenuContentProps) {
   const { t } = useTranslation();
   const { user, signOut } = useAuth();
   const [copied, setCopied] = useState(false);
