@@ -10,6 +10,8 @@ export interface TopicData {
   description: string | null;
   opinions: Opinion[];
   ratings: ChatRating[];
+  /** Map of opinionId → last chat message timestamp (ISO string) or null */
+  lastChatActivity: Map<string, string | null>;
 }
 
 export interface ActiveChat {
