@@ -400,6 +400,7 @@ const Index = () => {
                 variant="inline"
                 onOpinionClick={handleSidebarOpinionClick}
                 onChatOpen={openChatWith}
+                nodeAngles={nodeAngles}
               />
             </div>
           </div>
@@ -613,6 +614,7 @@ const Index = () => {
               variant="inline"
               onOpinionClick={handleSidebarOpinionClick}
               onChatOpen={openChatWith}
+              nodeAngles={nodeAngles}
             />
           </BottomPanel>
 
