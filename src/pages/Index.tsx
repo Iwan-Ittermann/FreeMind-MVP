@@ -80,6 +80,32 @@ const Index = () => {
     getRequestBetween, hasAcceptedChat, hasPendingRequest,
   } = useChatRequests(DEFAULT_TOPIC_ID);
 
+  // Chat-age activity filter (0 = show all, 1-4 = weeks)
+  const [chatAgeFilterWeeks, setChatAgeFilterWeeks] = useState(0);
+
+  // Debounce layout inputs — prevents constant reshuffling
+  const { stableOpinions, stableRatings } = useStableLayoutData(
+    topicData?.opinions,
+    topicData?.ratings,
+  );
+
+  // Compute node angles from stable layout for sidebar sorting
+  const nodeAngles = useMemo(() => {
+    if (stableOpinions.length === 0) return new Map<string, number>();
+    const size = Math.min(graphSize.width, graphSize.height);
+    const config: LayoutConfig = {
+      centerX: graphSize.width / 2,
+      centerY: graphSize.height / 2,
+      outerRadius: size * 0.48,
+      extremeRadius: size * 0.48 * 0.92,
+      moderateRadius: size * 0.48 * 0.80,
+      respectfulRadius: size * 0.48 * 0.25,
+      nodeRadius: Math.max(3, size * 0.012),
+    };
+    const layoutData = calculateLayout(stableOpinions, stableRatings, config);
+    return getNodeAngles(layoutData.nodes, config);
+  }, [stableOpinions, stableRatings, graphSize]);
+
   const myOpinion = topicData?.opinions.find(op => op.authorId === user?.id);
   const { onlineOpinionIds } = usePresence(DEFAULT_TOPIC_ID, myOpinion?.id);
   const { data: unreadMessageCounts } = useUnreadMessages(DEFAULT_TOPIC_ID, myOpinion?.id);
