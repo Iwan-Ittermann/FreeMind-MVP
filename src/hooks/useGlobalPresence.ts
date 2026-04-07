@@ -1,51 +1,55 @@
-import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useEffect, useMemo } from 'react';
+import { useLocation, useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
 
-const DEFAULT_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
-
 /**
  * Tracks the current user's presence globally across all routes.
- * On /home, usePresence handles both tracking and reading.
- * On other routes (e.g. /chat), this hook ensures the user still appears online.
+ * On /topic/:topicId, usePresence handles both tracking and reading.
+ * On other routes (e.g. /chat), this hook ensures the user still appears online
+ * for whichever topic they were last viewing.
  */
 export function useGlobalPresence() {
   const { user } = useAuth();
   const location = useLocation();
-  const isOnHomePage = location.pathname === '/home';
+  const params = useParams<{ topicId?: string }>();
 
-  const { data: myOpinionId } = useQuery({
-    queryKey: ['myOpinionIdForPresence', user?.id],
+  // Detect if we're on a topic page (where usePresence already tracks)
+  const isOnTopicPage = location.pathname.startsWith('/topic/');
+  const topicId = params.topicId;
+
+  // Find any opinion the user has (for presence tracking on non-topic pages)
+  const { data: presenceInfo } = useQuery({
+    queryKey: ['globalPresenceInfo', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
       const { data } = await supabase
         .from('opinions_public')
-        .select('id')
-        .eq('topic_id', DEFAULT_TOPIC_ID)
+        .select('id, topic_id')
         .eq('user_id', user.id)
+        .limit(1)
         .maybeSingle();
-      return data?.id || null;
+      return data ? { opinionId: data.id, topicId: data.topic_id } : null;
     },
-    enabled: !!user?.id,
+    enabled: !!user?.id && !isOnTopicPage,
     staleTime: 60000,
   });
 
-  // Only track on non-home pages (home page uses usePresence which already tracks)
+  // Only track on non-topic pages
   useEffect(() => {
-    if (!myOpinionId || isOnHomePage) return;
+    if (isOnTopicPage || !presenceInfo) return;
 
-    const channel = supabase.channel(`presence-topic-${DEFAULT_TOPIC_ID}`);
+    const channel = supabase.channel(`presence-topic-${presenceInfo.topicId}`);
 
     channel.subscribe(async (status) => {
       if (status === 'SUBSCRIBED') {
-        await channel.track({ opinionId: myOpinionId });
+        await channel.track({ opinionId: presenceInfo.opinionId });
       }
     });
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [myOpinionId, isOnHomePage]);
+  }, [presenceInfo, isOnTopicPage]);
 }

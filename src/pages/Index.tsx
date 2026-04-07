@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, X, Send, Check, Flag, Pencil, AlertCircle, LogIn } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -42,9 +42,10 @@ import { useChatRequestTooltips } from '@/hooks/useChatRequestTooltips';
 const opinionSchema = z.object({
   text: z.string().trim().min(10).max(500),
 });
-const DEFAULT_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
 
 const Index = () => {
+  const { topicId: topicIdParam } = useParams<{ topicId: string }>();
+  const topicId = topicIdParam || '00000000-0000-0000-0000-000000000001';
   const navigate = useNavigate();
   const { user } = useAuth();
   const { t } = useTranslation();

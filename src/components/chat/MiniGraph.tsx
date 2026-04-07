@@ -9,13 +9,16 @@ interface MiniGraphProps {
   myOpinionId?: string;
   theirOpinionId?: string;
   size?: number;
+  /** When true, hides You/Them legend (for homepage cards) */
+  compact?: boolean;
 }
 
 export function MiniGraph({ 
   topicId, 
   myOpinionId, 
   theirOpinionId,
-  size = 120 
+  size = 120,
+  compact = false,
 }: MiniGraphProps) {
   const { data: topicData, isLoading } = useTopicData(topicId);
 
@@ -156,16 +159,18 @@ export function MiniGraph({
       </svg>
 
       {/* Legend */}
-      <div className="absolute -bottom-6 left-0 right-0 flex justify-center gap-4 text-[9px] text-muted-foreground font-medium">
-        <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-secondary" />
-          You
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-primary" />
-          Them
-        </span>
-      </div>
+      {!compact && (
+        <div className="absolute -bottom-6 left-0 right-0 flex justify-center gap-4 text-[9px] text-muted-foreground font-medium">
+          <span className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-secondary" />
+            You
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-primary" />
+            Them
+          </span>
+        </div>
+      )}
     </motion.div>
   );
 }

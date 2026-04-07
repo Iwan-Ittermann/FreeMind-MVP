@@ -9,12 +9,12 @@ import { useDynamicSiteTitle } from "@/hooks/useDynamicSiteTitle";
 import { useGlobalPresence } from "@/hooks/useGlobalPresence";
 import { FreeMindThemeProvider } from "@/themes/ThemeContext";
 import Splash from "./pages/Splash";
+import Home from "./pages/Home";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import { Navigate } from "react-router-dom";
 import Admin from "./pages/Admin";
 import TopicJoin from "./pages/TopicJoin";
-import TopicView from "./pages/TopicView";
 import About from "./pages/About";
 import Legal from "./pages/Legal";
 import Landing from "./pages/Landing";
@@ -45,15 +45,15 @@ function AppRoutes() {
     <Routes>
       <Route path="/eching" element={<Splash />} />
       <Route path="/old-lp" element={<OldLanding />} />
-      <Route path="/" element={<Index />} />
+      <Route path="/" element={<Home />} />
+      <Route path="/topic/:topicId" element={<Index />} />
       <Route path="/about" element={<About />} />
       <Route path="/home" element={<Navigate to="/" replace />} />
-      <Route path="/auth" element={<Auth />} />
-      <Route path="/chat" element={<Navigate to="/home" replace />} />
+      <Route path="/auth" element={<Navigate to="/" replace />} />
+      <Route path="/chat" element={<Navigate to="/" replace />} />
       <Route path="/admin" element={<Admin />} />
       <Route path="/legal" element={<Legal />} />
       <Route path="/t/:slug" element={<TopicJoin />} />
-      <Route path="/topic/:topicId" element={<TopicView />} />
       <Route path="/test-diskussion" element={<TestDiskussion />} />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
