@@ -205,9 +205,11 @@ interface MainMenuProps {
   onTutorial?: () => void;
   onAbout?: () => void;
   onSignIn?: () => void;
+  chatAgeFilterWeeks?: number;
+  onChatAgeFilterChange?: (weeks: number) => void;
 }
 
-export function MainMenu({ open, onOpenChange, onTutorial, onAbout, onSignIn }: MainMenuProps) {
+export function MainMenu({ open, onOpenChange, onTutorial, onAbout, onSignIn, chatAgeFilterWeeks, onChatAgeFilterChange }: MainMenuProps) {
   const { t } = useTranslation();
 
   return (
@@ -226,6 +228,8 @@ export function MainMenu({ open, onOpenChange, onTutorial, onAbout, onSignIn }: 
             onTutorial={onTutorial}
             onAbout={onAbout}
             onSignIn={onSignIn}
+            chatAgeFilterWeeks={chatAgeFilterWeeks}
+            onChatAgeFilterChange={onChatAgeFilterChange}
           />
         </div>
       </SheetContent>
