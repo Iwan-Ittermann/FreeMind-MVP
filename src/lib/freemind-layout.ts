@@ -343,6 +343,66 @@ function adjustForMinSeparation(
   return adjusted;
 }
 
+// DBSCAN clustering algorithm
+function dbscan(
+  nodes: GraphNode[],
+  eps: number,
+  minPts: number,
+): Map<string, number> {
+  const clusterMap = new Map<string, number>();
+  const visited = new Set<string>();
+  const noise = new Set<string>();
+  let clusterId = 0;
+
+  function regionQuery(nodeId: string): string[] {
+    const node = nodes.find(n => n.id === nodeId)!;
+    const neighbors: string[] = [];
+    for (const other of nodes) {
+      if (other.id === nodeId) continue;
+      const dx = node.x - other.x;
+      const dy = node.y - other.y;
+      if (Math.sqrt(dx * dx + dy * dy) <= eps) {
+        neighbors.push(other.id);
+      }
+    }
+    return neighbors;
+  }
+
+  function expandCluster(nodeId: string, neighbors: string[], cid: number) {
+    clusterMap.set(nodeId, cid);
+    const queue = [...neighbors];
+    while (queue.length > 0) {
+      const current = queue.shift()!;
+      if (!visited.has(current)) {
+        visited.add(current);
+        const currentNeighbors = regionQuery(current);
+        if (currentNeighbors.length >= minPts) {
+          queue.push(...currentNeighbors.filter(n => !clusterMap.has(n)));
+        }
+      }
+      if (!clusterMap.has(current)) {
+        clusterMap.set(current, cid);
+        noise.delete(current);
+      }
+    }
+  }
+
+  for (const node of nodes) {
+    if (visited.has(node.id)) continue;
+    visited.add(node.id);
+    const neighbors = regionQuery(node.id);
+    if (neighbors.length < minPts) {
+      noise.add(node.id);
+      clusterMap.set(node.id, -1); // noise
+    } else {
+      expandCluster(node.id, neighbors, clusterId);
+      clusterId++;
+    }
+  }
+
+  return clusterMap;
+}
+
 // Main layout function
 export function calculateLayout(
   opinions: Opinion[],
@@ -374,7 +434,6 @@ export function calculateLayout(
   const angleMap = calculateDeterministicAngles(opinions, ratings);
 
   // Step 4: Position ALL nodes using discrete level → radius
-  // No more separate "inactive" positioning — all nodes use the same system
   let allNodes: GraphNode[] = opinions.map((op) => {
     const scores = nodeScores.get(op.id)!;
     const targetRadius = levelToRadius(scores.level, config);
@@ -424,7 +483,36 @@ export function calculateLayout(
   // Collision avoidance: push overlapping nodes apart angularly (never change radius)
   allNodes = resolveCollisions(allNodes, config, 12, pinnedIds);
 
+  // Step 5: DBSCAN clustering on final positions
+  // eps scaled to graph size, minPts = 2
+  const eps = config.outerRadius * 0.25;
+  const clusterAssignment = dbscan(allNodes, eps, 2);
+  allNodes = allNodes.map(node => ({
+    ...node,
+    cluster: clusterAssignment.get(node.id) ?? -1,
+  }));
+
   return { nodes: allNodes, edges, respectfulZoneSlots };
+}
+
+/**
+ * Extract node angles from laid-out nodes (for sidebar sorting).
+ * Returns a Map of opinionId → angle in radians (0 = 3 o'clock, clockwise).
+ */
+export function getNodeAngles(
+  nodes: GraphNode[],
+  config: LayoutConfig
+): Map<string, number> {
+  const angleMap = new Map<string, number>();
+  for (const node of nodes) {
+    const dx = node.x - config.centerX;
+    const dy = node.y - config.centerY;
+    // Convert to clockwise from 12 o'clock: atan2 gives angle from 3 o'clock
+    let angle = Math.atan2(dy, dx) + Math.PI / 2; // rotate so 0 = 12 o'clock
+    if (angle < 0) angle += 2 * Math.PI;
+    angleMap.set(node.id, angle);
+  }
+  return angleMap;
 }
 
 /**
