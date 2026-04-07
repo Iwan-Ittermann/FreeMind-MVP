@@ -132,6 +132,19 @@ const Index = () => {
   const { onlineOpinionIds } = usePresence(DEFAULT_TOPIC_ID, myOpinion?.id);
   const { data: unreadMessageCounts } = useUnreadMessages(DEFAULT_TOPIC_ID, myOpinion?.id);
 
+  // Detect new incoming requests and show tooltips
+  useEffect(() => {
+    if (!myOpinion) return;
+    const incomingRequests = chatRequests.filter(
+      r => r.target_opinion_id === myOpinion.id && r.status === 'pending'
+    );
+    const currentCount = incomingRequests.length;
+    if (currentCount > prevIncomingCountRef.current) {
+      onNewIncomingRequest(t);
+    }
+    prevIncomingCountRef.current = currentCount;
+  }, [chatRequests, myOpinion, onNewIncomingRequest, t]);
+
   // Disagreement rating for selected node
   const { disagreement, setDisagreement, canRate: canRateDisagreement } = useDisagreementRating(
     DEFAULT_TOPIC_ID,
