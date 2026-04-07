@@ -80,12 +80,29 @@ const Index = () => {
     getRequestBetween, hasAcceptedChat, hasPendingRequest,
   } = useChatRequests(DEFAULT_TOPIC_ID);
 
-  // Chat-age activity filter (0 = show all, 1-4 = weeks)
+  // Chat-age activity filter (0 = show all, 1-4 = weeks; slider value maps: 0=all, 1=4w, 2=3w, 3=2w, 4=1w)
   const [chatAgeFilterWeeks, setChatAgeFilterWeeks] = useState(0);
+
+  // Apply chat-age filter to opinions before layout
+  const filteredOpinions = useMemo(() => {
+    if (!topicData?.opinions) return undefined;
+    if (chatAgeFilterWeeks === 0) return topicData.opinions;
+    
+    const weeksAgo = 5 - chatAgeFilterWeeks; // slider 1→4w, 2→3w, 3→2w, 4→1w
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - weeksAgo * 7);
+    const cutoffStr = cutoff.toISOString();
+    
+    const lastActivity = topicData.lastChatActivity;
+    return topicData.opinions.filter(op => {
+      const activity = lastActivity.get(op.id);
+      return activity && activity >= cutoffStr;
+    });
+  }, [topicData?.opinions, topicData?.lastChatActivity, chatAgeFilterWeeks]);
 
   // Debounce layout inputs — prevents constant reshuffling
   const { stableOpinions, stableRatings } = useStableLayoutData(
-    topicData?.opinions,
+    filteredOpinions,
     topicData?.ratings,
   );
 
