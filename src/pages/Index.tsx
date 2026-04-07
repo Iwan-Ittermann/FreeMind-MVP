@@ -641,6 +641,8 @@ const Index = () => {
               onSignIn={() => setAuthDialogOpen(true)}
               showOpinionCta={mobileChatsOpen || (!showCtaBelowGraph && !!inlineOpinionCta)}
               opinionCtaNode={inlineOpinionCta}
+              chatAgeFilterWeeks={chatAgeFilterWeeks}
+              onChatAgeFilterChange={setChatAgeFilterWeeks}
             />
           </BottomPanel>
 
