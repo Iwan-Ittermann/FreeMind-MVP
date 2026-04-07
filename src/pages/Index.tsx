@@ -82,7 +82,7 @@ const Index = () => {
   } = useChatRequests(DEFAULT_TOPIC_ID);
 
   // Chat request tooltips
-  const { tooltipMessage, onNewIncomingRequest, dismissTooltip } = useChatRequestTooltips();
+  const { onNewIncomingRequest } = useChatRequestTooltips();
   const prevIncomingCountRef = useRef(0);
 
   // Chat-age activity filter (0 = show all, 1-4 = weeks; slider value maps: 0=all, 1=4w, 2=3w, 3=2w, 4=1w)
