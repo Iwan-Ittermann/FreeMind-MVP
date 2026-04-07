@@ -291,7 +291,7 @@ export function FloatingChat({
                     content={msg.content}
                     isOwn={msg.isOwn}
                     timestamp={msg.timestamp}
-                    reactions={msg.reactions}
+                    reactions={[]}
                     isOpinion={msg.isOpinion}
                     onReact={(reaction) => handleReaction(msg.id, reaction)}
                     visible={msg.visible}
