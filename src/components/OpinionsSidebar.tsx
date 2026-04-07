@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { List, Search, X, Send, MessageSquare, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Sheet,
   SheetContent,
@@ -24,6 +25,7 @@ interface OpinionsSidebarProps {
   variant?: 'sheet' | 'inline';
   onOpinionClick?: (opinionId: string) => void;
   onChatOpen?: (theirOpinionId: string) => void;
+  nodeAngles?: Map<string, number>;
 }
 
 interface OpinionItem {
@@ -35,7 +37,7 @@ interface OpinionItem {
   user_id: string;
 }
 
-export function OpinionsSidebar({ open, onOpenChange, topicId, variant = 'sheet', onOpinionClick, onChatOpen }: OpinionsSidebarProps) {
+export function OpinionsSidebar({ open, onOpenChange, topicId, variant = 'sheet', onOpinionClick, onChatOpen, nodeAngles }: OpinionsSidebarProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [search, setSearch] = useState('');
