@@ -417,8 +417,8 @@ const Index = () => {
             className="relative flex items-center justify-center transition-all duration-300"
           >
             <OpinionGraph
-              opinions={hasRealData ? topicData.opinions : undefined}
-              ratings={hasRealData ? topicData.ratings : undefined}
+              opinions={hasRealData ? stableOpinions : undefined}
+              ratings={hasRealData ? stableRatings : undefined}
               chatRequests={graphChatRequests}
               activeChats={activeChats}
               messageAnimations={messageAnimations}
