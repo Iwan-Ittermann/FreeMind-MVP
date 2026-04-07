@@ -369,12 +369,42 @@ export function useTopicData(topicId: string) {
       // Combine real and fake ratings
       const allRatings = [...formattedRatings, ...fakeRatings];
 
+      // Fetch last chat activity per opinion
+      // Get the most recent message timestamp for each opinion via their chats
+      const realOpinionIds = formattedOpinions.map(op => op.id);
+      const lastChatActivity = new Map<string, string | null>();
+      
+      if (realOpinionIds.length > 0) {
+        const { data: chatActivity } = await supabase
+          .from('chats')
+          .select('opinion_a_id, opinion_b_id, chat_messages(created_at)')
+          .eq('topic_id', topicId)
+          .order('created_at', { ascending: false, referencedTable: 'chat_messages' })
+          .limit(1, { referencedTable: 'chat_messages' });
+
+        if (chatActivity) {
+          for (const chat of chatActivity) {
+            const lastMsg = chat.chat_messages?.[0]?.created_at ?? null;
+            if (lastMsg) {
+              // Update both opinions in the chat
+              for (const opId of [chat.opinion_a_id, chat.opinion_b_id]) {
+                const existing = lastChatActivity.get(opId);
+                if (!existing || lastMsg > existing) {
+                  lastChatActivity.set(opId, lastMsg);
+                }
+              }
+            }
+          }
+        }
+      }
+
       return {
         id: topic.id,
         title: topic.title,
         description: topic.description,
         opinions: allOpinions,
         ratings: allRatings,
+        lastChatActivity,
       };
     },
   });
