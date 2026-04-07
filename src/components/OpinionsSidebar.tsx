@@ -177,7 +177,7 @@ export function OpinionsSidebar({ open, onOpenChange, topicId, variant = 'sheet'
               const isExpanded = expandedOpinionId === opinion.id;
               const actionState = getOpinionActionState(opinion);
               return (
-                <div key={opinion.id} className="rounded-lg bg-muted/50 overflow-hidden transition-colors">
+                <motion.div key={opinion.id} layout transition={{ type: 'spring', stiffness: 500, damping: 40 }} className="rounded-lg bg-muted/50 overflow-hidden transition-colors">
                   <button
                     onClick={() => handleOpinionClick(opinion.id)}
                     className="w-full text-left p-2.5 hover:bg-muted transition-colors"
@@ -215,7 +215,7 @@ export function OpinionsSidebar({ open, onOpenChange, topicId, variant = 'sheet'
                           <Button onClick={() => handleDeclineRequest(opinion.id)} disabled={isAccepting || isDeclining} variant="outline" size="sm" className="flex-1 h-8 text-xs border-destructive text-destructive hover:bg-destructive/10">
                             <X className="w-3.5 h-3.5 mr-1" />{isDeclining ? '...' : t('common.decline', 'Decline')}
                           </Button>
-                        </div>
+                </motion.div>
                       )}
                       {actionState === 'can_request' && (
                         <Button onClick={() => handleRequestChat(opinion.id)} disabled={isSending} variant="outline" size="sm" className="w-full h-8 text-xs border-accent text-accent hover:bg-accent/10">
