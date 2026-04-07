@@ -142,6 +142,42 @@ export function MenuContent({ onClose, onTutorial, onAbout, onSignIn, showOpinio
           </label>
           <LanguageSwitcher variant="full" />
         </div>
+
+        {/* Chat Activity Filter */}
+        {onChatAgeFilterChange && (
+          <>
+            <div className="border-t border-border" />
+            <div className="space-y-3">
+              <label className="text-sm font-medium text-foreground flex items-center gap-2">
+                <Filter className="w-4 h-4 text-muted-foreground" />
+                {t('settings.chatActivityFilter', 'Chat Activity Filter')}
+              </label>
+              <div className="space-y-2">
+                <input
+                  type="range"
+                  min={0}
+                  max={4}
+                  step={1}
+                  value={chatAgeFilterWeeks}
+                  onChange={(e) => onChatAgeFilterChange(Number(e.target.value))}
+                  className="w-full accent-primary"
+                />
+                <div className="flex justify-between text-[10px] text-muted-foreground">
+                  <span>{t('settings.filterAll', 'All')}</span>
+                  <span>4w</span>
+                  <span>3w</span>
+                  <span>2w</span>
+                  <span>1w</span>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {chatAgeFilterWeeks === 0
+                    ? t('settings.filterShowAll', 'Showing all opinions')
+                    : t('settings.filterShowRecent', 'Showing opinions with chats in last {{weeks}} week(s)', { weeks: 5 - chatAgeFilterWeeks })}
+                </p>
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       <div className="border-t border-border pt-4">
