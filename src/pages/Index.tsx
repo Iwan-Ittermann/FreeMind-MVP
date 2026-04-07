@@ -37,6 +37,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { getClientIP } from '@/hooks/useClientIP';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import { useChatRequestTooltips } from '@/hooks/useChatRequestTooltips';
 
 const opinionSchema = z.object({
   text: z.string().trim().min(10).max(500),
