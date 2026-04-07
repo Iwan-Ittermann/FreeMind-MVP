@@ -446,6 +446,7 @@ const Index = () => {
                 onOpinionClick={handleSidebarOpinionClick}
                 onChatOpen={openChatWith}
                 nodeAngles={nodeAngles}
+                nodeClusters={nodeClusters}
               />
             </div>
           </div>
