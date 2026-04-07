@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Send, Heart, HeartCrack, Check, X } from 'lucide-react';
+import { Send, Heart, HeartCrack, Check, X, Quote } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +8,7 @@ import { ChatBubble } from './ChatBubble';
 import { TypingIndicator } from './TypingIndicator';
 import { useChatSession } from '@/hooks/useChatSession';
 import { useChatMessages } from '@/hooks/useChatMessages';
+import { useChatReactions } from '@/hooks/useChatReactions';
 import { BOT_USER_ID } from '@/lib/constants';
 import { useTypingIndicator } from '@/hooks/useTypingIndicator';
 import { useUserBlocks } from '@/hooks/useUserBlocks';
@@ -36,11 +37,13 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
   );
   const { partnerTyping, setTyping } = useTypingIndicator(chatId);
   const { isBlocked, isBlockedByOther } = useUserBlocks(chatId, theirUserId);
+  const { getReactionsForMessage, hasReacted, addReaction, removeReaction } = useChatReactions(chatId);
 
   const [inputValue, setInputValue] = useState('');
   const [isRatingOpen, setIsRatingOpen] = useState(false);
   const [empathy, setEmpathy] = useState(0);
   const [initialized, setInitialized] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<{ id: string; content: string; isOwn: boolean } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -65,11 +68,13 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
   const handleSend = async () => {
     if (!inputValue.trim() || isSending) return;
     const content = inputValue;
+    const replyId = replyingTo?.id ?? null;
     setInputValue('');
+    setReplyingTo(null);
     setTyping(false);
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     try {
-      await sendMessage(content);
+      await sendMessage(content, replyId);
     } catch {
       setInputValue(content);
     }
@@ -90,38 +95,21 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
     }
   }, [dbMessages, isRatingOpen]);
 
-  const displayMessages = [
-    ...(theirOpinion ? [{
-      id: 'opinion-theirs',
-      content: theirOpinion.visible ? theirOpinion.text : (theirOpinion.notice_text || 'Hidden'),
-      isOwn: false,
-      timestamp: new Date(0),
-      reactions: [] as string[],
-      isOpinion: true,
-      visible: theirOpinion.visible,
-      noticeText: theirOpinion.notice_text,
-    }] : []),
-    ...(myOpinion ? [{
-      id: 'opinion-mine',
-      content: myOpinion.visible ? myOpinion.text : (myOpinion.notice_text || 'Hidden'),
-      isOwn: true,
-      timestamp: new Date(1),
-      reactions: [] as string[],
-      isOpinion: true,
-      visible: myOpinion.visible,
-      noticeText: myOpinion.notice_text,
-    }] : []),
-    ...dbMessages.map(msg => ({
-      id: msg.id,
-      content: msg.content,
-      isOwn: msg.isOwn,
-      timestamp: msg.createdAt,
-      reactions: [] as string[],
-      isOpinion: false,
-      visible: true,
-      noticeText: null as string | null,
-    })),
-  ];
+  const handleReply = useCallback((msg: { id: string; content: string; isOwn: boolean }) => {
+    setReplyingTo(msg);
+  }, []);
+
+  const handleReaction = useCallback((messageId: string, reactionType: string) => {
+    if (hasReacted(messageId, reactionType)) {
+      removeReaction({ messageId, reactionType });
+    } else {
+      addReaction({ messageId, reactionType });
+    }
+  }, [hasReacted, addReaction, removeReaction]);
+
+  // Build a map of message ID -> content for reply previews
+  const messageContentMap = new Map<string, string>();
+  dbMessages.forEach(msg => messageContentMap.set(msg.id, msg.content));
 
   const isLoading = !myOpinion || !theirOpinion;
 
@@ -141,7 +129,7 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
                 <X className="h-3.5 w-3.5" />
               </Button>
             </div>
-            <div className="space-y-2 mb-6">
+            <div className="space-y-2 mb-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Heart className="w-4 h-4 text-rose-400" />
@@ -164,28 +152,69 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
                 <Heart className="w-3 h-3" />
               </div>
             </div>
-            <Button onClick={handleSaveRating} disabled={isSavingRating} className="w-full">
-              <Check className="w-4 h-4 mr-2" />
-              {isSavingRating ? t('floatingChat.saving') : t('floatingChat.saveAndClose')}
-            </Button>
+            <button
+              onClick={handleSaveRating}
+              disabled={isSavingRating}
+              className="mx-auto flex items-center justify-center w-10 h-10 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
+            >
+              <Check className="w-5 h-5" />
+            </button>
           </div>
         ) : (
           <div className="space-y-2">
-            {displayMessages.map(msg => (
-              <ChatBubble
-                key={msg.id}
-                id={msg.id}
-                content={msg.content}
-                isOwn={msg.isOwn}
-                timestamp={msg.timestamp}
-                reactions={msg.reactions}
-                isOpinion={msg.isOpinion}
-                onReact={() => {}}
-                visible={msg.visible}
-                noticeText={msg.noticeText}
-                isBotMessage={isBotChat && !msg.isOwn}
-              />
-            ))}
+            {/* Opinion headers */}
+            {theirOpinion && (
+              <div className="px-2 py-2 rounded-lg bg-muted/50 border border-border/30">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <Quote className="w-3 h-3 text-secondary/60" />
+                  <span className="text-[10px] font-medium uppercase tracking-wider text-secondary/60">
+                    {t('chat.theirOpinion', 'Their opinion')}
+                  </span>
+                </div>
+                <p className="text-xs text-foreground leading-relaxed">
+                  {theirOpinion.visible ? theirOpinion.text : (theirOpinion.notice_text || 'Hidden')}
+                </p>
+              </div>
+            )}
+            <div className="border-t border-border/30 my-1" />
+            {myOpinion && (
+              <div className="px-2 py-2 rounded-lg bg-primary/5 border border-primary/20">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <Quote className="w-3 h-3 text-primary/60" />
+                  <span className="text-[10px] font-medium uppercase tracking-wider text-primary/60">
+                    {t('chat.yourOpinion', 'Your opinion')}
+                  </span>
+                </div>
+                <p className="text-xs text-foreground leading-relaxed">
+                  {myOpinion.visible ? myOpinion.text : (myOpinion.notice_text || 'Hidden')}
+                </p>
+              </div>
+            )}
+            <div className="border-t border-border/30 my-1" />
+
+            {/* Chat messages */}
+            {dbMessages.map(msg => {
+              const reactions = getReactionsForMessage(msg.id);
+              const replyContent = msg.replyToId ? messageContentMap.get(msg.replyToId) : undefined;
+              return (
+                <ChatBubble
+                  key={msg.id}
+                  id={msg.id}
+                  content={msg.content}
+                  isOwn={msg.isOwn}
+                  timestamp={msg.createdAt}
+                  isOpinion={false}
+                  visible={true}
+                  noticeText={null}
+                  isBotMessage={isBotChat && !msg.isOwn}
+                  replyToContent={replyContent}
+                  reactions={reactions}
+                  onReply={() => handleReply({ id: msg.id, content: msg.content, isOwn: msg.isOwn })}
+                  onReaction={(type) => handleReaction(msg.id, type)}
+                  hasISeenYou={hasReacted(msg.id, 'i_see_you')}
+                />
+              );
+            })}
             <AnimatePresence>
               {(partnerTyping.isTyping || isBotTyping) && <TypingIndicator userName={isBotTyping ? 'AI Bot' : partnerTyping.userName} />}
             </AnimatePresence>
@@ -193,6 +222,18 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
           </div>
         )}
       </div>
+
+      {/* Reply preview */}
+      {replyingTo && (
+        <div className="px-2 pt-1 pb-0 bg-muted/50 border-t border-border/40 flex items-center gap-2">
+          <div className="flex-1 text-xs text-muted-foreground truncate px-2 py-1 rounded bg-background border border-border/30">
+            ↩ {replyingTo.content}
+          </div>
+          <button onClick={() => setReplyingTo(null)} className="text-muted-foreground hover:text-foreground p-1">
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
 
       {/* Input footer */}
       <div className="border-t border-border p-2 shrink-0 bg-muted/80">
