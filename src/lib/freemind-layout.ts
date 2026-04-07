@@ -48,12 +48,20 @@ function calculateFreeMindScore(
     return { freeMindScore: 0, hasChats: false, chatCount: 0 };
   }
 
-  const totalBridgingScore = nodeRatings.reduce((sum, r) => {
-    const chatBridging = calculateBridgingScore(r.empathy, r.disagreement);
-    return sum + chatBridging;
-  }, 0);
+  // First-rating dampening: deduct 2/3 of 1st chat's score, 1/2 of 2nd chat's
+  // 3rd+ chats get full weight.
+  let dampenedTotal = 0;
+  let dampenedCount = 0;
+  for (let i = 0; i < nodeRatings.length; i++) {
+    const chatBridging = calculateBridgingScore(nodeRatings[i].empathy, nodeRatings[i].disagreement);
+    let multiplier = 1;
+    if (i === 0) multiplier = 1 / 3;       // First chat: keep only 1/3
+    else if (i === 1) multiplier = 1 / 2;  // Second chat: keep only 1/2
+    dampenedTotal += chatBridging * multiplier;
+    dampenedCount += multiplier;
+  }
 
-  const freeMindScore = totalBridgingScore / nodeRatings.length;
+  const freeMindScore = dampenedCount > 0 ? dampenedTotal / dampenedCount : 0;
 
   return { freeMindScore, hasChats: true, chatCount: nodeRatings.length };
 }
