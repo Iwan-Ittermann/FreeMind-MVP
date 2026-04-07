@@ -73,10 +73,21 @@ export function OpinionsSidebar({ open, onOpenChange, topicId, variant = 'sheet'
 
   const filteredOpinions = useMemo(() => {
     if (!opinions) return [];
-    if (!search.trim()) return opinions;
-    const query = search.toLowerCase();
-    return opinions.filter(op => op.text.toLowerCase().includes(query));
-  }, [opinions, search]);
+    let result = opinions;
+    if (search.trim()) {
+      const query = search.toLowerCase();
+      result = result.filter(op => op.text.toLowerCase().includes(query));
+    }
+    // Sort by angular position if available, otherwise by created_at
+    if (nodeAngles && nodeAngles.size > 0) {
+      result = [...result].sort((a, b) => {
+        const angleA = nodeAngles.get(a.id) ?? Infinity;
+        const angleB = nodeAngles.get(b.id) ?? Infinity;
+        return angleA - angleB;
+      });
+    }
+    return result;
+  }, [opinions, search, nodeAngles]);
 
   const handleOpinionClick = (opinionId: string) => {
     setExpandedOpinionId(prev => prev === opinionId ? null : opinionId);
