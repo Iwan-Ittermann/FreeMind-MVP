@@ -14,11 +14,18 @@ export function useStableLayoutData(
 
   const [stableOpinions, setStableOpinions] = useState<Opinion[]>([]);
   const [stableRatings, setStableRatings] = useState<ChatRating[]>([]);
+  const [secondsRemaining, setSecondsRemaining] = useState(0);
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pendingOpinions = useRef<Opinion[]>([]);
   const pendingRatings = useRef<ChatRating[]>([]);
   const hasInitialized = useRef(false);
+
+  const clearTimers = () => {
+    if (timerRef.current) { clearTimeout(timerRef.current); timerRef.current = null; }
+    if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null; }
+  };
 
   useEffect(() => {
     const newOpinions = opinions ?? [];
@@ -47,17 +54,31 @@ export function useStableLayoutData(
     pendingOpinions.current = newOpinions;
     pendingRatings.current = newRatings;
 
-    // Reset the timer on every change
-    if (timerRef.current) clearTimeout(timerRef.current);
+    // Reset timers on every change
+    clearTimers();
+
+    // Start countdown
+    const totalSeconds = Math.ceil(DEBOUNCE_MS / 1000);
+    setSecondsRemaining(totalSeconds);
+
+    intervalRef.current = setInterval(() => {
+      setSecondsRemaining(prev => {
+        if (prev <= 1) return 0;
+        return prev - 1;
+      });
+    }, 1000);
+
     timerRef.current = setTimeout(() => {
       setStableOpinions(pendingOpinions.current);
       setStableRatings(pendingRatings.current);
+      setSecondsRemaining(0);
+      if (intervalRef.current) { clearInterval(intervalRef.current); intervalRef.current = null; }
     }, DEBOUNCE_MS);
 
     return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
+      clearTimers();
     };
   }, [opinions, ratings]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return { stableOpinions, stableRatings };
+  return { stableOpinions, stableRatings, secondsRemaining };
 }

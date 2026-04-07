@@ -100,20 +100,22 @@ const Index = () => {
     
     const lastActivity = topicData.lastChatActivity;
     return topicData.opinions.filter(op => {
-      const activity = lastActivity.get(op.id);
-      return activity && activity >= cutoffStr;
+      // Use chat activity if available, otherwise fall back to opinion creation date
+      const chatActivity = lastActivity.get(op.id);
+      const activityStr = chatActivity || (op.createdAt ? op.createdAt.toISOString() : null);
+      return activityStr && activityStr >= cutoffStr;
     });
   }, [topicData?.opinions, topicData?.lastChatActivity, chatAgeFilterWeeks]);
 
   // Debounce layout inputs — prevents constant reshuffling
-  const { stableOpinions, stableRatings } = useStableLayoutData(
+  const { stableOpinions, stableRatings, secondsRemaining } = useStableLayoutData(
     filteredOpinions,
     topicData?.ratings,
   );
 
-  // Compute node angles from stable layout for sidebar sorting
-  const nodeAngles = useMemo(() => {
-    if (stableOpinions.length === 0) return new Map<string, number>();
+  // Compute node angles and cluster assignments from stable layout for sidebar sorting
+  const { nodeAngles, nodeClusters } = useMemo(() => {
+    if (stableOpinions.length === 0) return { nodeAngles: new Map<string, number>(), nodeClusters: new Map<string, number>() };
     const size = Math.min(graphSize.width, graphSize.height);
     const config: LayoutConfig = {
       centerX: graphSize.width / 2,
@@ -125,7 +127,14 @@ const Index = () => {
       nodeRadius: Math.max(3, size * 0.012),
     };
     const layoutData = calculateLayout(stableOpinions, stableRatings, config);
-    return getNodeAngles(layoutData.nodes, config);
+    const angles = getNodeAngles(layoutData.nodes, config);
+    const clusters = new Map<string, number>();
+    layoutData.nodes.forEach(n => {
+      if (n.cluster !== undefined && n.cluster !== -1) {
+        clusters.set(n.id, n.cluster);
+      }
+    });
+    return { nodeAngles: angles, nodeClusters: clusters };
   }, [stableOpinions, stableRatings, graphSize]);
 
   const myOpinion = topicData?.opinions.find(op => op.authorId === user?.id);
@@ -146,7 +155,7 @@ const Index = () => {
   }, [chatRequests, myOpinion, onNewIncomingRequest, t]);
 
   // Disagreement rating for selected node
-  const { disagreement, setDisagreement, canRate: canRateDisagreement } = useDisagreementRating(
+  const { disagreement, setDisagreement, save: saveDisagreement, hasUnsavedChanges: hasUnsavedDisagreement, isSaving: isSavingDisagreement, canRate: canRateDisagreement } = useDisagreementRating(
     DEFAULT_TOPIC_ID,
     myOpinion?.id ?? null,
     selectedNode?.id ?? null,
@@ -438,6 +447,7 @@ const Index = () => {
                 onOpinionClick={handleSidebarOpinionClick}
                 onChatOpen={openChatWith}
                 nodeAngles={nodeAngles}
+                nodeClusters={nodeClusters}
               />
             </div>
           </div>
@@ -454,6 +464,12 @@ const Index = () => {
             transition={{ delay: 0.2 }}
             className="relative flex items-center justify-center transition-all duration-300"
           >
+            {/* Debounce countdown pill */}
+            {secondsRemaining > 0 && (
+              <div className="absolute top-2 left-1/2 -translate-x-1/2 z-20 text-xs bg-muted/80 backdrop-blur px-3 py-1 rounded-full text-muted-foreground">
+                Recalculating in {secondsRemaining}s
+              </div>
+            )}
             <OpinionGraph
               opinions={hasRealData ? stableOpinions : undefined}
               ratings={hasRealData ? stableRatings : undefined}
@@ -517,6 +533,20 @@ const Index = () => {
                           step={1}
                           className="flex-1 [&_[role=slider]]:bg-primary [&_[role=slider]]:border-primary [&_.bg-primary]:bg-primary/30"
                         />
+                        {hasUnsavedDisagreement && (
+                          <button
+                            onClick={saveDisagreement}
+                            disabled={isSavingDisagreement}
+                            className="w-8 h-8 rounded-full bg-accent text-accent-foreground flex items-center justify-center hover:bg-accent/90 transition-colors shrink-0 disabled:opacity-50"
+                            title="Save rating"
+                          >
+                            {isSavingDisagreement ? (
+                              <div className="w-3.5 h-3.5 border-2 border-accent-foreground border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                              <Check className="w-4 h-4" />
+                            )}
+                          </button>
+                        )}
                       </div>
                       <div className="flex justify-between text-[10px] text-muted-foreground">
                         <span>{t('agreementRating.agree')}</span>
@@ -654,6 +684,7 @@ const Index = () => {
               onOpinionClick={handleSidebarOpinionClick}
               onChatOpen={openChatWith}
               nodeAngles={nodeAngles}
+              nodeClusters={nodeClusters}
             />
           </BottomPanel>
 

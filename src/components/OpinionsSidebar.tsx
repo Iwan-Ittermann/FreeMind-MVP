@@ -18,6 +18,18 @@ import { useAuth } from '@/hooks/useAuth';
 import { useChatRequests } from '@/hooks/useChatRequests';
 import { toast } from 'sonner';
 
+// 8 distinct cluster colors (HSL-based for theme consistency)
+const CLUSTER_COLORS = [
+  'hsl(210, 80%, 55%)',  // blue
+  'hsl(340, 75%, 55%)',  // pink
+  'hsl(150, 65%, 45%)',  // green
+  'hsl(40, 90%, 55%)',   // orange
+  'hsl(270, 65%, 60%)',  // purple
+  'hsl(180, 60%, 45%)',  // teal
+  'hsl(15, 80%, 55%)',   // red-orange
+  'hsl(60, 70%, 50%)',   // yellow
+];
+
 interface OpinionsSidebarProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -26,6 +38,7 @@ interface OpinionsSidebarProps {
   onOpinionClick?: (opinionId: string) => void;
   onChatOpen?: (theirOpinionId: string) => void;
   nodeAngles?: Map<string, number>;
+  nodeClusters?: Map<string, number>;
 }
 
 interface OpinionItem {
@@ -37,7 +50,7 @@ interface OpinionItem {
   user_id: string;
 }
 
-export function OpinionsSidebar({ open, onOpenChange, topicId, variant = 'sheet', onOpinionClick, onChatOpen, nodeAngles }: OpinionsSidebarProps) {
+export function OpinionsSidebar({ open, onOpenChange, topicId, variant = 'sheet', onOpinionClick, onChatOpen, nodeAngles, nodeClusters }: OpinionsSidebarProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [search, setSearch] = useState('');
@@ -176,12 +189,21 @@ export function OpinionsSidebar({ open, onOpenChange, topicId, variant = 'sheet'
             {filteredOpinions.map((opinion) => {
               const isExpanded = expandedOpinionId === opinion.id;
               const actionState = getOpinionActionState(opinion);
+              const clusterId = nodeClusters?.get(opinion.id);
+              const clusterColor = clusterId !== undefined ? CLUSTER_COLORS[clusterId % CLUSTER_COLORS.length] : undefined;
               return (
                 <motion.div key={opinion.id} layout transition={{ type: 'spring', stiffness: 500, damping: 40 }} className="rounded-lg bg-muted/50 overflow-hidden transition-colors">
                   <button
                     onClick={() => handleOpinionClick(opinion.id)}
-                    className="w-full text-left p-2.5 hover:bg-muted transition-colors"
+                    className="w-full text-left p-2.5 hover:bg-muted transition-colors flex items-start gap-2"
                   >
+                    {/* Cluster color dot */}
+                    {clusterColor && (
+                      <span
+                        className="w-2.5 h-2.5 rounded-full shrink-0 mt-0.5"
+                        style={{ backgroundColor: clusterColor }}
+                      />
+                    )}
                     {opinion.visible === false ? (
                       <p className="text-xs text-destructive/70 italic">{opinion.notice_text || t('index.contentHidden')}</p>
                     ) : (

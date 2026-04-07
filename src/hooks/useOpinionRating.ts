@@ -20,7 +20,6 @@ export function useDisagreementRating(
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [localDisagreement, setLocalDisagreement] = useState<number | null>(null);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const queryKey = ['opinionRating', myOpinionId, targetOpinionId];
 
@@ -53,7 +52,10 @@ export function useDisagreementRating(
     }
   }, [existingRating, localDisagreement]);
 
-  // Upsert mutation
+  // The saved value from DB
+  const savedDisagreement = existingRating?.disagreement ?? 50;
+
+  // Upsert mutation — manual save only
   const mutation = useMutation({
     mutationFn: async (disagreement: number) => {
       if (!myOpinionId || !targetOpinionId || !topicId) throw new Error('Missing IDs');
@@ -84,25 +86,27 @@ export function useDisagreementRating(
     },
   });
 
-  // Debounced save (500ms)
+  // Update local value only (no auto-save)
   const setDisagreement = useCallback((value: number) => {
     setLocalDisagreement(value);
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      mutation.mutate(value);
-    }, 1000);
-  }, [mutation]);
-
-  // Cleanup
-  useEffect(() => {
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
   }, []);
 
+  // Manual save
+  const save = useCallback(() => {
+    if (localDisagreement !== null) {
+      mutation.mutate(localDisagreement);
+    }
+  }, [localDisagreement, mutation]);
+
+  const currentValue = localDisagreement ?? savedDisagreement;
+  const hasUnsavedChanges = currentValue !== savedDisagreement;
+
   return {
-    disagreement: localDisagreement ?? existingRating?.disagreement ?? 50,
+    disagreement: currentValue,
     setDisagreement,
+    save,
+    savedDisagreement,
+    hasUnsavedChanges,
     isLoading,
     isSaving: mutation.isPending,
     canRate: !!user && !!myOpinionId && !!targetOpinionId && myOpinionId !== targetOpinionId,
