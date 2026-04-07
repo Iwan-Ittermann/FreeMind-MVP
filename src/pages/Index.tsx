@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, X, Send, Check, Flag, Pencil, AlertCircle, LogIn } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -42,9 +42,10 @@ import { useChatRequestTooltips } from '@/hooks/useChatRequestTooltips';
 const opinionSchema = z.object({
   text: z.string().trim().min(10).max(500),
 });
-const DEFAULT_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
 
 const Index = () => {
+  const { topicId: topicIdParam } = useParams<{ topicId: string }>();
+  const topicId = topicIdParam || '00000000-0000-0000-0000-000000000001';
   const navigate = useNavigate();
   const { user } = useAuth();
   const { t } = useTranslation();
@@ -74,12 +75,12 @@ const Index = () => {
   const [settingsSheetOpen, setSettingsSheetOpen] = useState(false);
   const [aboutSheetOpen, setAboutSheetOpen] = useState(false);
 
-  const { data: topicData, isLoading, error, activeChats, messageAnimations } = useTopicData(DEFAULT_TOPIC_ID);
+  const { data: topicData, isLoading, error, activeChats, messageAnimations } = useTopicData(topicId);
   const {
     chatRequests, sendRequest, acceptRequest, declineRequest,
     isSending, isAccepting, isDeclining,
     getRequestBetween, hasAcceptedChat, hasPendingRequest,
-  } = useChatRequests(DEFAULT_TOPIC_ID);
+  } = useChatRequests(topicId);
 
   // Chat request tooltips
   const { onNewIncomingRequest } = useChatRequestTooltips();
@@ -138,8 +139,8 @@ const Index = () => {
   }, [stableOpinions, stableRatings, graphSize]);
 
   const myOpinion = topicData?.opinions.find(op => op.authorId === user?.id);
-  const { onlineOpinionIds } = usePresence(DEFAULT_TOPIC_ID, myOpinion?.id);
-  const { data: unreadMessageCounts } = useUnreadMessages(DEFAULT_TOPIC_ID, myOpinion?.id);
+  const { onlineOpinionIds } = usePresence(topicId, myOpinion?.id);
+  const { data: unreadMessageCounts } = useUnreadMessages(topicId, myOpinion?.id);
 
   // Detect new incoming requests and show tooltips
   useEffect(() => {
@@ -156,7 +157,7 @@ const Index = () => {
 
   // Disagreement rating for selected node
   const { disagreement, setDisagreement, save: saveDisagreement, hasUnsavedChanges: hasUnsavedDisagreement, isSaving: isSavingDisagreement, canRate: canRateDisagreement } = useDisagreementRating(
-    DEFAULT_TOPIC_ID,
+    topicId,
     myOpinion?.id ?? null,
     selectedNode?.id ?? null,
   );
@@ -203,8 +204,8 @@ const Index = () => {
   const handleOpinionSubmitted = () => {
     setOpinionDialogOpen(false);
     setInlineOpinionText('');
-    queryClient.invalidateQueries({ queryKey: ['topic', DEFAULT_TOPIC_ID] });
-    queryClient.invalidateQueries({ queryKey: ['myOpinionForTopic', DEFAULT_TOPIC_ID] });
+    queryClient.invalidateQueries({ queryKey: ['topic', topicId] });
+    queryClient.invalidateQueries({ queryKey: ['myOpinionForTopic', topicId] });
     tutorial.onOpinionSubmitted();
   };
 
@@ -228,7 +229,7 @@ const Index = () => {
     try {
       const ipAddress = await getClientIP();
       const { error } = await supabase.rpc('submit_opinion', {
-        _topic_id: DEFAULT_TOPIC_ID,
+        _topic_id: topicId,
         _text: result.data.text,
         _ip_address: ipAddress,
       });
@@ -442,7 +443,7 @@ const Index = () => {
               <OpinionsSidebar
                 open={true}
                 onOpenChange={() => {}}
-                topicId={DEFAULT_TOPIC_ID}
+                topicId={topicId}
                 variant="inline"
                 onOpinionClick={handleSidebarOpinionClick}
                 onChatOpen={openChatWith}
@@ -646,7 +647,7 @@ const Index = () => {
               <ChatsSidebar
                 open={true}
                 onOpenChange={() => {}}
-                topicId={DEFAULT_TOPIC_ID}
+                topicId={topicId}
                 onChatOpen={openChatWith}
                 unreadMessageCounts={unreadMessageCounts}
                 variant="inline"
@@ -679,7 +680,7 @@ const Index = () => {
             <OpinionsSidebar
               open={true}
               onOpenChange={() => setActiveMobilePanel(null)}
-              topicId={DEFAULT_TOPIC_ID}
+              topicId={topicId}
               variant="inline"
               onOpinionClick={handleSidebarOpinionClick}
               onChatOpen={openChatWith}
@@ -692,7 +693,7 @@ const Index = () => {
             <ChatsSidebar
               open={true}
               onOpenChange={() => setActiveMobilePanel(null)}
-              topicId={DEFAULT_TOPIC_ID}
+              topicId={topicId}
               onChatOpen={openChatWith}
               unreadMessageCounts={unreadMessageCounts}
               variant="inline"
@@ -729,7 +730,7 @@ const Index = () => {
         <MainMenu
           open={settingsSheetOpen}
           onOpenChange={setSettingsSheetOpen}
-          topicId={DEFAULT_TOPIC_ID}
+          topicId={topicId}
           onSignIn={() => setAuthDialogOpen(true)}
           chatAgeFilterWeeks={chatAgeFilterWeeks}
           onChatAgeFilterChange={setChatAgeFilterWeeks}
@@ -746,7 +747,7 @@ const Index = () => {
       {!isMobile && (
         <FloatingChatManager
           ref={chatManagerRef}
-          topicId={DEFAULT_TOPIC_ID}
+          topicId={topicId}
           myOpinionId={myOpinion?.id}
           unreadMessageCounts={unreadMessageCounts}
         />
@@ -768,7 +769,7 @@ const Index = () => {
       <SubmitOpinionDialog
         open={opinionDialogOpen}
         onOpenChange={setOpinionDialogOpen}
-        topicId={DEFAULT_TOPIC_ID}
+        topicId={topicId}
         topicTitle={topicData?.title}
         onSuccess={handleOpinionSubmitted}
         hasExistingOpinion={!!myOpinion}
