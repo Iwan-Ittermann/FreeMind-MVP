@@ -215,7 +215,7 @@ export function OpinionsSidebar({ open, onOpenChange, topicId, variant = 'sheet'
                           <Button onClick={() => handleDeclineRequest(opinion.id)} disabled={isAccepting || isDeclining} variant="outline" size="sm" className="flex-1 h-8 text-xs border-destructive text-destructive hover:bg-destructive/10">
                             <X className="w-3.5 h-3.5 mr-1" />{isDeclining ? '...' : t('common.decline', 'Decline')}
                           </Button>
-                </motion.div>
+                </div>
                       )}
                       {actionState === 'can_request' && (
                         <Button onClick={() => handleRequestChat(opinion.id)} disabled={isSending} variant="outline" size="sm" className="w-full h-8 text-xs border-accent text-accent hover:bg-accent/10">
@@ -224,7 +224,7 @@ export function OpinionsSidebar({ open, onOpenChange, topicId, variant = 'sheet'
                       )}
                     </div>
                   )}
-                </div>
+                </motion.div>
               );
             })}
           </div>
