@@ -661,6 +661,8 @@ const Index = () => {
           onOpenChange={setSettingsSheetOpen}
           topicId={DEFAULT_TOPIC_ID}
           onSignIn={() => setAuthDialogOpen(true)}
+          chatAgeFilterWeeks={chatAgeFilterWeeks}
+          onChatAgeFilterChange={setChatAgeFilterWeeks}
         />
       )}
 
