@@ -100,20 +100,21 @@ const Index = () => {
     
     const lastActivity = topicData.lastChatActivity;
     return topicData.opinions.filter(op => {
-      const activity = lastActivity.get(op.id);
+      // Use chat activity if available, otherwise fall back to opinion creation date
+      const activity = lastActivity.get(op.id) || op.createdAt;
       return activity && activity >= cutoffStr;
     });
   }, [topicData?.opinions, topicData?.lastChatActivity, chatAgeFilterWeeks]);
 
   // Debounce layout inputs — prevents constant reshuffling
-  const { stableOpinions, stableRatings } = useStableLayoutData(
+  const { stableOpinions, stableRatings, secondsRemaining } = useStableLayoutData(
     filteredOpinions,
     topicData?.ratings,
   );
 
-  // Compute node angles from stable layout for sidebar sorting
-  const nodeAngles = useMemo(() => {
-    if (stableOpinions.length === 0) return new Map<string, number>();
+  // Compute node angles and cluster assignments from stable layout for sidebar sorting
+  const { nodeAngles, nodeClusters } = useMemo(() => {
+    if (stableOpinions.length === 0) return { nodeAngles: new Map<string, number>(), nodeClusters: new Map<string, number>() };
     const size = Math.min(graphSize.width, graphSize.height);
     const config: LayoutConfig = {
       centerX: graphSize.width / 2,
@@ -125,7 +126,14 @@ const Index = () => {
       nodeRadius: Math.max(3, size * 0.012),
     };
     const layoutData = calculateLayout(stableOpinions, stableRatings, config);
-    return getNodeAngles(layoutData.nodes, config);
+    const angles = getNodeAngles(layoutData.nodes, config);
+    const clusters = new Map<string, number>();
+    layoutData.nodes.forEach(n => {
+      if (n.cluster !== undefined && n.cluster !== -1) {
+        clusters.set(n.id, n.cluster);
+      }
+    });
+    return { nodeAngles: angles, nodeClusters: clusters };
   }, [stableOpinions, stableRatings, graphSize]);
 
   const myOpinion = topicData?.opinions.find(op => op.authorId === user?.id);
@@ -146,7 +154,7 @@ const Index = () => {
   }, [chatRequests, myOpinion, onNewIncomingRequest, t]);
 
   // Disagreement rating for selected node
-  const { disagreement, setDisagreement, canRate: canRateDisagreement } = useDisagreementRating(
+  const { disagreement, setDisagreement, save: saveDisagreement, hasUnsavedChanges: hasUnsavedDisagreement, isSaving: isSavingDisagreement, canRate: canRateDisagreement } = useDisagreementRating(
     DEFAULT_TOPIC_ID,
     myOpinion?.id ?? null,
     selectedNode?.id ?? null,
