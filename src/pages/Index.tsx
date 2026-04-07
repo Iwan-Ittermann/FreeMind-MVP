@@ -101,8 +101,9 @@ const Index = () => {
     const lastActivity = topicData.lastChatActivity;
     return topicData.opinions.filter(op => {
       // Use chat activity if available, otherwise fall back to opinion creation date
-      const activity = lastActivity.get(op.id) || op.createdAt;
-      return activity && activity >= cutoffStr;
+      const chatActivity = lastActivity.get(op.id);
+      const activityStr = chatActivity || (op.createdAt ? op.createdAt.toISOString() : null);
+      return activityStr && activityStr >= cutoffStr;
     });
   }, [topicData?.opinions, topicData?.lastChatActivity, chatAgeFilterWeeks]);
 
