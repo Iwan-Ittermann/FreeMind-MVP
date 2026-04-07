@@ -525,6 +525,20 @@ const Index = () => {
                           step={1}
                           className="flex-1 [&_[role=slider]]:bg-primary [&_[role=slider]]:border-primary [&_.bg-primary]:bg-primary/30"
                         />
+                        {hasUnsavedDisagreement && (
+                          <button
+                            onClick={saveDisagreement}
+                            disabled={isSavingDisagreement}
+                            className="w-8 h-8 rounded-full bg-accent text-accent-foreground flex items-center justify-center hover:bg-accent/90 transition-colors shrink-0 disabled:opacity-50"
+                            title="Save rating"
+                          >
+                            {isSavingDisagreement ? (
+                              <div className="w-3.5 h-3.5 border-2 border-accent-foreground border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                              <Check className="w-4 h-4" />
+                            )}
+                          </button>
+                        )}
                       </div>
                       <div className="flex justify-between text-[10px] text-muted-foreground">
                         <span>{t('agreementRating.agree')}</span>
