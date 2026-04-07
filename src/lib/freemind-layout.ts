@@ -485,7 +485,7 @@ export function calculateLayout(
 
   // Step 5: DBSCAN clustering on final positions
   // eps scaled to graph size, minPts = 2
-  const eps = config.outerRadius * 0.10;
+  const eps = config.outerRadius * 0.18;
   const clusterAssignment = dbscan(allNodes, eps, 2);
   allNodes = allNodes.map(node => ({
     ...node,
