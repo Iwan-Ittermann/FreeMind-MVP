@@ -81,6 +81,23 @@ const Index = () => {
     getRequestBetween, hasAcceptedChat, hasPendingRequest,
   } = useChatRequests(DEFAULT_TOPIC_ID);
 
+  // Chat request tooltips
+  const { tooltipMessage, onNewIncomingRequest, dismissTooltip } = useChatRequestTooltips();
+  const prevIncomingCountRef = useRef(0);
+
+  // Detect new incoming requests and show tooltips
+  useEffect(() => {
+    if (!myOpinion) return;
+    const incomingRequests = chatRequests.filter(
+      r => r.target_opinion_id === myOpinion.id && r.status === 'pending'
+    );
+    const currentCount = incomingRequests.length;
+    if (currentCount > prevIncomingCountRef.current) {
+      onNewIncomingRequest(t);
+    }
+    prevIncomingCountRef.current = currentCount;
+  }, [chatRequests, myOpinion, onNewIncomingRequest, t]);
+
   // Chat-age activity filter (0 = show all, 1-4 = weeks; slider value maps: 0=all, 1=4w, 2=3w, 3=2w, 4=1w)
   const [chatAgeFilterWeeks, setChatAgeFilterWeeks] = useState(0);
 
