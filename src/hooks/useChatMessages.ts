@@ -11,12 +11,13 @@ export interface ChatMessage {
   senderId: string;
   isOwn: boolean;
   createdAt: Date;
+  replyToId: string | null;
 }
 
 interface UseChatMessagesResult {
   messages: ChatMessage[];
   isLoading: boolean;
-  sendMessage: (content: string) => Promise<void>;
+  sendMessage: (content: string, replyToId?: string | null) => Promise<void>;
   isSending: boolean;
   isBotTyping: boolean;
 }
@@ -50,6 +51,7 @@ export function useChatMessages(
         senderId: msg.sender_id,
         isOwn: msg.sender_id === user.id,
         createdAt: new Date(msg.created_at),
+        replyToId: (msg as any).reply_to_id ?? null,
       }));
     },
     enabled: !!chatId && !!user?.id,
@@ -103,6 +105,7 @@ export function useChatMessages(
             senderId: newMsg.sender_id,
             isOwn: newMsg.sender_id === user?.id,
             createdAt: new Date(newMsg.created_at),
+            replyToId: newMsg.reply_to_id ?? null,
           };
           
           // Add message to cache immediately if not already there
@@ -123,16 +126,19 @@ export function useChatMessages(
 
   // Send message mutation
   const sendMutation = useMutation({
-    mutationFn: async (content: string) => {
+    mutationFn: async ({ content, replyToId }: { content: string; replyToId?: string | null }) => {
       if (!chatId || !user?.id) throw new Error('Cannot send message');
       
+      const insertData: any = {
+        chat_id: chatId,
+        sender_id: user.id,
+        content,
+      };
+      if (replyToId) insertData.reply_to_id = replyToId;
+
       const { error } = await supabase
         .from('chat_messages')
-        .insert({
-          chat_id: chatId,
-          sender_id: user.id,
-          content,
-        });
+        .insert(insertData);
       
       if (error) throw error;
     },
@@ -178,8 +184,8 @@ export function useChatMessages(
     },
   });
 
-  const sendMessage = async (content: string) => {
-    await sendMutation.mutateAsync(content);
+  const sendMessage = async (content: string, replyToId?: string | null) => {
+    await sendMutation.mutateAsync({ content, replyToId });
   };
 
   return {

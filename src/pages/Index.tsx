@@ -37,6 +37,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { getClientIP } from '@/hooks/useClientIP';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import { useChatRequestTooltips } from '@/hooks/useChatRequestTooltips';
 
 const opinionSchema = z.object({
   text: z.string().trim().min(10).max(500),
@@ -79,6 +80,10 @@ const Index = () => {
     isSending, isAccepting, isDeclining,
     getRequestBetween, hasAcceptedChat, hasPendingRequest,
   } = useChatRequests(DEFAULT_TOPIC_ID);
+
+  // Chat request tooltips
+  const { onNewIncomingRequest } = useChatRequestTooltips();
+  const prevIncomingCountRef = useRef(0);
 
   // Chat-age activity filter (0 = show all, 1-4 = weeks; slider value maps: 0=all, 1=4w, 2=3w, 3=2w, 4=1w)
   const [chatAgeFilterWeeks, setChatAgeFilterWeeks] = useState(0);
@@ -126,6 +131,19 @@ const Index = () => {
   const myOpinion = topicData?.opinions.find(op => op.authorId === user?.id);
   const { onlineOpinionIds } = usePresence(DEFAULT_TOPIC_ID, myOpinion?.id);
   const { data: unreadMessageCounts } = useUnreadMessages(DEFAULT_TOPIC_ID, myOpinion?.id);
+
+  // Detect new incoming requests and show tooltips
+  useEffect(() => {
+    if (!myOpinion) return;
+    const incomingRequests = chatRequests.filter(
+      r => r.target_opinion_id === myOpinion.id && r.status === 'pending'
+    );
+    const currentCount = incomingRequests.length;
+    if (currentCount > prevIncomingCountRef.current) {
+      onNewIncomingRequest(t);
+    }
+    prevIncomingCountRef.current = currentCount;
+  }, [chatRequests, myOpinion, onNewIncomingRequest, t]);
 
   // Disagreement rating for selected node
   const { disagreement, setDisagreement, canRate: canRateDisagreement } = useDisagreementRating(
@@ -177,6 +195,7 @@ const Index = () => {
     setOpinionDialogOpen(false);
     setInlineOpinionText('');
     queryClient.invalidateQueries({ queryKey: ['topic', DEFAULT_TOPIC_ID] });
+    queryClient.invalidateQueries({ queryKey: ['myOpinionForTopic', DEFAULT_TOPIC_ID] });
     tutorial.onOpinionSubmitted();
   };
 
@@ -219,7 +238,6 @@ const Index = () => {
 
   const handleNodeClick = (node: GraphNode) => {
     setSelectedNode(prev => prev?.id === node.id ? null : node);
-    tutorial.onNodeClicked();
   };
 
   const handleBackgroundClick = (e: React.MouseEvent) => {
@@ -395,6 +413,8 @@ const Index = () => {
       <Header
         title={topicTitle}
         enlarged={isMobile && !activeMobilePanel}
+        user={user}
+        onSignIn={() => setAuthDialogOpen(true)}
       />
 
       {/* Standalone mobile title when no panel open */}
@@ -487,18 +507,20 @@ const Index = () => {
                     <div className="mb-4 space-y-1.5">
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-muted-foreground">{t('agreementRating.label')}</span>
-                        <span className="text-xs font-mono text-muted-foreground">{100 - disagreement}</span>
+                        <span className="text-xs font-mono text-muted-foreground">{disagreement}</span>
                       </div>
-                      <Slider
-                        value={[100 - disagreement]}
-                        onValueChange={(v) => setDisagreement(100 - v[0])}
-                        max={100}
-                        step={1}
-                        className="[&_[role=slider]]:bg-primary [&_[role=slider]]:border-primary [&_.bg-primary]:bg-primary/30"
-                      />
+                      <div className="flex items-center gap-2">
+                        <Slider
+                          value={[disagreement]}
+                          onValueChange={(v) => setDisagreement(v[0])}
+                          max={100}
+                          step={1}
+                          className="flex-1 [&_[role=slider]]:bg-primary [&_[role=slider]]:border-primary [&_.bg-primary]:bg-primary/30"
+                        />
+                      </div>
                       <div className="flex justify-between text-[10px] text-muted-foreground">
-                        <span>{t('agreementRating.disagree')}</span>
                         <span>{t('agreementRating.agree')}</span>
+                        <span>{t('agreementRating.disagree')}</span>
                       </div>
                     </div>
                   )}

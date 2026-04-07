@@ -181,15 +181,10 @@ export function MenuContent({ onClose, onTutorial, onAbout, onSignIn, showOpinio
       </div>
 
       <div className="border-t border-border pt-4">
-        {user ? (
+        {user && (
           <button onClick={handleSignOut} className="flex items-center gap-3 w-full p-3 rounded-lg hover:bg-destructive/10 transition-colors text-destructive">
             <LogOut className="w-5 h-5" />
             <span>{t('common.signOut', 'Logout')}</span>
-          </button>
-        ) : (
-          <button onClick={() => { onClose(); onSignIn?.(); }} className="flex items-center gap-3 w-full p-3 rounded-lg hover:bg-muted transition-colors text-foreground">
-            <LogIn className="w-5 h-5 text-muted-foreground" />
-            <span>{t('common.signInOrSignUp', 'Sign In / Sign Up')}</span>
           </button>
         )}
       </div>

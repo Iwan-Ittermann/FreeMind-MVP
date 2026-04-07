@@ -68,6 +68,38 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_message_reactions: {
+        Row: {
+          created_at: string
+          id: string
+          message_id: string
+          reaction_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message_id: string
+          reaction_type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message_id?: string
+          reaction_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_message_reactions_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "chat_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chat_messages: {
         Row: {
           chat_id: string
@@ -76,6 +108,7 @@ export type Database = {
           id: string
           notice_text: string | null
           read_at: string | null
+          reply_to_id: string | null
           sender_id: string
           status: string | null
           visible: boolean | null
@@ -87,6 +120,7 @@ export type Database = {
           id?: string
           notice_text?: string | null
           read_at?: string | null
+          reply_to_id?: string | null
           sender_id: string
           status?: string | null
           visible?: boolean | null
@@ -98,6 +132,7 @@ export type Database = {
           id?: string
           notice_text?: string | null
           read_at?: string | null
+          reply_to_id?: string | null
           sender_id?: string
           status?: string | null
           visible?: boolean | null
@@ -108,6 +143,13 @@ export type Database = {
             columns: ["chat_id"]
             isOneToOne: false
             referencedRelation: "chats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_messages_reply_to_id_fkey"
+            columns: ["reply_to_id"]
+            isOneToOne: false
+            referencedRelation: "chat_messages"
             referencedColumns: ["id"]
           },
         ]

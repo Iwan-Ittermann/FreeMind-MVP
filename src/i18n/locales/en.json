@@ -358,7 +358,7 @@
       "title": "Your Opinion",
       "text": "This is your opinion on the map! As you chat with others, it will move to the middle."
     },
-    "exploreOpinions": { "title": "Explore Others", "text": "Click on 2 other opinions you find interesting." },
+    
     "requestChat": { "title": "Request a Chat", "text": "Now click 'Request to Chat' to start a conversation." },
     "nowWeWait": {
       "title": "Now We Wait!",
@@ -498,6 +498,10 @@
       "privacy": "Privacy Policy",
       "imprint": "Legal Notice",
       "contact": "Contact"
-    }
+  },
+  "chatRequestTooltip": {
+    "first": "You received your first chat request! Open it to start a conversation.",
+    "second": "Great, another request! From now on, new requests will appear in your chat sidebar."
   }
+}
 }
