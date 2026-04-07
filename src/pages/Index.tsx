@@ -219,7 +219,6 @@ const Index = () => {
 
   const handleNodeClick = (node: GraphNode) => {
     setSelectedNode(prev => prev?.id === node.id ? null : node);
-    tutorial.onNodeClicked();
   };
 
   const handleBackgroundClick = (e: React.MouseEvent) => {
