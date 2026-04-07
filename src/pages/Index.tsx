@@ -177,6 +177,7 @@ const Index = () => {
     setOpinionDialogOpen(false);
     setInlineOpinionText('');
     queryClient.invalidateQueries({ queryKey: ['topic', DEFAULT_TOPIC_ID] });
+    queryClient.invalidateQueries({ queryKey: ['myOpinionForTopic', DEFAULT_TOPIC_ID] });
     tutorial.onOpinionSubmitted();
   };
 
@@ -394,6 +395,8 @@ const Index = () => {
       <Header
         title={topicTitle}
         enlarged={isMobile && !activeMobilePanel}
+        user={user}
+        onSignIn={() => setAuthDialogOpen(true)}
       />
 
       {/* Standalone mobile title when no panel open */}
@@ -486,18 +489,20 @@ const Index = () => {
                     <div className="mb-4 space-y-1.5">
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-muted-foreground">{t('agreementRating.label')}</span>
-                        <span className="text-xs font-mono text-muted-foreground">{100 - disagreement}</span>
+                        <span className="text-xs font-mono text-muted-foreground">{disagreement}</span>
                       </div>
-                      <Slider
-                        value={[100 - disagreement]}
-                        onValueChange={(v) => setDisagreement(100 - v[0])}
-                        max={100}
-                        step={1}
-                        className="[&_[role=slider]]:bg-primary [&_[role=slider]]:border-primary [&_.bg-primary]:bg-primary/30"
-                      />
+                      <div className="flex items-center gap-2">
+                        <Slider
+                          value={[disagreement]}
+                          onValueChange={(v) => setDisagreement(v[0])}
+                          max={100}
+                          step={1}
+                          className="flex-1 [&_[role=slider]]:bg-primary [&_[role=slider]]:border-primary [&_.bg-primary]:bg-primary/30"
+                        />
+                      </div>
                       <div className="flex justify-between text-[10px] text-muted-foreground">
-                        <span>{t('agreementRating.disagree')}</span>
                         <span>{t('agreementRating.agree')}</span>
+                        <span>{t('agreementRating.disagree')}</span>
                       </div>
                     </div>
                   )}

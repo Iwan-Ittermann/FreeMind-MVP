@@ -98,7 +98,6 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
           setError(signUpError.message.includes("already registered") ? t("auth.passphraseTaken") : signUpError.message);
         } else {
           localStorage.setItem('freemind_new_account', 'true');
-          toast.success(t("auth.accountCreated"));
           onOpenChange(false);
         }
       } else {
