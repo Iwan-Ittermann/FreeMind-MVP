@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, X, Send, Check, Flag, Pencil, AlertCircle, LogIn } from 'lucide-react';
@@ -21,7 +21,7 @@ import { DesktopBottomBar } from '@/components/DesktopBottomBar';
 import { MainMenu, MenuContent } from '@/components/MainMenu';
 import { AboutSidebar } from '@/components/AboutSidebar';
 import { AuthDialog } from '@/components/AuthDialog';
-import { GraphNode, GraphEdge, ChatRequest } from '@/types/graph';
+import { GraphNode, GraphEdge, ChatRequest, LayoutConfig } from '@/types/graph';
 import { useTopicData } from '@/hooks/useTopicData';
 import { useChatRequests } from '@/hooks/useChatRequests';
 import { useAuth } from '@/hooks/useAuth';
@@ -30,6 +30,8 @@ import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { useBrowserNotification } from '@/hooks/useBrowserNotification';
 import { useTutorialContext } from '@/contexts/TutorialContext';
 import { useDisagreementRating } from '@/hooks/useOpinionRating';
+import { useStableLayoutData } from '@/hooks/useStableLayoutData';
+import { calculateLayout, getNodeAngles } from '@/lib/freemind-layout';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { getClientIP } from '@/hooks/useClientIP';
@@ -77,6 +79,32 @@ const Index = () => {
     isSending, isAccepting, isDeclining,
     getRequestBetween, hasAcceptedChat, hasPendingRequest,
   } = useChatRequests(DEFAULT_TOPIC_ID);
+
+  // Chat-age activity filter (0 = show all, 1-4 = weeks)
+  const [chatAgeFilterWeeks, setChatAgeFilterWeeks] = useState(0);
+
+  // Debounce layout inputs — prevents constant reshuffling
+  const { stableOpinions, stableRatings } = useStableLayoutData(
+    topicData?.opinions,
+    topicData?.ratings,
+  );
+
+  // Compute node angles from stable layout for sidebar sorting
+  const nodeAngles = useMemo(() => {
+    if (stableOpinions.length === 0) return new Map<string, number>();
+    const size = Math.min(graphSize.width, graphSize.height);
+    const config: LayoutConfig = {
+      centerX: graphSize.width / 2,
+      centerY: graphSize.height / 2,
+      outerRadius: size * 0.48,
+      extremeRadius: size * 0.48 * 0.92,
+      moderateRadius: size * 0.48 * 0.80,
+      respectfulRadius: size * 0.48 * 0.25,
+      nodeRadius: Math.max(3, size * 0.012),
+    };
+    const layoutData = calculateLayout(stableOpinions, stableRatings, config);
+    return getNodeAngles(layoutData.nodes, config);
+  }, [stableOpinions, stableRatings, graphSize]);
 
   const myOpinion = topicData?.opinions.find(op => op.authorId === user?.id);
   const { onlineOpinionIds } = usePresence(DEFAULT_TOPIC_ID, myOpinion?.id);
@@ -284,7 +312,7 @@ const Index = () => {
   };
 
   const actionState = getNodeActionState();
-  const hasRealData = topicData && topicData.opinions.length > 0;
+  const hasRealData = stableOpinions.length > 0;
 
   // Mobile: should we hide the below-graph CTA and show it in menu instead?
   const mobileChatsOpen = isMobile && activeMobilePanel === 'chats';
@@ -372,6 +400,7 @@ const Index = () => {
                 variant="inline"
                 onOpinionClick={handleSidebarOpinionClick}
                 onChatOpen={openChatWith}
+                nodeAngles={nodeAngles}
               />
             </div>
           </div>
@@ -389,8 +418,8 @@ const Index = () => {
             className="relative flex items-center justify-center transition-all duration-300"
           >
             <OpinionGraph
-              opinions={hasRealData ? topicData.opinions : undefined}
-              ratings={hasRealData ? topicData.ratings : undefined}
+              opinions={hasRealData ? stableOpinions : undefined}
+              ratings={hasRealData ? stableRatings : undefined}
               chatRequests={graphChatRequests}
               activeChats={activeChats}
               messageAnimations={messageAnimations}
@@ -585,6 +614,7 @@ const Index = () => {
               variant="inline"
               onOpinionClick={handleSidebarOpinionClick}
               onChatOpen={openChatWith}
+              nodeAngles={nodeAngles}
             />
           </BottomPanel>
 
@@ -611,6 +641,8 @@ const Index = () => {
               onSignIn={() => setAuthDialogOpen(true)}
               showOpinionCta={mobileChatsOpen || (!showCtaBelowGraph && !!inlineOpinionCta)}
               opinionCtaNode={inlineOpinionCta}
+              chatAgeFilterWeeks={chatAgeFilterWeeks}
+              onChatAgeFilterChange={setChatAgeFilterWeeks}
             />
           </BottomPanel>
 
@@ -629,6 +661,8 @@ const Index = () => {
           onOpenChange={setSettingsSheetOpen}
           topicId={DEFAULT_TOPIC_ID}
           onSignIn={() => setAuthDialogOpen(true)}
+          chatAgeFilterWeeks={chatAgeFilterWeeks}
+          onChatAgeFilterChange={setChatAgeFilterWeeks}
         />
       )}
 

@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { List, Search, X, Send, MessageSquare, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Sheet,
   SheetContent,
@@ -24,6 +25,7 @@ interface OpinionsSidebarProps {
   variant?: 'sheet' | 'inline';
   onOpinionClick?: (opinionId: string) => void;
   onChatOpen?: (theirOpinionId: string) => void;
+  nodeAngles?: Map<string, number>;
 }
 
 interface OpinionItem {
@@ -35,7 +37,7 @@ interface OpinionItem {
   user_id: string;
 }
 
-export function OpinionsSidebar({ open, onOpenChange, topicId, variant = 'sheet', onOpinionClick, onChatOpen }: OpinionsSidebarProps) {
+export function OpinionsSidebar({ open, onOpenChange, topicId, variant = 'sheet', onOpinionClick, onChatOpen, nodeAngles }: OpinionsSidebarProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [search, setSearch] = useState('');
@@ -71,10 +73,21 @@ export function OpinionsSidebar({ open, onOpenChange, topicId, variant = 'sheet'
 
   const filteredOpinions = useMemo(() => {
     if (!opinions) return [];
-    if (!search.trim()) return opinions;
-    const query = search.toLowerCase();
-    return opinions.filter(op => op.text.toLowerCase().includes(query));
-  }, [opinions, search]);
+    let result = opinions;
+    if (search.trim()) {
+      const query = search.toLowerCase();
+      result = result.filter(op => op.text.toLowerCase().includes(query));
+    }
+    // Sort by angular position if available, otherwise by created_at
+    if (nodeAngles && nodeAngles.size > 0) {
+      result = [...result].sort((a, b) => {
+        const angleA = nodeAngles.get(a.id) ?? Infinity;
+        const angleB = nodeAngles.get(b.id) ?? Infinity;
+        return angleA - angleB;
+      });
+    }
+    return result;
+  }, [opinions, search, nodeAngles]);
 
   const handleOpinionClick = (opinionId: string) => {
     setExpandedOpinionId(prev => prev === opinionId ? null : opinionId);
@@ -164,7 +177,7 @@ export function OpinionsSidebar({ open, onOpenChange, topicId, variant = 'sheet'
               const isExpanded = expandedOpinionId === opinion.id;
               const actionState = getOpinionActionState(opinion);
               return (
-                <div key={opinion.id} className="rounded-lg bg-muted/50 overflow-hidden transition-colors">
+                <motion.div key={opinion.id} layout transition={{ type: 'spring', stiffness: 500, damping: 40 }} className="rounded-lg bg-muted/50 overflow-hidden transition-colors">
                   <button
                     onClick={() => handleOpinionClick(opinion.id)}
                     className="w-full text-left p-2.5 hover:bg-muted transition-colors"
@@ -202,7 +215,7 @@ export function OpinionsSidebar({ open, onOpenChange, topicId, variant = 'sheet'
                           <Button onClick={() => handleDeclineRequest(opinion.id)} disabled={isAccepting || isDeclining} variant="outline" size="sm" className="flex-1 h-8 text-xs border-destructive text-destructive hover:bg-destructive/10">
                             <X className="w-3.5 h-3.5 mr-1" />{isDeclining ? '...' : t('common.decline', 'Decline')}
                           </Button>
-                        </div>
+                </div>
                       )}
                       {actionState === 'can_request' && (
                         <Button onClick={() => handleRequestChat(opinion.id)} disabled={isSending} variant="outline" size="sm" className="w-full h-8 text-xs border-accent text-accent hover:bg-accent/10">
@@ -211,7 +224,7 @@ export function OpinionsSidebar({ open, onOpenChange, topicId, variant = 'sheet'
                       )}
                     </div>
                   )}
-                </div>
+                </motion.div>
               );
             })}
           </div>
