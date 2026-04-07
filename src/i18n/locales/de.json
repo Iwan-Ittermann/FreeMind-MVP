@@ -358,7 +358,7 @@
       "title": "Deine Meinung",
       "text": "Das ist deine Meinung auf der Karte! Wenn du mit anderen chattest, wird es zu einem Haus."
     },
-    "exploreOpinions": { "title": "Entdecke Andere", "text": "Klicke auf 2 andere Meinungen." },
+    
     "requestChat": {
       "title": "Chat anfragen",
       "text": "Klicke jetzt auf 'Chat anfragen' bei einer Meinung, um ein Gespräch zu starten."
@@ -510,6 +510,10 @@
       "privacy": "Datenschutz",
       "imprint": "Impressum",
       "contact": "Kontakt"
-    }
+  },
+  "chatRequestTooltip": {
+    "first": "Du hast deine erste Chat-Anfrage erhalten! Öffne sie, um ein Gespräch zu starten.",
+    "second": "Super, noch eine Anfrage! Ab jetzt erscheinen neue Anfragen in deiner Chat-Seitenleiste."
   }
+}
 }

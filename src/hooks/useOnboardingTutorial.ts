@@ -17,7 +17,7 @@ export const UNIFIED_STEPS: UnifiedTutorialStep[] = [
   { id: 'welcome', targetSelector: null, titleKey: 'unifiedTutorial.welcome.title', textKey: 'unifiedTutorial.welcome.text', waitForEvent: false },
   { id: 'addOpinion', targetSelector: '[data-tutorial="add-opinion-button"]', titleKey: 'unifiedTutorial.addOpinion.title', textKey: 'unifiedTutorial.addOpinion.text', waitForEvent: true },
   { id: 'yourTent', targetSelector: '[data-user-node="true"]', titleKey: 'unifiedTutorial.yourTent.title', textKey: 'unifiedTutorial.yourTent.text', waitForEvent: false },
-  { id: 'exploreOpinions', targetSelector: null, titleKey: 'unifiedTutorial.exploreOpinions.title', textKey: 'unifiedTutorial.exploreOpinions.text', waitForEvent: true },
+  
   { id: 'requestChat', targetSelector: null, titleKey: 'unifiedTutorial.requestChat.title', textKey: 'unifiedTutorial.requestChat.text', waitForEvent: true },
   { id: 'nowWeWait', targetSelector: null, titleKey: 'unifiedTutorial.nowWeWait.title', textKey: 'unifiedTutorial.nowWeWait.text', waitForEvent: false },
   { id: 'chatStarted', targetSelector: null, titleKey: 'unifiedTutorial.chatStarted.title', textKey: 'unifiedTutorial.chatStarted.text', waitForEvent: false },
@@ -26,7 +26,6 @@ export const UNIFIED_STEPS: UnifiedTutorialStep[] = [
 
 interface TutorialState {
   step: number;
-  nodeClickCount: number;
 }
 
 function loadState(): TutorialState | null {
@@ -50,7 +49,7 @@ export function useOnboardingTutorial() {
   const { i18n } = useTranslation();
   const { isStepMuted } = useTutorialSettings();
   const [isActive, setIsActive] = useState(false);
-  const [state, setState] = useState<TutorialState>(() => loadState() || { step: 0, nodeClickCount: 0 });
+  const [state, setState] = useState<TutorialState>(() => loadState() || { step: 0 });
 
   const currentLanguage = i18n.language.startsWith('de') ? 'de' : 'en';
 
@@ -64,7 +63,7 @@ export function useOnboardingTutorial() {
   }, []);
 
   const startTutorial = useCallback(() => {
-    const newState = { step: 0, nodeClickCount: 0 };
+    const newState = { step: 0 };
     updateState(newState);
     setIsActive(true);
   }, [updateState]);
@@ -115,19 +114,6 @@ export function useOnboardingTutorial() {
     }
   }, [isActive, activeSteps, state, updateState]);
 
-  // Event: user clicked a node (advances from exploreOpinions after 2 clicks)
-  const onNodeClicked = useCallback(() => {
-    if (!isActive) return;
-    const currentStepData = activeSteps[state.step];
-    if (currentStepData?.id === 'exploreOpinions') {
-      const newCount = state.nodeClickCount + 1;
-      if (newCount >= 2) {
-        updateState({ ...state, step: state.step + 1, nodeClickCount: 0 });
-      } else {
-        updateState({ ...state, nodeClickCount: newCount });
-      }
-    }
-  }, [isActive, activeSteps, state, updateState]);
 
   // Event: user requested a chat
   const onChatRequested = useCallback(() => {
@@ -163,7 +149,6 @@ export function useOnboardingTutorial() {
     currentStep: state.step,
     currentStepData: safeCurrentStepData,
     totalSteps: activeSteps.length,
-    nodeClickCount: state.nodeClickCount,
     startTutorial,
     endTutorial,
     nextStep,
@@ -172,7 +157,6 @@ export function useOnboardingTutorial() {
     hasCompletedTutorial,
     resetTutorialStatus,
     onOpinionSubmitted,
-    onNodeClicked,
     onChatRequested,
     onChatAccepted,
     onChatOpened,
