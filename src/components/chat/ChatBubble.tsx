@@ -37,6 +37,16 @@ export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(function C
 }: ChatBubbleProps, ref) {
   const [showActions, setShowActions] = useState(false);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showMenu = useCallback(() => {
+    if (hideTimer.current) { clearTimeout(hideTimer.current); hideTimer.current = null; }
+    setShowActions(true);
+  }, []);
+
+  const hideMenu = useCallback(() => {
+    hideTimer.current = setTimeout(() => setShowActions(false), 200);
+  }, []);
 
   const handleTouchStart = useCallback(() => {
     if (isOwn || isOpinion) return;
@@ -80,12 +90,16 @@ export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(function C
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.3, type: "spring", stiffness: 500, damping: 30 }}
       className={`flex ${isOwn ? 'justify-end' : 'justify-start'} group relative`}
-      onMouseEnter={() => !isOwn && !isOpinion && setShowActions(true)}
-      onMouseLeave={() => setShowActions(false)}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      <div className={`relative max-w-[85%]`}>
+      {/* Wrapper with generous hover area including the action menu zone */}
+      <div
+        className={`relative max-w-[85%]`}
+        onMouseEnter={() => !isOwn && !isOpinion && showMenu()}
+        onMouseLeave={hideMenu}
+        style={{ paddingTop: !isOwn && !isOpinion ? '40px' : undefined, marginTop: !isOwn && !isOpinion ? '-40px' : undefined }}
+      >
         {/* Reply preview */}
         {replyToContent && (
           <div className={`mb-1 px-3 py-1.5 rounded-lg bg-muted/60 border-l-2 border-primary/40 ${isOwn ? 'ml-auto' : ''}`}>
@@ -145,7 +159,9 @@ export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(function C
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="absolute -top-8 left-0 flex items-center gap-1 bg-background border border-border rounded-lg shadow-lg px-1 py-0.5 z-10"
+            className="absolute top-0 left-0 flex items-center gap-1 bg-background border border-border rounded-lg shadow-lg px-1 py-0.5 z-10"
+            onMouseEnter={showMenu}
+            onMouseLeave={hideMenu}
           >
             <button
               onClick={(e) => { e.stopPropagation(); onReaction?.('i_see_you'); setShowActions(false); }}
