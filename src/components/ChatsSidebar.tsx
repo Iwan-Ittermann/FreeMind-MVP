@@ -12,12 +12,13 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useChatRequests } from '@/hooks/useChatRequests';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { EmbeddedChatView } from '@/components/chat/EmbeddedChatView';
+import { AuthForm } from '@/components/AuthForm';
 
 interface ChatsSidebarProps {
   open: boolean;
@@ -54,6 +55,7 @@ export function ChatsSidebar({ open, onOpenChange, topicId, onChatOpen, unreadMe
   const { t } = useTranslation();
   const { user } = useAuth();
   const isMobile = useIsMobile();
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [expandedRequestId, setExpandedRequestId] = useState<string | null>(null);
   const [activeChatOpinionId, setActiveChatOpinionId] = useState<string | null>(null);
@@ -75,7 +77,7 @@ export function ChatsSidebar({ open, onOpenChange, topicId, onChatOpen, unreadMe
     enabled: (variant === 'inline' || open) && !!topicId && !!user?.id,
   });
 
-  // Fetch chats
+  // Fetch chats with polling
   const { data: chats, isLoading: chatsLoading } = useQuery({
     queryKey: ['myChats', topicId, myOpinion?.id],
     queryFn: async () => {
@@ -128,9 +130,10 @@ export function ChatsSidebar({ open, onOpenChange, topicId, onChatOpen, unreadMe
       });
     },
     enabled: (variant === 'inline' || open) && !!myOpinion?.id,
+    refetchInterval: 4000,
   });
 
-  // Fetch pending requests
+  // Fetch pending requests with polling
   const { data: pendingRequests, isLoading: requestsLoading } = useQuery({
     queryKey: ['myPendingRequests', topicId, myOpinion?.id],
     queryFn: async () => {
@@ -168,7 +171,38 @@ export function ChatsSidebar({ open, onOpenChange, topicId, onChatOpen, unreadMe
       });
     },
     enabled: (variant === 'inline' || open) && !!myOpinion?.id,
+    refetchInterval: 4000,
   });
+
+  // Realtime subscription for chat_requests changes
+  useEffect(() => {
+    if (!myOpinion?.id || !topicId) return;
+    const channelName = `chats-sidebar-${topicId}-${Date.now()}`;
+    const channel = supabase
+      .channel(channelName)
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'chat_requests',
+        filter: `topic_id=eq.${topicId}`,
+      }, () => {
+        queryClient.refetchQueries({ queryKey: ['myPendingRequests', topicId, myOpinion.id] });
+        queryClient.refetchQueries({ queryKey: ['myChats', topicId, myOpinion.id] });
+      })
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'chats',
+        filter: `topic_id=eq.${topicId}`,
+      }, () => {
+        queryClient.refetchQueries({ queryKey: ['myChats', topicId, myOpinion.id] });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [topicId, myOpinion?.id, queryClient]);
 
   const filteredChats = useMemo(() => {
     if (!chats) return [];
@@ -191,10 +225,8 @@ export function ChatsSidebar({ open, onOpenChange, topicId, onChatOpen, unreadMe
     const theirOpinionId = chat.opinion_a_id === myOpinion?.id ? chat.opinion_b_id : chat.opinion_a_id;
     
     if (isMobile) {
-      // On mobile, open embedded chat inside sidebar
       setActiveChatOpinionId(theirOpinionId);
     } else {
-      // On desktop, use floating chat
       onChatClick?.(theirOpinionId);
       if (onChatOpen) {
         onChatOpen(theirOpinionId);
@@ -255,14 +287,11 @@ export function ChatsSidebar({ open, onOpenChange, topicId, onChatOpen, unreadMe
   const content = (
     <div className="flex flex-col h-full">
       {!user ? (
-        <div className="flex-1 flex flex-col items-center justify-center gap-3 text-muted-foreground text-sm">
-          <span>{t('sidebar.signInToSeeChats', 'Sign in to see your chats')}</span>
-          <Button
-            onClick={() => onSignIn?.()}
-            className="rounded-full bg-accent text-accent-foreground hover:bg-accent/90 font-semibold text-sm shadow-lg shadow-accent/25 px-6"
-          >
-            {t('common.signInOrSignUp', 'Sign In / Sign Up')}
-          </Button>
+        <div className="flex-1 flex flex-col items-center justify-center gap-3 px-2">
+          <span className="text-sm text-muted-foreground">{t('sidebar.signInToSeeChats', 'Sign in to see your chats')}</span>
+          <div className="w-full max-w-xs">
+            <AuthForm compact onSuccess={() => {}} />
+          </div>
         </div>
       ) : !myOpinion ? (
         <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center px-2">
