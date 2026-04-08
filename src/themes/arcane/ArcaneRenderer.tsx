@@ -10,7 +10,7 @@ import { ArcaneNode } from './ArcaneNode';
 import { ArcaneEventMarker } from './ArcaneEventMarker';
 import { useAppSetting } from '@/hooks/useAppSettings';
 import { useHidePendingEdges } from '../ThemeContext';
-import { ClusterWedges } from '@/components/graph/ClusterWedges';
+
 
 interface ArcaneRendererProps {
   nodes: GraphNode[];
@@ -115,7 +115,7 @@ export function ArcaneRenderer({
     <svg width={width} height={height} className="overflow-visible">
       <rect width={width} height={height} fill="transparent" />
       <ArcaneZones zones={zoneTokens} config={config} />
-      <ClusterWedges nodes={nodes} config={config} />
+      
       <ArcaneCluster nodes={nodeTokens} />
       <g className="arcane-edges">
         {edgeTokens.map((et, i) => (
