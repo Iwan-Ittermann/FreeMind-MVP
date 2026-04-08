@@ -21,6 +21,7 @@ import { DesktopBottomBar } from '@/components/DesktopBottomBar';
 import { MainMenu, MenuContent } from '@/components/MainMenu';
 import { AboutSidebar } from '@/components/AboutSidebar';
 import { AuthDialog } from '@/components/AuthDialog';
+import { AuthForm } from '@/components/AuthForm';
 import { GraphNode, GraphEdge, ChatRequest, LayoutConfig } from '@/types/graph';
 import { useTopicData } from '@/hooks/useTopicData';
 import { useChatRequests } from '@/hooks/useChatRequests';
@@ -30,7 +31,6 @@ import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { useBrowserNotification } from '@/hooks/useBrowserNotification';
 import { useTutorialContext } from '@/contexts/TutorialContext';
 import { useDisagreementRating } from '@/hooks/useOpinionRating';
-import { useStableLayoutData } from '@/hooks/useStableLayoutData';
 import { calculateLayout, getNodeAngles } from '@/lib/freemind-layout';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -108,15 +108,11 @@ const Index = () => {
     });
   }, [topicData?.opinions, topicData?.lastChatActivity, chatAgeFilterWeeks]);
 
-  // Debounce layout inputs — prevents constant reshuffling
-  const { stableOpinions, stableRatings, secondsRemaining } = useStableLayoutData(
-    filteredOpinions,
-    topicData?.ratings,
-  );
-
-  // Compute node angles and cluster assignments from stable layout for sidebar sorting
-  const { nodeAngles, nodeClusters } = useMemo(() => {
-    if (stableOpinions.length === 0) return { nodeAngles: new Map<string, number>(), nodeClusters: new Map<string, number>() };
+  // Compute node angles from layout for sidebar sorting
+  const nodeAngles = useMemo(() => {
+    const opinions = filteredOpinions ?? [];
+    const ratings = topicData?.ratings ?? [];
+    if (opinions.length === 0) return new Map<string, number>();
     const size = Math.min(graphSize.width, graphSize.height);
     const config: LayoutConfig = {
       centerX: graphSize.width / 2,
@@ -127,16 +123,9 @@ const Index = () => {
       respectfulRadius: size * 0.48 * 0.25,
       nodeRadius: Math.max(3, size * 0.012),
     };
-    const layoutData = calculateLayout(stableOpinions, stableRatings, config);
-    const angles = getNodeAngles(layoutData.nodes, config);
-    const clusters = new Map<string, number>();
-    layoutData.nodes.forEach(n => {
-      if (n.cluster !== undefined && n.cluster !== -1) {
-        clusters.set(n.id, n.cluster);
-      }
-    });
-    return { nodeAngles: angles, nodeClusters: clusters };
-  }, [stableOpinions, stableRatings, graphSize]);
+    const layoutData = calculateLayout(opinions, ratings, config);
+    return getNodeAngles(layoutData.nodes, config);
+  }, [filteredOpinions, topicData?.ratings, graphSize]);
 
   const myOpinion = topicData?.opinions.find(op => op.authorId === user?.id);
   const { onlineOpinionIds } = usePresence(topicId, myOpinion?.id);
@@ -155,8 +144,8 @@ const Index = () => {
     prevIncomingCountRef.current = currentCount;
   }, [chatRequests, myOpinion, onNewIncomingRequest, t]);
 
-  // Disagreement rating for selected node
-  const { disagreement, setDisagreement, save: saveDisagreement, hasUnsavedChanges: hasUnsavedDisagreement, isSaving: isSavingDisagreement, canRate: canRateDisagreement } = useDisagreementRating(
+  // Disagreement rating for selected node (auto-saves)
+  const { disagreement, setDisagreement, isSaving: isSavingDisagreement, canRate: canRateDisagreement } = useDisagreementRating(
     topicId,
     myOpinion?.id ?? null,
     selectedNode?.id ?? null,
@@ -357,7 +346,7 @@ const Index = () => {
   };
 
   const actionState = getNodeActionState();
-  const hasRealData = stableOpinions.length > 0;
+  const hasRealData = (filteredOpinions ?? []).length > 0;
 
   // Mobile: should we hide the below-graph CTA and show it in menu instead?
   const mobileChatsOpen = isMobile && activeMobilePanel === 'chats';
@@ -405,16 +394,10 @@ const Index = () => {
     </div>
   ) : null;
 
-  // Auth CTA for unauthenticated users (below graph in CTA slot)
+  // Auth CTA for unauthenticated users — inline form (mobile below graph)
   const authCta = !user ? (
     <div className="w-full max-w-sm px-4">
-      <Button
-        onClick={() => setAuthDialogOpen(true)}
-        className="w-full h-12 text-base bg-accent text-accent-foreground hover:bg-accent/90 rounded-full"
-      >
-        <LogIn className="w-5 h-5 mr-2" />
-        {t('common.signInOrSignUp', 'Einloggen / Loslegen')}
-      </Button>
+      <AuthForm compact onSuccess={() => {}} />
     </div>
   ) : null;
 
@@ -448,7 +431,6 @@ const Index = () => {
                 onOpinionClick={handleSidebarOpinionClick}
                 onChatOpen={openChatWith}
                 nodeAngles={nodeAngles}
-                nodeClusters={nodeClusters}
               />
             </div>
           </div>
@@ -465,15 +447,9 @@ const Index = () => {
             transition={{ delay: 0.2 }}
             className="relative flex items-center justify-center transition-all duration-300"
           >
-            {/* Debounce countdown pill */}
-            {secondsRemaining > 0 && (
-              <div className="absolute top-2 left-1/2 -translate-x-1/2 z-20 text-xs bg-muted/80 backdrop-blur px-3 py-1 rounded-full text-muted-foreground">
-                Recalculating in {secondsRemaining}s
-              </div>
-            )}
             <OpinionGraph
-              opinions={hasRealData ? stableOpinions : undefined}
-              ratings={hasRealData ? stableRatings : undefined}
+              opinions={hasRealData ? filteredOpinions : undefined}
+              ratings={hasRealData ? topicData?.ratings : undefined}
               chatRequests={graphChatRequests}
               activeChats={activeChats}
               messageAnimations={messageAnimations}
@@ -519,36 +495,20 @@ const Index = () => {
                     </p>
                   )}
 
-                  {/* Agreement slider — visible for all opinions except own */}
+                  {/* Agreement slider — auto-saves */}
                   {canRateDisagreement && selectedNode.opinion.visible !== false && actionState !== 'own' && (
                     <div className="mb-4 space-y-1.5">
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-muted-foreground">{t('agreementRating.label')}</span>
                         <span className="text-xs font-mono text-muted-foreground">{disagreement}</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Slider
-                          value={[disagreement]}
-                          onValueChange={(v) => setDisagreement(v[0])}
-                          max={100}
-                          step={1}
-                          className="flex-1 [&_[role=slider]]:bg-primary [&_[role=slider]]:border-primary [&_.bg-primary]:bg-primary/30"
-                        />
-                        {hasUnsavedDisagreement && (
-                          <button
-                            onClick={saveDisagreement}
-                            disabled={isSavingDisagreement}
-                            className="w-8 h-8 rounded-full bg-accent text-accent-foreground flex items-center justify-center hover:bg-accent/90 transition-colors shrink-0 disabled:opacity-50"
-                            title="Save rating"
-                          >
-                            {isSavingDisagreement ? (
-                              <div className="w-3.5 h-3.5 border-2 border-accent-foreground border-t-transparent rounded-full animate-spin" />
-                            ) : (
-                              <Check className="w-4 h-4" />
-                            )}
-                          </button>
-                        )}
-                      </div>
+                      <Slider
+                        value={[disagreement]}
+                        onValueChange={(v) => setDisagreement(v[0])}
+                        max={100}
+                        step={1}
+                        className="flex-1 [&_[role=slider]]:bg-primary [&_[role=slider]]:border-primary [&_.bg-primary]:bg-primary/30"
+                      />
                       <div className="flex justify-between text-[10px] text-muted-foreground">
                         <span>{t('agreementRating.agree')}</span>
                         <span>{t('agreementRating.disagree')}</span>
@@ -685,7 +645,6 @@ const Index = () => {
               onOpinionClick={handleSidebarOpinionClick}
               onChatOpen={openChatWith}
               nodeAngles={nodeAngles}
-              nodeClusters={nodeClusters}
             />
           </BottomPanel>
 
