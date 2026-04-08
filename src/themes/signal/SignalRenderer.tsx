@@ -8,7 +8,7 @@ import { SignalEdge } from './SignalEdge';
 import { SignalNode } from './SignalNode';
 import { SignalEventMarker } from './SignalEventMarker';
 import { useHidePendingEdges } from '../ThemeContext';
-import { ClusterWedges } from '@/components/graph/ClusterWedges';
+
 
 interface SignalRendererProps {
   nodes: GraphNode[];
@@ -112,7 +112,7 @@ export function SignalRenderer({
     <svg width={width} height={height} className="overflow-visible">
       <rect width={width} height={height} fill="transparent" onClick={() => onNodeClick(null as unknown as GraphNode)} />
       <SignalZones zones={zoneTokens} config={config} />
-      <ClusterWedges nodes={nodes} config={config} />
+      
       <g className="signal-edges">
         {edgeTokens.map((et, i) => (
           <SignalEdge

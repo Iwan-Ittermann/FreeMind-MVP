@@ -5,12 +5,7 @@ import { useAuth } from './useAuth';
 
 /**
  * Hook for standalone disagreement ratings on opinions.
- * Any user can rate their disagreement (0-100) with any other opinion,
- * regardless of whether they have a chat with them.
- *
- * Naming convention:
- * - "Disagreement rating" = opinion_ratings table (0-100 scale)
- * - "Respect rating" = chat_ratings table (empathy, -50 to +50 scale)
+ * Auto-saves with a 1000ms debounce.
  */
 export function useDisagreementRating(
   topicId: string | null,
@@ -20,6 +15,7 @@ export function useDisagreementRating(
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [localDisagreement, setLocalDisagreement] = useState<number | null>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const queryKey = ['opinionRating', myOpinionId, targetOpinionId];
 
@@ -55,7 +51,7 @@ export function useDisagreementRating(
   // The saved value from DB
   const savedDisagreement = existingRating?.disagreement ?? 50;
 
-  // Upsert mutation — manual save only
+  // Upsert mutation
   const mutation = useMutation({
     mutationFn: async (disagreement: number) => {
       if (!myOpinionId || !targetOpinionId || !topicId) throw new Error('Missing IDs');
@@ -86,27 +82,28 @@ export function useDisagreementRating(
     },
   });
 
-  // Update local value only (no auto-save)
+  // Auto-save with debounce
   const setDisagreement = useCallback((value: number) => {
     setLocalDisagreement(value);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      mutation.mutate(value);
+    }, 1000);
+  }, [mutation]);
+
+  // Cleanup debounce on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
   }, []);
 
-  // Manual save
-  const save = useCallback(() => {
-    if (localDisagreement !== null) {
-      mutation.mutate(localDisagreement);
-    }
-  }, [localDisagreement, mutation]);
-
   const currentValue = localDisagreement ?? savedDisagreement;
-  const hasUnsavedChanges = currentValue !== savedDisagreement;
 
   return {
     disagreement: currentValue,
     setDisagreement,
-    save,
     savedDisagreement,
-    hasUnsavedChanges,
     isLoading,
     isSaving: mutation.isPending,
     canRate: !!user && !!myOpinionId && !!targetOpinionId && myOpinionId !== targetOpinionId,

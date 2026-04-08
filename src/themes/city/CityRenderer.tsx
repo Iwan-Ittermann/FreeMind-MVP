@@ -10,7 +10,7 @@ import { CityNode } from './CityNode';
 import { CityEventMarker } from './CityEventMarker';
 import { useAppSetting } from '@/hooks/useAppSettings';
 import { useHidePendingEdges } from '../ThemeContext';
-import { ClusterWedges } from '@/components/graph/ClusterWedges';
+
 
 interface CityRendererProps {
   nodes: GraphNode[];
@@ -119,7 +119,7 @@ export function CityRenderer({
     <svg width={width} height={height} className="overflow-visible">
       <rect width={width} height={height} fill="transparent" />
       <CityZones zones={zoneTokens} config={config} />
-      <ClusterWedges nodes={nodes} config={config} />
+      
       <CityCluster nodes={nodeTokens} />
       <g className="city-edges">
         {edgeTokens.map((et, i) => (

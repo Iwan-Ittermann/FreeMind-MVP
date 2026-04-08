@@ -1,16 +1,18 @@
 import { useState } from 'react';
-import { Bot, Plus, Trash2, Edit2, Save, X, Loader2 } from 'lucide-react';
+import { Bot, Plus, Trash2, Edit2, Save, X, Loader2, EyeOff, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
 import { 
   useFakeNodes, 
   useCreateFakeNode, 
   useUpdateFakeNode, 
   useDeleteFakeNode 
 } from '@/hooks/useFakeNodes';
+import { useAppSetting, useUpdateAppSetting } from '@/hooks/useAppSettings';
 
 const PRIMARY_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
 
@@ -67,6 +69,14 @@ export function FakeNodesPanel() {
     );
   }
 
+  const { data: hideSetting } = useAppSetting('hide_fake_nodes');
+  const updateSetting = useUpdateAppSetting();
+  const hideFakeNodes = hideSetting?.value === 'true';
+
+  const handleToggleHide = () => {
+    updateSetting.mutate({ key: 'hide_fake_nodes', value: hideFakeNodes ? 'false' : 'true' });
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -81,6 +91,13 @@ export function FakeNodesPanel() {
           Create fake opinion nodes to populate the graph. These nodes will have random connections 
           with empathy between -20 and +50, and disagreement between 80 and 100.
         </CardDescription>
+        <div className="flex items-center justify-between pt-2">
+          <div className="flex items-center gap-2 text-sm">
+            {hideFakeNodes ? <EyeOff className="w-4 h-4 text-muted-foreground" /> : <Eye className="w-4 h-4 text-muted-foreground" />}
+            <span className="text-muted-foreground">{hideFakeNodes ? 'Fake nodes hidden' : 'Fake nodes visible'}</span>
+          </div>
+          <Switch checked={!hideFakeNodes} onCheckedChange={handleToggleHide} />
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Add new fake node */}
