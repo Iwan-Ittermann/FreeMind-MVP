@@ -143,6 +143,25 @@ export function useUpdateTopicTitle() {
   });
 }
 
+// Admin: Update topic description
+export function useUpdateTopicDescription() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ topicId, description }: { topicId: string; description: string | null }) => {
+      const { error } = await supabase
+        .from('topics')
+        .update({ description })
+        .eq('id', topicId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['topics'] });
+    },
+  });
+}
+
 // User: Join topic
 export function useJoinTopic() {
   const queryClient = useQueryClient();

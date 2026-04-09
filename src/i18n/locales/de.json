@@ -514,6 +514,22 @@
   "chatRequestTooltip": {
     "first": "Du hast deine erste Chat-Anfrage erhalten! Öffne sie, um ein Gespräch zu starten.",
     "second": "Super, noch eine Anfrage! Ab jetzt erscheinen neue Anfragen in deiner Chat-Seitenleiste."
+  },
+  "home": {
+    "nav": {
+      "home": "Home",
+      "about": "Über"
+    },
+    "login": "Login",
+    "loggedIn": "Eingeloggt",
+    "hero": {
+      "headline": "Hier kannst du dich produktiv mit anderen Meinungen austauschen",
+      "subheadline": "*Insbesondere über polarisierte Themen."
+    },
+    "discussions": "Aktuelle Diskussionen",
+    "noDiscussions": "Noch keine Diskussionen vorhanden.",
+    "opinions": "Meinungen",
+    "chats": "Chats"
   }
 }
 }

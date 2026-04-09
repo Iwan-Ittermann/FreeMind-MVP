@@ -3,10 +3,12 @@ import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MessageCircle, Users, LogIn } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { AuthDialog } from '@/components/AuthDialog';
 import { MiniGraph } from '@/components/chat/MiniGraph';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { useAuth } from '@/hooks/useAuth';
 
 interface TopicWithStats {
@@ -63,6 +65,7 @@ function useActiveTopicsWithStats() {
 export default function Home() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const { data: topics = [], isLoading } = useActiveTopicsWithStats();
 
@@ -75,22 +78,25 @@ export default function Home() {
             freemind
           </Link>
           <nav className="hidden sm:flex items-center gap-6 text-sm text-muted-foreground">
-            <Link to="/" className="hover:text-foreground transition-colors font-medium text-foreground">Home</Link>
-            <Link to="/about" className="hover:text-foreground transition-colors">About</Link>
+            <Link to="/" className="hover:text-foreground transition-colors font-medium text-foreground">{t('home.nav.home')}</Link>
+            <Link to="/about" className="hover:text-foreground transition-colors">{t('home.nav.about')}</Link>
           </nav>
-          {!user ? (
-            <Button
-              onClick={() => setAuthDialogOpen(true)}
-              variant="outline"
-              size="sm"
-              className="h-8 text-xs border-accent text-accent hover:bg-accent/10"
-            >
-              <LogIn className="w-3.5 h-3.5 mr-1.5" />
-              Login
-            </Button>
-          ) : (
-            <div className="w-2 h-2 rounded-full bg-accent" title="Eingeloggt" />
-          )}
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            {!user ? (
+              <Button
+                onClick={() => setAuthDialogOpen(true)}
+                variant="outline"
+                size="sm"
+                className="h-8 text-xs border-accent text-accent hover:bg-accent/10"
+              >
+                <LogIn className="w-3.5 h-3.5 mr-1.5" />
+                {t('home.login')}
+              </Button>
+            ) : (
+              <div className="w-2 h-2 rounded-full bg-accent" title={t('home.loggedIn')} />
+            )}
+          </div>
         </div>
       </header>
 
@@ -102,7 +108,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground leading-tight"
           >
-            Hier kannst du dich produktiv mit anderen Meinungen austauschen
+            {t('home.hero.headline')}
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -110,14 +116,14 @@ export default function Home() {
             transition={{ delay: 0.1 }}
             className="mt-4 text-sm sm:text-base text-muted-foreground"
           >
-            *Insbesondere über polarisierte Themen.
+            {t('home.hero.subheadline')}
           </motion.p>
         </div>
       </section>
 
       {/* Topic Grid */}
       <section className="container mx-auto px-4 py-10 md:py-16">
-        <h2 className="text-lg font-semibold text-foreground mb-6">Aktuelle Diskussionen</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-6">{t('home.discussions')}</h2>
 
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -126,7 +132,7 @@ export default function Home() {
             ))}
           </div>
         ) : topics.length === 0 ? (
-          <p className="text-muted-foreground text-center py-12">Noch keine Diskussionen vorhanden.</p>
+          <p className="text-muted-foreground text-center py-12">{t('home.noDiscussions')}</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {topics.map((topic, i) => (
@@ -154,11 +160,11 @@ export default function Home() {
                 <div className="flex items-center gap-4 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <Users className="w-3.5 h-3.5" />
-                    {topic.opinionCount} Meinungen
+                    {topic.opinionCount} {t('home.opinions')}
                   </span>
                   <span className="flex items-center gap-1">
                     <MessageCircle className="w-3.5 h-3.5" />
-                    {topic.chatCount} Chats
+                    {topic.chatCount} {t('home.chats')}
                   </span>
                 </div>
               </motion.div>
