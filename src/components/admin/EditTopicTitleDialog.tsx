@@ -19,12 +19,14 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { useUpdateTopicTitle, Topic } from '@/hooks/useTopics';
+import { useUpdateTopicTitle, useUpdateTopicDescription, Topic } from '@/hooks/useTopics';
 import { toast } from 'sonner';
 
 const formSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters').max(200, 'Title must be less than 200 characters'),
+  description: z.string().max(500, 'Description must be less than 500 characters').optional().or(z.literal('')),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -37,18 +39,20 @@ interface EditTopicTitleDialogProps {
 
 export function EditTopicTitleDialog({ open, onOpenChange, topic }: EditTopicTitleDialogProps) {
   const updateTitle = useUpdateTopicTitle();
+  const updateDescription = useUpdateTopicDescription();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: '',
+      description: '',
     },
   });
 
   // Reset form when topic changes or dialog opens
   useEffect(() => {
     if (topic && open) {
-      form.reset({ title: topic.title });
+      form.reset({ title: topic.title, description: topic.description || '' });
     }
   }, [topic, open, form]);
 
@@ -56,21 +60,34 @@ export function EditTopicTitleDialog({ open, onOpenChange, topic }: EditTopicTit
     if (!topic) return;
     
     try {
-      await updateTitle.mutateAsync({ topicId: topic.id, title: data.title });
-      toast.success('Topic title updated');
+      const promises: Promise<void>[] = [];
+      
+      if (data.title !== topic.title) {
+        promises.push(updateTitle.mutateAsync({ topicId: topic.id, title: data.title }));
+      }
+      
+      const newDesc = data.description || null;
+      if (newDesc !== topic.description) {
+        promises.push(updateDescription.mutateAsync({ topicId: topic.id, description: newDesc }));
+      }
+
+      await Promise.all(promises);
+      toast.success('Topic updated');
       onOpenChange(false);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to update title');
+      toast.error(err.message || 'Failed to update topic');
     }
   };
+
+  const isPending = updateTitle.isPending || updateDescription.isPending;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Edit Topic Title</DialogTitle>
+          <DialogTitle>Edit Topic</DialogTitle>
           <DialogDescription>
-            Change the title displayed on the main page.
+            Change the title and description of this topic.
           </DialogDescription>
         </DialogHeader>
 
@@ -84,7 +101,25 @@ export function EditTopicTitleDialog({ open, onOpenChange, topic }: EditTopicTit
                   <FormLabel>Title</FormLabel>
                   <FormControl>
                     <Input 
-                      placeholder="Enter the new topic title" 
+                      placeholder="Enter the topic title" 
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description (optional)</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      placeholder="Enter a short description" 
+                      className="min-h-[80px]"
                       {...field} 
                     />
                   </FormControl>
@@ -101,8 +136,8 @@ export function EditTopicTitleDialog({ open, onOpenChange, topic }: EditTopicTit
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={updateTitle.isPending}>
-                {updateTitle.isPending && (
+              <Button type="submit" disabled={isPending}>
+                {isPending && (
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 )}
                 Save

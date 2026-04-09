@@ -15,10 +15,11 @@ interface TopicCardProps {
   onArchive: (topicId: string) => void;
   onDelete: (topicId: string) => void;
   onRestore: (topicId: string) => void;
+  onEdit: (topic: Topic) => void;
   isUpdating: boolean;
 }
 
-function TopicCard({ topic, onArchive, onDelete, onRestore, isUpdating }: TopicCardProps) {
+function TopicCard({ topic, onArchive, onDelete, onRestore, onEdit, isUpdating }: TopicCardProps) {
   const baseUrl = window.location.origin;
   const joinUrl = `${baseUrl}/t/${topic.url_slug}`;
 
@@ -62,6 +63,14 @@ function TopicCard({ topic, onArchive, onDelete, onRestore, isUpdating }: TopicC
         <div className="flex items-center gap-2">
           {topic.status === 'Active' && (
             <>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => onEdit(topic)}
+                title="Edit topic"
+              >
+                <Pencil className="w-4 h-4" />
+              </Button>
               <Button
                 size="sm"
                 variant="outline"
@@ -115,17 +124,12 @@ function TopicCard({ topic, onArchive, onDelete, onRestore, isUpdating }: TopicC
   );
 }
 
-// Main topic ID constant
-const MAIN_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
-
 export function TopicPanel() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const [editTitleDialogOpen, setEditTitleDialogOpen] = useState(false);
   const [editSiteTitleDialogOpen, setEditSiteTitleDialogOpen] = useState(false);
+  const [editingTopic, setEditingTopic] = useState<Topic | null>(null);
   const { data: topics = [], isLoading } = useAllTopics(true);
   const updateStatus = useUpdateTopicStatus();
-  
-  const mainTopic = topics.find(t => t.id === MAIN_TOPIC_ID) || null;
 
   const activeTopics = topics.filter(t => t.status === 'Active');
   const archivedTopics = topics.filter(t => t.status === 'Archived');
@@ -158,6 +162,10 @@ export function TopicPanel() {
     }
   };
 
+  const handleEdit = (topic: Topic) => {
+    setEditingTopic(topic);
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -179,10 +187,6 @@ export function TopicPanel() {
           <Button variant="outline" onClick={() => setEditSiteTitleDialogOpen(true)}>
             <Globe className="w-4 h-4 mr-2" />
             Edit Site Title
-          </Button>
-          <Button variant="outline" onClick={() => setEditTitleDialogOpen(true)}>
-            <Pencil className="w-4 h-4 mr-2" />
-            Edit Main Title
           </Button>
           <Button onClick={() => setCreateDialogOpen(true)}>
             <Plus className="w-4 h-4 mr-2" />
@@ -241,6 +245,7 @@ export function TopicPanel() {
                   onArchive={handleArchive}
                   onDelete={handleDelete}
                   onRestore={handleRestore}
+                  onEdit={handleEdit}
                   isUpdating={updateStatus.isPending}
                 />
               ))}
@@ -263,6 +268,7 @@ export function TopicPanel() {
                   onArchive={handleArchive}
                   onDelete={handleDelete}
                   onRestore={handleRestore}
+                  onEdit={handleEdit}
                   isUpdating={updateStatus.isPending}
                 />
               ))}
@@ -285,6 +291,7 @@ export function TopicPanel() {
                   onArchive={handleArchive}
                   onDelete={handleDelete}
                   onRestore={handleRestore}
+                  onEdit={handleEdit}
                   isUpdating={updateStatus.isPending}
                 />
               ))}
@@ -299,9 +306,9 @@ export function TopicPanel() {
       />
       
       <EditTopicTitleDialog
-        open={editTitleDialogOpen}
-        onOpenChange={setEditTitleDialogOpen}
-        topic={mainTopic}
+        open={!!editingTopic}
+        onOpenChange={(open) => { if (!open) setEditingTopic(null); }}
+        topic={editingTopic}
       />
 
       <EditSiteTitleDialog

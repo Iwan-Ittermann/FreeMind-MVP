@@ -3,6 +3,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Opinion, ChatRating } from '@/types/graph';
 import { setAnimationChannel, removeAnimationChannel } from '@/lib/animation-channel';
+import { useAppSetting } from '@/hooks/useAppSettings';
 
 export interface TopicData {
   id: string;
@@ -12,6 +13,8 @@ export interface TopicData {
   ratings: ChatRating[];
   /** Map of opinionId → last chat message timestamp (ISO string) or null */
   lastChatActivity: Map<string, string | null>;
+  /** Set of opinion IDs that are fake (seeded) */
+  fakeOpinionIds: Set<string>;
 }
 
 export interface ActiveChat {
@@ -80,6 +83,10 @@ export function useTopicData(topicId: string) {
   const queryClient = useQueryClient();
   const [activeChats, setActiveChats] = useState<ActiveChat[]>([]);
   const [messageAnimations, setMessageAnimations] = useState<MessageAnimationData[]>([]);
+
+  // Per-topic hide setting
+  const { data: hideSetting } = useAppSetting(`hide_fake_nodes_${topicId}`);
+  const hideFakeNodes = hideSetting?.value === 'true';
 
   // Clean up stale active chats (older than 3 seconds) and message animations (older than 1 second)
   useEffect(() => {
@@ -266,14 +273,16 @@ export function useTopicData(topicId: string) {
 
       if (opinionsError) throw opinionsError;
 
-      // Fetch fake nodes for this topic
+      // Fetch fake nodes for this topic (used to identify which opinions are fake)
       const { data: fakeNodes, error: fakeNodesError } = await supabase
         .from('fake_nodes')
-        .select('*')
-        .eq('topic_id', topicId)
-        .order('id', { ascending: true });
+        .select('opinion_text')
+        .eq('topic_id', topicId);
 
       if (fakeNodesError) throw fakeNodesError;
+
+      // Build a set of fake opinion texts for matching
+      const fakeTexts = new Set((fakeNodes || []).map(fn => fn.opinion_text));
 
       // Fetch canonical graph pairs (empathy from chat_ratings via accepted chat_requests)
       const { data: ratingsData, error: ratingsError } = await supabase
@@ -301,19 +310,13 @@ export function useTopicData(topicId: string) {
         noticeText: op.notice_text ?? undefined,
       }));
 
-      // Add fake nodes as opinions (with fake- prefix to distinguish)
-      const fakeOpinions: Opinion[] = (fakeNodes || []).map(fn => ({
-        id: `fake-${fn.id}`,
-        text: fn.opinion_text,
-        authorId: undefined,
-        createdAt: new Date(fn.created_at),
-        status: 'Visible' as const,
-        visible: true,
-      }));
-
-      // Combine real and fake opinions
-      const allOpinions = [...formattedOpinions, ...fakeOpinions]
-        .sort((a, b) => a.id.localeCompare(b.id));
+      // Identify fake opinion IDs by matching text
+      const fakeOpinionIds = new Set<string>();
+      for (const op of formattedOpinions) {
+        if (fakeTexts.has(op.text)) {
+          fakeOpinionIds.add(op.id);
+        }
+      }
 
       // Build chat-based ratings (empathy from chats)
       const chatRatingsMap = new Map<string, ChatRating>();
@@ -360,14 +363,7 @@ export function useTopicData(topicId: string) {
         }
       }
 
-      const formattedRatings = Array.from(mergedRatingsMap.values());
-
-      // Generate ratings for fake nodes (connections between fake nodes only)
-      const fakeNodeIds = fakeOpinions.map(op => op.id).sort();
-      const fakeRatings = generateFakeNodeRatings(fakeNodeIds);
-
-      // Combine real and fake ratings
-      const allRatings = [...formattedRatings, ...fakeRatings];
+      const allRatings = Array.from(mergedRatingsMap.values());
 
       // Fetch last chat activity per opinion
       // Get the most recent message timestamp for each opinion via their chats
@@ -402,15 +398,35 @@ export function useTopicData(topicId: string) {
         id: topic.id,
         title: topic.title,
         description: topic.description,
-        opinions: allOpinions,
+        opinions: formattedOpinions,
         ratings: allRatings,
         lastChatActivity,
+        fakeOpinionIds,
       };
     },
   });
 
+  // Filter out fake opinions when hide toggle is on
+  const filteredData = useMemo(() => {
+    if (!query.data) return query.data;
+    if (!hideFakeNodes || query.data.fakeOpinionIds.size === 0) return query.data;
+
+    const fakeIds = query.data.fakeOpinionIds;
+    const filteredOpinions = query.data.opinions.filter(op => !fakeIds.has(op.id));
+    const filteredRatings = query.data.ratings.filter(
+      r => !fakeIds.has(r.opinionA) && !fakeIds.has(r.opinionB)
+    );
+
+    return {
+      ...query.data,
+      opinions: filteredOpinions,
+      ratings: filteredRatings,
+    };
+  }, [query.data, hideFakeNodes]);
+
   return {
     ...query,
+    data: filteredData,
     activeChats,
     messageAnimations,
   };

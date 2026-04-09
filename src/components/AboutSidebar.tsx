@@ -23,7 +23,7 @@ export function AboutSidebar({ open, onOpenChange }: AboutSidebarProps) {
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="bottom" hideClose className="max-h-[75vh] rounded-t-2xl flex flex-col md:mx-auto md:max-w-[calc(100%-580px)] md:min-w-[400px] md:bottom-12">
         <SheetHeader>
-          <SheetTitle>{t('about.title', 'About')}</SheetTitle>
+          <SheetTitle>About</SheetTitle>
           <SheetDescription className="sr-only">How FreeMind works</SheetDescription>
         </SheetHeader>
 
