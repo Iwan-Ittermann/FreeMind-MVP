@@ -1,36 +1,62 @@
+# Six Fixes
+
+## 1. Fake opinions shown twice on graph
+
+**Root cause**: The seeded fake data was inserted into BOTH the `opinions` table (as real opinions with fake user IDs) AND the `fake_nodes` table. The `useTopicData` hook then combines real opinions + fake_nodes, causing duplicates.
+
+**Fix**: In `useTopicData.ts`, stop adding `fake_nodes` as separate opinion entries. The fake_nodes table should only be used for tracking which opinions are fake (for the hide toggle). Remove lines 304-316 that create `fakeOpinions` and merge them. Instead, use the `fake_nodes` table only to identify which real opinions to hide when the toggle is on.
+
+Also remove `generateFakeNodeRatings` function since the ratings already exist in the DB.
+
+**Files**: `src/hooks/useTopicData.ts`
+
+## 2. Per-topic toggle to hide fake nodes
+
+**Current state**: Single global `hide_fake_nodes` setting in `app_settings`. `FakeNodesPanel` is hardcoded to one topic.
+
+**Fix**: Change the setting key to be per-topic: `hide_fake_nodes_<topicId>`. Update `FakeNodesPanel` to accept a `topicId` prop and list all topics with their fake node counts. Each topic gets its own toggle. Update `useTopicData` to check the per-topic setting.
+
+**Files**: `src/components/admin/FakeNodesPanel.tsx`, `src/hooks/useTopicData.ts`, `src/hooks/useAppSettings.ts`
+
+## 3. Topic editing in admin dashboard
+
+**Current state**: Only the "main topic" title can be edited via `EditTopicTitleDialog`. Other topics in the `TopicCard` component have no edit button.
+
+**Fix**: Add a Pencil/Edit button to each `TopicCard` that opens `EditTopicTitleDialog` for that topic. Also allow editing description. Pass selected topic state through `TopicPanel`.
+
+**Files**: `src/components/admin/TopicPanel.tsx`, `src/components/admin/EditTopicTitleDialog.tsx`
+
+## 4. Remove inline auth below graph on desktop
+
+**Current state**: `authCta` renders for all users (mobile + desktop) below the graph. On desktop, the chat sidebar already has an inline auth form, creating a duplicate.
+
+**Fix**: Only show `authCta` below the graph on mobile. Wrap with `isMobile` check.
+
+**Files**: `src/pages/Index.tsx` (line ~398)
+
+## 6. i18n support for homepage
+
+**Current state**: `Home.tsx` has hardcoded German strings ("Hier kannst du...", "Aktuelle Diskussionen", "Meinungen", etc.).
+
+**Fix**: Add `home.*` keys to both `en.json` and `de.json`, then use `t()` in `Home.tsx`.
+
+Also add a button with flag symbol to change the language.   
+  
+**Files**: `src/pages/Home.tsx`, `src/i18n/locales/en.json`, `src/i18n/locales/de.json`
+
+---
+
+## Summary
 
 
-# Seed Fake Data for Three New Topics
-
-## Approach
-
-Replicate the exact pattern used for the "links oder rechts" topic: insert opinions (with fake user IDs), fake_nodes entries, accepted chat_requests, chats, chat_messages, and opinion_ratings. The existing `useTopicData` hook already handles fake nodes and the hide toggle works site-wide via `app_settings.hide_fake_nodes`.
-
-## Data per Topic
-
-For each of the 3 topics, insert:
-- **17 opinions** with diverse perspectives (fake user IDs `fa0000000012`–`fa0000000062`, unique per topic)
-- **17 fake_nodes** entries (tracking which opinions are fake)
-- **~20 accepted chat_requests** between random pairs
-- **~20 chats** matching those requests
-- **3–4 chat_messages per chat** (~70 messages per topic)
-- **~15 opinion_ratings** (disagreement between pairs that have chats)
-
-No code changes needed — the existing hide toggle in `FakeNodesPanel` and filtering in `useTopicData` already apply site-wide to all topics.
-
-## Topics and Opinion Themes
-
-**"Was macht dich stolz auf Deutschland?"** — perspectives covering culture, engineering, social safety net, Grundgesetz, reunification, nature, football, music, science, Mittelstand, healthcare, education, diversity, history lessons, Vereine, volunteering, punctuality
-
-**"Wie stellst du dir die Welt im Jahr 2050 vor?"** — AI everywhere, climate crisis, renewable energy, space travel, overpopulation, digital currency, remote work, biotech, water scarcity, political fragmentation, universal basic income, autonomous transport, virtual reality, nuclear fusion, food tech, surveillance state, degrowth
-
-**"Was funktioniert oder funktioniert nicht an unserer Demokratie?"** — slow bureaucracy, strong constitution, lobby influence, federalism, voter apathy, free press, coalition compromise, direct democracy missing, independent judiciary, party system rigid, local democracy works, digitalization lagging, transparency lacking, civic education, minority protection, EU integration, term limits needed
-
-## Files Changed
-
-| File | Action |
-|------|--------|
-| DB inserts (3 batches) | Insert opinions, fake_nodes, chat_requests, chats, chat_messages, opinion_ratings for each topic |
-
-No frontend code changes required — the existing infrastructure handles everything.
-
+| File                                            | Action                                                                                         |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `src/hooks/useTopicData.ts`                     | Remove fake_nodes-as-opinions logic; use fake_nodes only for filtering; per-topic hide setting |
+| `src/components/admin/FakeNodesPanel.tsx`       | Per-topic toggles; list all topics with fake nodes                                             |
+| `src/pages/Index.tsx`                           | Show authCta only on mobile                                                                    |
+| `src/components/AboutSidebar.tsx`               | Title → "About"                                                                                |
+| `src/components/admin/TopicPanel.tsx`           | Add edit button to each TopicCard                                                              |
+| `src/components/admin/EditTopicTitleDialog.tsx` | Support editing description too                                                                |
+| `src/pages/Home.tsx`                            | Use i18n `t()` for all strings                                                                 |
+| `src/i18n/locales/en.json`                      | Add `home.*` keys                                                                              |
+| `src/i18n/locales/de.json`                      | Add `home.*` keys                                                                              |
