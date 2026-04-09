@@ -37,23 +37,7 @@ function TopicFakeNodes({ topicId, topicTitle }: TopicFakeNodesProps) {
 
   const handleToggleHide = () => {
     const newValue = hideFakeNodes ? 'false' : 'true';
-    // Use upsert-like approach: try update first, if no rows affected, insert
-    updateSetting.mutate(
-      { key: `hide_fake_nodes_${topicId}`, value: newValue },
-      {
-        onError: () => {
-          // Setting doesn't exist yet, need to insert
-          import('@/integrations/supabase/client').then(({ supabase }) => {
-            supabase.from('app_settings').insert({ key: `hide_fake_nodes_${topicId}`, value: newValue }).then(() => {
-              import('@tanstack/react-query').then(({ useQueryClient }) => {
-                // Force refetch
-                window.location.reload();
-              });
-            });
-          });
-        },
-      }
-    );
+    updateSetting.mutate({ key: `hide_fake_nodes_${topicId}`, value: newValue });
   };
 
   const handleCreate = () => {
