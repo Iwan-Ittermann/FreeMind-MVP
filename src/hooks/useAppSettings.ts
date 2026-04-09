@@ -38,12 +38,23 @@ export function useUpdateAppSetting() {
 
   return useMutation({
     mutationFn: async ({ key, value }: { key: string; value: string }) => {
-      const { error } = await supabase
+      // Try update first
+      const { data, error: updateError } = await supabase
         .from('app_settings')
         .update({ value })
-        .eq('key', key);
+        .eq('key', key)
+        .select();
 
-      if (error) throw error;
+      if (updateError) throw updateError;
+
+      // If no rows updated, insert instead
+      if (!data || data.length === 0) {
+        const { error: insertError } = await supabase
+          .from('app_settings')
+          .insert({ key, value });
+
+        if (insertError) throw insertError;
+      }
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['appSetting', variables.key] });
