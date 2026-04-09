@@ -502,6 +502,22 @@
   "chatRequestTooltip": {
     "first": "You received your first chat request! Open it to start a conversation.",
     "second": "Great, another request! From now on, new requests will appear in your chat sidebar."
+  },
+  "home": {
+    "nav": {
+      "home": "Home",
+      "about": "About"
+    },
+    "login": "Login",
+    "loggedIn": "Logged in",
+    "hero": {
+      "headline": "Exchange opinions productively with others here",
+      "subheadline": "*Especially about polarized topics."
+    },
+    "discussions": "Current Discussions",
+    "noDiscussions": "No discussions yet.",
+    "opinions": "Opinions",
+    "chats": "Chats"
   }
 }
 }
