@@ -394,8 +394,8 @@ const Index = () => {
     </div>
   ) : null;
 
-  // Auth CTA for unauthenticated users — inline form (mobile below graph)
-  const authCta = !user ? (
+  // Auth CTA for unauthenticated users — inline form (mobile only, below graph)
+  const authCta = !user && isMobile ? (
     <div className="w-full max-w-sm px-4">
       <AuthForm compact onSuccess={() => {}} />
     </div>
