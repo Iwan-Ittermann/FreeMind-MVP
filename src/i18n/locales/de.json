@@ -523,7 +523,10 @@
     "loggedIn": "Eingeloggt",
     "hero": {
       "headline": "Hier kannst du dich produktiv mit anderen Meinungen austauschen",
-      "subheadline": "Insbesondere zu polarsierten Themen"
+      "subheadline": "Insbesondere zu polarisierten Themen",
+      "bullet1": "Login per zufälliger Passphrase",
+      "bullet2": "Respekt von Gegnern entscheidet",
+      "bullet3": "Gleiche Meinungen stehen nebeneinander"
     },
     "discussions": "Aktuelle Themen",
     "noDiscussions": "Noch keine Diskussionen vorhanden.",
