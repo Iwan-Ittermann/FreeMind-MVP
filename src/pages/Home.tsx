@@ -43,9 +43,10 @@ function useActiveTopicsWithStats() {
             .eq('topic_id', topic.id)
             .eq('visible', true),
           supabase
-            .from('chats')
+            .from('chat_requests')
             .select('*', { count: 'exact', head: true })
-            .eq('topic_id', topic.id),
+            .eq('topic_id', topic.id)
+            .eq('status', 'accepted'),
         ]);
 
         results.push({
@@ -178,11 +179,11 @@ export default function Home() {
                 <div className="flex items-center gap-4 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <Users className="w-3.5 h-3.5" />
-                    {topic.opinionCount} {t('home.opinions')}
+                    {topic.opinionCount} {t('landing.home.opinions')}
                   </span>
                   <span className="flex items-center gap-1">
                     <MessageCircle className="w-3.5 h-3.5" />
-                    {topic.chatCount} {t('home.chats')}
+                    {topic.chatCount} {t('landing.home.chats')}
                   </span>
                 </div>
               </motion.div>
