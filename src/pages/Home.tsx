@@ -78,7 +78,6 @@ export default function Home() {
             freemind
           </Link>
           <nav className="hidden sm:flex items-center gap-6 text-sm text-muted-foreground">
-            <Link to="/" className="hover:text-foreground transition-colors font-medium text-foreground">{t('home.nav.home')}</Link>
             <Link to="/about" className="hover:text-foreground transition-colors">{t('home.nav.about')}</Link>
           </nav>
           <div className="flex items-center gap-2">
