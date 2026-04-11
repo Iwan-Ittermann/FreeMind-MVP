@@ -107,7 +107,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground leading-tight"
           >
-            Hier kannst du dich produktiv mit anderen Meinungen austauschen
+            {t('landing.home.hero.headline')}
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -115,7 +115,7 @@ export default function Home() {
             transition={{ delay: 0.1 }}
             className="mt-4 text-sm sm:text-base text-muted-foreground"
           >
-            Insbesondere zu polarisierten Themen
+            {t('landing.home.hero.subheadline')}
           </motion.p>
           <motion.ul
             initial={{ opacity: 0, y: 20 }}
