@@ -121,19 +121,19 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mt-8 flex flex-col items-center gap-3 text-sm text-muted-foreground"
+            className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 text-sm text-muted-foreground"
           >
             <li className="flex items-center gap-2">
               <KeyRound className="w-4 h-4 text-primary" />
-              <span>{t('home.hero.bullet1')}</span>
+              <span>{t('landing.home.hero.bullet1')}</span>
             </li>
             <li className="flex items-center gap-2">
               <Trophy className="w-4 h-4 text-primary" />
-              <span>{t('home.hero.bullet2')}</span>
+              <span>{t('landing.home.hero.bullet2')}</span>
             </li>
             <li className="flex items-center gap-2">
               <CircleDot className="w-4 h-4 text-primary" />
-              <span>{t('home.hero.bullet3')}</span>
+              <span>{t('landing.home.hero.bullet3')}</span>
             </li>
           </motion.ul>
         </div>
