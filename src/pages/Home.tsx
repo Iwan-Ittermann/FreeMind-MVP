@@ -78,7 +78,7 @@ export default function Home() {
             freemind
           </Link>
           <nav className="hidden sm:flex items-center gap-6 text-sm text-muted-foreground">
-            <Link to="/about" className="hover:text-foreground transition-colors">Über</Link>
+            <Link to="/about" className="hover:text-foreground transition-colors">{t('landing.home.nav.about')}</Link>
           </nav>
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
@@ -141,7 +141,7 @@ export default function Home() {
 
       {/* Topic Grid */}
       <section className="container mx-auto px-4 py-10 md:py-16">
-        <h2 className="text-lg font-semibold text-foreground mb-6">Aktuelle Themen</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-6">{t('landing.home.discussions')}</h2>
 
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
