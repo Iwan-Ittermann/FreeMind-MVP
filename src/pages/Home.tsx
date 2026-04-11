@@ -115,7 +115,7 @@ export default function Home() {
             transition={{ delay: 0.1 }}
             className="mt-4 text-sm sm:text-base text-muted-foreground"
           >
-            Insbesondere zu polarsierten Themen
+            Insbesondere zu polarisierten Themen
           </motion.p>
         </div>
       </section>
