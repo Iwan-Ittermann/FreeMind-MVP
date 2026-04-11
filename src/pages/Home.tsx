@@ -78,7 +78,7 @@ export default function Home() {
             freemind
           </Link>
           <nav className="hidden sm:flex items-center gap-6 text-sm text-muted-foreground">
-            <Link to="/about" className="hover:text-foreground transition-colors">{t('home.nav.about')}</Link>
+            <Link to="/about" className="hover:text-foreground transition-colors">Über</Link>
           </nav>
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
@@ -107,7 +107,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground leading-tight"
           >
-            {t('home.hero.headline')}
+            Hier kannst du dich produktiv mit anderen Meinungen austauschen
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -115,14 +115,14 @@ export default function Home() {
             transition={{ delay: 0.1 }}
             className="mt-4 text-sm sm:text-base text-muted-foreground"
           >
-            {t('home.hero.subheadline')}
+            Insbesondere zu polarsierten Themen
           </motion.p>
         </div>
       </section>
 
       {/* Topic Grid */}
       <section className="container mx-auto px-4 py-10 md:py-16">
-        <h2 className="text-lg font-semibold text-foreground mb-6">{t('home.discussions')}</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-6">Aktuelle Themen</h2>
 
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
