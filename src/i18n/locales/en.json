@@ -511,7 +511,10 @@
     "loggedIn": "Logged in",
     "hero": {
       "headline": "Engage productively with diverse perspectives",
-      "subheadline": "Particularly on polarized topics"
+      "subheadline": "Particularly on polarized topics",
+      "bullet1": "Random passphrase login",
+      "bullet2": "Earn opponent respect",
+      "bullet3": "Circle with similar views"
     },
     "discussions": "Available Topics",
     "noDiscussions": "No discussions yet.",

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MessageCircle, Users, LogIn } from 'lucide-react';
+import { MessageCircle, Users, LogIn, KeyRound, Trophy, CircleDot } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
@@ -117,6 +117,25 @@ export default function Home() {
           >
             Insbesondere zu polarisierten Themen
           </motion.p>
+          <motion.ul
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mt-8 flex flex-col items-center gap-3 text-sm text-muted-foreground"
+          >
+            <li className="flex items-center gap-2">
+              <KeyRound className="w-4 h-4 text-primary" />
+              <span>{t('home.hero.bullet1')}</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <Trophy className="w-4 h-4 text-primary" />
+              <span>{t('home.hero.bullet2')}</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <CircleDot className="w-4 h-4 text-primary" />
+              <span>{t('home.hero.bullet3')}</span>
+            </li>
+          </motion.ul>
         </div>
       </section>
 
