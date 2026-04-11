@@ -517,16 +517,15 @@
   },
   "home": {
     "nav": {
-      "home": "Home",
       "about": "Über"
     },
     "login": "Login",
     "loggedIn": "Eingeloggt",
     "hero": {
       "headline": "Hier kannst du dich produktiv mit anderen Meinungen austauschen",
-      "subheadline": "*Insbesondere über polarisierte Themen."
+      "subheadline": "Insbesondere zu polarisierten Themen"
     },
-    "discussions": "Aktuelle Diskussionen",
+    "discussions": "Aktuelle Themen",
     "noDiscussions": "Noch keine Diskussionen vorhanden.",
     "opinions": "Meinungen",
     "chats": "Chats"

@@ -505,16 +505,15 @@
   },
   "home": {
     "nav": {
-      "home": "Home",
       "about": "About"
     },
     "login": "Login",
     "loggedIn": "Logged in",
     "hero": {
-      "headline": "Exchange opinions productively with others here",
-      "subheadline": "*Especially about polarized topics."
+      "headline": "Engage productively with diverse perspectives",
+      "subheadline": "Particularly on polarized topics"
     },
-    "discussions": "Current Discussions",
+    "discussions": "Available Topics",
     "noDiscussions": "No discussions yet.",
     "opinions": "Opinions",
     "chats": "Chats"
