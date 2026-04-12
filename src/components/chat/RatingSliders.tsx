@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, Save, Check } from 'lucide-react';
+import { Heart, HeartCrack, Save, Check } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
@@ -41,15 +41,6 @@ export function RatingSliders({
 
       {/* Respect Slider: -50 to +50 */}
       <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Heart className="w-4 h-4 text-rose-400" />
-            <span className="text-sm text-muted-foreground">{t('floatingChat.respect')}</span>
-          </div>
-          <span className="text-xs font-mono text-rose-400/80">
-            {respect}
-          </span>
-        </div>
         <div className="relative">
           <Slider
             value={[respect + 50]}
@@ -61,10 +52,10 @@ export function RatingSliders({
           />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-0.5 h-3 bg-foreground/40 pointer-events-none" />
         </div>
-        <div className="flex justify-between text-[10px] text-muted-foreground">
-          <span>{t('floatingChat.disrespectful')}</span>
-          <span>0</span>
-          <span>{t('floatingChat.respectful')}</span>
+        <div className="flex items-center justify-between">
+          <HeartCrack className="w-4 h-4 text-rose-400" />
+          <span className="text-xs font-mono text-muted-foreground">{respect}</span>
+          <Heart className="w-4 h-4 text-rose-400" />
         </div>
       </div>
 

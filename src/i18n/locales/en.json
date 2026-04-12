@@ -315,7 +315,8 @@
     "chats": "chats",
     "signInToSeeChats": "Sign in to see your chats",
     "submitOpinionFirst": "Submit your opinion first to start chatting",
-    "yesterday": "Yesterday"
+    "yesterday": "Yesterday",
+    "requests": "Requests"
   },
   "tutorial": {
     "opinionSidebar": {
@@ -519,7 +520,10 @@
     "discussions": "Available Topics",
     "noDiscussions": "No discussions yet.",
     "opinions": "Opinions",
-    "chats": "Chats"
+    "chats": "Chats",
+    "showMore": "More",
+    "showLess": "Less",
+    "recentOpinions": "Recent Opinions"
   }
 }
 }
