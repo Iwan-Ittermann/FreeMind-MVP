@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MessageCircle, Users, LogIn, KeyRound, Trophy, CircleDot } from 'lucide-react';
+import { MessageCircle, Users, LogIn, KeyRound, Trophy, CircleDot, ChevronDown, ChevronUp } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
@@ -17,6 +17,7 @@ interface TopicWithStats {
   description: string | null;
   opinionCount: number;
   chatCount: number;
+  latestOpinionAt: string | null;
 }
 
 function useActiveTopicsWithStats() {
@@ -36,7 +37,7 @@ function useActiveTopicsWithStats() {
       const results: TopicWithStats[] = [];
 
       for (const topic of topics) {
-        const [opRes, chatRes] = await Promise.all([
+        const [opRes, chatRes, latestOpRes] = await Promise.all([
           supabase
             .from('opinions_public')
             .select('*', { count: 'exact', head: true })
@@ -47,6 +48,13 @@ function useActiveTopicsWithStats() {
             .select('*', { count: 'exact', head: true })
             .eq('topic_id', topic.id)
             .eq('status', 'accepted'),
+          supabase
+            .from('opinions_public')
+            .select('created_at')
+            .eq('topic_id', topic.id)
+            .eq('visible', true)
+            .order('created_at', { ascending: false })
+            .limit(1),
         ]);
 
         results.push({
@@ -55,12 +63,80 @@ function useActiveTopicsWithStats() {
           description: topic.description,
           opinionCount: opRes.count || 0,
           chatCount: chatRes.count || 0,
+          latestOpinionAt: latestOpRes.data?.[0]?.created_at || null,
         });
       }
+
+      // Sort by latest opinion activity
+      results.sort((a, b) => {
+        if (!a.latestOpinionAt && !b.latestOpinionAt) return 0;
+        if (!a.latestOpinionAt) return 1;
+        if (!b.latestOpinionAt) return -1;
+        return new Date(b.latestOpinionAt).getTime() - new Date(a.latestOpinionAt).getTime();
+      });
 
       return results;
     },
   });
+}
+
+interface OpinionWithTopic {
+  id: string;
+  text: string;
+  topic_id: string;
+  topic_title: string;
+  created_at: string;
+}
+
+function useLatestOpinions() {
+  return useQuery({
+    queryKey: ['latestOpinions'],
+    staleTime: 5 * 60 * 1000,
+    queryFn: async (): Promise<OpinionWithTopic[]> => {
+      const { data: opinions, error } = await supabase
+        .from('opinions_public')
+        .select('id, text, topic_id, created_at')
+        .eq('visible', true)
+        .order('created_at', { ascending: false })
+        .limit(9);
+
+      if (error) throw error;
+      if (!opinions || opinions.length === 0) return [];
+
+      // Get unique topic IDs
+      const topicIds = [...new Set(opinions.map(o => o.topic_id).filter(Boolean))];
+      const { data: topics } = await supabase
+        .from('topics')
+        .select('id, title')
+        .in('id', topicIds as string[]);
+
+      const topicMap = new Map((topics || []).map(t => [t.id, t.title]));
+
+      return opinions
+        .filter(o => o.id && o.text && o.topic_id)
+        .map(o => ({
+          id: o.id!,
+          text: o.text!,
+          topic_id: o.topic_id!,
+          topic_title: topicMap.get(o.topic_id!) || '',
+          created_at: o.created_at!,
+        }));
+    },
+  });
+}
+
+// Simple hash to pick a consistent color per topic
+const topicColors = [
+  'bg-primary/20 text-primary',
+  'bg-accent/20 text-accent',
+  'bg-rose-500/20 text-rose-400',
+  'bg-emerald-500/20 text-emerald-400',
+  'bg-amber-500/20 text-amber-400',
+];
+function colorForTopic(id: string) {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) | 0;
+  return topicColors[Math.abs(hash) % topicColors.length];
 }
 
 export default function Home() {
@@ -68,7 +144,11 @@ export default function Home() {
   const { user } = useAuth();
   const { t } = useTranslation();
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const [showAll, setShowAll] = useState(false);
   const { data: topics = [], isLoading } = useActiveTopicsWithStats();
+  const { data: latestOpinions = [] } = useLatestOpinions();
+
+  const visibleTopics = showAll ? topics : topics.slice(0, 3);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -91,10 +171,10 @@ export default function Home() {
                 className="h-8 text-xs border-accent text-accent hover:bg-accent/10"
               >
                 <LogIn className="w-3.5 h-3.5 mr-1.5" />
-                {t('home.login')}
+                {t('landing.home.login', t('home.login'))}
               </Button>
             ) : (
-              <div className="w-2 h-2 rounded-full bg-accent" title={t('home.loggedIn')} />
+              <div className="w-2 h-2 rounded-full bg-accent" title={t('landing.home.loggedIn', t('home.loggedIn'))} />
             )}
           </div>
         </div>
@@ -151,46 +231,97 @@ export default function Home() {
             ))}
           </div>
         ) : topics.length === 0 ? (
-          <p className="text-muted-foreground text-center py-12">{t('home.noDiscussions')}</p>
+          <p className="text-muted-foreground text-center py-12">{t('landing.home.noDiscussions', t('home.noDiscussions'))}</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {topics.map((topic, i) => (
-              <motion.div
-                key={topic.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
-                onClick={() => navigate(`/topic/${topic.id}`)}
-                className="group cursor-pointer rounded-xl border border-border/40 bg-card hover:border-primary/40 hover:shadow-lg transition-all duration-200 p-5 flex flex-col items-center gap-4"
-              >
-                <div className="w-full flex justify-center py-2">
-                  <MiniGraph topicId={topic.id} size={160} />
-                </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {visibleTopics.map((topic, i) => (
+                <motion.div
+                  key={topic.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  onClick={() => navigate(`/topic/${topic.id}`)}
+                  className="group cursor-pointer rounded-xl border border-border/40 bg-card hover:border-primary/40 hover:shadow-lg transition-all duration-200 p-5 flex flex-col items-center gap-4"
+                >
+                  <div className="w-full flex justify-center py-2">
+                    <MiniGraph topicId={topic.id} size={160} />
+                  </div>
 
-                <div className="w-full text-center">
-                  <h3 className="text-base font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">
-                    {topic.title}
-                  </h3>
-                  {topic.description && (
-                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{topic.description}</p>
+                  <div className="w-full text-center">
+                    <h3 className="text-base font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">
+                      {topic.title}
+                    </h3>
+                    {topic.description && (
+                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{topic.description}</p>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <Users className="w-3.5 h-3.5" />
+                      {topic.opinionCount} {t('landing.home.opinions')}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <MessageCircle className="w-3.5 h-3.5" />
+                      {topic.chatCount} {t('landing.home.chats')}
+                    </span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {topics.length > 3 && (
+              <div className="flex justify-center mt-6">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowAll(!showAll)}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  {showAll ? (
+                    <>
+                      {t('landing.home.showLess')}
+                      <ChevronUp className="w-4 h-4 ml-1" />
+                    </>
+                  ) : (
+                    <>
+                      {t('landing.home.showMore')}
+                      <ChevronDown className="w-4 h-4 ml-1" />
+                    </>
                   )}
-                </div>
+                </Button>
+              </div>
+            )}
+          </>
+        )}
+      </section>
 
-                <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <Users className="w-3.5 h-3.5" />
-                    {topic.opinionCount} {t('landing.home.opinions')}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <MessageCircle className="w-3.5 h-3.5" />
-                    {topic.chatCount} {t('landing.home.chats')}
-                  </span>
-                </div>
+      {/* Latest Opinions */}
+      {latestOpinions.length > 0 && (
+        <section className="container mx-auto px-4 pb-16">
+          <h2 className="text-lg font-semibold text-foreground mb-6">{t('landing.home.recentOpinions')}</h2>
+          <div className="flex flex-wrap gap-3">
+            {latestOpinions.map((op, i) => (
+              <motion.div
+                key={op.id}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: i * 0.03 }}
+                onClick={() => navigate(`/topic/${op.topic_id}`)}
+                className="cursor-pointer rounded-2xl border border-border/40 bg-card hover:border-primary/30 transition-all px-4 py-3 max-w-xs flex flex-col gap-2"
+              >
+                <p className="text-sm text-foreground line-clamp-2 leading-snug">
+                  "{op.text}"
+                </p>
+                <span className={`self-start text-[10px] font-medium rounded-full px-2 py-0.5 ${colorForTopic(op.topic_id)}`}>
+                  {op.topic_title}
+                </span>
               </motion.div>
             ))}
           </div>
-        )}
-      </section>
+        </section>
+      )}
 
       <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
     </div>

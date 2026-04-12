@@ -315,7 +315,8 @@
     "chats": "Chats",
     "signInToSeeChats": "Melde dich an, um deine Chats zu sehen",
     "submitOpinionFirst": "Teile zuerst deine Meinung, um zu chatten",
-    "yesterday": "Gestern"
+    "yesterday": "Gestern",
+    "requests": "Anfragen"
   },
   "tutorial": {
     "opinionSidebar": {
@@ -531,7 +532,10 @@
     "discussions": "Aktuelle Themen",
     "noDiscussions": "Noch keine Diskussionen vorhanden.",
     "opinions": "Meinungen",
-    "chats": "Chats"
+    "chats": "Chats",
+    "showMore": "Mehr",
+    "showLess": "Weniger",
+    "recentOpinions": "Neueste Meinungen"
   }
 }
 }
