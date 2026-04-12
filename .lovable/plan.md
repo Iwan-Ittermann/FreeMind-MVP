@@ -1,62 +1,82 @@
-# Six Fixes
 
-## 1. Fake opinions shown twice on graph
 
-**Root cause**: The seeded fake data was inserted into BOTH the `opinions` table (as real opinions with fake user IDs) AND the `fake_nodes` table. The `useTopicData` hook then combines real opinions + fake_nodes, causing duplicates.
+# Five Changes
 
-**Fix**: In `useTopicData.ts`, stop adding `fake_nodes` as separate opinion entries. The fake_nodes table should only be used for tracking which opinions are fake (for the hide toggle). Remove lines 304-316 that create `fakeOpinions` and merge them. Instead, use the `fake_nodes` table only to identify which real opinions to hide when the toggle is on.
+## 1. Expandable Topics Section (show 3 most recent, "more" button)
 
-Also remove `generateFakeNodeRatings` function since the ratings already exist in the DB.
+**What**: Sort topics by latest opinion activity, show only 3 by default, add a "more"/"less" toggle button below.
 
-**Files**: `src/hooks/useTopicData.ts`
+**How** (`src/pages/Home.tsx`):
+- Add a query for latest opinion `created_at` per topic to sort by most recent activity
+- Add `const [showAll, setShowAll] = useState(false)` state
+- Slice `topics` to first 3 unless `showAll` is true
+- Add a "more" / "less" button below the grid
+- Add i18n keys: `landing.home.showMore` (EN: "More", DE: "Mehr"), `landing.home.showLess` (EN: "Less", DE: "Weniger")
 
-## 2. Per-topic toggle to hide fake nodes
+## 2. Latest Opinions Bubbles Section
 
-**Current state**: Single global `hide_fake_nodes` setting in `app_settings`. `FakeNodesPanel` is hardcoded to one topic.
+**What**: New section below topics showing the most recent opinions as speech-bubble chips, each with a topic pill.
 
-**Fix**: Change the setting key to be per-topic: `hide_fake_nodes_<topicId>`. Update `FakeNodesPanel` to accept a `topicId` prop and list all topics with their fake node counts. Each topic gets its own toggle. Update `useTopicData` to check the per-topic setting.
+**How** (`src/pages/Home.tsx`):
+- Add a new query fetching latest 6-9 opinions from `opinions_public` ordered by `created_at DESC`, joined with topic title
+- Render as a section with heading (EN: "Recent Opinions", DE: "Neueste Meinungen")
+- Each opinion as a rounded bubble showing truncated text + a small colored pill with the topic name
+- Clicking navigates to the topic
+- Add i18n keys: `landing.home.recentOpinions`
 
-**Files**: `src/components/admin/FakeNodesPanel.tsx`, `src/hooks/useTopicData.ts`, `src/hooks/useAppSettings.ts`
+## 3. List All Tooltips and Toasts
 
-## 3. Topic editing in admin dashboard
+**What**: Compile a comprehensive list from the codebase. This is a research output, not code — I'll include it in the response.
 
-**Current state**: Only the "main topic" title can be edited via `EditTopicTitleDialog`. Other topics in the `TopicCard` component have no edit button.
+**Toasts found** (excluding tutorial):
+- `config.signOutFailed` / `config.signedOut` / `config.passphraseCopied` / `config.failedToCopy` / `config.passphraseDownloaded` (MainMenu)
+- `Failed to save rating` (Chat.tsx)
+- `chat.failedToSaveRating` (EmbeddedChatView, FloatingChatWindow)
+- `No topic found` / `AI Bot settings saved` / `Failed to save` (AIBotPanel)
+- `Theme switched to "..."` / `Failed to update theme` (ThemePanel)
+- `admin.tutorial.saved` / `admin.tutorial.saveError` / `admin.tutorial.stepMuted` / `admin.tutorial.stepUnmuted` (TutorialSettingsPanel)
+- `URL copied to clipboard` / `Topic archived` / `Topic deleted` / `Topic restored` + error variants (TopicPanel)
+- `Title is required` (CreateTopicDialog)
+- `auth.passphraseCopied` / `auth.passphraseDownloaded` / `auth.welcomeBack` / `auth.invalidPassphrase` (AuthForm)
+- `Successfully joined topic!` / `Failed to join topic` (TopicJoin)
+- `index.chatRequestSent` / `index.chatRequestAccepted` / `index.chatRequestDeclined` / `index.failedToSendRequest` / `index.failedToAcceptRequest` / `index.failedToDeclineRequest` (Index)
+- Various admin toasts in FakeNodesPanel, NodeManagementPanel, EditSiteTitleDialog, EditTopicTitleDialog, ReportDialog, SubmitOpinion
 
-**Fix**: Add a Pencil/Edit button to each `TopicCard` that opens `EditTopicTitleDialog` for that topic. Also allow editing description. Pass selected topic state through `TopicPanel`.
+**Tooltips** (`title=` attributes):
+- `home.loggedIn` (Home.tsx — green dot)
+- `Block user` / `Unblock user` (FloatingChat)
+- `Auto-translate` (FloatingChat)
+- `I see you` / `Reply` (ChatBubble)
+- Opinion text on minimized chat bubble (MinimizedChatBubble)
+- `Ask AI to Help` (AIConciliateButton)
+- `Edit topic` (TopicPanel)
+- `Save rating` / `Rating saved` (VerticalRatingSlider)
 
-**Files**: `src/components/admin/TopicPanel.tsx`, `src/components/admin/EditTopicTitleDialog.tsx`
+## 4. Rename Requests Tab to "Anfragen" in DE
 
-## 4. Remove inline auth below graph on desktop
+**How**: The `ChatsSidebar.tsx` line 337 uses `t('sidebar.requests', 'Requests')` with a fallback. Add the key to both locale files:
+- `de.json`: `"sidebar": { "requests": "Anfragen" }` (merge into existing sidebar keys if any)
+- `en.json`: `"sidebar": { "requests": "Requests" }`
 
-**Current state**: `authCta` renders for all users (mobile + desktop) below the graph. On desktop, the chat sidebar already has an inline auth form, creating a duplicate.
+## 5. Fix RatingSliders Respect Label
 
-**Fix**: Only show `authCta` below the graph on mobile. Wrap with `isMobile` check.
+**What**: Remove the "Respect" text label above the slider. Make both endpoint icons colored (HeartCrack in rose on the left for disrespectful, Heart in rose on the right for respectful).
 
-**Files**: `src/pages/Index.tsx` (line ~398)
-
-## 6. i18n support for homepage
-
-**Current state**: `Home.tsx` has hardcoded German strings ("Hier kannst du...", "Aktuelle Diskussionen", "Meinungen", etc.).
-
-**Fix**: Add `home.*` keys to both `en.json` and `de.json`, then use `t()` in `Home.tsx`.
-
-Also add a button with flag symbol to change the language.   
-  
-**Files**: `src/pages/Home.tsx`, `src/i18n/locales/en.json`, `src/i18n/locales/de.json`
+**How** (`src/components/chat/RatingSliders.tsx`):
+- Remove lines 44-52 (the label row with Heart icon + "Respect" text + numeric value)
+- Replace the bottom label row (lines 64-68) with two colored icons:
+  - Left: `<HeartCrack className="w-4 h-4 text-rose-400" />`
+  - Right: `<Heart className="w-4 h-4 text-rose-400" />`
+- Keep the numeric value display somewhere (e.g., centered between icons or above slider)
 
 ---
 
-## Summary
+### Files to modify
+| File | Change |
+|---|---|
+| `src/pages/Home.tsx` | Expandable topics + latest opinions section |
+| `src/i18n/locales/de.json` | Add `sidebar.requests`, `landing.home.showMore/showLess`, `landing.home.recentOpinions` |
+| `src/i18n/locales/en.json` | Same keys in English |
+| `src/components/chat/RatingSliders.tsx` | Remove label, add colored endpoint icons |
+| `src/components/ChatsSidebar.tsx` | No code change needed (already uses i18n key) |
 
-
-| File                                            | Action                                                                                         |
-| ----------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `src/hooks/useTopicData.ts`                     | Remove fake_nodes-as-opinions logic; use fake_nodes only for filtering; per-topic hide setting |
-| `src/components/admin/FakeNodesPanel.tsx`       | Per-topic toggles; list all topics with fake nodes                                             |
-| `src/pages/Index.tsx`                           | Show authCta only on mobile                                                                    |
-| `src/components/AboutSidebar.tsx`               | Title → "About"                                                                                |
-| `src/components/admin/TopicPanel.tsx`           | Add edit button to each TopicCard                                                              |
-| `src/components/admin/EditTopicTitleDialog.tsx` | Support editing description too                                                                |
-| `src/pages/Home.tsx`                            | Use i18n `t()` for all strings                                                                 |
-| `src/i18n/locales/en.json`                      | Add `home.*` keys                                                                              |
-| `src/i18n/locales/de.json`                      | Add `home.*` keys                                                                              |
