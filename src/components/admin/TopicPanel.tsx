@@ -21,6 +21,7 @@ interface TopicCardProps {
 }
 
 function TopicCard({ topic, onArchive, onDelete, onRestore, onEdit, isUpdating }: TopicCardProps) {
+  const { t } = useTranslation();
   const baseUrl = window.location.origin;
   const joinUrl = `${baseUrl}/t/${topic.url_slug}`;
 
@@ -126,6 +127,7 @@ function TopicCard({ topic, onArchive, onDelete, onRestore, onEdit, isUpdating }
 }
 
 export function TopicPanel() {
+  const { t } = useTranslation();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editSiteTitleDialogOpen, setEditSiteTitleDialogOpen] = useState(false);
   const [editingTopic, setEditingTopic] = useState<Topic | null>(null);

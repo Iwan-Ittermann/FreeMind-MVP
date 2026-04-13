@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
 export function AIBotPanel() {
+  const { t } = useTranslation();
   const { data: topics } = useAllTopics(true);
   // Pick the oldest (original) topic as primary, not the newest
   const primaryTopic = topics?.length
