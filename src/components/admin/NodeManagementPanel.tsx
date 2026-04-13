@@ -41,11 +41,11 @@ export function NodeManagementPanel() {
         _opinion_id: opinionId,
       });
       if (error) throw error;
-      toast.success('Node and all related data deleted');
+      toast.success(t('admin.toast.nodeDeleted'));
       queryClient.invalidateQueries({ queryKey: ['admin-opinions'] });
       queryClient.invalidateQueries({ queryKey: ['topic'] });
     } catch (err: any) {
-      toast.error(err.message || 'Failed to delete node');
+      toast.error(err.message || t('admin.toast.failedToDeleteNode'));
     } finally {
       setDeletingId(null);
       setConfirmId(null);

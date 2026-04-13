@@ -72,10 +72,10 @@ export function EditTopicTitleDialog({ open, onOpenChange, topic }: EditTopicTit
       }
 
       await Promise.all(promises);
-      toast.success('Topic updated');
+      toast.success(t('admin.toast.topicUpdated'));
       onOpenChange(false);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to update topic');
+      toast.error(err.message || t('admin.toast.failedToUpdate'));
     }
   };
 

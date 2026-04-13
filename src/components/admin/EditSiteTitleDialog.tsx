@@ -55,10 +55,10 @@ export function EditSiteTitleDialog({ open, onOpenChange }: EditSiteTitleDialogP
   const onSubmit = async (values: FormValues) => {
     try {
       await updateSetting.mutateAsync({ key: 'site_title', value: values.title });
-      toast.success('Site title updated');
+      toast.success(t('admin.toast.siteTitleUpdated'));
       onOpenChange(false);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to update site title');
+      toast.error(err.message || t('admin.toast.failedToUpdateTitle'));
     }
   };
 
