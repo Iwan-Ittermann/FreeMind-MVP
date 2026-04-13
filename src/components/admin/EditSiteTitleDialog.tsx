@@ -37,6 +37,7 @@ interface EditSiteTitleDialogProps {
 }
 
 export function EditSiteTitleDialog({ open, onOpenChange }: EditSiteTitleDialogProps) {
+  const { t } = useTranslation();
   const { data: siteTitleSetting, isLoading } = useSiteTitle();
   const updateSetting = useUpdateAppSetting();
 

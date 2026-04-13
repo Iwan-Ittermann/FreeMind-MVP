@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/alert-dialog';
 
 export function NodeManagementPanel() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [deletingId, setDeletingId] = useState<string | null>(null);

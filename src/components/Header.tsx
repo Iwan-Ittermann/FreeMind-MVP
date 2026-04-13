@@ -1,17 +1,20 @@
 import { motion } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
-import { LogIn, ArrowLeft } from 'lucide-react';
+import { LogIn, ArrowLeft, Bell, BellOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface HeaderProps {
   title?: string;
   enlarged?: boolean;
   user?: { id: string } | null;
   onSignIn?: () => void;
+  notificationsEnabled?: boolean;
+  onToggleNotifications?: () => void;
 }
 
-export function Header({ title, enlarged, user, onSignIn }: HeaderProps) {
+export function Header({ title, enlarged, user, onSignIn, notificationsEnabled, onToggleNotifications }: HeaderProps) {
   const { t } = useTranslation();
   const location = useLocation();
   const isTopicPage = location.pathname.startsWith('/topic/');
@@ -48,9 +51,34 @@ export function Header({ title, enlarged, user, onSignIn }: HeaderProps) {
           </h1>
         )}
 
-        {/* Login button in header for unauthenticated users */}
-        {!user && onSignIn && (
-          <div className="ml-auto z-10">
+        <div className="ml-auto z-10 flex items-center gap-2">
+          {/* Notification bell for topic pages */}
+          {isTopicPage && user && onToggleNotifications && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={onToggleNotifications}
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                  >
+                    {notificationsEnabled ? (
+                      <Bell className="w-4 h-4 text-primary fill-primary" />
+                    ) : (
+                      <BellOff className="w-4 h-4 text-muted-foreground" />
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {notificationsEnabled ? t('notifications.clickToDisable') : t('notifications.clickToEnable')}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+
+          {/* Login button for unauthenticated users */}
+          {!user && onSignIn && (
             <Button
               onClick={onSignIn}
               variant="outline"
@@ -60,8 +88,8 @@ export function Header({ title, enlarged, user, onSignIn }: HeaderProps) {
               <LogIn className="w-3.5 h-3.5 mr-1.5" />
               {t('common.logIn')}
             </Button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </header>
   );

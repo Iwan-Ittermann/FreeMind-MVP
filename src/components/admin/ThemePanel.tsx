@@ -19,6 +19,7 @@ const THEMES = [
 ] as const;
 
 export function ThemePanel() {
+  const { t } = useTranslation();
   const { data: setting, isLoading } = useAppSetting('active_theme');
   const updateSetting = useUpdateAppSetting();
 
