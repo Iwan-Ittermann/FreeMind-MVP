@@ -102,7 +102,7 @@ export function OpinionsSidebar({ open, onOpenChange, topicId, variant = 'sheet'
     try {
       await sendRequest({ requesterOpinionId: myOpinion.id, targetOpinionId });
     } catch (err: any) {
-      toast.error(err.message || 'Failed to send request');
+      toast.error(err.message || t('index.failedToSendRequest'));
     }
   };
 
@@ -114,7 +114,7 @@ export function OpinionsSidebar({ open, onOpenChange, topicId, variant = 'sheet'
       await acceptRequest(request.id);
       onChatOpen?.(targetOpinionId);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to accept request');
+      toast.error(err.message || t('index.failedToAcceptRequest'));
     }
   };
 
@@ -126,7 +126,7 @@ export function OpinionsSidebar({ open, onOpenChange, topicId, variant = 'sheet'
       await declineRequest(request.id);
       setExpandedOpinionId(null);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to decline request');
+      toast.error(err.message || t('index.failedToDeclineRequest'));
     }
   };
 

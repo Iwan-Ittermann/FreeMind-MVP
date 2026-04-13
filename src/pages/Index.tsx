@@ -252,7 +252,7 @@ const Index = () => {
       await sendRequest({ requesterOpinionId: myOpinion.id, targetOpinionId: selectedNode.id });
       tutorial.onChatRequested();
     } catch (err: any) {
-      toast.error(err.message || 'Failed to send request');
+      toast.error(err.message || t('index.failedToSendRequest'));
     }
   };
 
@@ -265,7 +265,7 @@ const Index = () => {
       openChatWith(selectedNode.id);
       setSelectedNode(null);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to accept request');
+      toast.error(err.message || t('index.failedToAcceptRequest'));
     }
   };
 
@@ -277,7 +277,7 @@ const Index = () => {
       await declineRequest(request.id);
       setSelectedNode(null);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to decline request');
+      toast.error(err.message || t('index.failedToDeclineRequest'));
     }
   };
 
@@ -473,6 +473,16 @@ const Index = () => {
               selectedNodeId={selectedNode?.id ?? null}
               showLabels={isMobile ? 'none' : 'highlighted-only'}
             />
+
+            {/* Dialogue Points badge for user's node */}
+            {myDialoguePoints !== null && (
+              <div className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm border border-border/40 rounded-lg px-2.5 py-1.5 text-center">
+                <p className="text-xs text-muted-foreground">{t('dialoguePoints.label')}</p>
+                <p className={`text-sm font-bold ${myDialoguePoints > 2500 ? 'text-green-500' : myDialoguePoints >= 0 ? 'text-orange-400' : 'text-destructive'}`}>
+                  {myDialoguePoints.toLocaleString()}
+                </p>
+              </div>
+            )}
 
             {/* Selected node action panel */}
             <AnimatePresence>
