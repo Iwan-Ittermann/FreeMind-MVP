@@ -9,6 +9,7 @@ import { CreateTopicDialog } from './CreateTopicDialog';
 import { EditTopicTitleDialog } from './EditTopicTitleDialog';
 import { EditSiteTitleDialog } from './EditSiteTitleDialog';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 interface TopicCardProps {
   topic: Topic;

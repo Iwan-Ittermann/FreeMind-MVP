@@ -8,6 +8,7 @@ import { useAppSetting, useUpdateAppSetting } from '@/hooks/useAppSettings';
 import { useAllTopics } from '@/hooks/useTopics';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export function AIBotPanel() {
   const { data: topics } = useAllTopics(true);
