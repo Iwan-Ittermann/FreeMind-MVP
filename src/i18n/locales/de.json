@@ -585,6 +585,16 @@
       "courtCaseActivated": "Gerichtsfall aktiviert",
       "failedToApprove": "Gerichtsfall konnte nicht genehmigt werden"
     }
+  },
+  "notifications": {
+    "enabled": "Benachrichtigungen aktiviert",
+    "disabled": "Benachrichtigungen deaktiviert",
+    "denied": "Benachrichtigungen wurden vom Browser blockiert. Bitte erlaube Benachrichtigungen in den Browser-Einstellungen.",
+    "unsupported": "Dein Browser unterstützt keine Benachrichtigungen",
+    "newMessage": "Neue Nachricht",
+    "newMessageBody": "Du hast {{count}} ungelesene Nachricht(en)",
+    "clickToEnable": "Browser-Benachrichtigungen aktivieren",
+    "clickToDisable": "Browser-Benachrichtigungen deaktivieren"
   }
 }
 }

@@ -39,6 +39,7 @@ interface EditTopicTitleDialogProps {
 }
 
 export function EditTopicTitleDialog({ open, onOpenChange, topic }: EditTopicTitleDialogProps) {
+  const { t } = useTranslation();
   const updateTitle = useUpdateTopicTitle();
   const updateDescription = useUpdateTopicDescription();
 

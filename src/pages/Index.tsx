@@ -154,7 +154,7 @@ const Index = () => {
   const totalUnreadCount = unreadMessageCounts
     ? Array.from(unreadMessageCounts.values()).reduce((sum, count) => sum + count, 0)
     : 0;
-  useBrowserNotification(totalUnreadCount);
+  const { notificationsEnabled, toggleNotifications } = useBrowserNotification(totalUnreadCount, 'freemind', topicId);
 
   const graphChatRequests: ChatRequest[] = chatRequests.map(r => ({
     id: r.id,
@@ -416,6 +416,8 @@ const Index = () => {
         enlarged={isMobile && !activeMobilePanel}
         user={user}
         onSignIn={() => setAuthDialogOpen(true)}
+        notificationsEnabled={notificationsEnabled}
+        onToggleNotifications={toggleNotifications}
       />
 
       {/* Standalone mobile title when no panel open */}
