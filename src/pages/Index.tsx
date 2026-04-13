@@ -31,7 +31,7 @@ import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { useBrowserNotification } from '@/hooks/useBrowserNotification';
 import { useTutorialContext } from '@/contexts/TutorialContext';
 import { useDisagreementRating } from '@/hooks/useOpinionRating';
-import { calculateLayout, getNodeAngles } from '@/lib/freemind-layout';
+import { calculateLayout, getNodeAngles, calculateFreeMindScore } from '@/lib/freemind-layout';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { getClientIP } from '@/hooks/useClientIP';
@@ -362,6 +362,14 @@ const Index = () => {
   // No hardcoded fallback — show empty until data loads
   const topicTitle = topicData?.title || '';
 
+  // Compute dialogue points for the user's node
+  const myDialoguePoints = useMemo(() => {
+    if (!myOpinion || !topicData?.ratings) return null;
+    const { freeMindScore, hasChats } = calculateFreeMindScore(myOpinion.id, topicData.ratings);
+    if (!hasChats) return null;
+    return Math.round(freeMindScore);
+  }, [myOpinion, topicData?.ratings]);
+
   // Inline opinion CTA component (reusable in menu)
   const inlineOpinionCta = user && !myOpinion && !isLoading ? (
     <div className="w-full max-w-sm px-4">
@@ -370,7 +378,7 @@ const Index = () => {
           value={inlineOpinionText}
           onChange={(e) => setInlineOpinionText(e.target.value)}
           placeholder={t('inlineCta.placeholder')}
-          className="min-h-[44px] max-h-[80px] resize-none rounded-full px-4 py-2.5 text-sm bg-background border-primary/40 focus:border-primary"
+          className={`${inlineOpinionText.length > 0 ? 'min-h-[80px] max-h-[120px] rounded-xl' : 'min-h-[44px] max-h-[44px] rounded-full'} resize-none px-4 py-2.5 text-sm bg-background border-primary/40 focus:border-primary transition-all duration-200`}
           maxLength={500}
           rows={1}
         />

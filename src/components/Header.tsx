@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { LogIn } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { LogIn, ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 
@@ -13,19 +13,34 @@ interface HeaderProps {
 
 export function Header({ title, enlarged, user, onSignIn }: HeaderProps) {
   const { t } = useTranslation();
+  const location = useLocation();
+  const isTopicPage = location.pathname.startsWith('/topic/');
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-white dark:bg-background flex-shrink-0">
       <div className={`px-3 lg:px-4 ${enlarged ? 'h-16' : 'h-14'} flex items-center gap-3`}>
-        <Link to="/" className="flex items-center flex-shrink-0 z-10">
-          <motion.span
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className={`${enlarged ? 'text-base' : 'text-xs lg:text-sm'} font-semibold text-foreground`}
-          >
-            freemind
-          </motion.span>
-        </Link>
+        {isTopicPage ? (
+          <Link to="/" className="flex items-center flex-shrink-0 z-10 gap-1.5 text-muted-foreground hover:text-foreground transition-colors">
+            <ArrowLeft className="w-4 h-4" />
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className={`${enlarged ? 'text-base' : 'text-xs lg:text-sm'} font-semibold text-foreground`}
+            >
+              freemind
+            </motion.span>
+          </Link>
+        ) : (
+          <Link to="/" className="flex items-center flex-shrink-0 z-10">
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className={`${enlarged ? 'text-base' : 'text-xs lg:text-sm'} font-semibold text-foreground`}
+            >
+              freemind
+            </motion.span>
+          </Link>
+        )}
 
         {title && !enlarged && (
           <h1 className={`absolute left-1/2 -translate-x-1/2 max-w-[65%] text-sm lg:text-lg font-semibold text-foreground truncate text-center`}>

@@ -34,7 +34,7 @@ function calculateBridgingScore(empathy: number, disagreement: number): number {
  * Calculate the FreeMind Score for a node
  * FreeMind Score = average of all Bridging Scores from the node's chats
  */
-function calculateFreeMindScore(
+export function calculateFreeMindScore(
   nodeId: string,
   ratings: ChatRating[]
 ): { freeMindScore: number; hasChats: boolean; chatCount: number } {
