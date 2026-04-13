@@ -573,6 +573,16 @@
       "courtCaseActivated": "Court case activated",
       "failedToApprove": "Failed to approve court case"
     }
+  },
+  "notifications": {
+    "enabled": "Notifications enabled",
+    "disabled": "Notifications disabled",
+    "denied": "Notifications blocked by your browser. Please allow notifications in your browser settings.",
+    "unsupported": "Your browser does not support notifications",
+    "newMessage": "New message",
+    "newMessageBody": "You have {{count}} unread message(s)",
+    "clickToEnable": "Enable browser notifications",
+    "clickToDisable": "Disable browser notifications"
   }
 }
 }
