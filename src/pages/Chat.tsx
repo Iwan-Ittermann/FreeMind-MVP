@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FloatingChat } from '@/components/chat/FloatingChat';
 import { ChatTutorial } from '@/components/chat/ChatTutorial';
 import { FloatingHelpButton } from '@/components/FloatingHelpButton';

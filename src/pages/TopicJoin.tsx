@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Users, LogIn, Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useTopicBySlug, useJoinTopic, useHasJoinedTopic } from '@/hooks/useTopics';
@@ -10,6 +11,7 @@ import { toast } from 'sonner';
 export default function TopicJoin() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user, loading: authLoading } = useAuth();
   const [joining, setJoining] = useState(false);
 
