@@ -1,82 +1,37 @@
 
 
-# Five Changes
+# Browser Notifications for Topic Pages
 
-## 1. Expandable Topics Section (show 3 most recent, "more" button)
+## What changes
 
-**What**: Sort topics by latest opinion activity, show only 3 by default, add a "more"/"less" toggle button below.
+Add a bell icon button to the topic page header that lets users opt in to browser push notifications for new chat messages and chat requests. When enabled, the browser's Notification API fires desktop/mobile notifications even when the tab is in the background.
 
-**How** (`src/pages/Home.tsx`):
-- Add a query for latest opinion `created_at` per topic to sort by most recent activity
-- Add `const [showAll, setShowAll] = useState(false)` state
-- Slice `topics` to first 3 unless `showAll` is true
-- Add a "more" / "less" button below the grid
-- Add i18n keys: `landing.home.showMore` (EN: "More", DE: "Mehr"), `landing.home.showLess` (EN: "Less", DE: "Weniger")
+## How it works
 
-## 2. Latest Opinions Bubbles Section
+1. **Bell icon in the header** — A bell icon appears in the topic page header (next to the sign-in button area). Clicking it requests `Notification.permission` and toggles notifications on/off for that topic. State is stored in `localStorage` (`notify-topic-{topicId}`).
 
-**What**: New section below topics showing the most recent opinions as speech-bubble chips, each with a topic pill.
+2. **Notification triggers** — The existing real-time subscriptions in `useUnreadMessages` and `useChatRequests` already listen for new messages/requests. We extend `useBrowserNotification` to actually fire `new Notification(...)` when:
+   - A new chat message arrives (not from the current user)
+   - A new chat request is received (targeting the user's opinion)
 
-**How** (`src/pages/Home.tsx`):
-- Add a new query fetching latest 6-9 opinions from `opinions_public` ordered by `created_at DESC`, joined with topic title
-- Render as a section with heading (EN: "Recent Opinions", DE: "Neueste Meinungen")
-- Each opinion as a rounded bubble showing truncated text + a small colored pill with the topic name
-- Clicking navigates to the topic
-- Add i18n keys: `landing.home.recentOpinions`
+3. **Visual feedback** — The bell icon shows filled/outlined state based on whether notifications are enabled. A tooltip explains the feature. If the browser denied permission, clicking shows a toast explaining how to re-enable in browser settings.
 
-## 3. List All Tooltips and Toasts
+## Files
 
-**What**: Compile a comprehensive list from the codebase. This is a research output, not code — I'll include it in the response.
-
-**Toasts found** (excluding tutorial):
-- `config.signOutFailed` / `config.signedOut` / `config.passphraseCopied` / `config.failedToCopy` / `config.passphraseDownloaded` (MainMenu)
-- `Failed to save rating` (Chat.tsx)
-- `chat.failedToSaveRating` (EmbeddedChatView, FloatingChatWindow)
-- `No topic found` / `AI Bot settings saved` / `Failed to save` (AIBotPanel)
-- `Theme switched to "..."` / `Failed to update theme` (ThemePanel)
-- `admin.tutorial.saved` / `admin.tutorial.saveError` / `admin.tutorial.stepMuted` / `admin.tutorial.stepUnmuted` (TutorialSettingsPanel)
-- `URL copied to clipboard` / `Topic archived` / `Topic deleted` / `Topic restored` + error variants (TopicPanel)
-- `Title is required` (CreateTopicDialog)
-- `auth.passphraseCopied` / `auth.passphraseDownloaded` / `auth.welcomeBack` / `auth.invalidPassphrase` (AuthForm)
-- `Successfully joined topic!` / `Failed to join topic` (TopicJoin)
-- `index.chatRequestSent` / `index.chatRequestAccepted` / `index.chatRequestDeclined` / `index.failedToSendRequest` / `index.failedToAcceptRequest` / `index.failedToDeclineRequest` (Index)
-- Various admin toasts in FakeNodesPanel, NodeManagementPanel, EditSiteTitleDialog, EditTopicTitleDialog, ReportDialog, SubmitOpinion
-
-**Tooltips** (`title=` attributes):
-- `home.loggedIn` (Home.tsx — green dot)
-- `Block user` / `Unblock user` (FloatingChat)
-- `Auto-translate` (FloatingChat)
-- `I see you` / `Reply` (ChatBubble)
-- Opinion text on minimized chat bubble (MinimizedChatBubble)
-- `Ask AI to Help` (AIConciliateButton)
-- `Edit topic` (TopicPanel)
-- `Save rating` / `Rating saved` (VerticalRatingSlider)
-
-## 4. Rename Requests Tab to "Anfragen" in DE
-
-**How**: The `ChatsSidebar.tsx` line 337 uses `t('sidebar.requests', 'Requests')` with a fallback. Add the key to both locale files:
-- `de.json`: `"sidebar": { "requests": "Anfragen" }` (merge into existing sidebar keys if any)
-- `en.json`: `"sidebar": { "requests": "Requests" }`
-
-## 5. Fix RatingSliders Respect Label
-
-**What**: Remove the "Respect" text label above the slider. Make both endpoint icons colored (HeartCrack in rose on the left for disrespectful, Heart in rose on the right for respectful).
-
-**How** (`src/components/chat/RatingSliders.tsx`):
-- Remove lines 44-52 (the label row with Heart icon + "Respect" text + numeric value)
-- Replace the bottom label row (lines 64-68) with two colored icons:
-  - Left: `<HeartCrack className="w-4 h-4 text-rose-400" />`
-  - Right: `<Heart className="w-4 h-4 text-rose-400" />`
-- Keep the numeric value display somewhere (e.g., centered between icons or above slider)
-
----
-
-### Files to modify
 | File | Change |
-|---|---|
-| `src/pages/Home.tsx` | Expandable topics + latest opinions section |
-| `src/i18n/locales/de.json` | Add `sidebar.requests`, `landing.home.showMore/showLess`, `landing.home.recentOpinions` |
+|------|--------|
+| `src/hooks/useBrowserNotification.ts` | Expand to handle `Notification.permission`, fire actual browser notifications, manage localStorage opt-in |
+| `src/components/Header.tsx` | Add bell icon button, pass notification state as props |
+| `src/pages/Index.tsx` | Wire up notification hook, pass props to Header |
+| `src/i18n/locales/de.json` | Add `notifications.enable`, `notifications.disabled`, `notifications.newMessage`, `notifications.newRequest`, `notifications.denied` |
 | `src/i18n/locales/en.json` | Same keys in English |
-| `src/components/chat/RatingSliders.tsx` | Remove label, add colored endpoint icons |
-| `src/components/ChatsSidebar.tsx` | No code change needed (already uses i18n key) |
+
+## Technical details
+
+- Uses the standard Web Notifications API (`Notification.requestPermission()`, `new Notification(...)`)
+- No service worker needed for basic notifications (tab must be open but can be in background)
+- Permission state: `default` → prompt on click; `granted` → toggle on/off; `denied` → toast with instructions
+- localStorage key per topic: `notify-topic-{topicId}` = `"true"` / absent
+- Notification body includes a truncated preview of the message or the request sender info
+- Clicking the notification focuses the tab via `notification.onclick = () => window.focus()`
 
