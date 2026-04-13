@@ -23,6 +23,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useUpdateTopicTitle, useUpdateTopicDescription, Topic } from '@/hooks/useTopics';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 const formSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters').max(200, 'Title must be less than 200 characters'),
@@ -72,10 +73,10 @@ export function EditTopicTitleDialog({ open, onOpenChange, topic }: EditTopicTit
       }
 
       await Promise.all(promises);
-      toast.success('Topic updated');
+      toast.success(t('admin.toast.topicUpdated'));
       onOpenChange(false);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to update topic');
+      toast.error(err.message || t('admin.toast.failedToUpdate'));
     }
   };
 

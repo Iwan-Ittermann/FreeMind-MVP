@@ -169,7 +169,11 @@
     "rateFirst": "Bewerte zuerst deine Meinungsverschiedenheit",
     "rateDisagreementPrompt": "Wie stark unterscheidet sich deine Meinung?",
     "respectNeutralNote": "Respekt-Bewertung auf neutral gesetzt",
-    "submitAndChat": "Absenden & Chat starten"
+    "submitAndChat": "Absenden & Chat starten",
+    "userBlocked": "Nutzer in diesem Chat blockiert",
+    "failedToBlock": "Nutzer konnte nicht blockiert werden",
+    "userUnblocked": "Nutzer freigegeben",
+    "failedToUnblock": "Nutzer konnte nicht freigegeben werden"
   },
   "about": {
     "title": "FreeMind",
@@ -536,6 +540,51 @@
     "showMore": "Mehr",
     "showLess": "Weniger",
     "recentOpinions": "Neueste Meinungen"
+  },
+  "dialoguePoints": {
+    "label": "Dialog-Punkte"
+  },
+  "report": {
+    "selectOffense": "Bitte wählen Sie einen Tatbestand aus",
+    "justificationRequired": "Begründung ist Pflicht und muss mindestens 100 Zeichen lang sein.",
+    "submitted": "Meldung erfolgreich eingereicht"
+  },
+  "admin": {
+    "report": {
+      "statusChanged": "Status geändert",
+      "updateFailed": "Fehler bei der Aktualisierung"
+    },
+    "toast": {
+      "noTopicFound": "Kein Thema gefunden",
+      "aiBotSaved": "KI-Bot Einstellungen gespeichert",
+      "failedToSave": "Speichern fehlgeschlagen",
+      "urlCopied": "URL in Zwischenablage kopiert",
+      "topicArchived": "Thema archiviert",
+      "topicDeleted": "Thema gelöscht",
+      "topicRestored": "Thema wiederhergestellt",
+      "topicUpdated": "Thema aktualisiert",
+      "topicCreated": "Thema erfolgreich erstellt",
+      "titleRequired": "Titel ist erforderlich",
+      "failedToArchive": "Thema konnte nicht archiviert werden",
+      "failedToDelete": "Thema konnte nicht gelöscht werden",
+      "failedToRestore": "Thema konnte nicht wiederhergestellt werden",
+      "failedToUpdate": "Thema konnte nicht aktualisiert werden",
+      "failedToCreate": "Thema konnte nicht erstellt werden",
+      "siteTitleUpdated": "Seitentitel aktualisiert",
+      "failedToUpdateTitle": "Seitentitel konnte nicht aktualisiert werden",
+      "nodeDeleted": "Knoten und alle zugehörigen Daten gelöscht",
+      "failedToDeleteNode": "Knoten konnte nicht gelöscht werden",
+      "themeSwitched": "Theme gewechselt",
+      "failedToUpdateTheme": "Theme konnte nicht aktualisiert werden",
+      "adminUnlocked": "Admin-Dashboard freigeschaltet",
+      "wrongPassword": "Falsches Passwort",
+      "dbReset": "Datenbank erfolgreich zurückgesetzt",
+      "failedToReset": "Zurücksetzen fehlgeschlagen",
+      "courtCaseUpdated": "Gerichtsfall aktualisiert",
+      "courtCaseCreated": "Gerichtsfall erstellt",
+      "courtCaseActivated": "Gerichtsfall aktiviert",
+      "failedToApprove": "Gerichtsfall konnte nicht genehmigt werden"
+    }
   }
 }
 }

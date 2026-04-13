@@ -20,6 +20,7 @@ import {
 import { STGB_PARAGRAPHS, MIN_JUSTIFICATION_LENGTH, type StGBParagraph } from '@/lib/stgb-paragraphs';
 import { useReportContent } from '@/hooks/useReports';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import { AlertTriangle, Loader2, Info, ExternalLink } from 'lucide-react';
 
 interface ReportDialogProps {
@@ -37,6 +38,7 @@ export function ReportDialog({
   contentType,
   contentPreview,
 }: ReportDialogProps) {
+  const { t } = useTranslation();
   const reportMutation = useReportContent();
   
   const [selectedParagraph, setSelectedParagraph] = useState<StGBParagraph | ''>('');
@@ -53,12 +55,12 @@ export function ReportDialog({
 
   const handleSubmit = async () => {
     if (!selectedParagraphInfo) {
-      toast.error('Bitte wählen Sie einen Tatbestand aus');
+      toast.error(t('report.selectOffense'));
       return;
     }
 
     if (!isJustificationValid) {
-      toast.error('Begründung ist Pflicht und muss mindestens 100 Zeichen lang sein.');
+      toast.error(t('report.justificationRequired'));
       return;
     }
 
@@ -72,7 +74,7 @@ export function ReportDialog({
         description: justification.trim(),
       });
 
-      toast.success('Meldung erfolgreich eingereicht');
+      toast.success(t('report.submitted'));
       onOpenChange(false);
       setSelectedParagraph('');
       setJustification('');

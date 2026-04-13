@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dialog';
 import { useCreateTopic } from '@/hooks/useTopics';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 interface CreateTopicDialogProps {
   open: boolean;
@@ -21,6 +22,7 @@ interface CreateTopicDialogProps {
 }
 
 export function CreateTopicDialog({ open, onOpenChange }: CreateTopicDialogProps) {
+  const { t } = useTranslation();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const createTopic = useCreateTopic();
@@ -29,7 +31,7 @@ export function CreateTopicDialog({ open, onOpenChange }: CreateTopicDialogProps
     e.preventDefault();
     
     if (!title.trim()) {
-      toast.error('Title is required');
+      toast.error(t('admin.toast.titleRequired'));
       return;
     }
 
@@ -38,12 +40,12 @@ export function CreateTopicDialog({ open, onOpenChange }: CreateTopicDialogProps
         title: title.trim(),
         description: description.trim() || undefined,
       });
-      toast.success('Topic created successfully');
+      toast.success(t('admin.toast.topicCreated'));
       setTitle('');
       setDescription('');
       onOpenChange(false);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to create topic');
+      toast.error(err.message || t('admin.toast.failedToCreate'));
     }
   };
 

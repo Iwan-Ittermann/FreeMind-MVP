@@ -8,8 +8,10 @@ import { useAppSetting, useUpdateAppSetting } from '@/hooks/useAppSettings';
 import { useAllTopics } from '@/hooks/useTopics';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export function AIBotPanel() {
+  const { t } = useTranslation();
   const { data: topics } = useAllTopics(true);
   // Pick the oldest (original) topic as primary, not the newest
   const primaryTopic = topics?.length
@@ -46,7 +48,7 @@ export function AIBotPanel() {
 
   const handleSave = async () => {
     if (!primaryTopic) {
-      toast.error('No topic found');
+      toast.error(t('admin.toast.noTopicFound'));
       return;
     }
 
@@ -73,10 +75,10 @@ export function AIBotPanel() {
 
       // Invalidate queries
       updateSetting.reset();
-      toast.success('AI Bot settings saved');
+      toast.success(t('admin.toast.aiBotSaved'));
     } catch (err: any) {
       console.error('Failed to save AI bot settings:', err);
-      toast.error(err.message || 'Failed to save');
+      toast.error(err.message || t('admin.toast.failedToSave'));
     } finally {
       setIsSaving(false);
     }

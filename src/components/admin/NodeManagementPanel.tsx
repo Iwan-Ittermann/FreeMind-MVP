@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,11 +42,11 @@ export function NodeManagementPanel() {
         _opinion_id: opinionId,
       });
       if (error) throw error;
-      toast.success('Node and all related data deleted');
+      toast.success(t('admin.toast.nodeDeleted'));
       queryClient.invalidateQueries({ queryKey: ['admin-opinions'] });
       queryClient.invalidateQueries({ queryKey: ['topic'] });
     } catch (err: any) {
-      toast.error(err.message || 'Failed to delete node');
+      toast.error(err.message || t('admin.toast.failedToDeleteNode'));
     } finally {
       setDeletingId(null);
       setConfirmId(null);

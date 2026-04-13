@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FloatingChat } from '@/components/chat/FloatingChat';
 import { ChatTutorial } from '@/components/chat/ChatTutorial';
 import { FloatingHelpButton } from '@/components/FloatingHelpButton';
@@ -16,6 +17,7 @@ const CHAT_VIDEO_START_TIME = 39; // Start at 00:39 for chat-specific tutorial
 
 export default function Chat() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
   const chatTutorial = useChatTutorialContext();
@@ -40,7 +42,7 @@ export default function Chat() {
       await saveRating(empathy, disagreement);
     } catch (err) {
       console.error('Error saving rating:', err);
-      toast.error('Failed to save rating');
+      toast.error(t('chat.failedToSaveRating'));
     }
   };
 

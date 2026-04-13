@@ -221,7 +221,7 @@ export default function Home() {
       </section>
 
       {/* Topic Grid */}
-      <section className="container mx-auto px-4 py-10 md:py-16">
+      <section className="container mx-auto px-4 pt-6 md:pt-8 pb-10 md:pb-16">
         <h2 className="text-lg font-semibold text-foreground mb-6">{t('landing.home.discussions')}</h2>
 
         {isLoading ? (

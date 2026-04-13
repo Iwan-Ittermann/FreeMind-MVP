@@ -31,7 +31,7 @@ import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { useBrowserNotification } from '@/hooks/useBrowserNotification';
 import { useTutorialContext } from '@/contexts/TutorialContext';
 import { useDisagreementRating } from '@/hooks/useOpinionRating';
-import { calculateLayout, getNodeAngles } from '@/lib/freemind-layout';
+import { calculateLayout, getNodeAngles, calculateFreeMindScore } from '@/lib/freemind-layout';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { getClientIP } from '@/hooks/useClientIP';
@@ -252,7 +252,7 @@ const Index = () => {
       await sendRequest({ requesterOpinionId: myOpinion.id, targetOpinionId: selectedNode.id });
       tutorial.onChatRequested();
     } catch (err: any) {
-      toast.error(err.message || 'Failed to send request');
+      toast.error(err.message || t('index.failedToSendRequest'));
     }
   };
 
@@ -265,7 +265,7 @@ const Index = () => {
       openChatWith(selectedNode.id);
       setSelectedNode(null);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to accept request');
+      toast.error(err.message || t('index.failedToAcceptRequest'));
     }
   };
 
@@ -277,7 +277,7 @@ const Index = () => {
       await declineRequest(request.id);
       setSelectedNode(null);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to decline request');
+      toast.error(err.message || t('index.failedToDeclineRequest'));
     }
   };
 
@@ -362,6 +362,14 @@ const Index = () => {
   // No hardcoded fallback — show empty until data loads
   const topicTitle = topicData?.title || '';
 
+  // Compute dialogue points for the user's node
+  const myDialoguePoints = useMemo(() => {
+    if (!myOpinion || !topicData?.ratings) return null;
+    const { freeMindScore, hasChats } = calculateFreeMindScore(myOpinion.id, topicData.ratings);
+    if (!hasChats) return null;
+    return Math.round(freeMindScore);
+  }, [myOpinion, topicData?.ratings]);
+
   // Inline opinion CTA component (reusable in menu)
   const inlineOpinionCta = user && !myOpinion && !isLoading ? (
     <div className="w-full max-w-sm px-4">
@@ -370,7 +378,7 @@ const Index = () => {
           value={inlineOpinionText}
           onChange={(e) => setInlineOpinionText(e.target.value)}
           placeholder={t('inlineCta.placeholder')}
-          className="min-h-[44px] max-h-[80px] resize-none rounded-full px-4 py-2.5 text-sm bg-background border-primary/40 focus:border-primary"
+          className={`${inlineOpinionText.length > 0 ? 'min-h-[80px] max-h-[120px] rounded-xl' : 'min-h-[44px] max-h-[44px] rounded-full'} resize-none px-4 py-2.5 text-sm bg-background border-primary/40 focus:border-primary transition-all duration-200`}
           maxLength={500}
           rows={1}
         />
@@ -465,6 +473,16 @@ const Index = () => {
               selectedNodeId={selectedNode?.id ?? null}
               showLabels={isMobile ? 'none' : 'highlighted-only'}
             />
+
+            {/* Dialogue Points badge for user's node */}
+            {myDialoguePoints !== null && (
+              <div className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm border border-border/40 rounded-lg px-2.5 py-1.5 text-center">
+                <p className="text-xs text-muted-foreground">{t('dialoguePoints.label')}</p>
+                <p className={`text-sm font-bold ${myDialoguePoints > 2500 ? 'text-green-500' : myDialoguePoints >= 0 ? 'text-orange-400' : 'text-destructive'}`}>
+                  {myDialoguePoints.toLocaleString()}
+                </p>
+              </div>
+            )}
 
             {/* Selected node action panel */}
             <AnimatePresence>

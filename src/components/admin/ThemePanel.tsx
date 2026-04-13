@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/select';
 import { useAppSetting, useUpdateAppSetting } from '@/hooks/useAppSettings';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 const THEMES = [
   { value: 'classic', label: '🔵 Classic' },
@@ -27,8 +28,8 @@ export function ThemePanel() {
     updateSetting.mutate(
       { key: 'active_theme', value },
       {
-        onSuccess: () => toast.success(`Theme switched to "${value}"`),
-        onError: () => toast.error('Failed to update theme'),
+        onSuccess: () => toast.success(t('admin.toast.themeSwitched')),
+        onError: () => toast.error(t('admin.toast.failedToUpdateTheme')),
       }
     );
   };

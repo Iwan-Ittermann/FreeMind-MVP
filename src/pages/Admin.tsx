@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Lock, Shield, FileText, History, AlertTriangle, ArrowLeft, Loader2, Layers, Trash2, GraduationCap, Bot, Palette, CircleDot, LogIn, Download } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -42,9 +43,9 @@ export default function Admin() {
     try {
       await grantAdminRole.mutateAsync(password);
       setPassword('');
-      toast.success('Admin-Dashboard freigeschaltet');
+      toast.success(t('admin.toast.adminUnlocked'));
     } catch (err: any) {
-      toast.error(err.message || 'Falsches Passwort');
+      toast.error(err.message || t('admin.toast.wrongPassword'));
       setPassword('');
     }
   };
@@ -65,10 +66,10 @@ export default function Admin() {
 
       if (error) throw error;
 
-      toast.success('Database reset successfully');
+      toast.success(t('admin.toast.dbReset'));
       queryClient.invalidateQueries();
     } catch (err: any) {
-      toast.error(err.message || 'Failed to reset database');
+      toast.error(err.message || t('admin.toast.failedToReset'));
     } finally {
       setIsResetting(false);
     }

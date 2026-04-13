@@ -162,18 +162,18 @@ export function FloatingChat({
   const handleBlock = async () => {
     try {
       await blockUser();
-      toast.success('User blocked in this chat');
+      toast.success(t('floatingChat.userBlocked'));
     } catch (err) {
-      toast.error('Failed to block user');
+      toast.error(t('floatingChat.failedToBlock'));
     }
   };
 
   const handleUnblock = async () => {
     try {
       await unblockUser();
-      toast.success('User unblocked');
+      toast.success(t('floatingChat.userUnblocked'));
     } catch (err) {
-      toast.error('Failed to unblock user');
+      toast.error(t('floatingChat.failedToUnblock'));
     }
   };
 

@@ -9,6 +9,7 @@ import { CreateTopicDialog } from './CreateTopicDialog';
 import { EditTopicTitleDialog } from './EditTopicTitleDialog';
 import { EditSiteTitleDialog } from './EditSiteTitleDialog';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 interface TopicCardProps {
   topic: Topic;
@@ -20,12 +21,13 @@ interface TopicCardProps {
 }
 
 function TopicCard({ topic, onArchive, onDelete, onRestore, onEdit, isUpdating }: TopicCardProps) {
+  const { t } = useTranslation();
   const baseUrl = window.location.origin;
   const joinUrl = `${baseUrl}/t/${topic.url_slug}`;
 
   const copyUrl = () => {
     navigator.clipboard.writeText(joinUrl);
-    toast.success('URL copied to clipboard');
+    toast.success(t('admin.toast.urlCopied'));
   };
 
   const statusBadge = {
@@ -125,6 +127,7 @@ function TopicCard({ topic, onArchive, onDelete, onRestore, onEdit, isUpdating }
 }
 
 export function TopicPanel() {
+  const { t } = useTranslation();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editSiteTitleDialogOpen, setEditSiteTitleDialogOpen] = useState(false);
   const [editingTopic, setEditingTopic] = useState<Topic | null>(null);
@@ -138,27 +141,27 @@ export function TopicPanel() {
   const handleArchive = async (topicId: string) => {
     try {
       await updateStatus.mutateAsync({ topicId, status: 'Archived' });
-      toast.success('Topic archived');
+      toast.success(t('admin.toast.topicArchived'));
     } catch (err: any) {
-      toast.error(err.message || 'Failed to archive topic');
+      toast.error(err.message || t('admin.toast.failedToArchive'));
     }
   };
 
   const handleDelete = async (topicId: string) => {
     try {
       await updateStatus.mutateAsync({ topicId, status: 'Deleted' });
-      toast.success('Topic deleted');
+      toast.success(t('admin.toast.topicDeleted'));
     } catch (err: any) {
-      toast.error(err.message || 'Failed to delete topic');
+      toast.error(err.message || t('admin.toast.failedToDelete'));
     }
   };
 
   const handleRestore = async (topicId: string) => {
     try {
       await updateStatus.mutateAsync({ topicId, status: 'Active' });
-      toast.success('Topic restored');
+      toast.success(t('admin.toast.topicRestored'));
     } catch (err: any) {
-      toast.error(err.message || 'Failed to restore topic');
+      toast.error(err.message || t('admin.toast.failedToRestore'));
     }
   };
 

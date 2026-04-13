@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { Report, useReviewReport } from '@/hooks/useReports';
 import { useCourtCaseByReport, CourtCase } from '@/hooks/useCourtCases';
 import { Button } from '@/components/ui/button';
@@ -136,6 +137,7 @@ function CourtCaseSection({ courtCase, reportId }: { courtCase: CourtCase | null
 }
 
 export function ReportCard({ report, contentText }: ReportCardProps) {
+  const { t } = useTranslation();
   const reviewMutation = useReviewReport();
   const [customNotice, setCustomNotice] = useState('');
   const [showActions, setShowActions] = useState(false);
@@ -156,11 +158,11 @@ export function ReportCard({ report, contentText }: ReportCardProps) {
         newStatus,
         noticeText: newStatus === 'Suspicion' && customNotice ? customNotice : undefined,
       });
-      toast.success(`Status geändert: ${statusConfig[newStatus].label}`);
+      toast.success(t('admin.report.statusChanged'));
       setShowActions(false);
       setCustomNotice('');
     } catch (err: any) {
-      toast.error(err.message || 'Fehler bei der Aktualisierung');
+      toast.error(err.message || t('admin.report.updateFailed'));
     }
   };
 
