@@ -503,6 +503,7 @@
       "privacy": "Privacy Policy",
       "imprint": "Legal Notice",
       "contact": "Contact"
+    }
   },
   "chatRequestTooltip": {
     "first": "You received your first chat request! Open it to start a conversation.",
