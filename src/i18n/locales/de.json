@@ -593,8 +593,9 @@
     "unsupported": "Dein Browser unterstützt keine Benachrichtigungen",
     "newMessage": "Neue Nachricht",
     "newMessageBody": "Du hast {{count}} ungelesene Nachricht(en)",
+    "newRequest": "Neue Chat-Anfrage",
+    "newRequestBody": "Du hast {{count}} neue Chat-Anfrage(n)",
     "clickToEnable": "Browser-Benachrichtigungen aktivieren",
     "clickToDisable": "Browser-Benachrichtigungen deaktivieren"
   }
-}
 }

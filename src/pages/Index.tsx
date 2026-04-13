@@ -154,7 +154,10 @@ const Index = () => {
   const totalUnreadCount = unreadMessageCounts
     ? Array.from(unreadMessageCounts.values()).reduce((sum, count) => sum + count, 0)
     : 0;
-  const { notificationsEnabled, toggleNotifications } = useBrowserNotification(totalUnreadCount, 'freemind', topicId);
+  const incomingRequestCount = myOpinion
+    ? chatRequests.filter(r => r.target_opinion_id === myOpinion.id && r.status === 'pending').length
+    : 0;
+  const { notificationsEnabled, toggleNotifications } = useBrowserNotification(totalUnreadCount, 'freemind', topicId, incomingRequestCount);
 
   const graphChatRequests: ChatRequest[] = chatRequests.map(r => ({
     id: r.id,

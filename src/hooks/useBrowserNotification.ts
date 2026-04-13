@@ -8,9 +8,11 @@ export function useBrowserNotification(
   unreadCount: number,
   baseTitle: string = 'freemind',
   topicId?: string,
+  chatRequestCount: number = 0,
 ) {
   const { t } = useTranslation();
   const prevUnreadRef = useRef(unreadCount);
+  const prevRequestRef = useRef(chatRequestCount);
 
   const [enabled, setEnabledState] = useState(() => {
     if (!topicId) return false;
@@ -29,10 +31,10 @@ export function useBrowserNotification(
     };
   }, [unreadCount, baseTitle]);
 
-  // Fire browser notification when unread count increases
+  // Fire browser notification when unread message count increases
   useEffect(() => {
     if (!enabled || !topicId) return;
-    if (unreadCount > prevUnreadRef.current && document.hidden) {
+    if (unreadCount > prevUnreadRef.current) {
       try {
         const n = new Notification(t('notifications.newMessage'), {
           body: t('notifications.newMessageBody', { count: unreadCount }),
@@ -48,6 +50,26 @@ export function useBrowserNotification(
     }
     prevUnreadRef.current = unreadCount;
   }, [unreadCount, enabled, topicId, t]);
+
+  // Fire browser notification when chat request count increases
+  useEffect(() => {
+    if (!enabled || !topicId) return;
+    if (chatRequestCount > prevRequestRef.current) {
+      try {
+        const n = new Notification(t('notifications.newRequest'), {
+          body: t('notifications.newRequestBody', { count: chatRequestCount }),
+          icon: '/placeholder.svg',
+        });
+        n.onclick = () => {
+          window.focus();
+          n.close();
+        };
+      } catch {
+        // Notification API unavailable
+      }
+    }
+    prevRequestRef.current = chatRequestCount;
+  }, [chatRequestCount, enabled, topicId, t]);
 
   const toggleNotifications = useCallback(() => {
     if (!topicId) return;
