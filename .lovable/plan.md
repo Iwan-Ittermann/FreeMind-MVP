@@ -1,37 +1,42 @@
 
 
-# Browser Notifications for Topic Pages
+# Fix: Browser Notifications + Dialogue Points Label
 
-## What changes
+## Bug 1: Browser notifications not firing
 
-Add a bell icon button to the topic page header that lets users opt in to browser push notifications for new chat messages and chat requests. When enabled, the browser's Notification API fires desktop/mobile notifications even when the tab is in the background.
+**Root causes** (two problems in `useBrowserNotification.ts`):
 
-## How it works
+1. **`document.hidden` guard too strict** — Line 35 only fires notifications when the tab is in the background. During testing the tab is likely focused, so nothing fires. Firefox also has stricter handling here. Fix: remove or relax the `document.hidden` check (fire notification whenever count increases, the OS will handle deduplication).
 
-1. **Bell icon in the header** — A bell icon appears in the topic page header (next to the sign-in button area). Clicking it requests `Notification.permission` and toggles notifications on/off for that topic. State is stored in `localStorage` (`notify-topic-{topicId}`).
+2. **Chat requests not tracked at all** — The hook only watches `unreadCount` (messages). Chat requests are handled separately in `useChatRequests` and never trigger a browser notification. Fix: add a `chatRequestCount` parameter to the hook, track it with a second ref, and fire a notification when it increases.
 
-2. **Notification triggers** — The existing real-time subscriptions in `useUnreadMessages` and `useChatRequests` already listen for new messages/requests. We extend `useBrowserNotification` to actually fire `new Notification(...)` when:
-   - A new chat message arrives (not from the current user)
-   - A new chat request is received (targeting the user's opinion)
+### Changes in `src/hooks/useBrowserNotification.ts`:
+- Add `chatRequestCount` parameter
+- Remove `document.hidden` requirement (or make it optional)
+- Add second `useEffect` that fires notification when `chatRequestCount` increases
+- Add i18n key `notifications.newRequest` / `notifications.newRequestBody`
 
-3. **Visual feedback** — The bell icon shows filled/outlined state based on whether notifications are enabled. A tooltip explains the feature. If the browser denied permission, clicking shows a toast explaining how to re-enable in browser settings.
+### Changes in `src/pages/Index.tsx`:
+- Pass incoming chat request count to `useBrowserNotification`
 
-## Files
+---
+
+## Bug 2: "dialoguePoints.label" showing as raw key
+
+The i18n keys **do exist** correctly in both `en.json` and `de.json`. The config is standard. This is likely a stale build artifact. However, to harden against this:
+
+- Verify the JSON files are syntactically valid (no trailing commas, correct nesting)
+- Force a clean rebuild
+- No code change needed since `t('dialoguePoints.label')` and the keys are correct
+
+---
+
+## Files to modify
 
 | File | Change |
 |------|--------|
-| `src/hooks/useBrowserNotification.ts` | Expand to handle `Notification.permission`, fire actual browser notifications, manage localStorage opt-in |
-| `src/components/Header.tsx` | Add bell icon button, pass notification state as props |
-| `src/pages/Index.tsx` | Wire up notification hook, pass props to Header |
-| `src/i18n/locales/de.json` | Add `notifications.enable`, `notifications.disabled`, `notifications.newMessage`, `notifications.newRequest`, `notifications.denied` |
-| `src/i18n/locales/en.json` | Same keys in English |
-
-## Technical details
-
-- Uses the standard Web Notifications API (`Notification.requestPermission()`, `new Notification(...)`)
-- No service worker needed for basic notifications (tab must be open but can be in background)
-- Permission state: `default` → prompt on click; `granted` → toggle on/off; `denied` → toast with instructions
-- localStorage key per topic: `notify-topic-{topicId}` = `"true"` / absent
-- Notification body includes a truncated preview of the message or the request sender info
-- Clicking the notification focuses the tab via `notification.onclick = () => window.focus()`
+| `src/hooks/useBrowserNotification.ts` | Add `chatRequestCount` param, remove `document.hidden` guard, add chat request notification effect |
+| `src/pages/Index.tsx` | Pass incoming request count to the hook |
+| `src/i18n/locales/en.json` | Add `notifications.newRequest`, `notifications.newRequestBody` |
+| `src/i18n/locales/de.json` | Same keys in German |
 
