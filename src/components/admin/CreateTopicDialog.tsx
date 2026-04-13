@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dialog';
 import { useCreateTopic } from '@/hooks/useTopics';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 interface CreateTopicDialogProps {
   open: boolean;
@@ -21,6 +22,7 @@ interface CreateTopicDialogProps {
 }
 
 export function CreateTopicDialog({ open, onOpenChange }: CreateTopicDialogProps) {
+  const { t } = useTranslation();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const createTopic = useCreateTopic();

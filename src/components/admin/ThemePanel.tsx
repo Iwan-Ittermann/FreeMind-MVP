@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/select';
 import { useAppSetting, useUpdateAppSetting } from '@/hooks/useAppSettings';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 const THEMES = [
   { value: 'classic', label: '🔵 Classic' },
