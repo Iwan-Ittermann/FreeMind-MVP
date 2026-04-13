@@ -25,6 +25,7 @@ import { toast } from 'sonner';
 
 
 export default function Admin() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const { data: isAdmin, isLoading: isAdminLoading } = useIsAdmin();
