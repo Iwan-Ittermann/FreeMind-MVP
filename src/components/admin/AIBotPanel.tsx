@@ -46,7 +46,7 @@ export function AIBotPanel() {
 
   const handleSave = async () => {
     if (!primaryTopic) {
-      toast.error('No topic found');
+      toast.error(t('admin.toast.noTopicFound'));
       return;
     }
 
@@ -73,10 +73,10 @@ export function AIBotPanel() {
 
       // Invalidate queries
       updateSetting.reset();
-      toast.success('AI Bot settings saved');
+      toast.success(t('admin.toast.aiBotSaved'));
     } catch (err: any) {
       console.error('Failed to save AI bot settings:', err);
-      toast.error(err.message || 'Failed to save');
+      toast.error(err.message || t('admin.toast.failedToSave'));
     } finally {
       setIsSaving(false);
     }
