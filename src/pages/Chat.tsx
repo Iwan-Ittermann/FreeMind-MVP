@@ -40,7 +40,7 @@ export default function Chat() {
       await saveRating(empathy, disagreement);
     } catch (err) {
       console.error('Error saving rating:', err);
-      toast.error('Failed to save rating');
+      toast.error(t('chat.failedToSaveRating'));
     }
   };
 

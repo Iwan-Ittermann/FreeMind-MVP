@@ -156,11 +156,11 @@ export function ReportCard({ report, contentText }: ReportCardProps) {
         newStatus,
         noticeText: newStatus === 'Suspicion' && customNotice ? customNotice : undefined,
       });
-      toast.success(`Status geändert: ${statusConfig[newStatus].label}`);
+      toast.success(t('admin.report.statusChanged'));
       setShowActions(false);
       setCustomNotice('');
     } catch (err: any) {
-      toast.error(err.message || 'Fehler bei der Aktualisierung');
+      toast.error(err.message || t('admin.report.updateFailed'));
     }
   };
 

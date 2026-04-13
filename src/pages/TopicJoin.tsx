@@ -30,10 +30,10 @@ export default function TopicJoin() {
     setJoining(true);
     try {
       const topicId = await joinTopic.mutateAsync(slug);
-      toast.success('Successfully joined topic!');
+      toast.success(t('topicJoin.joinedSuccess'));
       navigate(`/topic/${topicId}`);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to join topic');
+      toast.error(err.message || t('topicJoin.failedToJoin'));
     } finally {
       setJoining(false);
     }
