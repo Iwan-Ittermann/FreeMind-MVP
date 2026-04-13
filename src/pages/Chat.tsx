@@ -17,6 +17,7 @@ const CHAT_VIDEO_START_TIME = 39; // Start at 00:39 for chat-specific tutorial
 
 export default function Chat() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
   const chatTutorial = useChatTutorialContext();

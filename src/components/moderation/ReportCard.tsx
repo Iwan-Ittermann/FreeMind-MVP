@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { Report, useReviewReport } from '@/hooks/useReports';
 import { useCourtCaseByReport, CourtCase } from '@/hooks/useCourtCases';
 import { Button } from '@/components/ui/button';
