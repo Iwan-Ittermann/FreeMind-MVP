@@ -581,8 +581,9 @@
     "unsupported": "Your browser does not support notifications",
     "newMessage": "New message",
     "newMessageBody": "You have {{count}} unread message(s)",
+    "newRequest": "New chat request",
+    "newRequestBody": "You have {{count}} new chat request(s)",
     "clickToEnable": "Enable browser notifications",
     "clickToDisable": "Disable browser notifications"
   }
-}
 }
