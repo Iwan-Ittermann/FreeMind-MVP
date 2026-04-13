@@ -20,6 +20,7 @@ import {
 import { STGB_PARAGRAPHS, MIN_JUSTIFICATION_LENGTH, type StGBParagraph } from '@/lib/stgb-paragraphs';
 import { useReportContent } from '@/hooks/useReports';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import { AlertTriangle, Loader2, Info, ExternalLink } from 'lucide-react';
 
 interface ReportDialogProps {
@@ -37,6 +38,7 @@ export function ReportDialog({
   contentType,
   contentPreview,
 }: ReportDialogProps) {
+  const { t } = useTranslation();
   const reportMutation = useReportContent();
   
   const [selectedParagraph, setSelectedParagraph] = useState<StGBParagraph | ''>('');

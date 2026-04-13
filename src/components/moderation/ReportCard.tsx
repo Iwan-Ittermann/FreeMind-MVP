@@ -137,6 +137,7 @@ function CourtCaseSection({ courtCase, reportId }: { courtCase: CourtCase | null
 }
 
 export function ReportCard({ report, contentText }: ReportCardProps) {
+  const { t } = useTranslation();
   const reviewMutation = useReviewReport();
   const [customNotice, setCustomNotice] = useState('');
   const [showActions, setShowActions] = useState(false);
