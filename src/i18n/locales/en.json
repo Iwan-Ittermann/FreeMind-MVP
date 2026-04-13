@@ -525,5 +525,88 @@
     "showLess": "Less",
     "recentOpinions": "Recent Opinions"
   }
+},
+  "dialoguePoints": {
+    "label": "Dialogue Points"
+  },
+  "report": {
+    "selectOffense": "Please select an offense",
+    "justificationRequired": "Justification is required and must be at least 100 characters.",
+    "submitted": "Report submitted successfully"
+  },
+  "admin": {
+    "report": {
+      "statusChanged": "Status changed",
+      "updateFailed": "Failed to update"
+    },
+    "toast": {
+      "noTopicFound": "No topic found",
+      "aiBotSaved": "AI Bot settings saved",
+      "failedToSave": "Failed to save",
+      "urlCopied": "URL copied to clipboard",
+      "topicArchived": "Topic archived",
+      "topicDeleted": "Topic deleted",
+      "topicRestored": "Topic restored",
+      "topicUpdated": "Topic updated",
+      "topicCreated": "Topic created successfully",
+      "titleRequired": "Title is required",
+      "failedToArchive": "Failed to archive topic",
+      "failedToDelete": "Failed to delete topic",
+      "failedToRestore": "Failed to restore topic",
+      "failedToUpdate": "Failed to update topic",
+      "failedToCreate": "Failed to create topic",
+      "siteTitleUpdated": "Site title updated",
+      "failedToUpdateTitle": "Failed to update site title",
+      "nodeDeleted": "Node and all related data deleted",
+      "failedToDeleteNode": "Failed to delete node",
+      "themeSwitched": "Theme switched",
+      "failedToUpdateTheme": "Failed to update theme",
+      "adminUnlocked": "Admin dashboard unlocked",
+      "wrongPassword": "Wrong password",
+      "dbReset": "Database reset successfully",
+      "failedToReset": "Failed to reset database",
+      "courtCaseUpdated": "Court case updated",
+      "courtCaseCreated": "Court case created",
+      "courtCaseActivated": "Court case activated",
+      "failedToApprove": "Failed to approve court case"
+    }
+  },
+  "floatingChat": {
+    "bridgingScore": "Bridging Score:",
+    "readOnlyMode": "Read-only mode",
+    "blockUser": "Block User",
+    "unblockUser": "Unblock User",
+    "autoTranslate": "Auto-translate",
+    "rateConversation": "Rate This Conversation",
+    "bridgeBuilder": "Bridge Builder",
+    "discussionZone": "Discussion Zone",
+    "polarizedZone": "Polarized Zone",
+    "respect": "Respect",
+    "disagreement": "Disagreement",
+    "disrespectful": "Disrespectful",
+    "respectful": "Respectful",
+    "aligned": "Aligned",
+    "opposed": "Opposed",
+    "saveRating": "Save Rating",
+    "saving": "Saving...",
+    "saved": "Saved!",
+    "rate": "Rate!",
+    "saveAndClose": "Save & Close",
+    "typeMessage": "Type a message...",
+    "readOnlyBlocked": "Read-only mode — messaging disabled",
+    "blockedByYou": "You have blocked this user",
+    "blockedByThem": "This user has blocked you",
+    "unknownOpinion": "Unknown opinion",
+    "you": "You",
+    "them": "Them",
+    "rateFirst": "Rate your disagreement first",
+    "rateDisagreementPrompt": "How much do you disagree with their opinion?",
+    "respectNeutralNote": "Respect rating set to neutral",
+    "submitAndChat": "Submit & Start Chatting",
+    "userBlocked": "User blocked in this chat",
+    "failedToBlock": "Failed to block user",
+    "userUnblocked": "User unblocked",
+    "failedToUnblock": "Failed to unblock user"
+  }
 }
 }
