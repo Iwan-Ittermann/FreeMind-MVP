@@ -169,7 +169,11 @@
     "rateFirst": "Rate your disagreement first",
     "rateDisagreementPrompt": "How much do you disagree with their opinion?",
     "respectNeutralNote": "Respect rating set to neutral",
-    "submitAndChat": "Submit & Start Chatting"
+    "submitAndChat": "Submit & Start Chatting",
+    "userBlocked": "User blocked in this chat",
+    "failedToBlock": "Failed to block user",
+    "userUnblocked": "User unblocked",
+    "failedToUnblock": "Failed to unblock user"
   },
   "about": {
     "title": "About FreeMind",
@@ -524,8 +528,7 @@
     "showMore": "More",
     "showLess": "Less",
     "recentOpinions": "Recent Opinions"
-  }
-},
+  },
   "dialoguePoints": {
     "label": "Dialogue Points"
   },
@@ -570,43 +573,6 @@
       "courtCaseActivated": "Court case activated",
       "failedToApprove": "Failed to approve court case"
     }
-  },
-  "floatingChat": {
-    "bridgingScore": "Bridging Score:",
-    "readOnlyMode": "Read-only mode",
-    "blockUser": "Block User",
-    "unblockUser": "Unblock User",
-    "autoTranslate": "Auto-translate",
-    "rateConversation": "Rate This Conversation",
-    "bridgeBuilder": "Bridge Builder",
-    "discussionZone": "Discussion Zone",
-    "polarizedZone": "Polarized Zone",
-    "respect": "Respect",
-    "disagreement": "Disagreement",
-    "disrespectful": "Disrespectful",
-    "respectful": "Respectful",
-    "aligned": "Aligned",
-    "opposed": "Opposed",
-    "saveRating": "Save Rating",
-    "saving": "Saving...",
-    "saved": "Saved!",
-    "rate": "Rate!",
-    "saveAndClose": "Save & Close",
-    "typeMessage": "Type a message...",
-    "readOnlyBlocked": "Read-only mode — messaging disabled",
-    "blockedByYou": "You have blocked this user",
-    "blockedByThem": "This user has blocked you",
-    "unknownOpinion": "Unknown opinion",
-    "you": "You",
-    "them": "Them",
-    "rateFirst": "Rate your disagreement first",
-    "rateDisagreementPrompt": "How much do you disagree with their opinion?",
-    "respectNeutralNote": "Respect rating set to neutral",
-    "submitAndChat": "Submit & Start Chatting",
-    "userBlocked": "User blocked in this chat",
-    "failedToBlock": "Failed to block user",
-    "userUnblocked": "User unblocked",
-    "failedToUnblock": "Failed to unblock user"
   }
 }
 }

@@ -169,7 +169,11 @@
     "rateFirst": "Bewerte zuerst deine Meinungsverschiedenheit",
     "rateDisagreementPrompt": "Wie stark unterscheidet sich deine Meinung?",
     "respectNeutralNote": "Respekt-Bewertung auf neutral gesetzt",
-    "submitAndChat": "Absenden & Chat starten"
+    "submitAndChat": "Absenden & Chat starten",
+    "userBlocked": "Nutzer in diesem Chat blockiert",
+    "failedToBlock": "Nutzer konnte nicht blockiert werden",
+    "userUnblocked": "Nutzer freigegeben",
+    "failedToUnblock": "Nutzer konnte nicht freigegeben werden"
   },
   "about": {
     "title": "FreeMind",
@@ -536,8 +540,7 @@
     "showMore": "Mehr",
     "showLess": "Weniger",
     "recentOpinions": "Neueste Meinungen"
-  }
-},
+  },
   "dialoguePoints": {
     "label": "Dialog-Punkte"
   },
@@ -582,43 +585,6 @@
       "courtCaseActivated": "Gerichtsfall aktiviert",
       "failedToApprove": "Gerichtsfall konnte nicht genehmigt werden"
     }
-  },
-  "floatingChat": {
-    "bridgingScore": "Bridging-Score:",
-    "readOnlyMode": "Nur-Lese-Modus",
-    "blockUser": "Nutzer blockieren",
-    "unblockUser": "Nutzer freigeben",
-    "autoTranslate": "Auto-Übersetzen",
-    "rateConversation": "Bewerte dieses Gespräch",
-    "bridgeBuilder": "Brückenbauer",
-    "discussionZone": "Diskussionszone",
-    "polarizedZone": "Polarisierte Zone",
-    "respect": "Respekt",
-    "disagreement": "Meinungsverschiedenheit",
-    "disrespectful": "Respektlos",
-    "respectful": "Respektvoll",
-    "aligned": "Übereinstimmung",
-    "opposed": "Gegensätzlich",
-    "saveRating": "Bewertung speichern",
-    "saving": "Speichern...",
-    "saved": "Gespeichert!",
-    "rate": "Bewerten!",
-    "saveAndClose": "Speichern & Schließen",
-    "typeMessage": "Nachricht eingeben...",
-    "readOnlyBlocked": "Nur-Lese-Modus — Nachrichten deaktiviert",
-    "blockedByYou": "Du hast diesen Nutzer blockiert",
-    "blockedByThem": "Dieser Nutzer hat dich blockiert",
-    "unknownOpinion": "Unbekannte Meinung",
-    "you": "Du",
-    "them": "Sie",
-    "rateFirst": "Bewerte zuerst deine Meinungsverschiedenheit",
-    "rateDisagreementPrompt": "Wie stark unterscheidet sich deine Meinung?",
-    "respectNeutralNote": "Respekt-Bewertung auf neutral gesetzt",
-    "submitAndChat": "Absenden & Chat starten",
-    "userBlocked": "Nutzer in diesem Chat blockiert",
-    "failedToBlock": "Nutzer konnte nicht blockiert werden",
-    "userUnblocked": "Nutzer freigegeben",
-    "failedToUnblock": "Nutzer konnte nicht freigegeben werden"
   }
 }
 }
