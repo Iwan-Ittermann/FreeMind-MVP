@@ -24,6 +24,7 @@ import { AuthDialog } from '@/components/AuthDialog';
 import { AuthForm } from '@/components/AuthForm';
 import { PositioningTourCongrats } from '@/components/PositioningTourCongrats';
 import { PositioningTourControls } from '@/components/PositioningTourControls';
+import { ThumbRating } from '@/components/ThumbRating';
 import { GraphNode, GraphEdge, ChatRequest, LayoutConfig } from '@/types/graph';
 import { useTopicData } from '@/hooks/useTopicData';
 import { useChatRequests } from '@/hooks/useChatRequests';
@@ -75,10 +76,17 @@ const Index = () => {
   const [rightOpen, setRightOpen] = useState(false);
   const hasAutoOpenedRightRef = useRef(false);
 
-  // Positioning tour state — runs after the user submits their opinion
+  // Positioning tour state — runs after the user submits their opinion (once per topic)
+  const TOUR_MAX_RATINGS = 4;
+  const tourDoneStorageKey = `freemind-positioning-tour-done-${topicId}`;
   const [congratsOverlayOpen, setCongratsOverlayOpen] = useState(false);
   const [tourActive, setTourActive] = useState(false);
   const [tourSeenIds, setTourSeenIds] = useState<Set<string>>(new Set());
+  // Synchronous source of truth for seen ids — avoids duplicates from rapid clicks.
+  const tourSeenRef = useRef<Set<string>>(new Set());
+  // Set to true right before tour-driven setSelectedNode so we can distinguish
+  // tour navigation from user-initiated node clicks.
+  const tourSelectionRef = useRef(false);
 
   // Desktop settings sheet
   const [settingsSheetOpen, setSettingsSheetOpen] = useState(false);
@@ -216,11 +224,24 @@ const Index = () => {
     queryClient.invalidateQueries({ queryKey: ['topic', topicId] });
     queryClient.invalidateQueries({ queryKey: ['myOpinionForTopic', topicId] });
     tutorial.onOpinionSubmitted();
-    // Launch the positioning tour congrats overlay
+    // Only launch the positioning tour if it hasn't been completed for this topic yet
+    const alreadyDone = localStorage.getItem(tourDoneStorageKey) === 'true';
+    if (alreadyDone) return;
+    tourSeenRef.current = new Set();
     setTourSeenIds(new Set());
     setTourActive(false);
     setCongratsOverlayOpen(true);
   };
+
+  const finishTour = useCallback(() => {
+    setTourActive(false);
+    setSelectedNode(null);
+    try {
+      localStorage.setItem(tourDoneStorageKey, 'true');
+    } catch {
+      /* ignore storage errors */
+    }
+  }, [tourDoneStorageKey]);
 
   // Pick a random opinion for the positioning tour:
   // excludes the user's own opinion, the AI bot, and any already-seen ids.
@@ -245,12 +266,13 @@ const Index = () => {
 
   const startPositioningTour = () => {
     setCongratsOverlayOpen(false);
-    const seen = new Set<string>();
-    const opinion = pickRandomOpinionForTour(seen);
+    tourSeenRef.current = new Set();
+    const opinion = pickRandomOpinionForTour(tourSeenRef.current);
     if (!opinion) return; // nothing to rate against
-    seen.add(opinion.id);
-    setTourSeenIds(seen);
+    tourSeenRef.current.add(opinion.id);
+    setTourSeenIds(new Set(tourSeenRef.current));
     setTourActive(true);
+    tourSelectionRef.current = true;
     setSelectedNode({
       id: opinion.id,
       x: 0, y: 0, zone: 'outer' as const,
@@ -259,16 +281,19 @@ const Index = () => {
   };
 
   const handleTourNext = () => {
-    const opinion = pickRandomOpinionForTour(tourSeenIds);
-    if (!opinion) {
-      // No more opinions — end the tour
-      setTourActive(false);
-      setSelectedNode(null);
+    // Cap reached — finish the tour
+    if (tourSeenRef.current.size >= TOUR_MAX_RATINGS) {
+      finishTour();
       return;
     }
-    const nextSeen = new Set(tourSeenIds);
-    nextSeen.add(opinion.id);
-    setTourSeenIds(nextSeen);
+    const opinion = pickRandomOpinionForTour(tourSeenRef.current);
+    if (!opinion) {
+      finishTour();
+      return;
+    }
+    tourSeenRef.current.add(opinion.id);
+    setTourSeenIds(new Set(tourSeenRef.current));
+    tourSelectionRef.current = true;
     setSelectedNode({
       id: opinion.id,
       x: 0, y: 0, zone: 'outer' as const,
@@ -277,11 +302,11 @@ const Index = () => {
   };
 
   const handleTourStop = () => {
-    setTourActive(false);
-    setSelectedNode(null);
+    finishTour();
   };
 
   const tourCanContinue = useMemo(() => {
+    if (tourSeenIds.size >= TOUR_MAX_RATINGS) return false;
     const opinions = topicData?.opinions ?? [];
     return opinions.some(op =>
       op.id !== myOpinion?.id &&
@@ -328,6 +353,12 @@ const Index = () => {
   };
 
   const handleNodeClick = (node: GraphNode) => {
+    // If the user clicked a node themselves (not via the tour), end the tour.
+    if (tourActive && !tourSelectionRef.current) {
+      finishTour();
+      return;
+    }
+    tourSelectionRef.current = false;
     setSelectedNode(prev => prev?.id === node.id ? null : node);
   };
 
@@ -396,6 +427,11 @@ const Index = () => {
   };
 
   const handleSidebarOpinionClick = useCallback((opinionId: string) => {
+    // Manual sidebar selection ends the tour
+    if (tourActive) {
+      finishTour();
+      return;
+    }
     const node = topicData?.opinions.find(op => op.id === opinionId);
     if (node) {
       setSelectedNode(prev => prev?.id === opinionId ? null : {
@@ -410,7 +446,7 @@ const Index = () => {
         },
       } as unknown as GraphNode);
     }
-  }, [topicData?.opinions]);
+  }, [topicData?.opinions, tourActive, finishTour]);
 
   const handleSidebarChatClick = useCallback((theirOpinionId: string) => {
     openChatWith(theirOpinionId);
@@ -609,21 +645,37 @@ const Index = () => {
 
                   {/* Agreement slider — auto-saves */}
                   {canRateDisagreement && selectedNode.opinion.visible !== false && actionState !== 'own' && (
-                    <div className="mb-4 space-y-1.5">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground">{t('agreementRating.label')}</span>
-                        <span className="text-xs font-mono text-muted-foreground">{disagreement}</span>
+                    <div
+                      className={
+                        tourActive
+                          ? 'mb-4 rounded-lg p-2 -mx-2 ring-2 ring-accent ring-offset-2 ring-offset-background shadow-[0_0_20px_hsl(var(--accent)/0.4)]'
+                          : 'mb-4'
+                      }
+                    >
+                      {tourActive && (
+                        <p className="text-xs text-accent text-center mb-2 font-medium">
+                          {t('positioningTour.rateHint')}
+                        </p>
+                      )}
+                      <div className="flex items-center justify-center mb-2">
+                        <ThumbRating value={disagreement} />
                       </div>
-                      <Slider
-                        value={[disagreement]}
-                        onValueChange={(v) => setDisagreement(v[0])}
-                        max={100}
-                        step={1}
-                        className="flex-1 [&_[role=slider]]:bg-primary [&_[role=slider]]:border-primary [&_.bg-primary]:bg-primary/30"
-                      />
-                      <div className="flex justify-between text-[10px] text-muted-foreground">
-                        <span>{t('agreementRating.agree')}</span>
-                        <span>{t('agreementRating.disagree')}</span>
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-muted-foreground">{t('agreementRating.label')}</span>
+                          <span className="text-xs font-mono text-muted-foreground">{disagreement}</span>
+                        </div>
+                        <Slider
+                          value={[disagreement]}
+                          onValueChange={(v) => setDisagreement(v[0])}
+                          max={100}
+                          step={1}
+                          className="flex-1 [&_[role=slider]]:bg-primary [&_[role=slider]]:border-primary [&_.bg-primary]:bg-primary/30"
+                        />
+                        <div className="flex justify-between text-[10px] text-muted-foreground">
+                          <span>{t('agreementRating.agree')}</span>
+                          <span>{t('agreementRating.disagree')}</span>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -681,6 +733,18 @@ const Index = () => {
                 contentPreview={selectedNode.opinion.text}
               />
             )}
+
+            {/* Positioning tour controls — siblings of the opinion panel so they
+                track the panel's position exactly (panel uses lg:absolute too). */}
+            <AnimatePresence>
+              {tourActive && selectedNode && (
+                <PositioningTourControls
+                  onNext={handleTourNext}
+                  onStop={handleTourStop}
+                  canContinue={tourCanContinue}
+                />
+              )}
+            </AnimatePresence>
           </motion.div>
 
           {/* CTA slot below graph — auth CTA or opinion CTA */}
@@ -852,16 +916,7 @@ const Index = () => {
         onStart={startPositioningTour}
       />
 
-      {/* Positioning tour: floating Next / Stop controls — visible only during the tour */}
-      <AnimatePresence>
-        {tourActive && selectedNode && (
-          <PositioningTourControls
-            onNext={handleTourNext}
-            onStop={handleTourStop}
-            canContinue={tourCanContinue}
-          />
-        )}
-      </AnimatePresence>
+      {/* (Positioning tour controls are now rendered next to the opinion panel above.) */}
 
       {/* Welcome walkthrough — 3 steps */}
       <AnimatePresence>

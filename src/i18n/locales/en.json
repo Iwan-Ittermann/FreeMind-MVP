@@ -593,6 +593,7 @@
     "start": "OK, let's go!",
     "next": "Next opinion",
     "done": "Done",
-    "stop": "Stop tour"
+    "stop": "Stop tour",
+    "rateHint": "Rate your disagreement →"
   }
 }

@@ -605,6 +605,7 @@
     "start": "OK, los geht's!",
     "next": "Nächste Meinung",
     "done": "Fertig",
-    "stop": "Tour beenden"
+    "stop": "Tour beenden",
+    "rateHint": "Bewerte deine Ablehnung →"
   }
 }
