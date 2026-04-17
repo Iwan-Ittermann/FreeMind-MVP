@@ -22,6 +22,8 @@ import { MainMenu, MenuContent } from '@/components/MainMenu';
 import { AboutSidebar } from '@/components/AboutSidebar';
 import { AuthDialog } from '@/components/AuthDialog';
 import { AuthForm } from '@/components/AuthForm';
+import { PositioningTourCongrats } from '@/components/PositioningTourCongrats';
+import { PositioningTourControls } from '@/components/PositioningTourControls';
 import { GraphNode, GraphEdge, ChatRequest, LayoutConfig } from '@/types/graph';
 import { useTopicData } from '@/hooks/useTopicData';
 import { useChatRequests } from '@/hooks/useChatRequests';
@@ -37,6 +39,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { getClientIP } from '@/hooks/useClientIP';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import { BOT_USER_ID } from '@/lib/constants';
 import { useChatRequestTooltips } from '@/hooks/useChatRequestTooltips';
 
 const opinionSchema = z.object({
