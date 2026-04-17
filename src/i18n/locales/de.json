@@ -108,7 +108,7 @@
   "opinion": {
     "shareYourOpinion": "Teile deine Meinung",
     "stateYourMind": "Teile deine Gedanken zu diesem Thema. Sei klar und prägnant.",
-    "whatDoYouThink": "Was denkst du über dieses Thema?",
+    "whatDoYouThink": "Was ist deine Meinung zum Diskussionsthema?",
     "viewPlaceholder": "Was ist deine Meinung zu diesem Thema? Sei klar und prägnant...",
     "minCharacters": "Meinung muss mindestens 10 Zeichen haben",
     "maxCharacters": "Meinung darf maximal 500 Zeichen haben",
@@ -598,13 +598,5 @@
     "newRequestBody": "Du hast {{count}} neue Chat-Anfrage(n)",
     "clickToEnable": "Browser-Benachrichtigungen aktivieren",
     "clickToDisable": "Browser-Benachrichtigungen deaktivieren"
-  },
-  "positioningTour": {
-    "congratsTitle": "Meinung veröffentlicht!",
-    "congratsBody": "Jetzt positionieren wir deine Meinung im Graphen. Bewerte ein paar andere Meinungen, um deinen Platz zu finden.",
-    "start": "OK, los geht's!",
-    "next": "Nächste Meinung",
-    "done": "Fertig",
-    "stop": "Tour beenden"
   }
 }
