@@ -216,7 +216,80 @@ const Index = () => {
     queryClient.invalidateQueries({ queryKey: ['topic', topicId] });
     queryClient.invalidateQueries({ queryKey: ['myOpinionForTopic', topicId] });
     tutorial.onOpinionSubmitted();
+    // Launch the positioning tour congrats overlay
+    setTourSeenIds(new Set());
+    setTourActive(false);
+    setCongratsOverlayOpen(true);
   };
+
+  // Pick a random opinion for the positioning tour:
+  // excludes the user's own opinion, the AI bot, and any already-seen ids.
+  const pickRandomOpinionForTour = useCallback((excludeIds: Set<string>): GraphNode['opinion'] | null => {
+    const opinions = topicData?.opinions ?? [];
+    const candidates = opinions.filter(op =>
+      op.id !== myOpinion?.id &&
+      op.authorId !== BOT_USER_ID &&
+      !excludeIds.has(op.id) &&
+      op.visible !== false,
+    );
+    if (candidates.length === 0) return null;
+    const pick = candidates[Math.floor(Math.random() * candidates.length)];
+    return {
+      id: pick.id,
+      text: pick.text,
+      authorId: pick.authorId,
+      visible: true,
+      noticeText: null,
+    } as GraphNode['opinion'];
+  }, [topicData?.opinions, myOpinion?.id]);
+
+  const startPositioningTour = () => {
+    setCongratsOverlayOpen(false);
+    const seen = new Set<string>();
+    const opinion = pickRandomOpinionForTour(seen);
+    if (!opinion) return; // nothing to rate against
+    seen.add(opinion.id);
+    setTourSeenIds(seen);
+    setTourActive(true);
+    setSelectedNode({
+      id: opinion.id,
+      x: 0, y: 0, zone: 'outer' as const,
+      opinion,
+    } as unknown as GraphNode);
+  };
+
+  const handleTourNext = () => {
+    const opinion = pickRandomOpinionForTour(tourSeenIds);
+    if (!opinion) {
+      // No more opinions — end the tour
+      setTourActive(false);
+      setSelectedNode(null);
+      return;
+    }
+    const nextSeen = new Set(tourSeenIds);
+    nextSeen.add(opinion.id);
+    setTourSeenIds(nextSeen);
+    setSelectedNode({
+      id: opinion.id,
+      x: 0, y: 0, zone: 'outer' as const,
+      opinion,
+    } as unknown as GraphNode);
+  };
+
+  const handleTourStop = () => {
+    setTourActive(false);
+    setSelectedNode(null);
+  };
+
+  const tourCanContinue = useMemo(() => {
+    const opinions = topicData?.opinions ?? [];
+    return opinions.some(op =>
+      op.id !== myOpinion?.id &&
+      op.authorId !== BOT_USER_ID &&
+      !tourSeenIds.has(op.id) &&
+      op.visible !== false,
+    );
+  }, [topicData?.opinions, myOpinion?.id, tourSeenIds]);
 
   const handleDismissWelcome = () => {
     localStorage.setItem('freemind-walkthrough-seen', 'true');
@@ -246,7 +319,6 @@ const Index = () => {
         toast.error(error.message);
       } else {
         handleOpinionSubmitted();
-        toast.success(t('opinion.submittedGraph'));
       }
     } catch {
       toast.error(t('opinion.failedToSubmit'));
