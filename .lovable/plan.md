@@ -1,45 +1,42 @@
+## Plan: Topic Page i18n Tweaks + Chat Sidebar Default
+
+### 1. Update opinion textarea placeholder
+
+File: `src/i18n/locales/de.json` and `src/i18n/locales/en.json`
+
+The placeholder used in `SubmitOpinionDialog.tsx` is `opinion.whatDoYouThink`.
+
+- DE: `"whatDoYouThink": "Was ist deine Meinung dazu?"`
+- EN: `"whatDoYouThink": "What is your opinion on this?"`
+
+(I'll also align the related `viewPlaceholder` key to keep it consistent — DE: `"Was ist deine Meinung zur Diskussionsfrage?"`, EN: `"What is your opinion on the given topic?"`)
+
+### 2. Update "Sign in to see your chats" copy
+
+File: `src/i18n/locales/de.json` and `src/i18n/locales/en.json`
+
+Key `sidebar.signInToSeeChats` (used in `ChatsSidebar.tsx` line 291):
+
+- DE: `"Melde dich an, um mitzudiskutieren."`
+- EN: `"Sign in to join the discussion."`
+
+### 3. Remove "Join the conversation" empty state + don't auto-open chat sidebar
+
+File: `src/components/ChatsSidebar.tsx` — remove the entire `!myOpinion` empty-state block (lines 296–310: the MessagesSquare icon, the "Join the conversation" heading, the "Submit opinion first" subtitle, and the `opinionCtaNode` slot). When the user has no opinion, the sidebar simply won't be shown.
+
+File: `src/pages/Index.tsx` — change `rightOpen` default initialization so that on desktop the chat sidebar is **closed by default when the user has not yet submitted an opinion**:
+
+- Replace `const [rightOpen, setRightOpen] = useState(true);` with a state that initializes to `true` only when there is reason to (we don't yet know `myOpinion` at init, so use `false` as initial, and add a `useEffect` that opens it once when `myOpinion` becomes available — but only on first transition, so the user can still manually close it later).
+- Implementation: track a ref `hasAutoOpenedRightRef` to ensure we only auto-open once when `myOpinion` first appears, preserving manual user toggles afterward.
+
+Mobile is unaffected since the chats panel is opt-in via the bottom tab bar (`activeMobilePanel` defaults to `null`).
+
+### Files to modify
 
 
-## Root Cause
-
-`src/pages/Home.tsx` calls translation keys with the prefix `landing.home.*` (e.g. `landing.home.hero.headline`, `landing.home.discussions`, `landing.home.opinions`), but in the locale JSON files these keys live at the top level under `home.*`. The `landing` object only contains the marketing landing page sections (`trustLine`, `hero`, `problem`, `cta`, `footer`, etc.) — there is no `landing.home` namespace.
-
-Result: every `t('landing.home.X')` call falls through to the raw key string.
-
-A few calls use a fallback like `t('landing.home.login', t('home.login'))` which work. The rest (hero headline, bullets, "Available Topics", "Opinions", "Chats", "More/Less", "Recent Opinions") have no fallback and render the raw key.
-
-## Fix
-
-Single-file change to `src/pages/Home.tsx`: replace every `t('landing.home.X')` call with `t('home.X')` so it matches the actual JSON structure.
-
-| Old key | New key |
-|---|---|
-| `landing.home.nav.about` | `home.nav.about` |
-| `landing.home.login` | `home.login` |
-| `landing.home.loggedIn` | `home.loggedIn` |
-| `landing.home.hero.headline` | `home.hero.headline` |
-| `landing.home.hero.subheadline` | `home.hero.subheadline` |
-| `landing.home.hero.bullet1/2/3` | `home.hero.bullet1/2/3` |
-| `landing.home.discussions` | `home.discussions` |
-| `landing.home.noDiscussions` | `home.noDiscussions` |
-| `landing.home.opinions` | `home.opinions` |
-| `landing.home.chats` | `home.chats` |
-| `landing.home.showMore` / `showLess` | `home.showMore` / `home.showLess` |
-| `landing.home.recentOpinions` | `home.recentOpinions` |
-
-No JSON changes needed — all keys already exist correctly in both `en.json` and `de.json`.
-
-## Hardening (i18n safety)
-
-To prevent this class of bug from recurring, also enable i18next's missing-key warning in `src/i18n/config.ts`:
-- Add `saveMissing: true` and a `missingKeyHandler` that logs `console.warn` for any unresolved key in development.
-
-This makes future missing keys immediately visible in the browser console instead of silently rendering as raw labels.
-
-## Files to change
-
-| File | Change |
-|---|---|
-| `src/pages/Home.tsx` | Replace ~14 `landing.home.X` keys with `home.X` |
-| `src/i18n/config.ts` | Add dev-time `missingKeyHandler` to warn on unresolved keys |
-
+| File                              | Change                                                                                 |
+| --------------------------------- | -------------------------------------------------------------------------------------- |
+| `src/i18n/locales/de.json`        | Update `opinion.whatDoYouThink`, `opinion.viewPlaceholder`, `sidebar.signInToSeeChats` |
+| `src/i18n/locales/en.json`        | Same keys, English equivalents                                                         |
+| `src/components/ChatsSidebar.tsx` | Remove the `!myOpinion` empty-state block                                              |
+| `src/pages/Index.tsx`             | Default `rightOpen` to `false`; auto-open once when `myOpinion` first becomes truthy   |
