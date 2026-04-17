@@ -56,15 +56,16 @@ export function PositioningTourControls({ onNext, onStop, canContinue }: Positio
   }
 
   // Desktop: rendered as siblings of the opinion panel inside the graph wrapper.
-  // The panel uses `lg:absolute bottom-4 left-1/2 -translate-x-1/2 max-w-sm` (384px wide).
-  // We mirror that anchor with absolute positioning so we follow the panel exactly.
+  // Panel uses `lg:left-1/2 -translate-x-1/2 lg:max-w-sm` (384px wide → 192px half).
+  // Place buttons fully outside the panel: right edge of panel = +192px, leave 24px gap.
   return (
     <>
       <motion.div
         initial={{ opacity: 0, x: 10 }}
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: 10 }}
-        className="absolute bottom-4 left-1/2 z-[55] -translate-x-[calc(192px+56px)]"
+        className="absolute bottom-4 left-1/2 z-[55]"
+        style={{ transform: 'translateX(calc(-192px - 24px - 44px))' }}
       >
         <Button
           onClick={onStop}
@@ -82,11 +83,13 @@ export function PositioningTourControls({ onNext, onStop, canContinue }: Positio
         initial={{ opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: -10 }}
-        className="absolute bottom-4 left-1/2 z-[55] translate-x-[calc(192px+16px)]"
+        className="absolute bottom-4 left-1/2 z-[55]"
+        style={{ transform: 'translateX(calc(192px + 24px))' }}
       >
         <Button
           onClick={onNext}
-          className="bg-accent text-accent-foreground hover:bg-accent/90 h-11 px-5 shadow-lg"
+          size="sm"
+          className="bg-accent text-accent-foreground hover:bg-accent/90 h-11 px-4 shadow-lg"
         >
           {canContinue ? (
             <>
