@@ -55,16 +55,16 @@ export function PositioningTourControls({ onNext, onStop, canContinue }: Positio
     );
   }
 
-  // Desktop: two buttons flanking the opinion panel (bottom-4, max-w-sm = 384px).
-  // Center is left-1/2; panel half-width = 192px. Place X to the left of the panel,
-  // and Next to the right of the panel, both vertically aligned with panel center.
+  // Desktop: rendered as siblings of the opinion panel inside the graph wrapper.
+  // The panel uses `lg:absolute bottom-4 left-1/2 -translate-x-1/2 max-w-sm` (384px wide).
+  // We mirror that anchor with absolute positioning so we follow the panel exactly.
   return (
     <>
       <motion.div
         initial={{ opacity: 0, x: 10 }}
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: 10 }}
-        className="fixed bottom-4 left-1/2 z-[55] -translate-x-[calc(192px+56px)]"
+        className="absolute bottom-4 left-1/2 z-[55] -translate-x-[calc(192px+56px)]"
       >
         <Button
           onClick={onStop}
@@ -82,7 +82,7 @@ export function PositioningTourControls({ onNext, onStop, canContinue }: Positio
         initial={{ opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: -10 }}
-        className="fixed bottom-4 left-1/2 z-[55] translate-x-[calc(192px+16px)]"
+        className="absolute bottom-4 left-1/2 z-[55] translate-x-[calc(192px+16px)]"
       >
         <Button
           onClick={onNext}
