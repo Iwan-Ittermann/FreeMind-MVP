@@ -645,21 +645,37 @@ const Index = () => {
 
                   {/* Agreement slider — auto-saves */}
                   {canRateDisagreement && selectedNode.opinion.visible !== false && actionState !== 'own' && (
-                    <div className="mb-4 space-y-1.5">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground">{t('agreementRating.label')}</span>
-                        <span className="text-xs font-mono text-muted-foreground">{disagreement}</span>
+                    <div
+                      className={
+                        tourActive
+                          ? 'mb-4 rounded-lg p-2 -mx-2 ring-2 ring-accent ring-offset-2 ring-offset-background shadow-[0_0_20px_hsl(var(--accent)/0.4)] animate-pulse-soft'
+                          : 'mb-4'
+                      }
+                    >
+                      {tourActive && (
+                        <p className="text-xs text-accent text-center mb-2 font-medium">
+                          {t('positioningTour.rateHint')}
+                        </p>
+                      )}
+                      <div className="flex items-center justify-center mb-2">
+                        <ThumbRating value={disagreement} />
                       </div>
-                      <Slider
-                        value={[disagreement]}
-                        onValueChange={(v) => setDisagreement(v[0])}
-                        max={100}
-                        step={1}
-                        className="flex-1 [&_[role=slider]]:bg-primary [&_[role=slider]]:border-primary [&_.bg-primary]:bg-primary/30"
-                      />
-                      <div className="flex justify-between text-[10px] text-muted-foreground">
-                        <span>{t('agreementRating.agree')}</span>
-                        <span>{t('agreementRating.disagree')}</span>
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-muted-foreground">{t('agreementRating.label')}</span>
+                          <span className="text-xs font-mono text-muted-foreground">{disagreement}</span>
+                        </div>
+                        <Slider
+                          value={[disagreement]}
+                          onValueChange={(v) => setDisagreement(v[0])}
+                          max={100}
+                          step={1}
+                          className="flex-1 [&_[role=slider]]:bg-primary [&_[role=slider]]:border-primary [&_.bg-primary]:bg-primary/30"
+                        />
+                        <div className="flex justify-between text-[10px] text-muted-foreground">
+                          <span>{t('agreementRating.agree')}</span>
+                          <span>{t('agreementRating.disagree')}</span>
+                        </div>
                       </div>
                     </div>
                   )}
