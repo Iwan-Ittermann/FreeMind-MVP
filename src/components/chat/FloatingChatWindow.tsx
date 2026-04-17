@@ -179,10 +179,7 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
               {/* Respect slider (empathy only) */}
               <div className="space-y-2 mb-6">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Heart className="w-4 h-4 text-rose-400" />
-                    <span className="text-xs text-muted-foreground">{t('floatingChat.respect')}</span>
-                  </div>
+                  <span className="text-xs text-muted-foreground">{t('floatingChat.respect')}</span>
                   <span className="text-xs font-mono text-rose-400">{empathy}</span>
                 </div>
                 <div className="relative">
@@ -195,9 +192,9 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
                   />
                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-0.5 h-3 bg-foreground/20 pointer-events-none" />
                 </div>
-                <div className="flex justify-between text-[10px] text-muted-foreground">
-                  <HeartCrack className="w-3 h-3" />
-                  <Heart className="w-3 h-3" />
+                <div className="flex justify-between">
+                  <HeartCrack className="w-4 h-4 text-rose-400" />
+                  <Heart className="w-4 h-4 text-rose-400" />
                 </div>
               </div>
 
