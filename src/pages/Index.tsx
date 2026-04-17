@@ -75,6 +75,11 @@ const Index = () => {
   const [rightOpen, setRightOpen] = useState(false);
   const hasAutoOpenedRightRef = useRef(false);
 
+  // Positioning tour state — runs after the user submits their opinion
+  const [congratsOverlayOpen, setCongratsOverlayOpen] = useState(false);
+  const [tourActive, setTourActive] = useState(false);
+  const [tourSeenIds, setTourSeenIds] = useState<Set<string>>(new Set());
+
   // Desktop settings sheet
   const [settingsSheetOpen, setSettingsSheetOpen] = useState(false);
   const [aboutSheetOpen, setAboutSheetOpen] = useState(false);
