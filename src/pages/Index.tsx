@@ -132,6 +132,14 @@ const Index = () => {
   const { onlineOpinionIds } = usePresence(topicId, myOpinion?.id);
   const { data: unreadMessageCounts } = useUnreadMessages(topicId, myOpinion?.id);
 
+  // Auto-open the chat sidebar exactly once, when the user first has an opinion
+  useEffect(() => {
+    if (myOpinion && !hasAutoOpenedRightRef.current) {
+      hasAutoOpenedRightRef.current = true;
+      setRightOpen(true);
+    }
+  }, [myOpinion]);
+
   // Detect new incoming requests and show tooltips
   useEffect(() => {
     if (!myOpinion) return;
