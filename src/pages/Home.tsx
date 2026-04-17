@@ -159,7 +159,7 @@ export default function Home() {
             freemind
           </Link>
           <nav className="hidden sm:flex items-center gap-6 text-sm text-muted-foreground">
-            <Link to="/about" className="hover:text-foreground transition-colors">{t('landing.home.nav.about')}</Link>
+            <Link to="/about" className="hover:text-foreground transition-colors">{t('home.nav.about')}</Link>
           </nav>
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
@@ -171,10 +171,10 @@ export default function Home() {
                 className="h-8 text-xs border-accent text-accent hover:bg-accent/10"
               >
                 <LogIn className="w-3.5 h-3.5 mr-1.5" />
-                {t('landing.home.login', t('home.login'))}
+                {t('home.login')}
               </Button>
             ) : (
-              <div className="w-2 h-2 rounded-full bg-accent" title={t('landing.home.loggedIn', t('home.loggedIn'))} />
+              <div className="w-2 h-2 rounded-full bg-accent" title={t('home.loggedIn')} />
             )}
           </div>
         </div>
