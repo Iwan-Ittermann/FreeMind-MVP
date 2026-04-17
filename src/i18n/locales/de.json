@@ -108,8 +108,8 @@
   "opinion": {
     "shareYourOpinion": "Teile deine Meinung",
     "stateYourMind": "Teile deine Gedanken zu diesem Thema. Sei klar und prägnant.",
-    "whatDoYouThink": "Was ist deine Meinung dazu?",
-    "viewPlaceholder": "Was ist deine Meinung zur Diskussionsfrage?",
+    "whatDoYouThink": "Was denkst du über dieses Thema?",
+    "viewPlaceholder": "Was ist deine Meinung zu diesem Thema? Sei klar und prägnant...",
     "minCharacters": "Meinung muss mindestens 10 Zeichen haben",
     "maxCharacters": "Meinung darf maximal 500 Zeichen haben",
     "alreadySubmittedTitle": "Meinung bereits geteilt",
@@ -317,7 +317,7 @@
     "noChatsFound": "Keine Chats gefunden",
     "noChatsYet": "Noch keine Chats",
     "chats": "Chats",
-    "signInToSeeChats": "Melde dich an, um mitzudiskutieren.",
+    "signInToSeeChats": "Melde dich an, um deine Chats zu sehen",
     "submitOpinionFirst": "Teile zuerst deine Meinung, um zu chatten",
     "yesterday": "Gestern",
     "requests": "Anfragen"
@@ -528,7 +528,7 @@
     "login": "Login",
     "loggedIn": "Eingeloggt",
     "hero": {
-      "headline": "Hier kannst du dich produktiv mit anderen Meinungen austauschen",
+      "headline": "Hier kannst du produktiv mit anderen Meinungen diskutieren",
       "subheadline": "Insbesondere zu polarisierten Themen",
       "bullet1": "Login per zufälliger Passphrase",
       "bullet2": "Respekt von Gegnern entscheidet",
