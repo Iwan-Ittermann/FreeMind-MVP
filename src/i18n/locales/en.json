@@ -290,7 +290,7 @@
     "ok": "Let's go!"
   },
   "inlineCta": {
-    "placeholder": "What's your view on this topic?",
+    "placeholder": "What's your opinion on the given topic?",
     "submit": "Share",
     "submitting": "Sharing..."
   },
@@ -363,7 +363,7 @@
       "title": "Your Opinion",
       "text": "This is your opinion on the map! As you chat with others, it will move to the middle."
     },
-    
+
     "requestChat": { "title": "Request a Chat", "text": "Now click 'Request to Chat' to start a conversation." },
     "nowWeWait": {
       "title": "Now We Wait!",
@@ -586,13 +586,5 @@
     "newRequestBody": "You have {{count}} new chat request(s)",
     "clickToEnable": "Enable browser notifications",
     "clickToDisable": "Disable browser notifications"
-  },
-  "positioningTour": {
-    "congratsTitle": "Opinion submitted!",
-    "congratsBody": "Now let's position your opinion in the graph. Rate how much you disagree with a few other opinions to find your place.",
-    "start": "OK, let's go!",
-    "next": "Next opinion",
-    "done": "Done",
-    "stop": "Stop tour"
   }
 }
