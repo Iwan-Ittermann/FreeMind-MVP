@@ -586,5 +586,13 @@
     "newRequestBody": "You have {{count}} new chat request(s)",
     "clickToEnable": "Enable browser notifications",
     "clickToDisable": "Disable browser notifications"
+  },
+  "positioningTour": {
+    "congratsTitle": "Opinion submitted!",
+    "congratsBody": "Now let's position your opinion in the graph. Rate how much you disagree with a few other opinions to find your place.",
+    "start": "OK, let's go!",
+    "next": "Next opinion",
+    "done": "Done",
+    "stop": "Stop tour"
   }
 }
