@@ -648,7 +648,7 @@ const Index = () => {
                     <div
                       className={
                         tourActive
-                          ? 'mb-4 rounded-lg p-2 -mx-2 ring-2 ring-accent ring-offset-2 ring-offset-background shadow-[0_0_20px_hsl(var(--accent)/0.4)] animate-pulse-soft'
+                          ? 'mb-4 rounded-lg p-2 -mx-2 ring-2 ring-accent ring-offset-2 ring-offset-background shadow-[0_0_20px_hsl(var(--accent)/0.4)] animate-pulse'
                           : 'mb-4'
                       }
                     >
