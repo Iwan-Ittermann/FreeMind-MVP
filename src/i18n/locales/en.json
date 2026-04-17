@@ -108,8 +108,8 @@
   "opinion": {
     "shareYourOpinion": "Share Your Opinion",
     "stateYourMind": "State your mind on this topic. Be clear and concise.",
-    "whatDoYouThink": "What do you think about this topic?",
-    "viewPlaceholder": "What's your view on this topic? Be clear and concise...",
+    "whatDoYouThink": "What is your opinion on this?",
+    "viewPlaceholder": "What is your opinion on the given topic?",
     "minCharacters": "Opinion must be at least 10 characters",
     "maxCharacters": "Opinion must be less than 500 characters",
     "alreadySubmittedTitle": "Opinion Already Submitted",
@@ -317,7 +317,7 @@
     "noChatsFound": "No chats found",
     "noChatsYet": "No chats yet",
     "chats": "chats",
-    "signInToSeeChats": "Sign in to see your chats",
+    "signInToSeeChats": "Sign in to join the discussion.",
     "submitOpinionFirst": "Submit your opinion first to start chatting",
     "yesterday": "Yesterday",
     "requests": "Requests"

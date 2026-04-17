@@ -69,7 +69,8 @@ const Index = () => {
 
   // Desktop sidebar state
   const [leftOpen, setLeftOpen] = useState(true);
-  const [rightOpen, setRightOpen] = useState(true);
+  const [rightOpen, setRightOpen] = useState(false);
+  const hasAutoOpenedRightRef = useRef(false);
 
   // Desktop settings sheet
   const [settingsSheetOpen, setSettingsSheetOpen] = useState(false);
