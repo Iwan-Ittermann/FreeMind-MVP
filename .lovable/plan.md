@@ -1,42 +1,59 @@
-## Plan: Topic Page i18n Tweaks + Chat Sidebar Default
 
-### 1. Update opinion textarea placeholder
 
-File: `src/i18n/locales/de.json` and `src/i18n/locales/en.json`
+## Plan: Positioning Tour after Opinion Submission
 
-The placeholder used in `SubmitOpinionDialog.tsx` is `opinion.whatDoYouThink`.
+After the user submits their opinion, launch a guided "positioning tour" that asks them to rate disagreement against several random other opinions. This generates ratings → finer-grained graph layout.
 
-- DE: `"whatDoYouThink": "Was ist deine Meinung dazu?"`
-- EN: `"whatDoYouThink": "What is your opinion on this?"`
+### Flow
 
-(I'll also align the related `viewPlaceholder` key to keep it consistent — DE: `"Was ist deine Meinung zur Diskussionsfrage?"`, EN: `"What is your opinion on the given topic?"`)
+1. User submits opinion → instead of toast, show a **congratulations overlay** (centered modal, like the welcome walkthrough).
+2. User clicks **"OK, let's go!"** → overlay closes, tour begins.
+3. A random other opinion is selected and opened as `selectedNode` (existing opinion panel with disagreement slider appears).
+4. Tour-only floating controls anchored to the opinion panel:
+   - **Left side: "Next"** button → picks another random opinion not yet shown in this tour, and not the user's own.
+   - **Right side: "X"** button → ends the tour.
+5. When the pool of unseen opinions is exhausted, the Next button becomes "Done" and ends the tour.
+6. Existing disagreement slider auto-saves on change (already implemented via `useDisagreementRating`), so no extra save logic needed.
 
-### 2. Update "Sign in to see your chats" copy
+### State & logic (in `src/pages/Index.tsx`)
 
-File: `src/i18n/locales/de.json` and `src/i18n/locales/en.json`
+- New state: `congratsOverlayOpen: boolean`, `tourActive: boolean`, `tourSeenIds: Set<string>`.
+- Trigger: in `handleOpinionSubmitted()`, set `congratsOverlayOpen = true`. **Remove** the `toast.success(t('opinion.submittedGraph'))` call (both in `handleInlineSubmit` and any other path — `SubmitOpinionDialog` already doesn't toast).
+- "OK" handler: close overlay, set `tourActive = true`, pick first random opinion (excluding own + AI bot), set as `selectedNode`, add to `tourSeenIds`.
+- "Next" handler: pick a random opinion from `topicData.opinions` excluding own opinion, AI bot, and `tourSeenIds`; if none left → end tour.
+- "X" handler: `tourActive = false`, `setSelectedNode(null)`.
+- When `tourActive` is true, render two floating buttons positioned next to the opinion panel (already at `bottom-4 left-1/2 -translate-x-1/2` on desktop, `bottom-20 left-4 right-4` on mobile). Use absolute positioning relative to the panel via flex siblings or fixed offsets:
+  - Desktop: position Next/X as siblings of the opinion panel, vertically aligned at the panel's center, horizontally offset `~ -56px` (left) and `+panel-width+16px` (right).
+  - Mobile: place inline above the panel as a small toolbar `[X ............... Next]`.
 
-Key `sidebar.signInToSeeChats` (used in `ChatsSidebar.tsx` line 291):
+### Components
 
-- DE: `"Melde dich an, um mitzudiskutieren."`
-- EN: `"Sign in to join the discussion."`
+- **New file `src/components/PositioningTourCongrats.tsx`**: simple centered modal overlay (same backdrop/styling as the welcome walkthrough block in `Index.tsx` lines 769–812). Title + body + "OK, let's go!" button. Uses i18n keys.
+- **New file `src/components/PositioningTourControls.tsx`**: renders Next + X buttons; receives `onNext`, `onSkip`, `canContinue` props. Handles desktop vs mobile layout via `useIsMobile`.
 
-### 3. Remove "Join the conversation" empty state + don't auto-open chat sidebar
+### i18n keys (add to `src/i18n/locales/en.json` and `de.json` under `positioningTour`)
 
-File: `src/components/ChatsSidebar.tsx` — remove the entire `!myOpinion` empty-state block (lines 296–310: the MessagesSquare icon, the "Join the conversation" heading, the "Submit opinion first" subtitle, and the `opinionCtaNode` slot). When the user has no opinion, the sidebar simply won't be shown.
-
-File: `src/pages/Index.tsx` — change `rightOpen` default initialization so that on desktop the chat sidebar is **closed by default when the user has not yet submitted an opinion**:
-
-- Replace `const [rightOpen, setRightOpen] = useState(true);` with a state that initializes to `true` only when there is reason to (we don't yet know `myOpinion` at init, so use `false` as initial, and add a `useEffect` that opens it once when `myOpinion` becomes available — but only on first transition, so the user can still manually close it later).
-- Implementation: track a ref `hasAutoOpenedRightRef` to ensure we only auto-open once when `myOpinion` first appears, preserving manual user toggles afterward.
-
-Mobile is unaffected since the chats panel is opt-in via the bottom tab bar (`activeMobilePanel` defaults to `null`).
+| Key | EN | DE |
+|---|---|---|
+| `congratsTitle` | "Opinion submitted!" | "Meinung veröffentlicht!" |
+| `congratsBody` | "Now let's position your opinion in the graph. Rate how much you disagree with a few other opinions to find your place." | "Jetzt positionieren wir deine Meinung im Graphen. Bewerte ein paar andere Meinungen, um deinen Platz zu finden." |
+| `start` | "OK, let's go!" | "OK, los geht's!" |
+| `next` | "Next opinion" | "Nächste Meinung" |
+| `done` | "Done" | "Fertig" |
+| `stop` | "Stop tour" | "Tour beenden" |
 
 ### Files to modify
 
+| File | Change |
+|---|---|
+| `src/pages/Index.tsx` | Add tour state + handlers; remove `submittedGraph` toast; render new congrats overlay + tour controls |
+| `src/components/PositioningTourCongrats.tsx` | New centered modal |
+| `src/components/PositioningTourControls.tsx` | New floating Next/X controls |
+| `src/i18n/locales/en.json` | Add `positioningTour.*` keys |
+| `src/i18n/locales/de.json` | Add `positioningTour.*` keys |
 
-| File                              | Change                                                                                 |
-| --------------------------------- | -------------------------------------------------------------------------------------- |
-| `src/i18n/locales/de.json`        | Update `opinion.whatDoYouThink`, `opinion.viewPlaceholder`, `sidebar.signInToSeeChats` |
-| `src/i18n/locales/en.json`        | Same keys, English equivalents                                                         |
-| `src/components/ChatsSidebar.tsx` | Remove the `!myOpinion` empty-state block                                              |
-| `src/pages/Index.tsx`             | Default `rightOpen` to `false`; auto-open once when `myOpinion` first becomes truthy   |
+### Notes
+- Tour does not interfere with the existing onboarding tutorial (`useTutorialContext`); they're independent overlays.
+- The disagreement slider inside the opinion panel already auto-saves, so no DB calls are added by this feature beyond the existing rating writes.
+- The AI bot opinion (`00000000-0000-0000-0000-0000000000a1`) and the user's own opinion are filtered from the random pool.
+
