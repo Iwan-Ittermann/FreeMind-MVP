@@ -846,6 +846,23 @@ const Index = () => {
         hasExistingOpinion={!!myOpinion}
       />
 
+      {/* Positioning tour: congratulations overlay shown right after opinion submission */}
+      <PositioningTourCongrats
+        open={congratsOverlayOpen}
+        onStart={startPositioningTour}
+      />
+
+      {/* Positioning tour: floating Next / Stop controls — visible only during the tour */}
+      <AnimatePresence>
+        {tourActive && selectedNode && (
+          <PositioningTourControls
+            onNext={handleTourNext}
+            onStop={handleTourStop}
+            canContinue={tourCanContinue}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Welcome walkthrough — 3 steps */}
       <AnimatePresence>
         {welcomeStep >= 0 && (
