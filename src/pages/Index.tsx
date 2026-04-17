@@ -69,7 +69,8 @@ const Index = () => {
 
   // Desktop sidebar state
   const [leftOpen, setLeftOpen] = useState(true);
-  const [rightOpen, setRightOpen] = useState(true);
+  const [rightOpen, setRightOpen] = useState(false);
+  const hasAutoOpenedRightRef = useRef(false);
 
   // Desktop settings sheet
   const [settingsSheetOpen, setSettingsSheetOpen] = useState(false);
@@ -130,6 +131,14 @@ const Index = () => {
   const myOpinion = topicData?.opinions.find(op => op.authorId === user?.id);
   const { onlineOpinionIds } = usePresence(topicId, myOpinion?.id);
   const { data: unreadMessageCounts } = useUnreadMessages(topicId, myOpinion?.id);
+
+  // Auto-open the chat sidebar exactly once, when the user first has an opinion
+  useEffect(() => {
+    if (myOpinion && !hasAutoOpenedRightRef.current) {
+      hasAutoOpenedRightRef.current = true;
+      setRightOpen(true);
+    }
+  }, [myOpinion]);
 
   // Detect new incoming requests and show tooltips
   useEffect(() => {
