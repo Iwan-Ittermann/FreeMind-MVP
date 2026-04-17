@@ -188,7 +188,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground leading-tight"
           >
-            {t('landing.home.hero.headline')}
+            {t('home.hero.headline')}
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -196,7 +196,7 @@ export default function Home() {
             transition={{ delay: 0.1 }}
             className="mt-4 text-sm sm:text-base text-muted-foreground"
           >
-            {t('landing.home.hero.subheadline')}
+            {t('home.hero.subheadline')}
           </motion.p>
           <motion.ul
             initial={{ opacity: 0, y: 20 }}
@@ -206,15 +206,15 @@ export default function Home() {
           >
             <li className="flex items-center gap-2">
               <KeyRound className="w-4 h-4 text-primary" />
-              <span>{t('landing.home.hero.bullet1')}</span>
+              <span>{t('home.hero.bullet1')}</span>
             </li>
             <li className="flex items-center gap-2">
               <Trophy className="w-4 h-4 text-primary" />
-              <span>{t('landing.home.hero.bullet2')}</span>
+              <span>{t('home.hero.bullet2')}</span>
             </li>
             <li className="flex items-center gap-2">
               <CircleDot className="w-4 h-4 text-primary" />
-              <span>{t('landing.home.hero.bullet3')}</span>
+              <span>{t('home.hero.bullet3')}</span>
             </li>
           </motion.ul>
         </div>
