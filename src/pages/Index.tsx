@@ -733,6 +733,18 @@ const Index = () => {
                 contentPreview={selectedNode.opinion.text}
               />
             )}
+
+            {/* Positioning tour controls — siblings of the opinion panel so they
+                track the panel's position exactly (panel uses lg:absolute too). */}
+            <AnimatePresence>
+              {tourActive && selectedNode && (
+                <PositioningTourControls
+                  onNext={handleTourNext}
+                  onStop={handleTourStop}
+                  canContinue={tourCanContinue}
+                />
+              )}
+            </AnimatePresence>
           </motion.div>
 
           {/* CTA slot below graph — auth CTA or opinion CTA */}
@@ -904,16 +916,7 @@ const Index = () => {
         onStart={startPositioningTour}
       />
 
-      {/* Positioning tour: floating Next / Stop controls — visible only during the tour */}
-      <AnimatePresence>
-        {tourActive && selectedNode && (
-          <PositioningTourControls
-            onNext={handleTourNext}
-            onStop={handleTourStop}
-            canContinue={tourCanContinue}
-          />
-        )}
-      </AnimatePresence>
+      {/* (Positioning tour controls are now rendered next to the opinion panel above.) */}
 
       {/* Welcome walkthrough — 3 steps */}
       <AnimatePresence>
