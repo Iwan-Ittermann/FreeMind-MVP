@@ -5,6 +5,8 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import en from './locales/en.json';
 import de from './locales/de.json';
 
+const isDev = import.meta.env.DEV;
+
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
@@ -13,8 +15,8 @@ i18n
       en: { translation: en },
       de: { translation: de },
     },
-    fallbackLng: 'de', // German is now the fallback
-    lng: 'de', // German is now the default language
+    fallbackLng: 'de',
+    lng: 'de',
     interpolation: {
       escapeValue: false,
     },
@@ -22,6 +24,12 @@ i18n
       order: ['localStorage', 'navigator'],
       caches: ['localStorage'],
     },
+    saveMissing: isDev,
+    missingKeyHandler: isDev
+      ? (lngs, ns, key) => {
+          console.warn(`[i18n] Missing translation key: "${key}" (lng: ${lngs.join(',')}, ns: ${ns})`);
+        }
+      : undefined,
   });
 
 export default i18n;

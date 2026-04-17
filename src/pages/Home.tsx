@@ -159,7 +159,7 @@ export default function Home() {
             freemind
           </Link>
           <nav className="hidden sm:flex items-center gap-6 text-sm text-muted-foreground">
-            <Link to="/about" className="hover:text-foreground transition-colors">{t('landing.home.nav.about')}</Link>
+            <Link to="/about" className="hover:text-foreground transition-colors">{t('home.nav.about')}</Link>
           </nav>
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
@@ -171,10 +171,10 @@ export default function Home() {
                 className="h-8 text-xs border-accent text-accent hover:bg-accent/10"
               >
                 <LogIn className="w-3.5 h-3.5 mr-1.5" />
-                {t('landing.home.login', t('home.login'))}
+                {t('home.login')}
               </Button>
             ) : (
-              <div className="w-2 h-2 rounded-full bg-accent" title={t('landing.home.loggedIn', t('home.loggedIn'))} />
+              <div className="w-2 h-2 rounded-full bg-accent" title={t('home.loggedIn')} />
             )}
           </div>
         </div>
@@ -188,7 +188,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground leading-tight"
           >
-            {t('landing.home.hero.headline')}
+            {t('home.hero.headline')}
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -196,7 +196,7 @@ export default function Home() {
             transition={{ delay: 0.1 }}
             className="mt-4 text-sm sm:text-base text-muted-foreground"
           >
-            {t('landing.home.hero.subheadline')}
+            {t('home.hero.subheadline')}
           </motion.p>
           <motion.ul
             initial={{ opacity: 0, y: 20 }}
@@ -206,15 +206,15 @@ export default function Home() {
           >
             <li className="flex items-center gap-2">
               <KeyRound className="w-4 h-4 text-primary" />
-              <span>{t('landing.home.hero.bullet1')}</span>
+              <span>{t('home.hero.bullet1')}</span>
             </li>
             <li className="flex items-center gap-2">
               <Trophy className="w-4 h-4 text-primary" />
-              <span>{t('landing.home.hero.bullet2')}</span>
+              <span>{t('home.hero.bullet2')}</span>
             </li>
             <li className="flex items-center gap-2">
               <CircleDot className="w-4 h-4 text-primary" />
-              <span>{t('landing.home.hero.bullet3')}</span>
+              <span>{t('home.hero.bullet3')}</span>
             </li>
           </motion.ul>
         </div>
@@ -222,7 +222,7 @@ export default function Home() {
 
       {/* Topic Grid */}
       <section className="container mx-auto px-4 pt-6 md:pt-8 pb-10 md:pb-16">
-        <h2 className="text-lg font-semibold text-foreground mb-6">{t('landing.home.discussions')}</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-6">{t('home.discussions')}</h2>
 
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -231,7 +231,7 @@ export default function Home() {
             ))}
           </div>
         ) : topics.length === 0 ? (
-          <p className="text-muted-foreground text-center py-12">{t('landing.home.noDiscussions', t('home.noDiscussions'))}</p>
+          <p className="text-muted-foreground text-center py-12">{t('home.noDiscussions')}</p>
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -260,11 +260,11 @@ export default function Home() {
                   <div className="flex items-center gap-4 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <Users className="w-3.5 h-3.5" />
-                      {topic.opinionCount} {t('landing.home.opinions')}
+                      {topic.opinionCount} {t('home.opinions')}
                     </span>
                     <span className="flex items-center gap-1">
                       <MessageCircle className="w-3.5 h-3.5" />
-                      {topic.chatCount} {t('landing.home.chats')}
+                      {topic.chatCount} {t('home.chats')}
                     </span>
                   </div>
                 </motion.div>
@@ -281,12 +281,12 @@ export default function Home() {
                 >
                   {showAll ? (
                     <>
-                      {t('landing.home.showLess')}
+                      {t('home.showLess')}
                       <ChevronUp className="w-4 h-4 ml-1" />
                     </>
                   ) : (
                     <>
-                      {t('landing.home.showMore')}
+                      {t('home.showMore')}
                       <ChevronDown className="w-4 h-4 ml-1" />
                     </>
                   )}
@@ -300,7 +300,7 @@ export default function Home() {
       {/* Latest Opinions */}
       {latestOpinions.length > 0 && (
         <section className="container mx-auto px-4 pb-16">
-          <h2 className="text-lg font-semibold text-foreground mb-6">{t('landing.home.recentOpinions')}</h2>
+          <h2 className="text-lg font-semibold text-foreground mb-6">{t('home.recentOpinions')}</h2>
           <div className="flex flex-wrap gap-3">
             {latestOpinions.map((op, i) => (
               <motion.div
