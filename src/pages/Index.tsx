@@ -22,6 +22,8 @@ import { MainMenu, MenuContent } from '@/components/MainMenu';
 import { AboutSidebar } from '@/components/AboutSidebar';
 import { AuthDialog } from '@/components/AuthDialog';
 import { AuthForm } from '@/components/AuthForm';
+import { PositioningTourCongrats } from '@/components/PositioningTourCongrats';
+import { PositioningTourControls } from '@/components/PositioningTourControls';
 import { GraphNode, GraphEdge, ChatRequest, LayoutConfig } from '@/types/graph';
 import { useTopicData } from '@/hooks/useTopicData';
 import { useChatRequests } from '@/hooks/useChatRequests';
@@ -37,6 +39,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { getClientIP } from '@/hooks/useClientIP';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import { BOT_USER_ID } from '@/lib/constants';
 import { useChatRequestTooltips } from '@/hooks/useChatRequestTooltips';
 
 const opinionSchema = z.object({
@@ -71,6 +74,11 @@ const Index = () => {
   const [leftOpen, setLeftOpen] = useState(true);
   const [rightOpen, setRightOpen] = useState(false);
   const hasAutoOpenedRightRef = useRef(false);
+
+  // Positioning tour state — runs after the user submits their opinion
+  const [congratsOverlayOpen, setCongratsOverlayOpen] = useState(false);
+  const [tourActive, setTourActive] = useState(false);
+  const [tourSeenIds, setTourSeenIds] = useState<Set<string>>(new Set());
 
   // Desktop settings sheet
   const [settingsSheetOpen, setSettingsSheetOpen] = useState(false);
@@ -208,7 +216,80 @@ const Index = () => {
     queryClient.invalidateQueries({ queryKey: ['topic', topicId] });
     queryClient.invalidateQueries({ queryKey: ['myOpinionForTopic', topicId] });
     tutorial.onOpinionSubmitted();
+    // Launch the positioning tour congrats overlay
+    setTourSeenIds(new Set());
+    setTourActive(false);
+    setCongratsOverlayOpen(true);
   };
+
+  // Pick a random opinion for the positioning tour:
+  // excludes the user's own opinion, the AI bot, and any already-seen ids.
+  const pickRandomOpinionForTour = useCallback((excludeIds: Set<string>): GraphNode['opinion'] | null => {
+    const opinions = topicData?.opinions ?? [];
+    const candidates = opinions.filter(op =>
+      op.id !== myOpinion?.id &&
+      op.authorId !== BOT_USER_ID &&
+      !excludeIds.has(op.id) &&
+      op.visible !== false,
+    );
+    if (candidates.length === 0) return null;
+    const pick = candidates[Math.floor(Math.random() * candidates.length)];
+    return {
+      id: pick.id,
+      text: pick.text,
+      authorId: pick.authorId,
+      visible: true,
+      noticeText: null,
+    } as GraphNode['opinion'];
+  }, [topicData?.opinions, myOpinion?.id]);
+
+  const startPositioningTour = () => {
+    setCongratsOverlayOpen(false);
+    const seen = new Set<string>();
+    const opinion = pickRandomOpinionForTour(seen);
+    if (!opinion) return; // nothing to rate against
+    seen.add(opinion.id);
+    setTourSeenIds(seen);
+    setTourActive(true);
+    setSelectedNode({
+      id: opinion.id,
+      x: 0, y: 0, zone: 'outer' as const,
+      opinion,
+    } as unknown as GraphNode);
+  };
+
+  const handleTourNext = () => {
+    const opinion = pickRandomOpinionForTour(tourSeenIds);
+    if (!opinion) {
+      // No more opinions — end the tour
+      setTourActive(false);
+      setSelectedNode(null);
+      return;
+    }
+    const nextSeen = new Set(tourSeenIds);
+    nextSeen.add(opinion.id);
+    setTourSeenIds(nextSeen);
+    setSelectedNode({
+      id: opinion.id,
+      x: 0, y: 0, zone: 'outer' as const,
+      opinion,
+    } as unknown as GraphNode);
+  };
+
+  const handleTourStop = () => {
+    setTourActive(false);
+    setSelectedNode(null);
+  };
+
+  const tourCanContinue = useMemo(() => {
+    const opinions = topicData?.opinions ?? [];
+    return opinions.some(op =>
+      op.id !== myOpinion?.id &&
+      op.authorId !== BOT_USER_ID &&
+      !tourSeenIds.has(op.id) &&
+      op.visible !== false,
+    );
+  }, [topicData?.opinions, myOpinion?.id, tourSeenIds]);
 
   const handleDismissWelcome = () => {
     localStorage.setItem('freemind-walkthrough-seen', 'true');
@@ -238,7 +319,6 @@ const Index = () => {
         toast.error(error.message);
       } else {
         handleOpinionSubmitted();
-        toast.success(t('opinion.submittedGraph'));
       }
     } catch {
       toast.error(t('opinion.failedToSubmit'));
@@ -765,6 +845,23 @@ const Index = () => {
         onSuccess={handleOpinionSubmitted}
         hasExistingOpinion={!!myOpinion}
       />
+
+      {/* Positioning tour: congratulations overlay shown right after opinion submission */}
+      <PositioningTourCongrats
+        open={congratsOverlayOpen}
+        onStart={startPositioningTour}
+      />
+
+      {/* Positioning tour: floating Next / Stop controls — visible only during the tour */}
+      <AnimatePresence>
+        {tourActive && selectedNode && (
+          <PositioningTourControls
+            onNext={handleTourNext}
+            onStop={handleTourStop}
+            canContinue={tourCanContinue}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Welcome walkthrough — 3 steps */}
       <AnimatePresence>
