@@ -1,59 +1,63 @@
 
 
-## Plan: Positioning Tour after Opinion Submission
+## Plan: Positioning Tour Fixes + Thumb Rating Visual
 
-After the user submits their opinion, launch a guided "positioning tour" that asks them to rate disagreement against several random other opinions. This generates ratings → finer-grained graph layout.
+### Issue 1: Next button below the panel (desktop)
 
-### Flow
+**Root cause**: The opinion panel uses `lg:absolute` (positioned inside the centered graph wrapper), while `PositioningTourControls` uses `fixed bottom-4 left-1/2` (positioned relative to the viewport). When the graph is offset by sidebars or the layout center isn't viewport center, the controls land in the wrong spot — typically appearing below/under the panel.
 
-1. User submits opinion → instead of toast, show a **congratulations overlay** (centered modal, like the welcome walkthrough).
-2. User clicks **"OK, let's go!"** → overlay closes, tour begins.
-3. A random other opinion is selected and opened as `selectedNode` (existing opinion panel with disagreement slider appears).
-4. Tour-only floating controls anchored to the opinion panel:
-   - **Left side: "Next"** button → picks another random opinion not yet shown in this tour, and not the user's own.
-   - **Right side: "X"** button → ends the tour.
-5. When the pool of unseen opinions is exhausted, the Next button becomes "Done" and ends the tour.
-6. Existing disagreement slider auto-saves on change (already implemented via `useDisagreementRating`), so no extra save logic needed.
+**Fix**: Render `PositioningTourControls` as **siblings of the opinion panel** inside the same graph wrapper (the `motion.div` at line ~546 in `Index.tsx`), using the same positioning scheme:
+- Desktop: `absolute bottom-4 left-1/2` with translate offsets `-translate-x-[calc(192px+56px)]` (Stop) and `translate-x-[calc(192px+16px)]` (Next).
+- Mobile: keep `fixed` since the panel is `fixed bottom-20` on mobile.
 
-### State & logic (in `src/pages/Index.tsx`)
+The controls will move from a top-level `<AnimatePresence>` block into the graph wrapper, right next to the opinion panel.
 
-- New state: `congratsOverlayOpen: boolean`, `tourActive: boolean`, `tourSeenIds: Set<string>`.
-- Trigger: in `handleOpinionSubmitted()`, set `congratsOverlayOpen = true`. **Remove** the `toast.success(t('opinion.submittedGraph'))` call (both in `handleInlineSubmit` and any other path — `SubmitOpinionDialog` already doesn't toast).
-- "OK" handler: close overlay, set `tourActive = true`, pick first random opinion (excluding own + AI bot), set as `selectedNode`, add to `tourSeenIds`.
-- "Next" handler: pick a random opinion from `topicData.opinions` excluding own opinion, AI bot, and `tourSeenIds`; if none left → end tour.
-- "X" handler: `tourActive = false`, `setSelectedNode(null)`.
-- When `tourActive` is true, render two floating buttons positioned next to the opinion panel (already at `bottom-4 left-1/2 -translate-x-1/2` on desktop, `bottom-20 left-4 right-4` on mobile). Use absolute positioning relative to the panel via flex siblings or fixed offsets:
-  - Desktop: position Next/X as siblings of the opinion panel, vertically aligned at the panel's center, horizontally offset `~ -56px` (left) and `+panel-width+16px` (right).
-  - Mobile: place inline above the panel as a small toolbar `[X ............... Next]`.
+### Issue 2: Highlight the rating scale during the tour
 
-### Components
+Add a visual highlight to the disagreement slider section (lines 611–629 in `Index.tsx`) when `tourActive` is true:
+- Wrap in a div with `ring-2 ring-accent ring-offset-2 ring-offset-background rounded-lg p-2 -mx-2` (only when `tourActive`).
+- Add a small pulsing animation via `animate-pulse` on the ring, or a soft `shadow-[0_0_20px_hsl(var(--accent)/0.5)]`.
+- Optionally a one-line hint above: `t('positioningTour.rateHint')` → "Rate your disagreement →" / "Bewerte deine Ablehnung →".
 
-- **New file `src/components/PositioningTourCongrats.tsx`**: simple centered modal overlay (same backdrop/styling as the welcome walkthrough block in `Index.tsx` lines 769–812). Title + body + "OK, let's go!" button. Uses i18n keys.
-- **New file `src/components/PositioningTourControls.tsx`**: renders Next + X buttons; receives `onNext`, `onSkip`, `canContinue` props. Handles desktop vs mobile layout via `useIsMobile`.
+### Issue 3: Tour persists / restarts on every node click
 
-### i18n keys (add to `src/i18n/locales/en.json` and `de.json` under `positioningTour`)
+**Root cause**: `tourActive` only ends via Stop or when no candidates remain. Clicking any node keeps `tourActive` true, so Next button + highlight reappear forever.
 
-| Key | EN | DE |
-|---|---|---|
-| `congratsTitle` | "Opinion submitted!" | "Meinung veröffentlicht!" |
-| `congratsBody` | "Now let's position your opinion in the graph. Rate how much you disagree with a few other opinions to find your place." | "Jetzt positionieren wir deine Meinung im Graphen. Bewerte ein paar andere Meinungen, um deinen Platz zu finden." |
-| `start` | "OK, let's go!" | "OK, los geht's!" |
-| `next` | "Next opinion" | "Nächste Meinung" |
-| `done` | "Done" | "Fertig" |
-| `stop` | "Stop tour" | "Tour beenden" |
+**Fixes**:
+1. **Limit to 4 ratings**: end the tour when `tourSeenIds.size >= 4` OR no more candidates (whichever comes first). Update `tourCanContinue` and `handleTourNext` accordingly.
+2. **Persist completion**: store `freemind-positioning-tour-done-${topicId}` in `localStorage` once the tour completes (any of: 4 ratings reached, all opinions exhausted, user clicked Stop, OR user closed the panel mid-tour). On opinion submission, only show the congrats overlay if this flag is not set.
+3. **Exit tour on manual node selection**: if `tourActive` is true and the user clicks a different node via `handleNodeClick` or `handleSidebarOpinionClick` (not via `handleTourNext`), end the tour immediately. Track tour-driven navigation with a ref/flag (e.g. set `tourSelectionRef.current = true` right before `setSelectedNode` inside `handleTourNext`/`startPositioningTour`, then any node selection where the ref is false means "user-initiated → exit tour").
+
+### Issue 4: Same opinion shown twice
+
+**Root cause**: `pickRandomOpinionForTour` reads from `topicData.opinions` which is the unfiltered list. The seen-set logic looks correct, BUT `handleTourNext` reads `tourSeenIds` from React state — if invoked twice quickly before state commits, both calls see the same set. Also `startPositioningTour` adds the first pick to a local `seen` and sets state, but `handleTourNext` reads from state — a single click should be safe; however if `selectedNode` is reset to the same id (e.g., picking before state updates), duplicates appear.
+
+**Fix**: Use a `useRef<Set<string>>` (`tourSeenRef`) as the source of truth, mutated synchronously inside `pickRandomOpinionForTour` *and* mirrored to state for re-renders. This guarantees no duplicate even with fast clicks.
+
+### Issue 5 (experiment): Thumb rotation visual
+
+Add a hand-with-thumb SVG above (or beside) the disagreement slider in the opinion panel. Map disagreement value to rotation:
+- `0` (full agreement) → thumb up → `rotate(0deg)`
+- `50` (default) → thumb sideways → `rotate(90deg)`
+- `100` (full disagreement) → thumb down → `rotate(180deg)`
+- Linear interpolation: `rotation = (disagreement / 100) * 180`.
+
+**Implementation**:
+- New file `src/components/ThumbRating.tsx` — renders a `ThumbsUp` lucide icon (front-view substitute) in a circular badge, with `framer-motion` `animate={{ rotate }}` for smooth interpolation.
+- Color shifts with rating: green (0) → amber (50) → red (100), via `hsl` interpolation or three discrete tiers.
+- Render inline in the opinion panel above the slider: small (~48px) badge centered.
 
 ### Files to modify
 
 | File | Change |
 |---|---|
-| `src/pages/Index.tsx` | Add tour state + handlers; remove `submittedGraph` toast; render new congrats overlay + tour controls |
-| `src/components/PositioningTourCongrats.tsx` | New centered modal |
-| `src/components/PositioningTourControls.tsx` | New floating Next/X controls |
-| `src/i18n/locales/en.json` | Add `positioningTour.*` keys |
-| `src/i18n/locales/de.json` | Add `positioningTour.*` keys |
+| `src/pages/Index.tsx` | Move `PositioningTourControls` inside the graph wrapper as siblings of the opinion panel; add highlight ring around the slider when `tourActive`; cap tour at 4 ratings; persist done-state per topic in `localStorage`; exit tour on manual node selection via ref; switch seen-tracking to `useRef` |
+| `src/components/PositioningTourControls.tsx` | Change desktop variant from `fixed` to `absolute` (drop `fixed` class) so it inherits the graph wrapper's positioning context |
+| `src/components/ThumbRating.tsx` | New component: rotating thumb icon driven by disagreement value |
+| `src/i18n/locales/en.json` & `de.json` | Add `positioningTour.rateHint` keys |
 
 ### Notes
-- Tour does not interfere with the existing onboarding tutorial (`useTutorialContext`); they're independent overlays.
-- The disagreement slider inside the opinion panel already auto-saves, so no DB calls are added by this feature beyond the existing rating writes.
-- The AI bot opinion (`00000000-0000-0000-0000-0000000000a1`) and the user's own opinion are filtered from the random pool.
+- The 4-rating cap is hard-coded; happy to make it configurable if you'd prefer.
+- Tour-done flag is per topic, so each new topic gets its own first-time tour.
+- Once the tour is done for a topic, the congrats overlay also stops appearing on re-submission/edit of opinion.
 
