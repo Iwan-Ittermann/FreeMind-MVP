@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { MotionValue } from 'framer-motion';
 import { useTopicData } from '@/hooks/useTopicData';
 import { useAuth } from '@/hooks/useAuth';
@@ -40,6 +40,9 @@ function TTScreenInnerImpl({
 
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const [size, setSize] = useState<number>(0);
+  const [viewportW, setViewportW] = useState<number>(
+    typeof window !== 'undefined' ? window.innerWidth : 0,
+  );
 
   useEffect(() => {
     const el = wrapperRef.current;
@@ -54,6 +57,28 @@ function TTScreenInnerImpl({
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+
+  useEffect(() => {
+    const onResize = () => setViewportW(window.innerWidth);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  // Convert background landmarks (viewport units) to graph-SVG px.
+  // Background SVG is sized so the blue ring (r=300 of viewBox 1000) spans 100vw,
+  // so 1 viewBox unit = (viewportW / 600) px. Landmarks in graph coords = the SAME
+  // pixel distance because the graph SVG is rendered 1:1 at size × size.
+  // Rcore = 140 viewBox-units → coreR_vw ≈ 23.33vw → (140/600) × viewportW px
+  // Rblue = 300 → 50vw → (300/600) × viewportW
+  // Rwhite = 360 → 60vw → (360/600) × viewportW
+  const ttLandmarks = useMemo(() => {
+    if (!viewportW) return undefined;
+    return {
+      coreR: (140 / 600) * viewportW,
+      blueR: (300 / 600) * viewportW,
+      whiteR: (360 / 600) * viewportW,
+    };
+  }, [viewportW]);
 
   const ownOpinionId = user
     ? data?.opinions.find((o) => o.authorId === user.id)?.id ?? null
