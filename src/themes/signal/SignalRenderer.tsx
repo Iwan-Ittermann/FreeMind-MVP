@@ -114,7 +114,7 @@ export function SignalRenderer({
   return (
     <svg width={width} height={height} className="overflow-visible">
       <rect width={width} height={height} fill="transparent" onClick={() => onNodeClick(null as unknown as GraphNode)} />
-      <SignalZones zones={zoneTokens} config={config} />
+      {showZones && <SignalZones zones={zoneTokens} config={config} />}
       
       <g className="signal-edges">
         {edgeTokens.map((et, i) => (
