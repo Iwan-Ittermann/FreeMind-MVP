@@ -65,8 +65,12 @@ function TTScreenInnerImpl({
       className="relative w-full h-[100dvh] snap-start overflow-hidden"
       style={{ contain: 'layout paint', backgroundColor: '#eef2f4' }}
     >
-      {/* Background + graph share the same centered stacking context so they
-          always align regardless of viewport aspect ratio. */}
+      {/* Full-bleed background, sized so the blue ring spans the viewport width.
+          Lives outside the graph wrapper so it isn't clipped. */}
+      <TTBackground hue={hue} />
+
+      {/* Graph stays centered in its own square wrapper. Both the background's
+          dark core and this wrapper are centered on the section, so they align. */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div
           ref={wrapperRef}
@@ -76,12 +80,7 @@ function TTScreenInnerImpl({
             height: 'min(85vmin, 480px)',
           }}
         >
-          {/* Iris background — sized to match the graph footprint exactly */}
-          <div className="absolute inset-0 rounded-full overflow-hidden">
-            <TTBackground hue={hue} />
-          </div>
-
-          {/* Graph layer — sized to match wrapper so SVG center aligns with iris center */}
+          {/* Graph layer — sized to match wrapper so SVG center aligns with background center */}
           {size > 0 && (
             <div data-tt-graph className="absolute inset-0 flex items-center justify-center">
               <OpinionGraph
