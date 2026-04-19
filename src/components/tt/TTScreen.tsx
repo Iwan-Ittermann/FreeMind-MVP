@@ -55,8 +55,8 @@ function TTScreenInnerImpl({
     <section
       ref={sectionRef}
       data-tt-topic={topicId}
-      className="relative w-full h-[100dvh] snap-start overflow-hidden bg-black"
-      style={{ contain: 'layout paint' }}
+      className="relative w-full h-[100dvh] snap-start overflow-hidden"
+      style={{ contain: 'layout paint', backgroundColor: '#eef2f4' }}
     >
       <TTBackground hue={hue} />
 
