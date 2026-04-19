@@ -38,6 +38,23 @@ function TTScreenInnerImpl({
   const { user } = useAuth();
   const { data, activeChats, messageAnimations } = useTopicData(topicId);
 
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const [size, setSize] = useState<number>(0);
+
+  useEffect(() => {
+    const el = wrapperRef.current;
+    if (!el) return;
+    const update = () => {
+      const rect = el.getBoundingClientRect();
+      const next = Math.round(Math.min(rect.width, rect.height));
+      if (next > 0) setSize(next);
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   const ownOpinionId = user
     ? data?.opinions.find((o) => o.authorId === user.id)?.id ?? null
     : null;
