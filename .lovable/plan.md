@@ -1,92 +1,91 @@
-## Plan: TT UI Polish + Swipe Architecture
+## Plan: TT UI Polish v2 — Parallax, Silent Auth, Panel Refinements
 
-### 1. Side panels — overlay feel, animated from buttons
+### 1. Parallax swipe (graph moves, chrome stays)
 
-Replace the full-height `Sheet` with custom Framer Motion panels that **expand from the tab buttons**:
+**Problem**: Currently each `TTScreen` is a full snap section containing both graph AND chrome — so header/tabs/bottom panel re-render on every swipe (= shake/flash).
 
-- **Opinions panel**: expands rightward from the left tab. ~75vw wide, ~60vh tall, vertically centered around the tab. Rounded-2xl, glassmorphism (`bg-background/85 backdrop-blur-xl`), strong shadow, subtle border. Origin-left scale + fade.
-- **Chats panel**: mirrors from the right tab (origin-right, expands leftward, vertically aligned to the bottom-right tab).
-- **Backdrop**: very light blur overlay (`bg-black/20 backdrop-blur-sm`), click-to-close.
-- Spring animation: `transition: { type: 'spring', stiffness: 320, damping: 28 }`.
+**Fix**: Restructure `TT.tsx`:
 
-### 2. Bottom panel — expanding input + floating "Posten"
+- **Persistent chrome layer** (single instance, fixed): `TTHeader`, `TTSideTabs`, `TTNotificationsBell`, `TTBottomPanel`. Driven by a shared `activeTopicId` state.
+- **Scroll layer** (snap container): only contains backgrounds + graphs, one per topic. Each section = `TTScreenInner` (background + graph only, no chrome).
+- **Parallax**: in `TTScreenInner`, use `useScroll` + `useTransform` from Framer Motion to translate the graph at a slower rate (e.g. 0.7x) than the background (1x) as the section enters/leaves the viewport. Only the graph layer animates `y`.
+- **Performance**: `will-change: transform` on graph wrapper, `contain: layout paint` on each section, memoize `TTScreenInner` per topicId.
 
-`TTBottomPanel.tsx` (input state):
+Result: chrome never unmounts → no flash; only graph slides with subtle parallax.
 
-- Default: collapsed textarea (44px, single line, placeholder visible). No button shown.
-- On focus: textarea animates to `min-h-[140px]`, `Posten` button **floats above the panel** (absolutely positioned, `bottom: calc(100% + 8px) right: 12px`), pill-shaped, `bg-primary` with shadow.
-- On blur with empty text: collapse back, hide button.
-- Use Framer Motion `AnimatePresence` for the floating button.
+### 2. URL per topic
 
-### 3. Silent auth — cost evaluation + UX
+**Already works**: route is `/tt/:topicId?` and `IntersectionObserver` updates URL via `navigate('/tt/:id', { replace: true })`. TikTok stickers can link to `https://freemind.chat/tt/<topic-uuid>` directly.
 
-**Cost evaluation**: Silent passphrase signup on every visit creates one `auth.users` row + one `user_topics` row per visitor. Risks:
+**Improvement**: support `url_slug` too — accept `/tt/:idOrSlug`, resolve in `TT.tsx` (look up by slug if not a UUID). More shareable.
 
-- Bot/scraper traffic could spam thousands of phantom accounts (Supabase free tier: 50k MAU; paid: $0.00325/MAU above that).
-- Mitigations already in place: client IP logging, single opinion per topic per user.
-- **Recommendation**: proceed with silent auth, but only call `signUp` **once a real interaction happens** (first opinion submission). Until then, render the UI in a "preview" mode using a local-only ephemeral session. This keeps `auth.users` clean of pure bounces.
+### 3. Links in headline
+
+Currently: `topicTitle.split(/\b(Video|video)\b/)` only links the literal word "Video".
+
+**Fix**: support markdown-style links `[label](url)` in `topics.title`. Parse with a tiny regex in `TTHeader`, render `<a>` for matched segments. Backwards-compatible (titles without `[..](..)` render plain). No DB change needed.
+
+### 4. Opinion panel polish
+
+File: `TTBottomPanel.tsx` (selected-opinion state) + `TTEmojiRating.tsx`.
+
+- **Colored emojis**: replace neutral faces with naturally-colored ones — `🟢 🟡 🟠 🔴 ⚫` OR keep face concept with gradient-tinted unicode: `💚 🙂 😐 😟 💢`. Best balance: use **circle emojis** (`🟢🟡🟠🔴⚫`) — universally rendered with native color, no backdrop needed.
+- **Size + layout**: shrink emojis from `text-2xl aspect-square w-full` → `text-base`, place inline in a single row with the "Let's chat" button on the right. Drop circular backdrops entirely.
+- **Scale labels**: tiny `text-[9px] text-muted-foreground` under the row — left "Fully agree" / right "Fully disagree" (i18n keys).
+- **Button**: remove `MessageCircle` icon from "Let's chat".
+- **Centered opinion text + responsive font**: wrap text in flex-center container; compute font size from char count — short text (<60 chars) → `text-xl`, medium (<150) → `text-base`, long → `text-sm`. Use a small util `getOpinionFontSize(len)`.
+- **Report button**: wire to existing `ReportDialog` component (already used in `BottomPanel.tsx`) — open with `contentId=opinion.id`, `contentType='Opinion'`.
+- **Click-outside close**: `TTScreen` listens for clicks on the background/graph area; if `selectedNode` is set and click target isn't inside the bottom panel or a node, call `setSelectedNode(null)`. Existing `OpinionGraph` already deselects on background click — ensure that propagates up.
+
+### 5. Opinions list
+
+**Problem**: `TTSideTabs` opens panels but content is empty/broken.
+
+**Fix**: render an actual list inside the left "Opinions" panel:
+
+- Reuse data from `useTopicData(activeTopicId).opinions`.
+- Sort by FreeMind score (existing sort util) or by created_at desc.
+- Each row:  opinion text (truncated), tap → set `selectedNode` + close panel.
+- Right "Chats" panel: list user's accepted chats for this topic (reuse `useChatRequests` data).
+
+### 6. Account dropdown fixes (`TTHeader.tsx`)
+
+- **Eye icon bug**: button currently inside `accountRef`, click triggers outside-handler? Actual cause likely: `setShowPhrase` inside a button that has no `e.stopPropagation()`. Fix: ensure the eye button is inside `accountRef` (it is) and stop propagation isn't needed — real cause is probably the click-outside handler firing because the button is rendered inside `<AnimatePresence>` which exits on state change. **Investigation needed in default mode**, but likely fix: move `showPhrase` toggle into a stable child with `e.stopPropagation()` on the click handler.
+- **Remove "Konto wechseln" link copy**: the `tt.alreadyHavePassphrase` button — leave the AuthForm trigger but rename or remove the toggle text. 
+- **Remove regenerate button**: drop the `RefreshCw` button from the passphrase row.
+
+### 7. Silent auth (deferred until first opinion)
+
+**Current**: `TTBottomPanel` shows `AuthForm` when not logged in → "loslegen" button required.
+
+**New flow**:
+
+1. On `/tt` mount: if no session, **do nothing** — render the UI in browse mode. The textarea is visible and usable. Side panels / ratings / chat actions remain visible but inert.
+2. On first opinion submit: silently call `supabase.auth.signUp({ email: <generated>@freemind.local, password: <passphrase> })`, wait for session, then call `submit_opinion`. No UI shown unless it fails.
   &nbsp;
+3. Header dropdown still shows the passphrase (now backed by the auto-generated identity), with "Du hast bereits eine Passphrase?" → inline AuthForm to switch identity.
 
-**UX changes**:
+**Cost note**: this matches the original recommendation — `auth.users` rows are only created once a user contributes, keeping bounce traffic free.
 
-- Remove "Abmelden" / sign-out button from the header dropdown.
-- Replace with link `Du hast bereits eine Passphrase? → Anmelden` that opens an inline `AuthForm` (login mode) inside the dropdown — lets the user *switch account*, not log out.
+**Files**: new helper `src/lib/silent-auth.ts` (`ensureSilentAuth(): Promise<User>`), called from `TTBottomPanel` opinion submit + emoji-rating + chat-request handlers.
 
-### 4. Notifications bell rework
-
-`TTNotificationsBell.tsx` (bottom-left) becomes a **subscription toggle**, not a panel trigger:
-
-- Default icon: `BellOff` (struck-out) — subscription disabled.
-- Toggled icon: `Bell` — subscription enabled.
-- Clicking it: New opinions added or new chat requests or accepted requests or new messages are shown in the uniersal notification panel, eachable from the header. 
-- This has nothing to do with the browser notifications we used in the old topic view. This feature is aout in-app notifications. 
-
-The **header bell** remains the actual notifications panel trigger (already wired via `onBellClick`). Add real notifications panel content as a dropdown beneath the bell (similar styling to the passphrase dropdown).
-
-### 5. Click-outside to close panels
-
-- Header dropdown (passphrase) and notifications dropdown: wrap each in a `useEffect` listening to `mousedown` on `document`, close if click is outside the panel ref. Standard pattern.
-- Side panels: backdrop click already closes them.
-
-### 6. Swipe-to-next-topic — make it functional
-
-Currently `TT.tsx` only renders one `<TTScreen>`. Changes:
-
-**Data layer**:
-
-- New hook `useTTTopics(currentTopicId)` that fetches the **list of public topic IDs** (ordered by `created_at desc`, limit ~20) once. Returns `[prevId, currentId, nextId]` window.
-- Each `TTScreen` mounts its own `useTopicData(topicId)` — already topic-scoped, so this works.
-
-**Render**:
-
-- `TT.tsx` renders the prev / current / next `TTScreen` inside the existing scroll-snap container. As the user swipes, `IntersectionObserver` detects which screen is centered and updates the URL (`navigate('/tt/:newId', { replace: true })`) + slides the window forward.
-- New chats / opinions for the new topic load automatically because `useTopicData` is keyed on `topicId`.
-
-**Cleanup on swipe**:
-
-- Close any open floating chat bubbles (dispatch a global event `tt:close-all-chats` listened to by the floating chat manager, OR just use a per-screen state that resets on unmount — since each screen is its own React subtree, switching topics naturally unmounts old chat windows).
-- Reset `selectedNode` (already per-screen).
-- For now: no preservation of open bubbles across topics, as you confirmed.
-
-**This prompt scope**: build the 3-screen window + IntersectionObserver + URL sync. Leave infinite-scroll loading (fetching beyond the initial 20) for a later iteration.
-
-### 7. Files
+### 8. Files to change
 
 
-| File                                        | Action                                                                                                                  |
-| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `src/components/tt/TTSideTabs.tsx`          | Replace `Sheet` with Framer Motion overlay panels                                                                       |
-| `src/components/tt/TTBottomPanel.tsx`       | Expanding textarea + floating Posten button                                                                             |
-| `src/components/tt/TTHeader.tsx`            | Remove sign-out, add "switch account" inline auth link, click-outside close, add notifications dropdown                 |
-| `src/components/tt/TTNotificationsBell.tsx` | Convert to subscription toggle (BellOff ↔ Bell), wire to `useBrowserNotification`                                       |
-| `src/components/tt/TTScreen.tsx`            | Pass `onBellClick` for header notifications dropdown; ensure `selectedNode` resets cleanly                              |
-| `src/pages/TT.tsx`                          | New `useTTTopics` hook + 3-screen swipe window + IntersectionObserver + URL sync                                        |
-| `src/hooks/useTTTopics.ts` (new)            | Fetch ordered list of public topic IDs                                                                                  |
-| `src/i18n/locales/{en,de}.json`             | New keys: `tt.alreadyHavePassphrase`, `tt.switchAccount`, `tt.notifyOn`, `tt.notifyOff`, `tt.enableNotifications`, etc. |
+| File                                  | Change                                                                                                                                          |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/pages/TT.tsx`                    | Restructure: persistent chrome + scroll-only-graphs layer, parallax via `useScroll`, slug→id resolution                                         |
+| `src/components/tt/TTScreen.tsx`      | Split into `TTScreenInner` (graph+bg only) + chrome moved up to `TT.tsx`                                                                        |
+| `src/components/tt/TTBottomPanel.tsx` | Selected-opinion redesign (centered text, inline emoji+button row, scale labels, report wired, no icon, responsive font), silent-auth on submit |
+| `src/components/tt/TTEmojiRating.tsx` | Smaller, no backdrop, colored circles, inline layout                                                                                            |
+| `src/components/tt/TTHeader.tsx`      | Markdown link parsing, eye-icon stopPropagation fix, remove regenerate, remove "Konto wechseln" copy                                            |
+| `src/components/tt/TTSideTabs.tsx`    | Wire opinions list (left) + chats list (right)                                                                                                  |
+| `src/lib/silent-auth.ts` (new)        | `ensureSilentAuth()` helper                                                                                                                     |
+| `src/i18n/locales/{en,de}.json`       | New keys: `tt.fullyAgree`, `tt.fullyDisagree`, `tt.opinions`, etc.                                                                              |
 
 
-### 8. Out of scope (this prompt)
+### 9. Out of scope (later)
 
-- Real silent-signup deferral logic (keep current auth flow for now; remove only the sign-out button + add switch-account UI).
-- Infinite scroll beyond 20 topics.
-- Persisting open chat windows across topic swipes.
+- Caching parallax positions across navigation history.
+- Slug resolution UI (only direct route works for now).
+- Persisting opened panels across topic swipes.
