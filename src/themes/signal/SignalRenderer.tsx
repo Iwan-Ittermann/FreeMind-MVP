@@ -27,6 +27,8 @@ interface SignalRendererProps {
   showLabels?: 'none' | 'highlighted-only';
   /** When false, omit SignalZones (dark core + atmospheric glows). */
   showZones?: boolean;
+  /** TT mode: gold core stars, emerald middle circles, small black extreme nodes. */
+  ttMode?: boolean;
 }
 
 export function SignalRenderer({
@@ -36,6 +38,7 @@ export function SignalRenderer({
   onNodeClick, onNodeHover, onEdgeClick,
   showLabels = 'highlighted-only',
   showZones = true,
+  ttMode = false,
 }: SignalRendererProps) {
   const nodeMap = useMemo(() => new Map(nodes.map(n => [n.id, n])), [nodes]);
   const [hidePendingEdges] = useHidePendingEdges();
@@ -136,6 +139,7 @@ export function SignalRenderer({
             isDimmed={!!(highlightedNode && highlightedNode !== nt.id)}
             showSpeechBubble={shouldShowBubble(nt.id)}
             scale={nodeScale}
+            ttMode={ttMode}
             onClick={() => handleNodeClick(nt.id)}
             onMouseEnter={() => handleNodeHover(nt.id)}
             onMouseLeave={() => handleNodeHover(null)}
