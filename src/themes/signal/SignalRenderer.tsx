@@ -8,6 +8,7 @@ import { SignalEdge } from './SignalEdge';
 import { SignalNode } from './SignalNode';
 import { SignalEventMarker } from './SignalEventMarker';
 import { useHidePendingEdges } from '../ThemeContext';
+import { TTLandmarks, getTTLevelRadii } from '@/lib/tt-layout';
 
 
 interface SignalRendererProps {
@@ -29,6 +30,8 @@ interface SignalRendererProps {
   showZones?: boolean;
   /** TT mode: gold core stars, emerald middle circles, small black extreme nodes. */
   ttMode?: boolean;
+  /** TT level rings will be drawn when these landmarks are provided. */
+  ttLandmarks?: TTLandmarks;
 }
 
 export function SignalRenderer({
@@ -39,6 +42,7 @@ export function SignalRenderer({
   showLabels = 'highlighted-only',
   showZones = true,
   ttMode = false,
+  ttLandmarks,
 }: SignalRendererProps) {
   const nodeMap = useMemo(() => new Map(nodes.map(n => [n.id, n])), [nodes]);
   const [hidePendingEdges] = useHidePendingEdges();
@@ -118,7 +122,24 @@ export function SignalRenderer({
     <svg width={width} height={height} className="overflow-visible">
       <rect width={width} height={height} fill="transparent" onClick={() => onNodeClick(null as unknown as GraphNode)} />
       {showZones && <SignalZones zones={zoneTokens} config={config} />}
-      
+
+      {ttLandmarks && (
+        <g className="tt-level-rings" pointerEvents="none">
+          {getTTLevelRadii(ttLandmarks).map(({ level, r }) => (
+            <circle
+              key={level}
+              cx={config.centerX}
+              cy={config.centerY}
+              r={r}
+              fill="none"
+              stroke="white"
+              strokeOpacity={0.35}
+              strokeWidth={0.75}
+            />
+          ))}
+        </g>
+      )}
+
       <g className="signal-edges">
         {edgeTokens.map((et, i) => (
           <SignalEdge
