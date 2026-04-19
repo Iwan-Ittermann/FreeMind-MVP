@@ -92,23 +92,28 @@ interface SignalNodeProps {
   isDimmed: boolean;
   showSpeechBubble: boolean;
   scale?: number;
+  /** TT mode: gold core stars, emerald middle circles, smaller black extreme nodes. */
+  ttMode?: boolean;
   onClick: () => void;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
 }
 
 export const SignalNode = memo(function SignalNode({
-  token, isHighlighted, isDimmed, showSpeechBubble, scale = 1,
+  token, isHighlighted, isDimmed, showSpeechBubble, scale = 1, ttMode = false,
   onClick, onMouseEnter, onMouseLeave,
 }: SignalNodeProps) {
-  const Shape = token.isBot ? BotShape : (ZONE_SHAPE[token.zone] ?? MiddleShape);
+  const shapeSet = ttMode ? ZONE_SHAPE_TT : ZONE_SHAPE;
+  const Shape = token.isBot ? BotShape : (shapeSet[token.zone] ?? MiddleShape);
   const opacity = isDimmed ? 0.4 : token.isHidden ? 0.3 : 1;
   const isScaled = isHighlighted && !isDimmed;
   const bubbleText = token.opinionText
     ? (token.opinionText.length > 16 ? token.opinionText.slice(0, 16) + '…' : token.opinionText)
     : '';
 
-  const scaledHalf = HALF * scale;
+  // TT extreme nodes are visually smaller (× 0.6)
+  const effectiveScale = ttMode && !token.isBot && token.zone === 'outer' ? scale * 0.6 : scale;
+  const scaledHalf = HALF * effectiveScale;
 
   return (
       <g
