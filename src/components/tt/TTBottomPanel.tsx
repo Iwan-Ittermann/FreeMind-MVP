@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Flag, MessageCircle, Send } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
 import { TTEmojiRating } from './TTEmojiRating';
 import { useAuth } from '@/hooks/useAuth';
 import { AuthForm } from '@/components/AuthForm';
@@ -40,12 +40,27 @@ export function TTBottomPanel({
   const { user } = useAuth();
   const [text, setText] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const taRef = useRef<HTMLTextAreaElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   const { disagreement, setDisagreement, canRate } = useDisagreementRating(
     topicId,
     ownOpinionId,
     selected?.id ?? null,
   );
+
+  // Click outside collapses the textarea (if empty)
+  useEffect(() => {
+    if (!focused) return;
+    const onDown = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        if (text.trim() === '') setFocused(false);
+      }
+    };
+    document.addEventListener('mousedown', onDown);
+    return () => document.removeEventListener('mousedown', onDown);
+  }, [focused, text]);
 
   const handleSubmit = async () => {
     if (text.trim().length < 10) {
@@ -62,6 +77,7 @@ export function TTBottomPanel({
       });
       if (error) throw error;
       setText('');
+      setFocused(false);
       toast.success(t('tt.opinionPosted'));
       onOpinionSubmitted?.();
     } catch (e: any) {
@@ -114,30 +130,49 @@ export function TTBottomPanel({
     );
   }
 
-  // STATE 2: Logged in but no opinion → input
+  // STATE 2: Logged in but no opinion → expanding input with floating button
   if (user && !hasOwnOpinion) {
     return (
-      <div className="absolute bottom-0 inset-x-0 z-20 px-3 pb-3">
-        <div className="rounded-2xl bg-background/95 backdrop-blur-md border border-border/40 shadow-lg p-3">
-          <div className="flex items-end gap-2">
+      <div ref={wrapperRef} className="absolute bottom-0 inset-x-0 z-20 px-3 pb-3">
+        <div className="relative">
+          {/* Floating Posten button */}
+          <AnimatePresence>
+            {focused && (
+              <motion.div
+                initial={{ opacity: 0, y: 8, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 8, scale: 0.9 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+                className="absolute right-2 -top-2 -translate-y-full z-10"
+              >
+                <Button
+                  size="sm"
+                  className="rounded-full uppercase tracking-wider text-xs h-9 shadow-lg bg-primary text-primary-foreground hover:bg-primary/90"
+                  onClick={handleSubmit}
+                  disabled={submitting || text.trim().length < 10}
+                >
+                  <Send className="w-3.5 h-3.5 mr-1.5" />
+                  {t('tt.post')}
+                </Button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <motion.div
+            animate={{ height: focused ? 152 : 56 }}
+            transition={{ type: 'spring', stiffness: 320, damping: 30 }}
+            className="rounded-2xl bg-background/95 backdrop-blur-md border border-border/40 shadow-lg overflow-hidden"
+          >
             <Textarea
+              ref={taRef}
               value={text}
               onChange={(e) => setText(e.target.value)}
+              onFocus={() => setFocused(true)}
               placeholder={t('tt.opinionPlaceholder')}
-              className="min-h-[44px] max-h-[120px] resize-none border-0 bg-transparent focus-visible:ring-0 text-sm"
+              className="h-full w-full resize-none border-0 bg-transparent focus-visible:ring-0 text-sm px-4 py-4 leading-relaxed"
               maxLength={500}
             />
-            <Button
-              size="sm"
-              variant="outline"
-              className="rounded-full uppercase tracking-wider text-xs h-9"
-              onClick={handleSubmit}
-              disabled={submitting || text.trim().length < 10}
-            >
-              <Send className="w-3.5 h-3.5 mr-1" />
-              {t('tt.post')}
-            </Button>
-          </div>
+          </motion.div>
         </div>
       </div>
     );

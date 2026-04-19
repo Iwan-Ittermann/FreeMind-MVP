@@ -620,6 +620,12 @@
     "opinionPosted": "Opinion posted!",
     "opinionFailed": "Failed to post opinion.",
     "opinionsEmpty": "No opinions yet.",
-    "chatsEmpty": "No chats yet."
+    "chatsEmpty": "No chats yet.",
+    "alreadyHavePassphrase": "Already have a passphrase? Switch account →",
+    "switchAccountHint": "Sign in with another passphrase to switch account.",
+    "notifyOn": "In-app notifications enabled",
+    "notifyOff": "In-app notifications disabled",
+    "subscribed": "Subscribed to this topic",
+    "notSubscribed": "Subscribe to this topic"
   }
 }
