@@ -94,6 +94,32 @@ function TTScreenInnerImpl({
           Lives outside the graph wrapper so it isn't clipped. */}
       <TTBackground hue={hue} />
 
+      {/* Zone labels — positioned relative to the section center using viewport
+          units so they align with the background's blue/white ring landmarks. */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Respektvoll — exact center (dark core) */}
+        <span
+          className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10px] tracking-[0.2em] uppercase text-foreground/70 font-medium"
+          style={{ top: '50%' }}
+        >
+          {t('tt.respectful')}
+        </span>
+        {/* Moderat — inside the blue ring, above center */}
+        <span
+          className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10px] tracking-[0.2em] uppercase text-foreground/40 font-medium"
+          style={{ top: 'calc(50% - 35vw)' }}
+        >
+          {t('tt.moderate')}
+        </span>
+        {/* Extrem — outside the white ring, below */}
+        <span
+          className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10px] tracking-[0.2em] uppercase text-foreground/30 font-medium"
+          style={{ top: 'calc(50% + 62vw)' }}
+        >
+          {t('tt.extreme')}
+        </span>
+      </div>
+
       {/* Graph stays centered in its own square wrapper. Both the background's
           dark core and this wrapper are centered on the section, so they align. */}
       <div className="absolute inset-0 flex items-center justify-center">
@@ -106,7 +132,7 @@ function TTScreenInnerImpl({
           }}
         >
           {/* Graph layer — sized to match wrapper so SVG center aligns with background center */}
-          {size > 0 && (
+          {size > 0 && ttLandmarks && (
             <div data-tt-graph className="absolute inset-0 flex items-center justify-center">
               <OpinionGraph
                 opinions={data?.opinions ?? []}
@@ -121,22 +147,11 @@ function TTScreenInnerImpl({
                 height={size}
                 showLabels="none"
                 chrome="naked"
+                ttMode
+                ttLandmarks={ttLandmarks}
               />
             </div>
           )}
-
-          {/* Zone labels (decorative) */}
-          <div className="absolute inset-0 pointer-events-none">
-            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[10px] tracking-[0.2em] uppercase text-foreground/70 font-medium">
-              {t('tt.respectful')}
-            </span>
-            <span className="absolute left-1/2 top-[18%] -translate-x-1/2 text-[10px] tracking-[0.2em] uppercase text-foreground/40 font-medium">
-              {t('tt.moderate')}
-            </span>
-            <span className="absolute left-1/2 bottom-[2%] -translate-x-1/2 text-[10px] tracking-[0.2em] uppercase text-foreground/30 font-medium">
-              {t('tt.extreme')}
-            </span>
-          </div>
         </div>
       </div>
     </section>
