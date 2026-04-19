@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { MotionValue } from 'framer-motion';
 import { useTopicData } from '@/hooks/useTopicData';
 import { useAuth } from '@/hooks/useAuth';
