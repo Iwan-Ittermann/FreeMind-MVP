@@ -49,6 +49,7 @@ export function OpinionGraph({
   useMockData = false,
   selectedNodeId = null,
   showLabels = 'highlighted-only',
+  chrome = 'full',
 }: OpinionGraphProps) {
   const [highlightedNode, setHighlightedNode] = useState<string | null>(null);
 
