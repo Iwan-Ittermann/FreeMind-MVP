@@ -5,95 +5,72 @@ interface TTBackgroundProps {
 }
 
 /**
- * Layered "iris" SVG background for the TikTok-style mobile UI.
- * Three concentric zones: dark core (Respectful), blurred mid-blue ring
- * (Moderate), warm cream gap, and outer pastel zone (Extreme).
+ * Concentric background for the TT mobile UI.
  *
- * preserveAspectRatio="xMidYMid slice" guarantees full-bleed coverage in portrait.
+ * Sized so the blue ring (r=300 in a 1000-unit viewBox → 60% of width) spans
+ * exactly the viewport width: SVG width = 100vw / 0.6 ≈ 166.67vw, square,
+ * centered. The white ring + outer gradient/grain bleed off the top and
+ * bottom intentionally.
  */
 export function TTBackground({ hue = 0, className }: TTBackgroundProps) {
   return (
-    <svg
-      viewBox="0 0 1000 1000"
-      preserveAspectRatio="xMidYMid slice"
+    <div
       className={className}
       style={{
-        width: '100%',
-        height: '100%',
         position: 'absolute',
-        inset: 0,
+        left: '50%',
+        top: '50%',
+        width: 'calc(100vw / 0.6)',
+        height: 'calc(100vw / 0.6)',
+        transform: 'translate(-50%, -50%)',
+        pointerEvents: 'none',
         filter: hue ? `hue-rotate(${hue}deg)` : undefined,
       }}
       aria-hidden="true"
     >
-      <defs>
-        {/* Zone 2 gradient (slightly off-center) */}
-        <radialGradient id="tt-g2" cx="48%" cy="46%" r="52%">
-          <stop offset="55%" stopColor="#12313f" />
-          <stop offset="100%" stopColor="#2a5d73" />
-        </radialGradient>
+      <svg
+        viewBox="0 0 1000 1000"
+        preserveAspectRatio="xMidYMid meet"
+        width="100%"
+        height="100%"
+      >
+        <defs>
+          <linearGradient id="tt-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#e4d2bd" />
+            <stop offset="100%" stopColor="#9fb6c4" />
+          </linearGradient>
 
-        {/* Outer (Zone 3 + 4) directional gradient */}
-        <linearGradient id="tt-g34" x1="-10%" y1="-10%" x2="110%" y2="110%">
-          <stop offset="0%" stopColor="#e4d2bd" />
-          <stop offset="45%" stopColor="#b8cbd3" />
-          <stop offset="100%" stopColor="#eef2f4" />
-        </linearGradient>
+          <filter id="tt-grain">
+            <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves={2} />
+            <feColorMatrix type="saturate" values="0" />
+            <feComponentTransfer>
+              <feFuncA type="table" tableValues="0 0.06" />
+            </feComponentTransfer>
+          </filter>
 
-        {/* Outer vignette for depth */}
-        <radialGradient id="tt-vignette" cx="50%" cy="50%" r="60%">
-          <stop offset="60%" stopColor="rgba(0,0,0,0)" />
-          <stop offset="100%" stopColor="rgba(0,0,0,0.35)" />
-        </radialGradient>
+          <radialGradient id="tt-inner" cx="60%" cy="40%" r="60%">
+            <stop offset="0%" stopColor="#1f5c6b" />
+            <stop offset="100%" stopColor="#0b2c3a" />
+          </radialGradient>
 
-        {/* Masks: cut out inner zones from outer fills */}
-        <mask id="tt-mask-z2">
-          <rect width="100%" height="100%" fill="white" />
-          <circle cx="500" cy="500" r="130" fill="black" />
-        </mask>
-        <mask id="tt-mask-gap">
-          <rect width="100%" height="100%" fill="white" />
-          <circle cx="500" cy="500" r="290" fill="black" />
-        </mask>
+          <filter id="tt-blur">
+            <feGaussianBlur stdDeviation="10" />
+          </filter>
+        </defs>
 
-        {/* Blur applied ONLY to the moderate ring */}
-        <filter id="tt-blur-z2">
-          <feGaussianBlur stdDeviation="8" />
-        </filter>
+        {/* Background gradient + grain */}
+        <rect width="1000" height="1000" fill="url(#tt-bg)" />
+        <rect width="1000" height="1000" filter="url(#tt-grain)" opacity="0.25" />
 
-        {/* Subtle film grain for outer zone */}
-        <filter id="tt-noise-outer">
-          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" />
-          <feColorMatrix type="saturate" values="0" />
-          <feComponentTransfer>
-            <feFuncA type="table" tableValues="0 0.025" />
-          </feComponentTransfer>
-        </filter>
-      </defs>
+        {/* White ring */}
+        <circle cx="500" cy="500" r="360" fill="#f3efe9" />
 
-      {/* Outer (Zone 3 + 4) */}
-      <g>
-        <circle cx="500" cy="500" r="500" fill="url(#tt-g34)" />
-        <circle cx="500" cy="500" r="500" filter="url(#tt-noise-outer)" opacity="0.08" />
-      </g>
+        {/* Blurred teal circle */}
+        <circle cx="500" cy="500" r="300" fill="url(#tt-inner)" filter="url(#tt-blur)" />
 
-      {/* Warm cream gap — narrower (r=300) for subtler ring */}
-      <g>
-        <circle cx="500" cy="500" r="300" fill="#f4f1ec" mask="url(#tt-mask-gap)" />
-      </g>
-
-      {/* Zone 2 — moderate (blurred) */}
-      <g>
-        <circle cx="500" cy="500" r="290" fill="url(#tt-g2)" mask="url(#tt-mask-z2)" filter="url(#tt-blur-z2)" />
-      </g>
-
-      {/* Zone 1 — respectful core */}
-      <g>
-        <circle cx="500" cy="500" r="130" fill="#0c1f28" />
-      </g>
-
-      {/* Edge vignette (above all) */}
-      <circle cx="500" cy="500" r="500" fill="url(#tt-vignette)" pointerEvents="none" />
-    </svg>
+        {/* Dark core */}
+        <circle cx="500" cy="500" r="140" fill="#071c26" />
+      </svg>
+    </div>
   );
 }
