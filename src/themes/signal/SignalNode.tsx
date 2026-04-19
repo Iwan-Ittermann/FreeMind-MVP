@@ -23,15 +23,44 @@ function CoreShape() {
   );
 }
 
+function CoreShapeGold() {
+  return (
+    <>
+      <defs>
+        <filter id="signal-glow-gold">
+          <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+          <feFlood floodColor="#F5C542" floodOpacity="0.55" result="goldColor"/>
+          <feComposite in="goldColor" in2="coloredBlur" operator="in" result="goldGlow"/>
+          <feMerge><feMergeNode in="goldGlow"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <path d="M20 8 L23 17 L32 20 L23 23 L20 32 L17 23 L8 20 L17 17 Z" fill="#F5C542" filter="url(#signal-glow-gold)" />
+    </>
+  );
+}
+
 function MiddleShape() {
   return (
     <circle cx="20" cy="20" r="9" fill="#14B866" />
   );
 }
 
+function MiddleShapeEmerald() {
+  return (
+    <circle cx="20" cy="20" r="9" fill="#10B981" />
+  );
+}
+
 function OuterShape() {
   return (
     <rect x="12" y="12" width="16" height="16" fill="#CC5500" stroke="none" />
+  );
+}
+
+function OuterShapeBlack() {
+  // Smaller black square for TT extreme nodes
+  return (
+    <rect x="15" y="15" width="10" height="10" fill="#0a0a0a" stroke="none" />
   );
 }
 
@@ -49,6 +78,12 @@ const ZONE_SHAPE: Record<SemanticZone, () => JSX.Element> = {
   core: CoreShape,
   middle: MiddleShape,
   outer: OuterShape,
+};
+
+const ZONE_SHAPE_TT: Record<SemanticZone, () => JSX.Element> = {
+  core: CoreShapeGold,
+  middle: MiddleShapeEmerald,
+  outer: OuterShapeBlack,
 };
 
 interface SignalNodeProps {
