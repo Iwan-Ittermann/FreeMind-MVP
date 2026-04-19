@@ -25,6 +25,8 @@ interface SignalRendererProps {
   onNodeHover: (node: GraphNode | null) => void;
   onEdgeClick?: (edge: GraphEdge) => void;
   showLabels?: 'none' | 'highlighted-only';
+  /** When false, omit SignalZones (dark core + atmospheric glows). */
+  showZones?: boolean;
 }
 
 export function SignalRenderer({
