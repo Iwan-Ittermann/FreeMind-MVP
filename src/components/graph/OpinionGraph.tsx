@@ -28,6 +28,8 @@ interface OpinionGraphProps {
   useMockData?: boolean;
   selectedNodeId?: string | null;
   showLabels?: 'none' | 'highlighted-only';
+  /** 'naked' = transparent, no zones/glows/rings (TT mode). Default 'full'. */
+  chrome?: 'full' | 'naked';
 }
 
 export function OpinionGraph({ 
