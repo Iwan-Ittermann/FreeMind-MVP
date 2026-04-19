@@ -1,63 +1,112 @@
 
 
-## Plan: Positioning Tour Fixes + Thumb Rating Visual
+## Plan: TikTok-style Mobile UI for FreeMind (`/tt` route)
 
-### Issue 1: Next button below the panel (desktop)
+### What I see in the mockup (3 frames, portrait phone)
 
-**Root cause**: The opinion panel uses `lg:absolute` (positioned inside the centered graph wrapper), while `PositioningTourControls` uses `fixed bottom-4 left-1/2` (positioned relative to the viewport). When the graph is offset by sidebars or the layout center isn't viewport center, the controls land in the wrong spot — typically appearing below/under the panel.
+**Frame 1 — Blank Home Screen**
+- **Top-left**: `freemind` wordmark (small, lowercase, no icon).
+- **Top-right**: small bell icon with red unread dot + door/exit icon (logout/leave).
+- **Center top**: small label `Diskussionsfrage`, below it the topic title in large italic-ish serif: *"Was sagst du zu diesem Video?"* with `Video` underlined → tappable link back to the TikTok video.
+- **Center**: the layered eye/iris background you uploaded — three concentric zones with labels overlaid: `respektvoll` (in dark core), `moderat` (mid blue ring), `Extrem` (faint, bottom of outer ring).
+- **Left edge, upper third**: vertical tab labelled `MEINUNGEN` (Opinions sidebar trigger) — rounded right edge sticking out from the screen border.
+- **Right edge, lower third**: vertical tab labelled `CHATS` — rounded left edge sticking out from the right border.
+- **Bottom-left**: standalone bell icon (notifications panel trigger).
+- **Bottom**: empty white strip — reserved for opinion input (appears in Frame 2).
 
-**Fix**: Render `PositioningTourControls` as **siblings of the opinion panel** inside the same graph wrapper (the `motion.div` at line ~546 in `Index.tsx`), using the same positioning scheme:
-- Desktop: `absolute bottom-4 left-1/2` with translate offsets `-translate-x-[calc(192px+56px)]` (Stop) and `translate-x-[calc(192px+16px)]` (Next).
-- Mobile: keep `fixed` since the panel is `fixed bottom-20` on mobile.
+**Frame 2 — Header buttons unfolded / no node selected**
+- Same as Frame 1, plus:
+- A **dropdown panel** unfolds from the top-right exit button area, listing recent activity items: `Neue Meinung → Topic`, `Neue Meinung → Topic`, **`Neue Nachricht`** (bold = unread) `→ Topic`. Each row is a clickable card with a Topic chip.
+- A **second floating panel** below it: `Deine Passphrase:` with a pill-shaped passphrase field, four small icon buttons (copy, download, regenerate, show/hide), and a link `Du hast bereits eine Passphrase?`.
+- **Bottom panel active**: input field placeholder *"Was ist deine Menung zu dem Thema?"* + `POSTEN` button (rounded outline). Replaces the empty strip from Frame 1.
 
-The controls will move from a top-level `<AnimatePresence>` block into the graph wrapper, right next to the opinion panel.
+**Frame 3 — Node Selected**
+- Same chrome.
+- Inside the graph: a hand cursor points at a small green node in the moderate ring; other dots scattered (green = moderate, yellow = respectful core, black = extreme).
+- **Bottom panel** now shows the selected opinion:
+  - Small flag/report icon top-right of the panel.
+  - Opinion text: *"[Opinion Text] Ich finde das Video gut, denn es zeigt, dass jeder es schaffen kann, wenn er oder sie nicht aufgibt."*
+  - **Emoji rating row**: 5 face emojis (😀😊😐🙁😠) — green→red gradient = the disagreement scale (replaces the slider).
+  - **`Let's chat`** button bottom-right (rounded outline).
 
-### Issue 2: Highlight the rating scale during the tour
+### Architecture decisions (with rationale)
 
-Add a visual highlight to the disagreement slider section (lines 611–629 in `Index.tsx`) when `tourActive` is true:
-- Wrap in a div with `ring-2 ring-accent ring-offset-2 ring-offset-background rounded-lg p-2 -mx-2` (only when `tourActive`).
-- Add a small pulsing animation via `animate-pulse` on the ring, or a soft `shadow-[0_0_20px_hsl(var(--accent)/0.5)]`.
-- Optionally a one-line hint above: `t('positioningTour.rateHint')` → "Rate your disagreement →" / "Bewerte deine Ablehnung →".
+| Question | Recommendation |
+|---|---|
+| Same project? | **Yes.** New route `/tt/:topicId?` mounts a dedicated `TTLayout`. Reuses all hooks (`useTopicData`, `useChatRequests`, `useAuth`, `useDisagreementRating`), the `OpinionGraph` engine, Supabase client, i18n. |
+| Same database? | **Yes — same Supabase.** Same opinions, ratings, chats, users. The whole point of TikTok traffic is to feed the existing graph. Add a single `signup_source` column on `user_topics` later if you want analytics. |
+| Width? | Lock to **mobile portrait** (max-width 480px, centered on desktop with dark gutters). No TikTok 810px constraint exists anymore — link stickers open the system browser at full device width. |
+| Swipe up/down between topics? | **Architect for it now, build CSS only.** Wrap the screen in a vertical snap container (`overflow-y: scroll; scroll-snap-type: y mandatory`) where each topic is one `100dvh` snap section. Data-fetching per snap deferred to a later prompt. |
+| PWA? | **Installable manifest only** (no service worker → avoids preview-iframe issues per project conventions). Add `display: standalone`, icons, theme color. Users get "Add to Home Screen". |
 
-### Issue 3: Tour persists / restarts on every node click
+### Files to create
 
-**Root cause**: `tourActive` only ends via Stop or when no candidates remain. Clicking any node keeps `tourActive` true, so Next button + highlight reappear forever.
-
-**Fixes**:
-1. **Limit to 4 ratings**: end the tour when `tourSeenIds.size >= 4` OR no more candidates (whichever comes first). Update `tourCanContinue` and `handleTourNext` accordingly.
-2. **Persist completion**: store `freemind-positioning-tour-done-${topicId}` in `localStorage` once the tour completes (any of: 4 ratings reached, all opinions exhausted, user clicked Stop, OR user closed the panel mid-tour). On opinion submission, only show the congrats overlay if this flag is not set.
-3. **Exit tour on manual node selection**: if `tourActive` is true and the user clicks a different node via `handleNodeClick` or `handleSidebarOpinionClick` (not via `handleTourNext`), end the tour immediately. Track tour-driven navigation with a ref/flag (e.g. set `tourSelectionRef.current = true` right before `setSelectedNode` inside `handleTourNext`/`startPositioningTour`, then any node selection where the ref is false means "user-initiated → exit tour").
-
-### Issue 4: Same opinion shown twice
-
-**Root cause**: `pickRandomOpinionForTour` reads from `topicData.opinions` which is the unfiltered list. The seen-set logic looks correct, BUT `handleTourNext` reads `tourSeenIds` from React state — if invoked twice quickly before state commits, both calls see the same set. Also `startPositioningTour` adds the first pick to a local `seen` and sets state, but `handleTourNext` reads from state — a single click should be safe; however if `selectedNode` is reset to the same id (e.g., picking before state updates), duplicates appear.
-
-**Fix**: Use a `useRef<Set<string>>` (`tourSeenRef`) as the source of truth, mutated synchronously inside `pickRandomOpinionForTour` *and* mirrored to state for re-renders. This guarantees no duplicate even with fast clicks.
-
-### Issue 5 (experiment): Thumb rotation visual
-
-Add a hand-with-thumb SVG above (or beside) the disagreement slider in the opinion panel. Map disagreement value to rotation:
-- `0` (full agreement) → thumb up → `rotate(0deg)`
-- `50` (default) → thumb sideways → `rotate(90deg)`
-- `100` (full disagreement) → thumb down → `rotate(180deg)`
-- Linear interpolation: `rotation = (disagreement / 100) * 180`.
-
-**Implementation**:
-- New file `src/components/ThumbRating.tsx` — renders a `ThumbsUp` lucide icon (front-view substitute) in a circular badge, with `framer-motion` `animate={{ rotate }}` for smooth interpolation.
-- Color shifts with rating: green (0) → amber (50) → red (100), via `hsl` interpolation or three discrete tiers.
-- Render inline in the opinion panel above the slider: small (~48px) badge centered.
+| File | Purpose |
+|---|---|
+| `src/pages/TT.tsx` | Route component, swipe-snap container, fetches topic(s), renders `TTScreen` per topic |
+| `src/components/tt/TTScreen.tsx` | One full-viewport screen: background + graph + chrome + bottom panel |
+| `src/components/tt/TTBackground.tsx` | The layered SVG background (reusable, accepts `seed` prop for variation per topic) |
+| `src/components/tt/TTHeader.tsx` | Top wordmark, bell w/ dot, exit/passphrase dropdown |
+| `src/components/tt/TTSideTabs.tsx` | Left `MEINUNGEN` tab (top-left) + right `CHATS` tab (bottom-right), each opens a slide-in sheet |
+| `src/components/tt/TTBottomPanel.tsx` | Three states: empty/inline opinion input / selected-opinion view |
+| `src/components/tt/TTEmojiRating.tsx` | 5-emoji disagreement picker (replaces slider, writes to same `opinion_ratings`) |
+| `src/components/tt/TTNotificationsBell.tsx` | Bottom-left bell + panel |
+| `public/tt-manifest.webmanifest` | PWA manifest scoped to `/tt` |
 
 ### Files to modify
 
 | File | Change |
 |---|---|
-| `src/pages/Index.tsx` | Move `PositioningTourControls` inside the graph wrapper as siblings of the opinion panel; add highlight ring around the slider when `tourActive`; cap tour at 4 ratings; persist done-state per topic in `localStorage`; exit tour on manual node selection via ref; switch seen-tracking to `useRef` |
-| `src/components/PositioningTourControls.tsx` | Change desktop variant from `fixed` to `absolute` (drop `fixed` class) so it inherits the graph wrapper's positioning context |
-| `src/components/ThumbRating.tsx` | New component: rotating thumb icon driven by disagreement value |
-| `src/i18n/locales/en.json` & `de.json` | Add `positioningTour.rateHint` keys |
+| `src/App.tsx` | Add `<Route path="/tt/:topicId?" element={<TT />} />` (no global `Header`, no `BottomTabBar` — TT layout is self-contained) |
+| `index.html` | Conditionally link the manifest only when path starts with `/tt` (or always — harmless) |
+| `src/i18n/locales/{en,de}.json` | Add `tt.*` keys: `discussionQuestion`, `respectful`, `moderate`, `extreme`, `yourOpinionPlaceholder`, `post`, `letsChat`, `opinions`, `chats`, etc. |
 
-### Notes
-- The 4-rating cap is hard-coded; happy to make it configurable if you'd prefer.
-- Tour-done flag is per topic, so each new topic gets its own first-time tour.
-- Once the tour is done for a topic, the congrats overlay also stops appearing on re-submission/edit of opinion.
+### SVG background — suggested improvements
+
+Your SVG is solid. Small refinements I'd apply:
+1. **Make the gap warmer / thinner** — currently 30px wide (r=320 minus r=290). At phone width that's prominent. Suggest r=300 (gap ~10px) to match the uploaded reference image where the cream ring is subtler.
+2. **Per-topic color seed** — accept a `hue` prop that rotates the `g34` gradient stops (0–360°) so each swiped topic feels distinct while preserving the eye composition.
+3. **Slight radial vignette on outer edge** — adds depth, matches the reference better than the flat linear gradient corners.
+4. **Move the noise filter** to the cream gap too (very low opacity, ~0.04) to unify texture.
+5. **Use `viewBox` + `preserveAspectRatio="xMidYMid slice"`** on the wrapper so it always covers the screen edge-to-edge in portrait.
+
+### Layout sketch (portrait)
+
+```text
+┌────────────────────────────┐
+│ freemind          🔔• 🚪  │  ← TTHeader (overlays graph)
+│      Diskussionsfrage      │
+│   Was sagst du zu diesem   │
+│         Video?             │
+│ ┌──┐                       │
+│ │M │   ╭──── eye ────╮     │
+│ │E │  (    moderat    )    │
+│ │I │  (   ╭ resp ╮    )    │
+│ │N │  (   ╰──────╯    )    │
+│ │U │   ╰──── extrem ─╯     │
+│ │N │                  ┌──┐ │
+│ │G │                  │C │ │
+│ │E │                  │H │ │
+│ │N │                  │A │ │
+│ └──┘                  │T │ │
+│                       │S │ │
+│ 🔔                    └──┘ │
+├────────────────────────────┤
+│ [bottom panel, 3 states]   │
+└────────────────────────────┘
+```
+
+### Scope of THIS prompt (build now)
+1. Route + skeleton page with vertical snap container (CSS only, single topic for now).
+2. SVG background component with the improvements.
+3. All chrome: header, side tabs (open empty sheets), bottom-left bell, bottom panel with 3 states.
+4. Wire bottom panel to existing `useTopicData` + `submit_opinion` + `useDisagreementRating` (using new emoji rating).
+5. Reuse existing `OpinionGraph` (signal theme) inside the eye, sized to the cream/moderate area.
+6. i18n keys (EN/DE).
+7. PWA manifest (no service worker).
+
+### Out of scope (later prompts)
+- Actual swipe-loading of next/prev topic data.
+- TikTok link sticker integration (just a URL — no SDK).
+- Pixel parity polish on each component.
 
