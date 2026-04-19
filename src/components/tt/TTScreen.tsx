@@ -82,6 +82,7 @@ function TTScreenInnerImpl({
             width={480}
             height={480}
             showLabels="none"
+            chrome="naked"
           />
         </div>
       </motion.div>
