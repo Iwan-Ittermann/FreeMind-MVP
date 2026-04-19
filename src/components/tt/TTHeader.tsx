@@ -92,6 +92,7 @@ export function TTHeader({ topicTitle, notifications = [] }: TTHeaderProps) {
 
   return (
     <>
+      <div aria-hidden className="absolute top-0 inset-x-0 z-20 h-24 pointer-events-none bg-gradient-to-b from-background/70 via-background/30 to-transparent" />
       <header className="absolute top-0 inset-x-0 z-30 px-4 pt-4 pointer-events-none">
         <div className="flex items-start justify-between pointer-events-auto">
           <span className="text-foreground/90 font-medium tracking-tight lowercase text-base">

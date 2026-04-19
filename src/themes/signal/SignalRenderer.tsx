@@ -25,6 +25,8 @@ interface SignalRendererProps {
   onNodeHover: (node: GraphNode | null) => void;
   onEdgeClick?: (edge: GraphEdge) => void;
   showLabels?: 'none' | 'highlighted-only';
+  /** When false, omit SignalZones (dark core + atmospheric glows). */
+  showZones?: boolean;
 }
 
 export function SignalRenderer({
@@ -33,6 +35,7 @@ export function SignalRenderer({
   activeChats, messageAnimations,
   onNodeClick, onNodeHover, onEdgeClick,
   showLabels = 'highlighted-only',
+  showZones = true,
 }: SignalRendererProps) {
   const nodeMap = useMemo(() => new Map(nodes.map(n => [n.id, n])), [nodes]);
   const [hidePendingEdges] = useHidePendingEdges();
@@ -111,7 +114,7 @@ export function SignalRenderer({
   return (
     <svg width={width} height={height} className="overflow-visible">
       <rect width={width} height={height} fill="transparent" onClick={() => onNodeClick(null as unknown as GraphNode)} />
-      <SignalZones zones={zoneTokens} config={config} />
+      {showZones && <SignalZones zones={zoneTokens} config={config} />}
       
       <g className="signal-edges">
         {edgeTokens.map((et, i) => (

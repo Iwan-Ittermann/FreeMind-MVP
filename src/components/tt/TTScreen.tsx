@@ -49,14 +49,14 @@ function TTScreenInnerImpl({
     offset: ['start end', 'end start'],
   });
   // Graph slides slower than background → parallax effect.
-  const graphY = useTransform(scrollYProgress, [0, 1], ['12%', '-12%']);
+  const graphY = useTransform(scrollYProgress, [0, 1], ['4%', '-4%']);
 
   return (
     <section
       ref={sectionRef}
       data-tt-topic={topicId}
-      className="relative w-full h-[100dvh] snap-start overflow-hidden bg-black"
-      style={{ contain: 'layout paint' }}
+      className="relative w-full h-[100dvh] snap-start overflow-hidden"
+      style={{ contain: 'layout paint', backgroundColor: '#eef2f4' }}
     >
       <TTBackground hue={hue} />
 
@@ -82,6 +82,7 @@ function TTScreenInnerImpl({
             width={480}
             height={480}
             showLabels="none"
+            chrome="naked"
           />
         </div>
       </motion.div>
