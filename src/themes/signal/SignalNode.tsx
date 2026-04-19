@@ -23,15 +23,44 @@ function CoreShape() {
   );
 }
 
+function CoreShapeGold() {
+  return (
+    <>
+      <defs>
+        <filter id="signal-glow-gold">
+          <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+          <feFlood floodColor="#F5C542" floodOpacity="0.55" result="goldColor"/>
+          <feComposite in="goldColor" in2="coloredBlur" operator="in" result="goldGlow"/>
+          <feMerge><feMergeNode in="goldGlow"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <path d="M20 8 L23 17 L32 20 L23 23 L20 32 L17 23 L8 20 L17 17 Z" fill="#F5C542" filter="url(#signal-glow-gold)" />
+    </>
+  );
+}
+
 function MiddleShape() {
   return (
     <circle cx="20" cy="20" r="9" fill="#14B866" />
   );
 }
 
+function MiddleShapeEmerald() {
+  return (
+    <circle cx="20" cy="20" r="9" fill="#10B981" />
+  );
+}
+
 function OuterShape() {
   return (
     <rect x="12" y="12" width="16" height="16" fill="#CC5500" stroke="none" />
+  );
+}
+
+function OuterShapeBlack() {
+  // Smaller black square for TT extreme nodes
+  return (
+    <rect x="15" y="15" width="10" height="10" fill="#0a0a0a" stroke="none" />
   );
 }
 
@@ -51,29 +80,40 @@ const ZONE_SHAPE: Record<SemanticZone, () => JSX.Element> = {
   outer: OuterShape,
 };
 
+const ZONE_SHAPE_TT: Record<SemanticZone, () => JSX.Element> = {
+  core: CoreShapeGold,
+  middle: MiddleShapeEmerald,
+  outer: OuterShapeBlack,
+};
+
 interface SignalNodeProps {
   token: SemanticNodeToken;
   isHighlighted: boolean;
   isDimmed: boolean;
   showSpeechBubble: boolean;
   scale?: number;
+  /** TT mode: gold core stars, emerald middle circles, smaller black extreme nodes. */
+  ttMode?: boolean;
   onClick: () => void;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
 }
 
 export const SignalNode = memo(function SignalNode({
-  token, isHighlighted, isDimmed, showSpeechBubble, scale = 1,
+  token, isHighlighted, isDimmed, showSpeechBubble, scale = 1, ttMode = false,
   onClick, onMouseEnter, onMouseLeave,
 }: SignalNodeProps) {
-  const Shape = token.isBot ? BotShape : (ZONE_SHAPE[token.zone] ?? MiddleShape);
+  const shapeSet = ttMode ? ZONE_SHAPE_TT : ZONE_SHAPE;
+  const Shape = token.isBot ? BotShape : (shapeSet[token.zone] ?? MiddleShape);
   const opacity = isDimmed ? 0.4 : token.isHidden ? 0.3 : 1;
   const isScaled = isHighlighted && !isDimmed;
   const bubbleText = token.opinionText
     ? (token.opinionText.length > 16 ? token.opinionText.slice(0, 16) + '…' : token.opinionText)
     : '';
 
-  const scaledHalf = HALF * scale;
+  // TT extreme nodes are visually smaller (× 0.6)
+  const effectiveScale = ttMode && !token.isBot && token.zone === 'outer' ? scale * 0.6 : scale;
+  const scaledHalf = HALF * effectiveScale;
 
   return (
       <g
@@ -100,8 +140,8 @@ export const SignalNode = memo(function SignalNode({
       <svg
         x={-scaledHalf}
         y={-scaledHalf}
-        width={NODE_SIZE * scale}
-        height={NODE_SIZE * scale}
+        width={NODE_SIZE * effectiveScale}
+        height={NODE_SIZE * effectiveScale}
         viewBox="0 0 40 40"
         overflow="visible"
         style={{
