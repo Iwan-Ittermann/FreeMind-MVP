@@ -35,6 +35,7 @@ export function SignalRenderer({
   activeChats, messageAnimations,
   onNodeClick, onNodeHover, onEdgeClick,
   showLabels = 'highlighted-only',
+  showZones = true,
 }: SignalRendererProps) {
   const nodeMap = useMemo(() => new Map(nodes.map(n => [n.id, n])), [nodes]);
   const [hidePendingEdges] = useHidePendingEdges();
