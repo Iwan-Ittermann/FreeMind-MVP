@@ -140,8 +140,8 @@ export const SignalNode = memo(function SignalNode({
       <svg
         x={-scaledHalf}
         y={-scaledHalf}
-        width={NODE_SIZE * scale}
-        height={NODE_SIZE * scale}
+        width={NODE_SIZE * effectiveScale}
+        height={NODE_SIZE * effectiveScale}
         viewBox="0 0 40 40"
         overflow="visible"
         style={{
