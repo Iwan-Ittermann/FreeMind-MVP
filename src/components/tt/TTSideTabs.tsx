@@ -28,6 +28,7 @@ export function TTSideTabs({
   const { t } = useTranslation();
   const [side, setSide] = useState<'left' | 'right' | null>(null);
   const [activeChatOpinionId, setActiveChatOpinionId] = useState<string | null>(null);
+  const [rightTab, setRightTab] = useState<'chats' | 'requests'>('chats');
   const { acceptRequest, declineRequest, isAccepting, isDeclining } = useChatRequests(topicId);
 
   const closeAndRun = (fn?: () => void) => {
@@ -187,19 +188,69 @@ export function TTSideTabs({
                     <EmbeddedChatView theirOpinionId={activeChatOpinionId} />
                   </div>
                 ) : (
-                  <div className="flex-1 overflow-auto">
-                    {/* Pending requests */}
-                    {pendingRequests.length > 0 && (
-                      <div className="px-3 py-2 border-b border-border/30">
-                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-2 px-1">
-                          {t('sidebar.requests', 'Requests')} ({pendingRequests.length})
+                  <div className="flex-1 flex flex-col min-h-0">
+                    {/* Toggle */}
+                    <div className="flex gap-1 p-2 border-b border-border/30">
+                      <button
+                        onClick={() => setRightTab('chats')}
+                        className={`flex-1 text-[11px] font-semibold uppercase tracking-wider py-1.5 rounded-md transition-colors ${
+                          rightTab === 'chats'
+                            ? 'bg-foreground/10 text-foreground'
+                            : 'text-muted-foreground hover:bg-muted/40'
+                        }`}
+                      >
+                        {t('sidebar.myChats', 'Chats')} ({chats.length})
+                      </button>
+                      <button
+                        onClick={() => setRightTab('requests')}
+                        className={`flex-1 text-[11px] font-semibold uppercase tracking-wider py-1.5 rounded-md transition-colors relative ${
+                          rightTab === 'requests'
+                            ? 'bg-foreground/10 text-foreground'
+                            : 'text-muted-foreground hover:bg-muted/40'
+                        }`}
+                      >
+                        {t('sidebar.requests', 'Requests')} ({pendingRequests.length})
+                        {incomingCount > 0 && (
+                          <span className="absolute top-0.5 right-1 min-w-[14px] h-3.5 rounded-full bg-accent text-accent-foreground text-[8px] font-bold flex items-center justify-center px-1">
+                            {incomingCount}
+                          </span>
+                        )}
+                      </button>
+                    </div>
+
+                    <div className="flex-1 overflow-auto">
+                      {rightTab === 'chats' ? (
+                        chats.length === 0 ? (
+                          <p className="text-sm text-muted-foreground p-4">{t('tt.chatsEmpty')}</p>
+                        ) : (
+                          <ul className="divide-y divide-border/30">
+                            {chats.map((c) => (
+                              <li key={c.id}>
+                                <button
+                                  onClick={() => setActiveChatOpinionId(c.theirOpinionId)}
+                                  className="w-full text-left px-4 py-3 hover:bg-muted/40 transition-colors"
+                                >
+                                  <p className="text-sm text-foreground line-clamp-2 leading-snug">
+                                    {c.opinionText}
+                                  </p>
+                                  {c.lastMessage && (
+                                    <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
+                                      {c.lastMessage}
+                                    </p>
+                                  )}
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        )
+                      ) : pendingRequests.length === 0 ? (
+                        <p className="text-sm text-muted-foreground p-4">
+                          {t('sidebar.noRequests', 'No pending requests')}
                         </p>
-                        <ul className="space-y-1.5">
+                      ) : (
+                        <ul className="space-y-1.5 p-2">
                           {pendingRequests.map((req) => (
-                            <li
-                              key={req.id}
-                              className="p-2.5 rounded-lg bg-muted/50"
-                            >
+                            <li key={req.id} className="p-2.5 rounded-lg bg-muted/50">
                               <div className="flex items-start justify-between gap-2 mb-1">
                                 <span
                                   className={`text-[9px] font-semibold uppercase px-1.5 py-0.5 rounded ${
@@ -242,33 +293,8 @@ export function TTSideTabs({
                             </li>
                           ))}
                         </ul>
-                      </div>
-                    )}
-
-                    {/* Chats */}
-                    {chats.length === 0 ? (
-                      <p className="text-sm text-muted-foreground p-4">{t('tt.chatsEmpty')}</p>
-                    ) : (
-                      <ul className="divide-y divide-border/30">
-                        {chats.map((c) => (
-                          <li key={c.id}>
-                            <button
-                              onClick={() => setActiveChatOpinionId(c.theirOpinionId)}
-                              className="w-full text-left px-4 py-3 hover:bg-muted/40 transition-colors"
-                            >
-                              <p className="text-sm text-foreground line-clamp-2 leading-snug">
-                                {c.opinionText}
-                              </p>
-                              {c.lastMessage && (
-                                <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
-                                  {c.lastMessage}
-                                </p>
-                              )}
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
+                      )}
+                    </div>
                   </div>
                 )}
               </motion.div>

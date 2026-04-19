@@ -124,7 +124,7 @@ export function SignalRenderer({
       {showZones && <SignalZones zones={zoneTokens} config={config} />}
 
       {ttLandmarks && (
-        <g className="tt-level-rings" pointerEvents="none">
+        <g className="tt-level-rings" pointerEvents="none" style={{ filter: 'blur(0.6px)' }}>
           {getTTLevelRadii(ttLandmarks).map(({ level, r }) => (
             <circle
               key={level}
@@ -133,7 +133,7 @@ export function SignalRenderer({
               r={r}
               fill="none"
               stroke="white"
-              strokeOpacity={0.35}
+              strokeOpacity={0.2}
               strokeWidth={0.75}
             />
           ))}
