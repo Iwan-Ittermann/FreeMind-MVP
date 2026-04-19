@@ -1,20 +1,14 @@
 import { cn } from '@/lib/utils';
 
 /**
- * 5-emoji disagreement picker. Maps faces to the 0–100 scale used by
- * `opinion_ratings.disagreement` (0 = full agreement, 100 = full disagreement).
+ * Compact 5-step disagreement picker using naturally-colored circle emojis.
+ * Maps to 0–100 (0 = full agreement, 100 = full disagreement).
  *
  * Index → value:  0:0  1:25  2:50  3:75  4:100
  */
 const VALUES = [0, 25, 50, 75, 100] as const;
-const FACES = ['😀', '🙂', '😐', '🙁', '😠'];
-const COLORS = [
-  'hsl(140 65% 55%)', // green
-  'hsl(90 60% 55%)',  // light green
-  'hsl(50 80% 60%)',  // yellow
-  'hsl(25 80% 60%)',  // orange
-  'hsl(0 75% 60%)',   // red
-];
+// Native colored circles — no backdrop needed
+const ICONS = ['🟢', '🟡', '🟠', '🔴', '⚫'];
 
 interface TTEmojiRatingProps {
   value: number;
@@ -39,8 +33,8 @@ export function TTEmojiRating({ value, onChange, disabled }: TTEmojiRatingProps)
   const activeIdx = nearestIndex(value);
 
   return (
-    <div className="flex items-center justify-between gap-1.5 w-full">
-      {FACES.map((face, i) => {
+    <div className="flex items-center gap-1">
+      {ICONS.map((icon, i) => {
         const isActive = i === activeIdx;
         return (
           <button
@@ -49,20 +43,14 @@ export function TTEmojiRating({ value, onChange, disabled }: TTEmojiRatingProps)
             disabled={disabled}
             onClick={() => onChange(VALUES[i])}
             className={cn(
-              'flex-1 aspect-square rounded-full flex items-center justify-center text-2xl transition-all',
-              'border',
-              isActive
-                ? 'scale-110 shadow-md border-foreground/40'
-                : 'border-transparent opacity-70 hover:opacity-100',
-              disabled && 'opacity-40 cursor-not-allowed'
+              'text-base leading-none transition-all p-0.5',
+              isActive ? 'scale-125 opacity-100' : 'opacity-50 hover:opacity-90',
+              disabled && 'opacity-30 cursor-not-allowed',
             )}
-            style={{
-              backgroundColor: isActive ? COLORS[i] : `${COLORS[i]}33`,
-            }}
             aria-label={`Rate ${VALUES[i]}`}
             aria-pressed={isActive}
           >
-            {face}
+            {icon}
           </button>
         );
       })}

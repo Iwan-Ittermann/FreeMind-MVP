@@ -633,11 +633,13 @@
     "opinionFailed": "Meinung konnte nicht gepostet werden.",
     "opinionsEmpty": "Noch keine Meinungen.",
     "chatsEmpty": "Noch keine Chats.",
-    "alreadyHavePassphrase": "Du hast bereits eine Passphrase? Konto wechseln →",
+    "alreadyHavePassphrase": "Du hast bereits eine Passphrase?",
     "switchAccountHint": "Melde dich mit einer anderen Passphrase an, um das Konto zu wechseln.",
     "notifyOn": "In-App-Benachrichtigungen aktiviert",
     "notifyOff": "In-App-Benachrichtigungen deaktiviert",
     "subscribed": "Du folgst diesem Thema",
-    "notSubscribed": "Diesem Thema folgen"
+    "notSubscribed": "Diesem Thema folgen",
+    "fullyAgree": "Volle Zustimmung",
+    "fullyDisagree": "Volle Ablehnung"
   }
 }
