@@ -28,6 +28,7 @@ export function TTSideTabs({
   const { t } = useTranslation();
   const [side, setSide] = useState<'left' | 'right' | null>(null);
   const [activeChatOpinionId, setActiveChatOpinionId] = useState<string | null>(null);
+  const [rightTab, setRightTab] = useState<'chats' | 'requests'>('chats');
   const { acceptRequest, declineRequest, isAccepting, isDeclining } = useChatRequests(topicId);
 
   const closeAndRun = (fn?: () => void) => {
