@@ -29,8 +29,6 @@ export function TTScreen({ topicId, hue = 0, videoUrl }: TTScreenProps) {
 
   const hasOwnOpinion = !!ownOpinionId;
 
-  // The graph is sized to fit inside the moderate ring (~52% of viewport width)
-  // viewport min dimension drives diameter
   return (
     <section
       className="relative w-full h-full overflow-hidden bg-black"
@@ -57,7 +55,7 @@ export function TTScreen({ topicId, hue = 0, videoUrl }: TTScreenProps) {
         </div>
       </div>
 
-      {/* Zone labels (decorative, not covered by graph) */}
+      {/* Zone labels (decorative) */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div className="relative w-[85vmin] h-[85vmin] max-w-[480px] max-h-[480px]">
           <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[10px] tracking-[0.2em] uppercase text-foreground/70 font-medium">
@@ -74,7 +72,7 @@ export function TTScreen({ topicId, hue = 0, videoUrl }: TTScreenProps) {
 
       <TTHeader topicTitle={data?.title ?? '...'} videoUrl={videoUrl} />
       <TTSideTabs />
-      <TTNotificationsBell />
+      <TTNotificationsBell topicId={topicId} />
 
       <TTBottomPanel
         topicId={topicId}
@@ -82,7 +80,6 @@ export function TTScreen({ topicId, hue = 0, videoUrl }: TTScreenProps) {
         ownOpinionId={ownOpinionId}
         selected={selectedNode ? { id: selectedNode.id, text: selectedNode.opinion?.text ?? '' } : null}
         onLetsChat={() => {
-          // Hook up later — for now show a toast via event bus
           window.dispatchEvent(new CustomEvent('tt:lets-chat', { detail: { selected: selectedNode } }));
         }}
         onReport={() => {
