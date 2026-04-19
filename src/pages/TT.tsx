@@ -148,12 +148,8 @@ export default function TT() {
           onOpinionTap={(opinionId) => {
             const op = activeData?.opinions.find((o) => o.id === opinionId);
             if (op) {
-              setSelectedNode({
-                id: op.id,
-                position: { x: 0, y: 0 },
-                opinion: op,
-                ringLevel: 0,
-              } as GraphNode);
+              // Synthetic node — only id + opinion are used by the bottom panel.
+              setSelectedNode({ id: op.id, x: 0, y: 0, opinion: op } as GraphNode);
             }
           }}
         />
