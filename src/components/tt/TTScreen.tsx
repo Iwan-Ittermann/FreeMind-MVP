@@ -69,6 +69,7 @@ function TTScreenInnerImpl({
           always align regardless of viewport aspect ratio. */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div
+          ref={wrapperRef}
           className="relative"
           style={{
             width: 'min(85vmin, 480px)',
@@ -80,23 +81,25 @@ function TTScreenInnerImpl({
             <TTBackground hue={hue} />
           </div>
 
-          {/* Graph layer */}
-          <div data-tt-graph className="absolute inset-0">
-            <OpinionGraph
-              opinions={data?.opinions ?? []}
-              ratings={data?.ratings ?? []}
-              activeChats={activeChats}
-              messageAnimations={messageAnimations}
-              currentUserId={user?.id}
-              currentUserOpinionId={ownOpinionId}
-              onNodeSelect={onNodeSelect}
-              selectedNodeId={selectedNodeId}
-              width={480}
-              height={480}
-              showLabels="none"
-              chrome="naked"
-            />
-          </div>
+          {/* Graph layer — sized to match wrapper so SVG center aligns with iris center */}
+          {size > 0 && (
+            <div data-tt-graph className="absolute inset-0 flex items-center justify-center">
+              <OpinionGraph
+                opinions={data?.opinions ?? []}
+                ratings={data?.ratings ?? []}
+                activeChats={activeChats}
+                messageAnimations={messageAnimations}
+                currentUserId={user?.id}
+                currentUserOpinionId={ownOpinionId}
+                onNodeSelect={onNodeSelect}
+                selectedNodeId={selectedNodeId}
+                width={size}
+                height={size}
+                showLabels="none"
+                chrome="naked"
+              />
+            </div>
+          )}
 
           {/* Zone labels (decorative) */}
           <div className="absolute inset-0 pointer-events-none">
