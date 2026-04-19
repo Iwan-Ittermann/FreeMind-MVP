@@ -49,7 +49,7 @@ function TTScreenInnerImpl({
     offset: ['start end', 'end start'],
   });
   // Graph slides slower than background → parallax effect.
-  const graphY = useTransform(scrollYProgress, [0, 1], ['12%', '-12%']);
+  const graphY = useTransform(scrollYProgress, [0, 1], ['4%', '-4%']);
 
   return (
     <section
