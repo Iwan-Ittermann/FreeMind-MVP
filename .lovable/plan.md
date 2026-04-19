@@ -1,112 +1,92 @@
+## Plan: TT UI Polish + Swipe Architecture
+
+### 1. Side panels — overlay feel, animated from buttons
+
+Replace the full-height `Sheet` with custom Framer Motion panels that **expand from the tab buttons**:
+
+- **Opinions panel**: expands rightward from the left tab. ~75vw wide, ~60vh tall, vertically centered around the tab. Rounded-2xl, glassmorphism (`bg-background/85 backdrop-blur-xl`), strong shadow, subtle border. Origin-left scale + fade.
+- **Chats panel**: mirrors from the right tab (origin-right, expands leftward, vertically aligned to the bottom-right tab).
+- **Backdrop**: very light blur overlay (`bg-black/20 backdrop-blur-sm`), click-to-close.
+- Spring animation: `transition: { type: 'spring', stiffness: 320, damping: 28 }`.
+
+### 2. Bottom panel — expanding input + floating "Posten"
+
+`TTBottomPanel.tsx` (input state):
+
+- Default: collapsed textarea (44px, single line, placeholder visible). No button shown.
+- On focus: textarea animates to `min-h-[140px]`, `Posten` button **floats above the panel** (absolutely positioned, `bottom: calc(100% + 8px) right: 12px`), pill-shaped, `bg-primary` with shadow.
+- On blur with empty text: collapse back, hide button.
+- Use Framer Motion `AnimatePresence` for the floating button.
+
+### 3. Silent auth — cost evaluation + UX
+
+**Cost evaluation**: Silent passphrase signup on every visit creates one `auth.users` row + one `user_topics` row per visitor. Risks:
+
+- Bot/scraper traffic could spam thousands of phantom accounts (Supabase free tier: 50k MAU; paid: $0.00325/MAU above that).
+- Mitigations already in place: client IP logging, single opinion per topic per user.
+- **Recommendation**: proceed with silent auth, but only call `signUp` **once a real interaction happens** (first opinion submission). Until then, render the UI in a "preview" mode using a local-only ephemeral session. This keeps `auth.users` clean of pure bounces.
+  &nbsp;
+
+**UX changes**:
+
+- Remove "Abmelden" / sign-out button from the header dropdown.
+- Replace with link `Du hast bereits eine Passphrase? → Anmelden` that opens an inline `AuthForm` (login mode) inside the dropdown — lets the user *switch account*, not log out.
+
+### 4. Notifications bell rework
+
+`TTNotificationsBell.tsx` (bottom-left) becomes a **subscription toggle**, not a panel trigger:
+
+- Default icon: `BellOff` (struck-out) — subscription disabled.
+- Toggled icon: `Bell` — subscription enabled.
+- Clicking it: New opinions added or new chat requests or accepted requests or new messages are shown in the uniersal notification panel, eachable from the header. 
+- This has nothing to do with the browser notifications we used in the old topic view. This feature is aout in-app notifications. 
+
+The **header bell** remains the actual notifications panel trigger (already wired via `onBellClick`). Add real notifications panel content as a dropdown beneath the bell (similar styling to the passphrase dropdown).
+
+### 5. Click-outside to close panels
+
+- Header dropdown (passphrase) and notifications dropdown: wrap each in a `useEffect` listening to `mousedown` on `document`, close if click is outside the panel ref. Standard pattern.
+- Side panels: backdrop click already closes them.
+
+### 6. Swipe-to-next-topic — make it functional
+
+Currently `TT.tsx` only renders one `<TTScreen>`. Changes:
+
+**Data layer**:
+
+- New hook `useTTTopics(currentTopicId)` that fetches the **list of public topic IDs** (ordered by `created_at desc`, limit ~20) once. Returns `[prevId, currentId, nextId]` window.
+- Each `TTScreen` mounts its own `useTopicData(topicId)` — already topic-scoped, so this works.
+
+**Render**:
+
+- `TT.tsx` renders the prev / current / next `TTScreen` inside the existing scroll-snap container. As the user swipes, `IntersectionObserver` detects which screen is centered and updates the URL (`navigate('/tt/:newId', { replace: true })`) + slides the window forward.
+- New chats / opinions for the new topic load automatically because `useTopicData` is keyed on `topicId`.
+
+**Cleanup on swipe**:
+
+- Close any open floating chat bubbles (dispatch a global event `tt:close-all-chats` listened to by the floating chat manager, OR just use a per-screen state that resets on unmount — since each screen is its own React subtree, switching topics naturally unmounts old chat windows).
+- Reset `selectedNode` (already per-screen).
+- For now: no preservation of open bubbles across topics, as you confirmed.
+
+**This prompt scope**: build the 3-screen window + IntersectionObserver + URL sync. Leave infinite-scroll loading (fetching beyond the initial 20) for a later iteration.
+
+### 7. Files
 
 
-## Plan: TikTok-style Mobile UI for FreeMind (`/tt` route)
+| File                                        | Action                                                                                                                  |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `src/components/tt/TTSideTabs.tsx`          | Replace `Sheet` with Framer Motion overlay panels                                                                       |
+| `src/components/tt/TTBottomPanel.tsx`       | Expanding textarea + floating Posten button                                                                             |
+| `src/components/tt/TTHeader.tsx`            | Remove sign-out, add "switch account" inline auth link, click-outside close, add notifications dropdown                 |
+| `src/components/tt/TTNotificationsBell.tsx` | Convert to subscription toggle (BellOff ↔ Bell), wire to `useBrowserNotification`                                       |
+| `src/components/tt/TTScreen.tsx`            | Pass `onBellClick` for header notifications dropdown; ensure `selectedNode` resets cleanly                              |
+| `src/pages/TT.tsx`                          | New `useTTTopics` hook + 3-screen swipe window + IntersectionObserver + URL sync                                        |
+| `src/hooks/useTTTopics.ts` (new)            | Fetch ordered list of public topic IDs                                                                                  |
+| `src/i18n/locales/{en,de}.json`             | New keys: `tt.alreadyHavePassphrase`, `tt.switchAccount`, `tt.notifyOn`, `tt.notifyOff`, `tt.enableNotifications`, etc. |
 
-### What I see in the mockup (3 frames, portrait phone)
 
-**Frame 1 — Blank Home Screen**
-- **Top-left**: `freemind` wordmark (small, lowercase, no icon).
-- **Top-right**: small bell icon with red unread dot + door/exit icon (logout/leave).
-- **Center top**: small label `Diskussionsfrage`, below it the topic title in large italic-ish serif: *"Was sagst du zu diesem Video?"* with `Video` underlined → tappable link back to the TikTok video.
-- **Center**: the layered eye/iris background you uploaded — three concentric zones with labels overlaid: `respektvoll` (in dark core), `moderat` (mid blue ring), `Extrem` (faint, bottom of outer ring).
-- **Left edge, upper third**: vertical tab labelled `MEINUNGEN` (Opinions sidebar trigger) — rounded right edge sticking out from the screen border.
-- **Right edge, lower third**: vertical tab labelled `CHATS` — rounded left edge sticking out from the right border.
-- **Bottom-left**: standalone bell icon (notifications panel trigger).
-- **Bottom**: empty white strip — reserved for opinion input (appears in Frame 2).
+### 8. Out of scope (this prompt)
 
-**Frame 2 — Header buttons unfolded / no node selected**
-- Same as Frame 1, plus:
-- A **dropdown panel** unfolds from the top-right exit button area, listing recent activity items: `Neue Meinung → Topic`, `Neue Meinung → Topic`, **`Neue Nachricht`** (bold = unread) `→ Topic`. Each row is a clickable card with a Topic chip.
-- A **second floating panel** below it: `Deine Passphrase:` with a pill-shaped passphrase field, four small icon buttons (copy, download, regenerate, show/hide), and a link `Du hast bereits eine Passphrase?`.
-- **Bottom panel active**: input field placeholder *"Was ist deine Menung zu dem Thema?"* + `POSTEN` button (rounded outline). Replaces the empty strip from Frame 1.
-
-**Frame 3 — Node Selected**
-- Same chrome.
-- Inside the graph: a hand cursor points at a small green node in the moderate ring; other dots scattered (green = moderate, yellow = respectful core, black = extreme).
-- **Bottom panel** now shows the selected opinion:
-  - Small flag/report icon top-right of the panel.
-  - Opinion text: *"[Opinion Text] Ich finde das Video gut, denn es zeigt, dass jeder es schaffen kann, wenn er oder sie nicht aufgibt."*
-  - **Emoji rating row**: 5 face emojis (😀😊😐🙁😠) — green→red gradient = the disagreement scale (replaces the slider).
-  - **`Let's chat`** button bottom-right (rounded outline).
-
-### Architecture decisions (with rationale)
-
-| Question | Recommendation |
-|---|---|
-| Same project? | **Yes.** New route `/tt/:topicId?` mounts a dedicated `TTLayout`. Reuses all hooks (`useTopicData`, `useChatRequests`, `useAuth`, `useDisagreementRating`), the `OpinionGraph` engine, Supabase client, i18n. |
-| Same database? | **Yes — same Supabase.** Same opinions, ratings, chats, users. The whole point of TikTok traffic is to feed the existing graph. Add a single `signup_source` column on `user_topics` later if you want analytics. |
-| Width? | Lock to **mobile portrait** (max-width 480px, centered on desktop with dark gutters). No TikTok 810px constraint exists anymore — link stickers open the system browser at full device width. |
-| Swipe up/down between topics? | **Architect for it now, build CSS only.** Wrap the screen in a vertical snap container (`overflow-y: scroll; scroll-snap-type: y mandatory`) where each topic is one `100dvh` snap section. Data-fetching per snap deferred to a later prompt. |
-| PWA? | **Installable manifest only** (no service worker → avoids preview-iframe issues per project conventions). Add `display: standalone`, icons, theme color. Users get "Add to Home Screen". |
-
-### Files to create
-
-| File | Purpose |
-|---|---|
-| `src/pages/TT.tsx` | Route component, swipe-snap container, fetches topic(s), renders `TTScreen` per topic |
-| `src/components/tt/TTScreen.tsx` | One full-viewport screen: background + graph + chrome + bottom panel |
-| `src/components/tt/TTBackground.tsx` | The layered SVG background (reusable, accepts `seed` prop for variation per topic) |
-| `src/components/tt/TTHeader.tsx` | Top wordmark, bell w/ dot, exit/passphrase dropdown |
-| `src/components/tt/TTSideTabs.tsx` | Left `MEINUNGEN` tab (top-left) + right `CHATS` tab (bottom-right), each opens a slide-in sheet |
-| `src/components/tt/TTBottomPanel.tsx` | Three states: empty/inline opinion input / selected-opinion view |
-| `src/components/tt/TTEmojiRating.tsx` | 5-emoji disagreement picker (replaces slider, writes to same `opinion_ratings`) |
-| `src/components/tt/TTNotificationsBell.tsx` | Bottom-left bell + panel |
-| `public/tt-manifest.webmanifest` | PWA manifest scoped to `/tt` |
-
-### Files to modify
-
-| File | Change |
-|---|---|
-| `src/App.tsx` | Add `<Route path="/tt/:topicId?" element={<TT />} />` (no global `Header`, no `BottomTabBar` — TT layout is self-contained) |
-| `index.html` | Conditionally link the manifest only when path starts with `/tt` (or always — harmless) |
-| `src/i18n/locales/{en,de}.json` | Add `tt.*` keys: `discussionQuestion`, `respectful`, `moderate`, `extreme`, `yourOpinionPlaceholder`, `post`, `letsChat`, `opinions`, `chats`, etc. |
-
-### SVG background — suggested improvements
-
-Your SVG is solid. Small refinements I'd apply:
-1. **Make the gap warmer / thinner** — currently 30px wide (r=320 minus r=290). At phone width that's prominent. Suggest r=300 (gap ~10px) to match the uploaded reference image where the cream ring is subtler.
-2. **Per-topic color seed** — accept a `hue` prop that rotates the `g34` gradient stops (0–360°) so each swiped topic feels distinct while preserving the eye composition.
-3. **Slight radial vignette on outer edge** — adds depth, matches the reference better than the flat linear gradient corners.
-4. **Move the noise filter** to the cream gap too (very low opacity, ~0.04) to unify texture.
-5. **Use `viewBox` + `preserveAspectRatio="xMidYMid slice"`** on the wrapper so it always covers the screen edge-to-edge in portrait.
-
-### Layout sketch (portrait)
-
-```text
-┌────────────────────────────┐
-│ freemind          🔔• 🚪  │  ← TTHeader (overlays graph)
-│      Diskussionsfrage      │
-│   Was sagst du zu diesem   │
-│         Video?             │
-│ ┌──┐                       │
-│ │M │   ╭──── eye ────╮     │
-│ │E │  (    moderat    )    │
-│ │I │  (   ╭ resp ╮    )    │
-│ │N │  (   ╰──────╯    )    │
-│ │U │   ╰──── extrem ─╯     │
-│ │N │                  ┌──┐ │
-│ │G │                  │C │ │
-│ │E │                  │H │ │
-│ │N │                  │A │ │
-│ └──┘                  │T │ │
-│                       │S │ │
-│ 🔔                    └──┘ │
-├────────────────────────────┤
-│ [bottom panel, 3 states]   │
-└────────────────────────────┘
-```
-
-### Scope of THIS prompt (build now)
-1. Route + skeleton page with vertical snap container (CSS only, single topic for now).
-2. SVG background component with the improvements.
-3. All chrome: header, side tabs (open empty sheets), bottom-left bell, bottom panel with 3 states.
-4. Wire bottom panel to existing `useTopicData` + `submit_opinion` + `useDisagreementRating` (using new emoji rating).
-5. Reuse existing `OpinionGraph` (signal theme) inside the eye, sized to the cream/moderate area.
-6. i18n keys (EN/DE).
-7. PWA manifest (no service worker).
-
-### Out of scope (later prompts)
-- Actual swipe-loading of next/prev topic data.
-- TikTok link sticker integration (just a URL — no SDK).
-- Pixel parity polish on each component.
-
+- Real silent-signup deferral logic (keep current auth flow for now; remove only the sign-out button + add switch-account UI).
+- Infinite scroll beyond 20 topics.
+- Persisting open chat windows across topic swipes.
