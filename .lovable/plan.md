@@ -1,59 +1,78 @@
 
 
-## Plan: Swap TT background to new SVG, sized so blue ring fits screen width
+## Plan: TT radii, colors, sizes, label positions
 
-### What changes
+### 1. New 10-level radial mapping (TT only)
 
-Replace the current `TTBackground` artwork with the user's uploaded SVG (cream/blue gradient + grain, white ring r=360, blurred teal circle r=300, dark core r=140). Keep the same component API (`hue`, `className`).
+Background landmarks (in viewport pixels, relative to graph center):
+- Dark core radius `Rcore = 23.33vw`
+- Blue ring outer `Rblue = 50vw`
+- White ring outer `Rwhite = 60vw`
 
-### Sizing requirement
+Convert to graph-internal coords by passing the section's CSS-px landmarks to the graph as part of `LayoutConfig`. Strategy: compute landmarks in `TTScreen.tsx` from the actual viewport width (using a `useEffect` + window resize listener, plus the wrapper's measured `size`), then pass them into a new TT-specific layout function instead of re-using `calculateLayout`.
 
-"Outer borders of the blue ring touch left and right of the screen."
-- Blue ring radius = 300 in a 1000×1000 viewBox → diameter 600, i.e. **60% of the SVG width**.
-- For diameter to equal `100vw`, the SVG must be rendered at **width = 100vw / 0.6 ≈ 166.67vw**, square (same height).
-- Center it so the blue circle sits at the screen center. Vertically the SVG overflows top/bottom — that's intended (white ring + grain get cropped).
+**Discrete level → radius (TT)**
 
-### Implementation
+| Level | Score range | Position |
+|---|---|---|
+| 10 | ≥ 2500 | Exact center (R=0). Multiple level-10 nodes arrange on a tight inner circle. |
+| 9  | 1750–2499 | Inside dark core, ~75% of `Rcore` |
+| 8  | 1250–1749 | Inside dark core, ~50% of `Rcore` |
+| 7  | 1000–1249 | Just inside dark core border, ~25% of `Rcore` |
+| 6  | 750–999  | Inside blue ring near dark core border (`Rcore + 12% × (Rblue − Rcore)`) |
+| 5  | 500–749  | `Rcore + 30% × (Rblue − Rcore)` |
+| 4  | 250–499  | `Rcore + 50% × (Rblue − Rcore)` |
+| 3  | 50–249  | `Rcore + 70% × (Rblue − Rcore)` |
+| 2  | 10–49   | `Rcore + 88% × (Rblue − Rcore)` ← **starter ring (10 pts) sits slightly inside blue ring** |
+| 1  | 0       | `Rblue − tinyPad` (very outer edge of blue ring) |
+| Extreme A | −1 to −1000 | `Rwhite + 4px` (just outside white ring) |
+| Extreme B | −1001 to −2500 | `Rwhite + 4px + step` |
+| Extreme C | < −2500 | `Rwhite + 4px + 2×step` |
 
-**1. `src/components/tt/TTBackground.tsx`** — rewrite contents:
-- Inline the new SVG markup (gradients, grain filter, blur filter, four circles).
-- Remove the old iris layers + masks (no longer needed).
-- Render the SVG inside a positioned wrapper:
-  ```tsx
-  <div style={{
-    position: 'absolute',
-    left: '50%', top: '50%',
-    width: 'calc(100vw / 0.6)',
-    height: 'calc(100vw / 0.6)',
-    transform: 'translate(-50%, -50%)',
-    pointerEvents: 'none',
-  }}>
-    <svg viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
-      {/* new artwork */}
-    </svg>
-  </div>
-  ```
-- Keep `hue` prop applied via `filter: hue-rotate(...)` for topic differentiation.
+`step ≈ 18px` (one node-diameter spacing) — adjusted so even the outer extreme ring stays within section bounds for a 390×844 viewport.
 
-**2. `src/components/tt/TTScreen.tsx`** — adjust how the background is mounted:
-- Currently `TTBackground` lives inside the small square wrapper (`min(85vmin, 480px)`) clipped by `rounded-full overflow-hidden`. That has to change because the new background must be sized to **viewport width**, not the graph wrapper.
-- Move `<TTBackground>` out of the inner square wrapper and place it as a direct child of the section, absolutely positioned to fill the section. Remove the `rounded-full overflow-hidden` clip — the new SVG is intentionally a soft-edged painting that bleeds beyond the graph footprint.
-- Keep the graph wrapper exactly as-is (centered, sized to `min(85vmin, 480px)`) so the graph layout doesn't change. The graph's center will still align with the dark core because both are centered on the section.
-- Section background color stays `#eef2f4` as a fallback for the cropped vertical edges (matches the cream gradient stop).
+**No node ever sits in the white-ring band** (`Rblue → Rwhite`).
 
-**3. No other files affected.**
-- `OpinionGraph` keeps `chrome="naked"`.
-- Zone labels stay where they are.
-- i18n unchanged.
+Newly added nodes (no chats yet) get **10 starter points** → land on Level 2 ring (slightly inside blue ring), per user choice.
 
-### Edge cases
+### 2. Per-zone node styling (TT only)
 
-- **Tall viewports (e.g. 390×844)**: `100vw/0.6 = 650px` SVG on a 390-wide screen. Blue ring spans full width, dark core is well within the graph footprint. White ring + grain crop top/bottom — desired.
-- **Wide viewports**: Same rule still holds; the SVG follows viewport width. On very wide screens the background gets larger but stays centered. Acceptable for a mobile-first surface; if it ever runs on tablet landscape we can cap with `min(166vw, 1200px)` later — out of scope now.
-- **Hue rotation per topic**: still works via CSS filter on the wrapper.
+The graph uses the Signal renderer in TT. We add TT-specific styling via a new `ttMode` flag (or by zone re-tagging in tokenizer). Easier: pass `ttMode` down to `SignalRenderer` and `SignalNode`, and have the node component override colors/size when active.
 
-### Out of scope
-- Changing the graph itself.
-- Different per-topic palettes (only hue rotation as today).
-- Capping max background size for ultrawide screens.
+| Zone | Color | Size |
+|---|---|---|
+| `core` (inside dark center, levels 7–10) | Gold `#F5C542` (replaces cyan star, keep star shape) | Standard |
+| `middle` (blue ring, levels 1–6) | Emerald green `#10B981` (replaces existing green circle) | Standard |
+| `outer` (extreme, outside white ring) | Black `#0a0a0a` | **Smaller** (`scale × 0.6`) |
+| Bot | Unchanged (purple AI badge) | Unchanged |
+
+Re-zoning uses score thresholds: `>1000 → core (gold)`, `0–1000 → middle (green)`, `<0 → outer (black, small)`. Zone tagging happens in the tokenizer when a `ttMode` flag is on, or in the new TT layout function via the `zone` field on `GraphNode`.
+
+### 3. Label repositioning in `TTScreen.tsx`
+
+Labels use viewport-relative positions to align with background landmarks:
+
+- **Respektvoll** — keep at center (current).
+- **Moderat** — inside the blue ring (between dark core and blue-ring outer). Position: `top: calc(50% - 35vw)` (≈ midway between `Rcore=23vw` and `Rblue=50vw` from center, above center). Centered horizontally.
+- **Extrem** — outside the white ring. Position: `top: calc(50% + 62vw)` (just below `Rwhite=60vw`). Centered horizontally.
+
+All three centered on the X axis, stacked vertically: Respectful (center) → Moderate (above, in blue ring) → Extreme (below, outside white ring). Per user request: "Moderate below Respectful, Extreme below both" — interpreted as Z-stack from inside-out, not strict vertical order. Labels use `position: absolute; left: 50%; transform: translateX(-50%)` and `top` values relative to section center.
+
+### 4. Implementation files
+
+| File | Change |
+|---|---|
+| `src/lib/tt-layout.ts` (new) | TT-specific layout: takes opinions, ratings, viewport-derived `Rcore/Rblue/Rwhite`, returns `GraphData` with the new level→radius mapping and zone tagging. Reuses existing angle calc + collision resolution. |
+| `src/components/tt/TTScreen.tsx` | Measure viewport width on mount/resize, compute `Rcore/Rblue/Rwhite` in graph-SVG coords (ratio = viewport-px ÷ wrapper-size × graph-internal-radius). Pass new `ttMode={true}` and landmark radii to `OpinionGraph`. Reposition the three zone labels per spec above. |
+| `src/components/graph/OpinionGraph.tsx` | Accept `ttMode?: boolean` and optional `ttLandmarks?: { coreR, blueR, whiteR }`. When set, use `tt-layout.ts` instead of `calculateLayout`. Forward `ttMode` to renderer. |
+| `src/themes/signal/SignalRenderer.tsx` | Accept and forward `ttMode` to `SignalNode`. |
+| `src/themes/signal/SignalNode.tsx` | When `ttMode`: render gold star for core, emerald circle for middle, small black square for outer. Use `scale × 0.6` for outer nodes. |
+| `src/lib/freemind-layout.ts` | Untouched (other routes keep current behavior). |
+
+### 5. Out of scope
+
+- Animating nodes between old and new positions on initial load.
+- Changing the bot's color (stays purple).
+- Per-topic hue rotation affecting node colors.
+- Wide-viewport (desktop) re-tuning of the TT view.
 
