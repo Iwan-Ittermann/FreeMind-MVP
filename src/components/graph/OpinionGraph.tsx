@@ -4,6 +4,7 @@ import { GraphEdges } from './GraphEdges';
 import { GraphNodes } from './GraphNodes';
 import { MessageDots } from './MessageDots';
 import { calculateLayout, generateMockData } from '@/lib/freemind-layout';
+import { calculateTTLayout, TTLandmarks } from '@/lib/tt-layout';
 import { GraphNode, GraphEdge, LayoutConfig, Opinion, ChatRating, ChatRequest } from '@/types/graph';
 import { ActiveChat, MessageAnimationData } from '@/hooks/useTopicData';
 import { useFreeMindTheme } from '@/themes/ThemeContext';
@@ -30,6 +31,10 @@ interface OpinionGraphProps {
   showLabels?: 'none' | 'highlighted-only';
   /** 'naked' = transparent, no zones/glows/rings (TT mode). Default 'full'. */
   chrome?: 'full' | 'naked';
+  /** TT mode: re-color/re-size nodes per zone (gold/emerald/black). */
+  ttMode?: boolean;
+  /** TT layout landmarks in graph-SVG coords. When set, uses TT layout. */
+  ttLandmarks?: TTLandmarks;
 }
 
 export function OpinionGraph({ 
@@ -50,6 +55,8 @@ export function OpinionGraph({
   selectedNodeId = null,
   showLabels = 'highlighted-only',
   chrome = 'full',
+  ttMode = false,
+  ttLandmarks,
 }: OpinionGraphProps) {
   const [highlightedNode, setHighlightedNode] = useState<string | null>(null);
 
@@ -87,7 +94,9 @@ export function OpinionGraph({
 
   // Calculate layout and add chat request edges
   const graphData = useMemo(() => {
-    const baseData = calculateLayout(opinions, ratings, config);
+    const baseData = ttLandmarks
+      ? calculateTTLayout(opinions, ratings, config, ttLandmarks)
+      : calculateLayout(opinions, ratings, config);
     
     const pendingEdges: GraphEdge[] = chatRequests
       .filter(req => req.status === 'pending' && currentUserOpinionId && (
@@ -129,7 +138,7 @@ export function OpinionGraph({
       edges: [...baseData.edges, ...uniquePendingEdges],
       respectfulZoneSlots: baseData.respectfulZoneSlots,
     };
-  }, [opinions, ratings, config, chatRequests, currentUserOpinionId, onlineOpinionIds, unreadMessageCounts]);
+  }, [opinions, ratings, config, chatRequests, currentUserOpinionId, onlineOpinionIds, unreadMessageCounts, ttLandmarks]);
 
   const handleNodeClick = useCallback((node: GraphNode | null) => {
     onNodeSelect?.(node);
@@ -159,7 +168,7 @@ export function OpinionGraph({
           onNodeClick={handleNodeClick}
           onNodeHover={handleNodeHover}
           onEdgeClick={onEdgeClick}
-          {...(theme === 'signal' ? { showLabels, showZones: chrome !== 'naked' } : {})}
+          {...(theme === 'signal' ? { showLabels, showZones: chrome !== 'naked', ttMode } : {})}
         />
       </div>
     );
