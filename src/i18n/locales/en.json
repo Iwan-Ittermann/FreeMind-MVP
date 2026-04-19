@@ -595,5 +595,31 @@
     "done": "Done",
     "stop": "Stop tour",
     "rateHint": "Rate your disagreement →"
+  },
+  "tt": {
+    "discussionQuestion": "Discussion question",
+    "respectful": "respectful",
+    "moderate": "moderate",
+    "extreme": "extreme",
+    "opinions": "OPINIONS",
+    "chats": "CHATS",
+    "notifications": "Notifications",
+    "noNotifications": "No notifications yet.",
+    "menu": "Menu",
+    "yourPassphrase": "Your passphrase:",
+    "regenerateHint": "New passphrase copied: {{phrase}}",
+    "signOut": "Sign out",
+    "opinionPlaceholder": "What is your opinion on this topic?",
+    "post": "Post",
+    "letsChat": "Let's chat",
+    "report": "Report",
+    "tapNodeHint": "Tap a node in the eye to read and rate an opinion.",
+    "signInToRate": "Sign in to rate this opinion.",
+    "postFirstToRate": "Post your own opinion first to rate others.",
+    "opinionTooShort": "Your opinion must be at least 10 characters.",
+    "opinionPosted": "Opinion posted!",
+    "opinionFailed": "Failed to post opinion.",
+    "opinionsEmpty": "No opinions yet.",
+    "chatsEmpty": "No chats yet."
   }
 }

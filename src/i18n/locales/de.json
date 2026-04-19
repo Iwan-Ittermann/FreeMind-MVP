@@ -607,5 +607,31 @@
     "done": "Fertig",
     "stop": "Tour beenden",
     "rateHint": "Bewerte deine Ablehnung →"
+  },
+  "tt": {
+    "discussionQuestion": "Diskussionsfrage",
+    "respectful": "respektvoll",
+    "moderate": "moderat",
+    "extreme": "extrem",
+    "opinions": "MEINUNGEN",
+    "chats": "CHATS",
+    "notifications": "Benachrichtigungen",
+    "noNotifications": "Noch keine Benachrichtigungen.",
+    "menu": "Menü",
+    "yourPassphrase": "Deine Passphrase:",
+    "regenerateHint": "Neue Passphrase kopiert: {{phrase}}",
+    "signOut": "Abmelden",
+    "opinionPlaceholder": "Was ist deine Meinung zu dem Thema?",
+    "post": "Posten",
+    "letsChat": "Let's chat",
+    "report": "Melden",
+    "tapNodeHint": "Tippe auf einen Punkt im Auge, um eine Meinung zu lesen und zu bewerten.",
+    "signInToRate": "Melde dich an, um diese Meinung zu bewerten.",
+    "postFirstToRate": "Poste zuerst deine eigene Meinung, um andere zu bewerten.",
+    "opinionTooShort": "Deine Meinung muss mindestens 10 Zeichen haben.",
+    "opinionPosted": "Meinung gepostet!",
+    "opinionFailed": "Meinung konnte nicht gepostet werden.",
+    "opinionsEmpty": "Noch keine Meinungen.",
+    "chatsEmpty": "Noch keine Chats."
   }
 }

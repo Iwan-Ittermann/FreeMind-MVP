@@ -80,7 +80,7 @@ export function TTScreen({ topicId, hue = 0, videoUrl }: TTScreenProps) {
         topicId={topicId}
         hasOwnOpinion={hasOwnOpinion}
         ownOpinionId={ownOpinionId}
-        selected={selectedNode ? { id: selectedNode.id, text: selectedNode.text ?? '' } : null}
+        selected={selectedNode ? { id: selectedNode.id, text: selectedNode.opinion?.text ?? '' } : null}
         onLetsChat={() => {
           // Hook up later — for now show a toast via event bus
           window.dispatchEvent(new CustomEvent('tt:lets-chat', { detail: { selected: selectedNode } }));
