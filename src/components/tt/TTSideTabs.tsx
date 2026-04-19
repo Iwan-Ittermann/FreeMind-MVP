@@ -2,17 +2,30 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
+import type { Opinion } from '@/types/graph';
 
 interface TTSideTabsProps {
-  opinionsContent?: React.ReactNode;
-  chatsContent?: React.ReactNode;
+  opinions?: Opinion[];
+  chats?: Array<{ id: string; opinionText: string; lastMessage?: string }>;
+  onOpinionTap?: (opinionId: string) => void;
+  onChatTap?: (chatId: string) => void;
 }
 
 const SPRING = { type: 'spring' as const, stiffness: 320, damping: 28 };
 
-export function TTSideTabs({ opinionsContent, chatsContent }: TTSideTabsProps) {
+export function TTSideTabs({
+  opinions = [],
+  chats = [],
+  onOpinionTap,
+  onChatTap,
+}: TTSideTabsProps) {
   const { t } = useTranslation();
   const [side, setSide] = useState<'left' | 'right' | null>(null);
+
+  const closeAndRun = (fn?: () => void) => {
+    setSide(null);
+    fn?.();
+  };
 
   return (
     <>
@@ -80,9 +93,24 @@ export function TTSideTabs({ opinionsContent, chatsContent }: TTSideTabsProps) {
                     <X className="w-3.5 h-3.5" />
                   </button>
                 </div>
-                <div className="flex-1 overflow-auto p-4">
-                  {opinionsContent ?? (
-                    <p className="text-sm text-muted-foreground">{t('tt.opinionsEmpty')}</p>
+                <div className="flex-1 overflow-auto">
+                  {opinions.length === 0 ? (
+                    <p className="text-sm text-muted-foreground p-4">{t('tt.opinionsEmpty')}</p>
+                  ) : (
+                    <ul className="divide-y divide-border/30">
+                      {opinions.map((op) => (
+                        <li key={op.id}>
+                          <button
+                            onClick={() => closeAndRun(() => onOpinionTap?.(op.id))}
+                            className="w-full text-left px-4 py-3 hover:bg-muted/40 transition-colors"
+                          >
+                            <p className="text-sm text-foreground line-clamp-3 leading-snug">
+                              {op.text}
+                            </p>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
                   )}
                 </div>
               </motion.div>
@@ -110,9 +138,29 @@ export function TTSideTabs({ opinionsContent, chatsContent }: TTSideTabsProps) {
                     <X className="w-3.5 h-3.5" />
                   </button>
                 </div>
-                <div className="flex-1 overflow-auto p-4">
-                  {chatsContent ?? (
-                    <p className="text-sm text-muted-foreground">{t('tt.chatsEmpty')}</p>
+                <div className="flex-1 overflow-auto">
+                  {chats.length === 0 ? (
+                    <p className="text-sm text-muted-foreground p-4">{t('tt.chatsEmpty')}</p>
+                  ) : (
+                    <ul className="divide-y divide-border/30">
+                      {chats.map((c) => (
+                        <li key={c.id}>
+                          <button
+                            onClick={() => closeAndRun(() => onChatTap?.(c.id))}
+                            className="w-full text-left px-4 py-3 hover:bg-muted/40 transition-colors"
+                          >
+                            <p className="text-sm text-foreground line-clamp-2 leading-snug">
+                              {c.opinionText}
+                            </p>
+                            {c.lastMessage && (
+                              <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
+                                {c.lastMessage}
+                              </p>
+                            )}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
                   )}
                 </div>
               </motion.div>

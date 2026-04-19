@@ -1,8 +1,8 @@
-import { useState, useRef, useEffect } from 'react';
-import { Bell, DoorOpen, Copy, Download, RefreshCw, Eye, EyeOff, X } from 'lucide-react';
+import { useState, useRef, useEffect, useMemo } from 'react';
+import { Bell, DoorOpen, Copy, Download, Eye, EyeOff, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
-import { generatePassphrase, emailToPassphrase } from '@/lib/passphrase';
+import { emailToPassphrase } from '@/lib/passphrase';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuthForm } from '@/components/AuthForm';
@@ -16,12 +16,29 @@ export interface TTNotification {
 }
 
 interface TTHeaderProps {
-  videoUrl?: string | null;
   topicTitle: string;
   notifications?: TTNotification[];
 }
 
-export function TTHeader({ videoUrl, topicTitle, notifications = [] }: TTHeaderProps) {
+/**
+ * Parse markdown-style links `[label](url)` in the topic title.
+ * Plain titles (no `[..](..)`) render unchanged.
+ */
+function parseTitleSegments(title: string): Array<{ label: string; href?: string }> {
+  const re = /\[([^\]]+)\]\(([^)]+)\)/g;
+  const out: Array<{ label: string; href?: string }> = [];
+  let lastIdx = 0;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(title)) !== null) {
+    if (m.index > lastIdx) out.push({ label: title.slice(lastIdx, m.index) });
+    out.push({ label: m[1], href: m[2] });
+    lastIdx = re.lastIndex;
+  }
+  if (lastIdx < title.length) out.push({ label: title.slice(lastIdx) });
+  return out;
+}
+
+export function TTHeader({ topicTitle, notifications = [] }: TTHeaderProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [accountOpen, setAccountOpen] = useState(false);
@@ -33,6 +50,8 @@ export function TTHeader({ videoUrl, topicTitle, notifications = [] }: TTHeaderP
 
   const phrase = user?.email ? emailToPassphrase(user.email) ?? '' : '';
   const hasUnread = notifications.some((n) => n.unread);
+
+  const titleSegments = useMemo(() => parseTitleSegments(topicTitle), [topicTitle]);
 
   // Click-outside closes both dropdowns
   useEffect(() => {
@@ -51,13 +70,15 @@ export function TTHeader({ videoUrl, topicTitle, notifications = [] }: TTHeaderP
     return () => document.removeEventListener('mousedown', onDown);
   }, [accountOpen, bellOpen]);
 
-  const handleCopy = async () => {
+  const handleCopy = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!phrase) return;
     await navigator.clipboard.writeText(phrase);
     toast.success(t('auth.passphraseCopied'));
   };
 
-  const handleDownload = () => {
+  const handleDownload = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!phrase) return;
     const content = `FreeMind Passphrase\n==================\n${phrase}\n`;
     const blob = new Blob([content], { type: 'text/plain' });
@@ -69,12 +90,6 @@ export function TTHeader({ videoUrl, topicTitle, notifications = [] }: TTHeaderP
     URL.revokeObjectURL(url);
   };
 
-  const handleRegenerate = () => {
-    const newPhrase = generatePassphrase();
-    navigator.clipboard.writeText(newPhrase);
-    toast.info(t('tt.regenerateHint', { phrase: newPhrase }));
-  };
-
   return (
     <>
       <header className="absolute top-0 inset-x-0 z-30 px-4 pt-4 pointer-events-none">
@@ -82,20 +97,22 @@ export function TTHeader({ videoUrl, topicTitle, notifications = [] }: TTHeaderP
           <span className="text-foreground/90 font-medium tracking-tight lowercase text-base">
             freemind
           </span>
-          <div className="flex items-center gap-1" ref={bellRef}>
-            <button
-              onClick={() => {
-                setBellOpen((o) => !o);
-                setAccountOpen(false);
-              }}
-              className="relative h-8 w-8 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground transition-colors"
-              aria-label={t('tt.notifications')}
-            >
-              <Bell className="w-4 h-4" />
-              {hasUnread && (
-                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-destructive" />
-              )}
-            </button>
+          <div className="flex items-center gap-1">
+            <div ref={bellRef}>
+              <button
+                onClick={() => {
+                  setBellOpen((o) => !o);
+                  setAccountOpen(false);
+                }}
+                className="relative h-8 w-8 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground transition-colors"
+                aria-label={t('tt.notifications')}
+              >
+                <Bell className="w-4 h-4" />
+                {hasUnread && (
+                  <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-destructive" />
+                )}
+              </button>
+            </div>
             <div ref={accountRef}>
               <button
                 onClick={() => {
@@ -118,18 +135,20 @@ export function TTHeader({ videoUrl, topicTitle, notifications = [] }: TTHeaderP
             {t('tt.discussionQuestion')}
           </div>
           <h1 className="mt-1 text-xl font-serif italic leading-tight text-foreground px-6">
-            {topicTitle.split(/\b(Video|video)\b/).map((part, i) =>
-              part.toLowerCase() === 'video' && videoUrl ? (
+            {titleSegments.map((seg, i) =>
+              seg.href ? (
                 <a
                   key={i}
-                  href={videoUrl}
+                  href={seg.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="underline decoration-foreground/60 underline-offset-4"
                 >
-                  {part}
+                  {seg.label}
                 </a>
               ) : (
-                <span key={i}>{part}</span>
-              )
+                <span key={i}>{seg.label}</span>
+              ),
             )}
           </h1>
         </div>
@@ -187,7 +206,6 @@ export function TTHeader({ videoUrl, topicTitle, notifications = [] }: TTHeaderP
             style={{ transformOrigin: '95% 0%' }}
             className="absolute top-12 right-3 z-40 w-72 space-y-2"
           >
-            {/* Passphrase panel */}
             <div className="rounded-2xl bg-background/95 backdrop-blur-xl border border-border/40 shadow-2xl p-3">
               <div className="text-xs text-muted-foreground mb-2">
                 {t('tt.yourPassphrase')}
@@ -196,7 +214,17 @@ export function TTHeader({ videoUrl, topicTitle, notifications = [] }: TTHeaderP
                 <div className="flex-1 px-3 py-1.5 rounded-full bg-muted text-xs font-mono truncate">
                   {showPhrase ? phrase || '—' : '••••••••••••'}
                 </div>
-                <button onClick={() => setShowPhrase((s) => !s)} className="p-1.5 rounded-full hover:bg-muted">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setShowPhrase((s) => !s);
+                  }}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  className="p-1.5 rounded-full hover:bg-muted"
+                  aria-label={showPhrase ? 'Hide' : 'Show'}
+                >
                   {showPhrase ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                 </button>
               </div>
@@ -207,12 +235,9 @@ export function TTHeader({ videoUrl, topicTitle, notifications = [] }: TTHeaderP
                 <button onClick={handleDownload} className="flex-1 p-1.5 rounded-md hover:bg-muted text-muted-foreground" aria-label="Download">
                   <Download className="w-3.5 h-3.5 mx-auto" />
                 </button>
-                <button onClick={handleRegenerate} className="flex-1 p-1.5 rounded-md hover:bg-muted text-muted-foreground" aria-label="Regenerate">
-                  <RefreshCw className="w-3.5 h-3.5 mx-auto" />
-                </button>
               </div>
 
-              {/* Switch account link */}
+              {/* Switch account link (no "Konto wechseln" copy) */}
               <button
                 onClick={() => setShowLogin((s) => !s)}
                 className="mt-3 w-full text-[11px] text-muted-foreground hover:text-foreground transition-colors underline-offset-4 hover:underline"
