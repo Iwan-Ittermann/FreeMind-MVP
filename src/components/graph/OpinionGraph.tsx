@@ -168,7 +168,7 @@ export function OpinionGraph({
           onNodeClick={handleNodeClick}
           onNodeHover={handleNodeHover}
           onEdgeClick={onEdgeClick}
-          {...(theme === 'signal' ? { showLabels, showZones: chrome !== 'naked', ttMode } : {})}
+          {...(theme === 'signal' ? { showLabels, showZones: chrome !== 'naked', ttMode, ttLandmarks } : {})}
         />
       </div>
     );

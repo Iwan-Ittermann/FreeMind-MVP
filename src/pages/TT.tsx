@@ -7,6 +7,7 @@ import { TTBottomPanel } from '@/components/tt/TTBottomPanel';
 import { TTNotificationsBell } from '@/components/tt/TTNotificationsBell';
 import { useTTSwipeWindow } from '@/hooks/useTTTopics';
 import { useTopicData } from '@/hooks/useTopicData';
+import { useTTChats } from '@/hooks/useTTChats';
 import { useAuth } from '@/hooks/useAuth';
 import { GraphNode } from '@/types/graph';
 
@@ -55,6 +56,7 @@ export default function TT() {
 
   // Data for the chrome (header title, side panel lists, ownership checks).
   const { data: activeData } = useTopicData(activeTopicId);
+  const { chats: ttChats, pendingRequests: ttPendingRequests } = useTTChats(activeTopicId);
   const ownOpinionId = useMemo(() => {
     if (!user || !activeData) return null;
     return activeData.opinions.find((o) => o.authorId === user.id)?.id ?? null;
@@ -144,7 +146,9 @@ export default function TT() {
         <TTHeader topicTitle={activeData?.title ?? '...'} />
         <TTSideTabs
           opinions={activeData?.opinions ?? []}
-          chats={[]}
+          chats={ttChats}
+          pendingRequests={ttPendingRequests}
+          topicId={activeTopicId}
           onOpinionTap={(opinionId) => {
             const op = activeData?.opinions.find((o) => o.id === opinionId);
             if (op) {

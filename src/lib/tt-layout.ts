@@ -13,14 +13,14 @@
  *  - Level  6 ( 750.. 999)     → Rcore + 0.12 × (Rblue−Rcore)
  *  - Level  5 ( 500.. 749)     → Rcore + 0.30 × (Rblue−Rcore)
  *  - Level  4 ( 250.. 499)     → Rcore + 0.50 × (Rblue−Rcore)
- *  - Level  3 (  50.. 249)     → Rcore + 0.70 × (Rblue−Rcore)
- *  - Level  2 (  10..  49)     → Rcore + 0.88 × (Rblue−Rcore)  ← starter ring
+ *  - Level  3 (  50.. 249)     → Rcore + 0.70 × (Rblue−Rcore)  ← starter ring
+ *  - Level  2 (  10..  49)     → Rcore + 0.88 × (Rblue−Rcore)
  *  - Level  1 (   0)           → Rblue − tinyPad
  *  - Extreme A (-1..-1000)     → Rwhite + 4
  *  - Extreme B (-1001..-2500)  → Rwhite + 4 + step
  *  - Extreme C (< -2500)       → Rwhite + 4 + 2×step
  *
- * Newly added nodes (no chats) start with 10 starter points → Level 2.
+ * Newly added nodes (no chats) start with 50 starter points → Level 3.
  */
 
 import { GraphNode, GraphEdge, GraphData, ChatRating, Opinion, LayoutConfig, RespectfulZoneSlot } from '@/types/graph';
@@ -36,8 +36,26 @@ export interface TTLandmarks {
   whiteR: number;
 }
 
-const STARTER_POINTS = 10;
+const STARTER_POINTS = 50;
 const EXTREME_STEP = 18;
+
+/**
+ * Returns radii (in graph-SVG units) for each TT level so callers can render
+ * thin guide rings aligned with both nodes and the background SVG.
+ * Skips Level 10 when its radius is 0 (single center point).
+ */
+export function getTTLevelRadii(landmarks: TTLandmarks): { level: number; r: number }[] {
+  const out: { level: number; r: number }[] = [];
+  const positiveLevels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  for (const lvl of positiveLevels) {
+    const r = ttLevelToRadius(lvl, landmarks);
+    if (r > 0) out.push({ level: lvl, r });
+  }
+  for (const lvl of [-1, -2, -3]) {
+    out.push({ level: lvl, r: ttLevelToRadius(lvl, landmarks) });
+  }
+  return out;
+}
 
 /**
  * Discretize a (possibly negative) score to a level.
@@ -343,7 +361,7 @@ export function calculateTTLayout(
   // Pin the bot to 6 o'clock at the starter ring
   allNodes = allNodes.map(node => {
     if (node.opinion.authorId === BOT_USER_ID) {
-      const r = ttLevelToRadius(2, landmarks);
+      const r = ttLevelToRadius(3, landmarks);
       return {
         ...node,
         x: config.centerX,
