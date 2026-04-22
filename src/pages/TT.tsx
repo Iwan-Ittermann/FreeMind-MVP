@@ -8,8 +8,10 @@ import { TTNotificationsBell } from '@/components/tt/TTNotificationsBell';
 import { useTTSwipeWindow } from '@/hooks/useTTTopics';
 import { useTopicData } from '@/hooks/useTopicData';
 import { useTTChats } from '@/hooks/useTTChats';
+import { useChatRequests } from '@/hooks/useChatRequests';
 import { useAuth } from '@/hooks/useAuth';
 import { GraphNode } from '@/types/graph';
+import { toast } from 'sonner';
 
 const PRIMARY_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
 
