@@ -173,8 +173,8 @@ export default function TT() {
           onLetsChat={async (targetOpinionId) => {
             if (!ownOpinionId) return;
             if (hasAcceptedChat(ownOpinionId, targetOpinionId)) {
-              // Already have a chat — open it in the sidebar
-              setSide('right');
+              // Already have a chat — could open sidebar
+              toast.info('Chat already active');
               return;
             }
             if (hasPendingRequest(ownOpinionId, targetOpinionId)) {
