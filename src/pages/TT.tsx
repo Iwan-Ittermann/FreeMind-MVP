@@ -59,6 +59,7 @@ export default function TT() {
   // Data for the chrome (header title, side panel lists, ownership checks).
   const { data: activeData } = useTopicData(activeTopicId);
   const { chats: ttChats, pendingRequests: ttPendingRequests } = useTTChats(activeTopicId);
+  const { sendRequest, isSending, hasPendingRequest, hasAcceptedChat } = useChatRequests(activeTopicId);
   const ownOpinionId = useMemo(() => {
     if (!user || !activeData) return null;
     return activeData.opinions.find((o) => o.authorId === user.id)?.id ?? null;
