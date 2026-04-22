@@ -116,7 +116,7 @@ export function SignalRenderer({
     return nodeId === highlightedNode || nodeId === currentUserOpinionId;
   }, [showLabels, highlightedNode, currentUserOpinionId]);
 
-  const nodeScale = config.nodeRadius / 6;
+  const nodeScale = ttMode ? (config.nodeRadius / 6) * 1.6 : config.nodeRadius / 6;
 
   return (
     <svg width={width} height={height} className="overflow-visible">
