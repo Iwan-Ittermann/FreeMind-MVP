@@ -8,8 +8,10 @@ import { TTNotificationsBell } from '@/components/tt/TTNotificationsBell';
 import { useTTSwipeWindow } from '@/hooks/useTTTopics';
 import { useTopicData } from '@/hooks/useTopicData';
 import { useTTChats } from '@/hooks/useTTChats';
+import { useChatRequests } from '@/hooks/useChatRequests';
 import { useAuth } from '@/hooks/useAuth';
 import { GraphNode } from '@/types/graph';
+import { toast } from 'sonner';
 
 const PRIMARY_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
 
@@ -57,6 +59,7 @@ export default function TT() {
   // Data for the chrome (header title, side panel lists, ownership checks).
   const { data: activeData } = useTopicData(activeTopicId);
   const { chats: ttChats, pendingRequests: ttPendingRequests } = useTTChats(activeTopicId);
+  const { sendRequest, isSending, hasPendingRequest, hasAcceptedChat } = useChatRequests(activeTopicId);
   const ownOpinionId = useMemo(() => {
     if (!user || !activeData) return null;
     return activeData.opinions.find((o) => o.authorId === user.id)?.id ?? null;
@@ -167,10 +170,23 @@ export default function TT() {
               ? { id: selectedNode.id, text: selectedNode.opinion?.text ?? '' }
               : null
           }
-          onLetsChat={() => {
-            window.dispatchEvent(
-              new CustomEvent('tt:lets-chat', { detail: { selected: selectedNode } }),
-            );
+          onLetsChat={async (targetOpinionId) => {
+            if (!ownOpinionId) return;
+            if (hasAcceptedChat(ownOpinionId, targetOpinionId)) {
+              // Already have a chat — could open sidebar
+              toast.info('Chat already active');
+              return;
+            }
+            if (hasPendingRequest(ownOpinionId, targetOpinionId)) {
+              toast.info('Request already sent');
+              return;
+            }
+            try {
+              await sendRequest({ requesterOpinionId: ownOpinionId, targetOpinionId });
+              toast.success('Chat request sent!');
+            } catch {
+              toast.error('Failed to send request');
+            }
           }}
           onOpinionSubmitted={() => setSelectedNode(null)}
           onCloseSelection={() => setSelectedNode(null)}
