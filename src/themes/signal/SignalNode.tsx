@@ -39,6 +39,22 @@ function CoreShapeGold() {
   );
 }
 
+function CoreShapeRed() {
+  return (
+    <>
+      <defs>
+        <filter id="signal-glow-red">
+          <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+          <feFlood floodColor="#FF3B3B" floodOpacity="0.55" result="redColor"/>
+          <feComposite in="redColor" in2="coloredBlur" operator="in" result="redGlow"/>
+          <feMerge><feMergeNode in="redGlow"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <path d="M20 8 L23 17 L32 20 L23 23 L20 32 L17 23 L8 20 L17 17 Z" fill="#FF3B3B" filter="url(#signal-glow-red)" />
+    </>
+  );
+}
+
 function MiddleShape() {
   return (
     <circle cx="20" cy="20" r="9" fill="#14B866" />
@@ -51,6 +67,12 @@ function MiddleShapeEmerald() {
   );
 }
 
+function MiddleShapeRed() {
+  return (
+    <circle cx="20" cy="20" r="9" fill="#FF3B3B" />
+  );
+}
+
 function OuterShape() {
   return (
     <rect x="12" y="12" width="16" height="16" fill="#CC5500" stroke="none" />
@@ -58,9 +80,14 @@ function OuterShape() {
 }
 
 function OuterShapeBlack() {
-  // Smaller black square for TT extreme nodes
   return (
     <rect x="15" y="15" width="10" height="10" fill="#0a0a0a" stroke="none" />
+  );
+}
+
+function OuterShapeRed() {
+  return (
+    <rect x="15" y="15" width="10" height="10" fill="#FF3B3B" stroke="none" />
   );
 }
 
@@ -86,6 +113,12 @@ const ZONE_SHAPE_TT: Record<SemanticZone, () => JSX.Element> = {
   outer: OuterShapeBlack,
 };
 
+const ZONE_SHAPE_TT_USER: Record<SemanticZone, () => JSX.Element> = {
+  core: CoreShapeRed,
+  middle: MiddleShapeRed,
+  outer: OuterShapeRed,
+};
+
 interface SignalNodeProps {
   token: SemanticNodeToken;
   isHighlighted: boolean;
@@ -103,7 +136,9 @@ export const SignalNode = memo(function SignalNode({
   token, isHighlighted, isDimmed, showSpeechBubble, scale = 1, ttMode = false,
   onClick, onMouseEnter, onMouseLeave,
 }: SignalNodeProps) {
-  const shapeSet = ttMode ? ZONE_SHAPE_TT : ZONE_SHAPE;
+  const shapeSet = ttMode
+    ? (token.isCurrentUser ? ZONE_SHAPE_TT_USER : ZONE_SHAPE_TT)
+    : ZONE_SHAPE;
   const Shape = token.isBot ? BotShape : (shapeSet[token.zone] ?? MiddleShape);
   const opacity = isDimmed ? 0.4 : token.isHidden ? 0.3 : 1;
   const isScaled = isHighlighted && !isDimmed;
@@ -158,8 +193,8 @@ export const SignalNode = memo(function SignalNode({
         <Shape />
       </svg>
 
-      {/* "YOU" badge */}
-      {token.isCurrentUser && (
+      {/* "YOU" badge — hidden in TT mode where red color suffices */}
+      {token.isCurrentUser && !ttMode && (
         <g transform={`translate(${scaledHalf * 0.7}, ${-scaledHalf * 0.7})`}>
           <circle r={8 * scale} fill="#FF3B3B" />
           <text x={0} y={0.5} textAnchor="middle" dominantBaseline="central" fill="#FFFFFF" fontSize={5 * scale} fontWeight="bold" fontFamily="monospace">
