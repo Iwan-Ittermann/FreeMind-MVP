@@ -170,10 +170,23 @@ export default function TT() {
               ? { id: selectedNode.id, text: selectedNode.opinion?.text ?? '' }
               : null
           }
-          onLetsChat={() => {
-            window.dispatchEvent(
-              new CustomEvent('tt:lets-chat', { detail: { selected: selectedNode } }),
-            );
+          onLetsChat={async (targetOpinionId) => {
+            if (!ownOpinionId) return;
+            if (hasAcceptedChat(ownOpinionId, targetOpinionId)) {
+              // Already have a chat — open it in the sidebar
+              setSide('right');
+              return;
+            }
+            if (hasPendingRequest(ownOpinionId, targetOpinionId)) {
+              toast.info('Request already sent');
+              return;
+            }
+            try {
+              await sendRequest({ requesterOpinionId: ownOpinionId, targetOpinionId });
+              toast.success('Chat request sent!');
+            } catch {
+              toast.error('Failed to send request');
+            }
           }}
           onOpinionSubmitted={() => setSelectedNode(null)}
           onCloseSelection={() => setSelectedNode(null)}
