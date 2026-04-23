@@ -123,9 +123,9 @@ export function TTNotificationSetup({
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed bottom-0 inset-x-0 z-50 max-w-[480px] mx-auto rounded-t-3xl bg-background border border-border/40 shadow-2xl"
+            className="fixed bottom-0 inset-x-0 z-50 max-w-[480px] mx-auto rounded-t-3xl bg-background border border-border/40 shadow-2xl max-h-[85vh] flex flex-col"
           >
-            <div className="px-5 pt-5 pb-8">
+            <div className="px-5 pt-5 pb-6 overflow-y-auto flex-1">
               {/* Handle */}
               <div className="w-10 h-1 rounded-full bg-muted-foreground/30 mx-auto mb-4" />
 
