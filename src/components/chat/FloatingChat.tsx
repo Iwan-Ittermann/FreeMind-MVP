@@ -121,6 +121,8 @@ export function FloatingChat({
       isOpinion: false,
       visible: true,
       noticeText: null as string | null,
+      audioUrl: msg.audioUrl,
+      transcript: msg.transcript,
     })),
   ];
 
