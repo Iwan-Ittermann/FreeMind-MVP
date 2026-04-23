@@ -20,6 +20,7 @@ interface UseChatMessagesResult {
   messages: ChatMessage[];
   isLoading: boolean;
   sendMessage: (content: string, replyToId?: string | null) => Promise<void>;
+  sendVoiceMessage: (audioBlob: Blob) => Promise<void>;
   isSending: boolean;
   isBotTyping: boolean;
 }
@@ -54,6 +55,8 @@ export function useChatMessages(
         isOwn: msg.sender_id === user.id,
         createdAt: new Date(msg.created_at),
         replyToId: (msg as any).reply_to_id ?? null,
+        audioUrl: (msg as any).audio_url ?? null,
+        transcript: (msg as any).transcript ?? null,
       }));
     },
     enabled: !!chatId && !!user?.id,
@@ -108,6 +111,8 @@ export function useChatMessages(
             isOwn: newMsg.sender_id === user?.id,
             createdAt: new Date(newMsg.created_at),
             replyToId: newMsg.reply_to_id ?? null,
+            audioUrl: newMsg.audio_url ?? null,
+            transcript: newMsg.transcript ?? null,
           };
           
           // Add message to cache immediately if not already there
