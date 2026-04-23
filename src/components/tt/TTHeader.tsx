@@ -64,6 +64,8 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead }: TTHe
   const [filters, setFilters] = useState<NotificationFilters>(getGlobalFilters);
   const accountRef = useRef<HTMLDivElement>(null);
   const bellRef = useRef<HTMLDivElement>(null);
+  const bellDropdownRef = useRef<HTMLDivElement>(null);
+  const accountDropdownRef = useRef<HTMLDivElement>(null);
 
   const phrase = user?.email ? emailToPassphrase(user.email) ?? '' : '';
   const hasUnread = notifications.some((n) => n.unread);
