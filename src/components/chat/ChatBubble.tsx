@@ -1,6 +1,6 @@
 import { forwardRef, useState, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Quote, AlertTriangle, Eye, Reply } from 'lucide-react';
+import { Quote, AlertTriangle, Eye, Reply, Mic, Loader2 } from 'lucide-react';
 import type { ChatReaction } from '@/hooks/useChatReactions';
 
 interface ChatBubbleProps {
@@ -18,6 +18,8 @@ interface ChatBubbleProps {
   onReply?: () => void;
   onReaction?: (type: string) => void;
   hasISeenYou?: boolean;
+  audioUrl?: string | null;
+  transcript?: string | null;
 }
 
 export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(function ChatBubble({ 
@@ -34,6 +36,8 @@ export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(function C
   onReply,
   onReaction,
   hasISeenYou = false,
+  audioUrl,
+  transcript,
 }: ChatBubbleProps, ref) {
   const [showActions, setShowActions] = useState(false);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
