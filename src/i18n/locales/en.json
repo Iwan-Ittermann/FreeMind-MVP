@@ -628,6 +628,28 @@
     "subscribed": "Subscribed to this topic",
     "notSubscribed": "Subscribe to this topic",
     "fullyAgree": "Fully agree",
-    "fullyDisagree": "Fully disagree"
+    "fullyDisagree": "Fully disagree",
+    "notifSetup": {
+      "title": "Stay in the loop",
+      "description": "Get notified when something happens in this topic. Choose what matters to you.",
+      "enableButton": "Enable Notifications",
+      "notNow": "Not now",
+      "unsupported": "Your browser doesn't support notifications.",
+      "denied": "Notifications are blocked. Please allow them in your browser settings.",
+      "enabled": "Notifications enabled!"
+    },
+    "notifFilter": {
+      "newOpinion": "New opinions",
+      "newOpinionDesc": "When someone adds an opinion",
+      "newMessage": "New messages",
+      "newMessageDesc": "When you receive a chat message",
+      "newChat": "New conversations",
+      "newChatDesc": "When someone starts chatting with you",
+      "newTopic": "New topics",
+      "newTopicDesc": "When a new discussion topic is added",
+      "newHighlight": "Highlights",
+      "newHighlightDesc": "Notable activity in subscribed topics",
+      "comingSoon": "soon"
+    }
   }
 }

@@ -640,6 +640,28 @@
     "subscribed": "Du folgst diesem Thema",
     "notSubscribed": "Diesem Thema folgen",
     "fullyAgree": "Volle Zustimmung",
-    "fullyDisagree": "Volle Ablehnung"
+    "fullyDisagree": "Volle Ablehnung",
+    "notifSetup": {
+      "title": "Bleib auf dem Laufenden",
+      "description": "Erhalte Benachrichtigungen, wenn in diesem Thema etwas passiert. Wähle aus, was dich interessiert.",
+      "enableButton": "Benachrichtigungen aktivieren",
+      "notNow": "Nicht jetzt",
+      "unsupported": "Dein Browser unterstützt keine Benachrichtigungen.",
+      "denied": "Benachrichtigungen sind blockiert. Bitte erlaube sie in deinen Browser-Einstellungen.",
+      "enabled": "Benachrichtigungen aktiviert!"
+    },
+    "notifFilter": {
+      "newOpinion": "Neue Meinungen",
+      "newOpinionDesc": "Wenn jemand eine Meinung hinzufügt",
+      "newMessage": "Neue Nachrichten",
+      "newMessageDesc": "Wenn du eine Chat-Nachricht erhältst",
+      "newChat": "Neue Gespräche",
+      "newChatDesc": "Wenn jemand ein Gespräch mit dir beginnt",
+      "newTopic": "Neue Themen",
+      "newTopicDesc": "Wenn ein neues Diskussionsthema hinzugefügt wird",
+      "newHighlight": "Highlights",
+      "newHighlightDesc": "Besondere Aktivität in abonnierten Themen",
+      "comingSoon": "bald"
+    }
   }
 }
