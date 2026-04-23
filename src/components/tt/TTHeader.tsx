@@ -74,11 +74,13 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead }: TTHe
     if (!accountOpen && !bellOpen) return;
     const onDown = (e: MouseEvent) => {
       const target = e.target as Node;
-      if (accountOpen && accountRef.current && !accountRef.current.contains(target)) {
+      const bellDropdown = (bellRef as any).current?._dropdownEl ?? (bellRef as any)._dropdownEl;
+      const accountDropdown = (accountRef as any).current?._dropdownEl ?? (accountRef as any)._dropdownEl;
+      if (accountOpen && accountRef.current && !accountRef.current.contains(target) && (!accountDropdown || !accountDropdown.contains(target))) {
         setAccountOpen(false);
         setShowLogin(false);
       }
-      if (bellOpen && bellRef.current && !bellRef.current.contains(target)) {
+      if (bellOpen && bellRef.current && !bellRef.current.contains(target) && (!bellDropdown || !bellDropdown.contains(target))) {
         setBellOpen(false);
         setFiltersOpen(false);
       }
