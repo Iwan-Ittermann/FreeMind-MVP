@@ -1,56 +1,72 @@
 
 
-## Plan
+## Plan: Voice Messages with Speech-to-Text
 
-### 1. Starter capital → Level 3
+### Overview
+Add voice message recording to chats. Users tap a microphone button to record audio, which is uploaded to storage and transcribed using Lovable AI (Gemini). Messages display both an audio player and the transcript text.
 
-In `src/lib/tt-layout.ts`:
-- Change `STARTER_POINTS = 10` → `STARTER_POINTS = 50` (lower bound of Level 3 band `50..249`).
-- Update bot-pin radius from `ttLevelToRadius(2, …)` to `ttLevelToRadius(3, …)`.
-- Update header comment table to reflect Level 3 as starter.
+### 1. Database Migration
 
-### 2. Visible level rings (thin white lines)
+Add two columns to `chat_messages`:
+- `audio_url text` (nullable) -- public URL of the uploaded audio file
+- `transcript text` (nullable) -- speech-to-text result
 
-Add concentric guide circles inside the graph SVG so they share the graph's coordinate system (centered, scale exactly with the graph wrapper).
+Create a `voice-messages` storage bucket (public) with RLS policies:
+- Authenticated users can upload files
+- Public read access for playback
 
-In `src/components/graph/OpinionGraph.tsx`:
-- When `ttMode && ttLandmarks` is set, render a thin guide layer (just inside the existing `<svg>`, before nodes/edges) drawing one circle per level.
-- Reuse `ttLevelToRadius` from `tt-layout.ts` (export a small helper `getTTLevelRadii(landmarks)` that returns `{ level, r }[]` for levels 1–10 and –1, –2, –3, plus the level-10 inner orbit radius when relevant).
-- Style: `stroke="white"` `stroke-opacity="0.35"` `stroke-width="0.75"` `fill="none"`. Skip Level 10 if its radius is 0.
-- Suppress level rings in the white-band gap (between blueR and whiteR) — none exist there anyway by construction.
+### 2. Edge Function: `transcribe-voice`
 
-This keeps the rings visually aligned with both background landmarks and node positions because all three (background, rings, nodes) use the same center.
+New edge function at `supabase/functions/transcribe-voice/index.ts`:
+1. Receives `{ messageId }` from client
+2. Reads the `audio_url` from `chat_messages` using service role
+3. Downloads the audio file
+4. Converts audio to base64 and sends to Lovable AI Gateway (Gemini) with a prompt like "Transcribe this audio accurately. Return only the transcription text."
+5. Updates the `chat_messages` row with the `transcript` result
+6. Returns success/failure
 
-### 3. Fix the chat sidebar (right tab in `TTSideTabs`)
+Uses `LOVABLE_API_KEY` (already available) -- no new secrets needed.
 
-Currently `TT.tsx` passes `chats={[]}` (hardcoded) and no tap handler. The right side tab opens an empty list with no way to access conversations.
+### 3. New Hook: `useVoiceRecorder`
 
-Approach: reuse the existing chat data + view stack (`ChatsSidebar` patterns) but keep TT's lightweight visual style.
+File: `src/hooks/useVoiceRecorder.ts`
+- Uses browser `MediaRecorder` API to capture microphone audio
+- Returns `{ isRecording, startRecording, stopRecording, audioBlob, duration }`
+- Outputs WebM/Opus format
+- Handles microphone permission requests
 
-In `src/pages/TT.tsx`:
-- Replicate the data fetching from `ChatsSidebar.tsx` (myOpinion → chats with last message, polling every 4s) inside a small new hook `useTTChats(topicId)` in `src/hooks/useTTChats.ts` to avoid duplication. Returns `{ id, opinionText, lastMessage }[]` matching `TTSideTabs`'s shape.
-- Pass result as `chats` to `<TTSideTabs>`.
+### 4. Update `useChatMessages` Hook
 
-In `src/components/tt/TTSideTabs.tsx`:
-- Add a new prop `activeChatOpinionId: string | null` and an internal "expanded chat" view. When a chat row is tapped, swap the panel's body to render `<EmbeddedChatView theirOpinionId={...} />` with a back arrow header (mirrors `ChatsSidebar` lines ~270–283).
-- The right panel's `width`/`height` is already constrained; give the chat view `flex-1 min-h-0 overflow-hidden` so the embedded chat scrolls inside it.
-- Pending requests: include them in the same panel (small section above chats) so users can accept/decline. Reuse `useChatRequests(topicId).acceptRequest/declineRequest`. Mirror the request row styling already in `ChatsSidebar`.
+Add `sendVoiceMessage(audioBlob)` function:
+1. Generate a unique filename
+2. Upload blob to `voice-messages` bucket
+3. Get public URL
+4. Insert `chat_messages` row with `audio_url` set, `content` as placeholder text
+5. Call `transcribe-voice` edge function (fire-and-forget)
+6. Realtime subscription picks up the transcript update automatically
 
-In `src/pages/TT.tsx`:
-- Wire `onChatTap` from `TTSideTabs` to update local state used by the same sidebar (we keep state inside `TTSideTabs` itself — simpler: it already manages `side` open/close; add `activeChatId` state there).
+### 5. UI Changes
 
-### 4. Files
+**`ChatBubble.tsx`**:
+- Detect `audioUrl` prop on the message
+- Render an inline `<audio>` player with controls
+- Show transcript text below the player (or "Transcribing..." spinner if not yet available)
+
+**`FloatingChat.tsx` and `EmbeddedChatView.tsx`**:
+- Add a `Mic` icon button next to the send button
+- When no text is typed, show mic button; when text is typed, show send button
+- Tap mic to start recording; tap again to stop and auto-send
+- Show recording indicator (pulsing red dot + duration timer) while recording
+
+### 6. File Summary
 
 | File | Change |
-|---|---|
-| `src/lib/tt-layout.ts` | `STARTER_POINTS = 50`; bot pin → level 3; export `getTTLevelRadii(landmarks)`. |
-| `src/components/graph/OpinionGraph.tsx` | When TT mode, render thin white concentric rings using `getTTLevelRadii`. |
-| `src/hooks/useTTChats.ts` (new) | Fetch user's chats + last message + pending requests for a topic. Returns shape consumed by side tabs. |
-| `src/components/tt/TTSideTabs.tsx` | Render real chats list; tap → embedded chat view with back arrow; render pending-requests subsection with accept/decline. |
-| `src/pages/TT.tsx` | Use `useTTChats(activeTopicId)`; pass chats + pending to `<TTSideTabs>`. |
-
-### 5. Out of scope
-- Floating windows (TT uses single embedded view).
-- Unread badges in the side tab (defer).
-- Animating between old/new starter ring positions.
+|------|--------|
+| Migration SQL | Add `audio_url`, `transcript` columns; create `voice-messages` bucket + RLS |
+| `supabase/functions/transcribe-voice/index.ts` | New -- transcribes audio via Lovable AI |
+| `src/hooks/useVoiceRecorder.ts` | New -- MediaRecorder wrapper |
+| `src/hooks/useChatMessages.ts` | Add `sendVoiceMessage`, extend `ChatMessage` type with `audioUrl`/`transcript` |
+| `src/components/chat/ChatBubble.tsx` | Render audio player + transcript |
+| `src/components/chat/FloatingChat.tsx` | Add mic button and recording UI |
+| `src/components/chat/EmbeddedChatView.tsx` | Add mic button and recording UI |
 
