@@ -39,7 +39,7 @@ function parseTitleSegments(title: string): Array<{ label: string; href?: string
   return out;
 }
 
-export function TTHeader({ topicTitle, notifications = [] }: TTHeaderProps) {
+export function TTHeader({ topicTitle, notifications = [], onMarkAllRead }: TTHeaderProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [accountOpen, setAccountOpen] = useState(false);
