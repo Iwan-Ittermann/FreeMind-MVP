@@ -1,72 +1,121 @@
+## Plan: TT Browser Notifications with Filter Preferences
 
+### Current State
 
-## Plan: Voice Messages with Speech-to-Text
+- The **left-side bell** (`TTNotificationsBell`) toggles an in-app subscription per topic stored in `localStorage`. It controls whether items appear in the header bell's notification panel.
+- The **header bell** (`TTHeader`) displays a dropdown of `TTNotification` items but currently receives an empty array — the panel is wired but not populated with live data.
+- `useBrowserNotification` exists for the original `/topic/` route but is not used in `/tt`.
+- There is no notification filter system — users receive all or nothing.
 
-### Overview
-Add voice message recording to chats. Users tap a microphone button to record audio, which is uploaded to storage and transcribed using Lovable AI (Gemini). Messages display both an audio player and the transcript text.
+### Design
 
-### 1. Database Migration
+When the user taps the left-side bell for the first time:
 
-Add two columns to `chat_messages`:
-- `audio_url text` (nullable) -- public URL of the uploaded audio file
-- `transcript text` (nullable) -- speech-to-text result
+1. A brief **explanation modal** appears: "Stay in the loop — get notified about new opinions, messages, and more. You can customize what you receive." (all newvtexts integrated as i18n key for [DE] and [EN])
+2. A **notification filter icon opens a checklist** with five categories, all checked by default:
+  - New opinions added
+  - New message in existing chat
+  - First message in new chat
+  - New topic added
+  - New highlight in subscribed topic
+3. A "Turn on notifications" button triggers the browser `Notification.requestPermission()` prompt.
+4. On approval, preferences are saved to `localStorage` and the subscription is active.
+5. Subsequent taps on the bell toggle on/off; a long-press or a settings gear next to the bell reopens the filter picker.
 
-Create a `voice-messages` storage bucket (public) with RLS policies:
-- Authenticated users can upload files
-- Public read access for playback
+Browser notifications fire **only** for the categories the user has enabled. The header notification panel shows the **same** filtered set — both views share one source of truth.
 
-### 2. Edge Function: `transcribe-voice`
+### 1. Notification Preferences Storage
 
-New edge function at `supabase/functions/transcribe-voice/index.ts`:
-1. Receives `{ messageId }` from client
-2. Reads the `audio_url` from `chat_messages` using service role
-3. Downloads the audio file
-4. Converts audio to base64 and sends to Lovable AI Gateway (Gemini) with a prompt like "Transcribe this audio accurately. Return only the transcription text."
-5. Updates the `chat_messages` row with the `transcript` result
-6. Returns success/failure
+**File: `src/lib/tt-notification-prefs.ts**` (new)
 
-Uses `LOVABLE_API_KEY` (already available) -- no new secrets needed.
+```text
+Storage key: tt:notification-prefs
+Shape: Record<topicId, {
+  enabled: boolean,
+  filters: {
+    newOpinion: boolean,
+    newMessage: boolean,
+    newChat: boolean,
+    newTopic: boolean,
+    newHighlight: boolean,
+  }
+}>
+```
 
-### 3. New Hook: `useVoiceRecorder`
+Helper functions: `getPrefs(topicId)`, `setPrefs(topicId, prefs)`, `isFilterEnabled(topicId, filterKey)`.
 
-File: `src/hooks/useVoiceRecorder.ts`
-- Uses browser `MediaRecorder` API to capture microphone audio
-- Returns `{ isRecording, startRecording, stopRecording, audioBlob, duration }`
-- Outputs WebM/Opus format
-- Handles microphone permission requests
+### 2. Permission + Filter Modal
 
-### 4. Update `useChatMessages` Hook
+**File: `src/components/tt/TTNotificationSetup.tsx**` (new)
 
-Add `sendVoiceMessage(audioBlob)` function:
-1. Generate a unique filename
-2. Upload blob to `voice-messages` bucket
-3. Get public URL
-4. Insert `chat_messages` row with `audio_url` set, `content` as placeholder text
-5. Call `transcribe-voice` edge function (fire-and-forget)
-6. Realtime subscription picks up the transcript update automatically
+A bottom-sheet style modal triggered on first bell tap:
 
-### 5. UI Changes
+- Explanation text: "Get notified when something happens in this topic. Choose what matters to you."
+- Five toggle rows with labels and icons.
+- Primary CTA: "Enable Notifications" (calls `Notification.requestPermission()`).
+- Secondary: "Not now" to dismiss without enabling.
+- If permission was previously denied, show a note explaining how to unblock in browser settings.
 
-**`ChatBubble.tsx`**:
-- Detect `audioUrl` prop on the message
-- Render an inline `<audio>` player with controls
-- Show transcript text below the player (or "Transcribing..." spinner if not yet available)
+### 3. Refactor `TTNotificationsBell`
 
-**`FloatingChat.tsx` and `EmbeddedChatView.tsx`**:
-- Add a `Mic` icon button next to the send button
-- When no text is typed, show mic button; when text is typed, show send button
-- Tap mic to start recording; tap again to stop and auto-send
-- Show recording indicator (pulsing red dot + duration timer) while recording
+**File: `src/components/tt/TTNotificationsBell.tsx**` (edit)
+
+- On first tap (no prefs saved): open `TTNotificationSetup` modal.
+- On subsequent taps: toggle enabled on/off.
+- Add a small gear/settings icon that re-opens the filter picker.
+- Read/write prefs via the new helpers in `tt-notification-prefs.ts`.
+- Remove the old `STORAGE_KEY` approach.
+
+### 4. Live Notification Feed Hook
+
+**File: `src/hooks/useTTNotifications.ts**` (new)
+
+Central hook that:
+
+- Subscribes to realtime `postgres_changes` on `opinions` (INSERT), `chat_messages` (INSERT), `chat_requests` (INSERT with status=accepted), and `topics` (INSERT) for subscribed topic IDs.
+- Maintains an in-memory array of `TTNotification` items.
+- For each incoming event, checks the user's filter prefs via `isFilterEnabled()`.
+- If the filter passes:
+  - Adds the item to the notification list (for the header panel).
+  - Fires a browser `Notification` if the tab is not focused and permission is granted.
+- Deduplicates by event ID to avoid double-firing.
+- Returns `{ notifications, unreadCount, markAllRead }`.
+
+### 5. Wire Into TT Page
+
+**File: `src/pages/TT.tsx**` (edit)
+
+- Import `useTTNotifications` and pass its `notifications` to `<TTHeader>`.
+- The header bell badge now reflects real unread count.
 
 ### 6. File Summary
 
-| File | Change |
-|------|--------|
-| Migration SQL | Add `audio_url`, `transcript` columns; create `voice-messages` bucket + RLS |
-| `supabase/functions/transcribe-voice/index.ts` | New -- transcribes audio via Lovable AI |
-| `src/hooks/useVoiceRecorder.ts` | New -- MediaRecorder wrapper |
-| `src/hooks/useChatMessages.ts` | Add `sendVoiceMessage`, extend `ChatMessage` type with `audioUrl`/`transcript` |
-| `src/components/chat/ChatBubble.tsx` | Render audio player + transcript |
-| `src/components/chat/FloatingChat.tsx` | Add mic button and recording UI |
-| `src/components/chat/EmbeddedChatView.tsx` | Add mic button and recording UI |
 
+| File                                        | Change                                                               |
+| ------------------------------------------- | -------------------------------------------------------------------- |
+| `src/lib/tt-notification-prefs.ts`          | New — localStorage helpers for per-topic filter prefs                |
+| `src/components/tt/TTNotificationSetup.tsx` | New — permission request modal with filter checkboxes                |
+| `src/components/tt/TTNotificationsBell.tsx` | Refactor — integrate prefs, open setup on first tap                  |
+| `src/hooks/useTTNotifications.ts`           | New — realtime listener, filter check, browser notification dispatch |
+| `src/pages/TT.tsx`                          | Wire `useTTNotifications` → `TTHeader`                               |
+| `src/components/tt/TTHeader.tsx`            | Minor — accept `unreadCount` + `onMarkRead` props                    |
+
+
+### 7. Notification Categories Detail
+
+
+| Filter key     | Realtime source                                                                         | Browser notification title |
+| -------------- | --------------------------------------------------------------------------------------- | -------------------------- |
+| `newOpinion`   | `opinions` INSERT where `topic_id` matches                                              | "New opinion added"        |
+| `newMessage`   | `chat_messages` INSERT where chat belongs to subscribed topic, and chat already existed | "New message"              |
+| `newChat`      | `chat_messages` INSERT where it's the first message in a chat (check via count)         | "New conversation started" |
+| `newTopic`     | `topics` INSERT                                                                         | "New topic available"      |
+| `newHighlight` | Deferred — needs a highlights table. Will show as disabled/coming soon for now.         | &nbsp;                     |
+
+
+### 8. Out of Scope
+
+- Push notifications via service workers (this uses the simpler Web Notifications API which works when the tab is open).
+- Chat request notifications (explicitly excluded per user request).
+- Database-persisted notification preferences (localStorage is sufficient for this prototype).
+- Sound alerts.
