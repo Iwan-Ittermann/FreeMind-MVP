@@ -10,6 +10,7 @@ import { useTopicData } from '@/hooks/useTopicData';
 import { useTTChats } from '@/hooks/useTTChats';
 import { useChatRequests } from '@/hooks/useChatRequests';
 import { useAuth } from '@/hooks/useAuth';
+import { useTTNotifications } from '@/hooks/useTTNotifications';
 import { GraphNode } from '@/types/graph';
 import { toast } from 'sonner';
 
@@ -146,7 +147,11 @@ export default function TT() {
         </div>
 
         {/* Persistent chrome — never unmounts on swipe */}
-        <TTHeader topicTitle={activeData?.title ?? '...'} />
+        <TTHeader
+          topicTitle={activeData?.title ?? '...'}
+          notifications={ttNotifications}
+          onMarkAllRead={markAllRead}
+        />
         <TTSideTabs
           opinions={activeData?.opinions ?? []}
           chats={ttChats}
