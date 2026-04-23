@@ -115,10 +115,29 @@ export function useChatMessages(
             transcript: newMsg.transcript ?? null,
           };
           
-          // Add message to cache immediately if not already there
           queryClient.setQueryData(['chat-messages', chatId, user?.id], (old: ChatMessage[] = []) => {
             if (old.some(m => m.id === message.id)) return old;
             return [...old, message];
+          });
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'chat_messages',
+          filter: `chat_id=eq.${chatId}`,
+        },
+        (payload) => {
+          const updated = payload.new as any;
+          queryClient.setQueryData(['chat-messages', chatId, user?.id], (old: ChatMessage[] = []) => {
+            return old.map(m => m.id === updated.id ? {
+              ...m,
+              content: updated.content,
+              transcript: updated.transcript ?? null,
+              audioUrl: updated.audio_url ?? null,
+            } : m);
           });
         }
       )
