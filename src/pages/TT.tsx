@@ -49,6 +49,13 @@ export default function TT() {
   }, [user, activeData]);
   const hasOwnOpinion = !!ownOpinionId;
   const { notifications: ttNotifications, markAllRead } = useTTNotifications(activeTopicId);
+  const { data: unreadMap } = useUnreadMessages(activeTopicId, ownOpinionId);
+  const totalUnread = useMemo(() => {
+    if (!unreadMap) return 0;
+    let sum = 0;
+    unreadMap.forEach((v) => { sum += v; });
+    return sum;
+  }, [unreadMap]);
 
   // Lock viewport for this route only
   useEffect(() => {
