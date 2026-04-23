@@ -102,6 +102,7 @@ export type Database = {
       }
       chat_messages: {
         Row: {
+          audio_url: string | null
           chat_id: string
           content: string
           created_at: string
@@ -111,9 +112,11 @@ export type Database = {
           reply_to_id: string | null
           sender_id: string
           status: string | null
+          transcript: string | null
           visible: boolean | null
         }
         Insert: {
+          audio_url?: string | null
           chat_id: string
           content: string
           created_at?: string
@@ -123,9 +126,11 @@ export type Database = {
           reply_to_id?: string | null
           sender_id: string
           status?: string | null
+          transcript?: string | null
           visible?: boolean | null
         }
         Update: {
+          audio_url?: string | null
           chat_id?: string
           content?: string
           created_at?: string
@@ -135,6 +140,7 @@ export type Database = {
           reply_to_id?: string | null
           sender_id?: string
           status?: string | null
+          transcript?: string | null
           visible?: boolean | null
         }
         Relationships: [

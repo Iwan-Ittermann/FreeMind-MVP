@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, ArrowLeft, Languages, Check, ChevronRight, ChevronLeft, Ban, Unlock } from 'lucide-react';
+import { Send, ArrowLeft, Languages, Check, ChevronRight, ChevronLeft, Ban, Unlock, Mic, Square } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ChatBubble } from './ChatBubble';
@@ -13,6 +13,7 @@ import { useTypingIndicator } from '@/hooks/useTypingIndicator';
 import { useUserBlocks } from '@/hooks/useUserBlocks';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+import { useVoiceRecorder } from '@/hooks/useVoiceRecorder';
 
 interface OpinionData {
   text: string;
@@ -58,7 +59,7 @@ export function FloatingChat({
   isBotChat = false,
 }: FloatingChatProps) {
   const { t } = useTranslation();
-  const { messages: dbMessages, sendMessage, isSending, isBotTyping } = useChatMessages(
+  const { messages: dbMessages, sendMessage, sendVoiceMessage, isSending, isBotTyping } = useChatMessages(
     chatId,
     isBotChat,
     topicId && myOpinionId && theirOpinionId
@@ -67,6 +68,7 @@ export function FloatingChat({
   );
   const { partnerTyping, setTyping } = useTypingIndicator(chatId);
   const { isBlocked, isBlockedByOther, blockUser, unblockUser, isBlocking, isUnblocking } = useUserBlocks(chatId, theirUserId || null);
+  const { isRecording, duration, startRecording, stopRecording, cancelRecording } = useVoiceRecorder();
   const [inputValue, setInputValue] = useState('');
   const [translateEnabled, setTranslateEnabled] = useState(false);
   // Empathy only: -50 to +50
@@ -99,6 +101,8 @@ export function FloatingChat({
       isOpinion: true,
       visible: theirOpinion.visible,
       noticeText: theirOpinion.notice_text,
+      audioUrl: null as string | null,
+      transcript: null as string | null,
     },
     {
       id: 'opinion-mine',
@@ -109,6 +113,8 @@ export function FloatingChat({
       isOpinion: true,
       visible: myOpinion.visible,
       noticeText: myOpinion.notice_text,
+      audioUrl: null as string | null,
+      transcript: null as string | null,
     },
     ...dbMessages.map(msg => ({
       id: msg.id,
@@ -119,6 +125,8 @@ export function FloatingChat({
       isOpinion: false,
       visible: true,
       noticeText: null as string | null,
+      audioUrl: msg.audioUrl,
+      transcript: msg.transcript,
     })),
   ];
 
@@ -139,6 +147,28 @@ export function FloatingChat({
       setInputValue(content);
     }
   };
+
+  const handleVoiceToggle = async () => {
+    if (isRecording) {
+      const blob = await stopRecording();
+      if (blob && blob.size > 0) {
+        try {
+          await sendVoiceMessage(blob);
+        } catch (err) {
+          console.error('Failed to send voice message:', err);
+          toast.error('Failed to send voice message');
+        }
+      }
+    } else {
+      try {
+        await startRecording();
+      } catch {
+        toast.error('Microphone access denied');
+      }
+    }
+  };
+
+  const formatDuration = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
   const handleReaction = (messageId: string, reaction: string) => {
     console.log('Reaction:', messageId, reaction);
@@ -297,6 +327,8 @@ export function FloatingChat({
                     visible={msg.visible}
                     noticeText={msg.noticeText}
                     isBotMessage={isBotChat && !msg.isOwn}
+                    audioUrl={msg.audioUrl}
+                    transcript={msg.transcript}
                   />
                 ))}
               </AnimatePresence>
@@ -397,26 +429,51 @@ export function FloatingChat({
                   {/* Input area */}
                   <div className="p-4">
                     <div className="max-w-lg mx-auto">
-                      <div className="flex gap-2 items-center">
-                        <Input
-                          value={inputValue}
-                          onChange={(e) => handleInputChange(e.target.value)}
-                          onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-                          placeholder="Type a message..."
-                          className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-12 rounded-full px-5 text-base"
-                          disabled={isSending}
-                        />
-                        <Button 
-                          onClick={handleSend}
-                          disabled={!inputValue.trim() || isSending}
-                          className="bg-primary hover:bg-primary/90 h-12 w-12 rounded-full p-0 flex-shrink-0"
-                        >
-                          <Send className="w-5 h-5" />
-                        </Button>
-                        <div className="hidden md:block">
-                          <AIConciliateButton compact />
+                      {isRecording ? (
+                        <div className="flex gap-2 items-center">
+                          <div className="flex-1 flex items-center gap-2 bg-white/5 border border-red-500/50 h-12 rounded-full px-5">
+                            <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
+                            <span className="text-red-400 text-sm font-mono">{formatDuration(duration)}</span>
+                            <span className="text-white/50 text-sm">Recording...</span>
+                          </div>
+                          <Button
+                            onClick={handleVoiceToggle}
+                            className="bg-red-500 hover:bg-red-600 h-12 w-12 rounded-full p-0 flex-shrink-0"
+                          >
+                            <Square className="w-4 h-4 fill-current" />
+                          </Button>
                         </div>
-                      </div>
+                      ) : (
+                        <div className="flex gap-2 items-center">
+                          <Input
+                            value={inputValue}
+                            onChange={(e) => handleInputChange(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
+                            placeholder="Type a message..."
+                            className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-12 rounded-full px-5 text-base"
+                            disabled={isSending}
+                          />
+                          {inputValue.trim() ? (
+                            <Button 
+                              onClick={handleSend}
+                              disabled={isSending}
+                              className="bg-primary hover:bg-primary/90 h-12 w-12 rounded-full p-0 flex-shrink-0"
+                            >
+                              <Send className="w-5 h-5" />
+                            </Button>
+                          ) : (
+                            <Button
+                              onClick={handleVoiceToggle}
+                              className="bg-primary hover:bg-primary/90 h-12 w-12 rounded-full p-0 flex-shrink-0"
+                            >
+                              <Mic className="w-5 h-5" />
+                            </Button>
+                          )}
+                          <div className="hidden md:block">
+                            <AIConciliateButton compact />
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

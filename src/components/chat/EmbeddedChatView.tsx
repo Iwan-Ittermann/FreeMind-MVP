@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Send, Heart, HeartCrack, Check, X, Quote } from 'lucide-react';
+import { Send, Heart, HeartCrack, Check, X, Quote, Mic, Square } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,6 +14,7 @@ import { useTypingIndicator } from '@/hooks/useTypingIndicator';
 import { useUserBlocks } from '@/hooks/useUserBlocks';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+import { useVoiceRecorder } from '@/hooks/useVoiceRecorder';
 
 interface EmbeddedChatViewProps {
   theirOpinionId: string;
@@ -28,7 +29,7 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
   } = useChatSession(theirOpinionId);
 
   const topicId = theirOpinion?.topic_id ?? null;
-  const { messages: dbMessages, sendMessage, isSending, isBotTyping } = useChatMessages(
+  const { messages: dbMessages, sendMessage, sendVoiceMessage, isSending, isBotTyping } = useChatMessages(
     chatId,
     isBotChat,
     topicId && myOpinion && theirOpinion
@@ -38,6 +39,7 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
   const { partnerTyping, setTyping } = useTypingIndicator(chatId);
   const { isBlocked, isBlockedByOther } = useUserBlocks(chatId, theirUserId);
   const { getReactionsForMessage, hasReacted, addReaction, removeReaction } = useChatReactions(chatId);
+  const { isRecording, duration, startRecording, stopRecording } = useVoiceRecorder();
 
   const [inputValue, setInputValue] = useState('');
   const [isRatingOpen, setIsRatingOpen] = useState(false);
@@ -79,6 +81,28 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
       setInputValue(content);
     }
   };
+
+  const handleVoiceToggle = async () => {
+    if (isRecording) {
+      const blob = await stopRecording();
+      if (blob && blob.size > 0) {
+        try {
+          await sendVoiceMessage(blob);
+        } catch (err) {
+          console.error('Failed to send voice message:', err);
+          toast.error('Failed to send voice message');
+        }
+      }
+    } else {
+      try {
+        await startRecording();
+      } catch {
+        toast.error('Microphone access denied');
+      }
+    }
+  };
+
+  const formatDuration = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
   const handleSaveRating = async () => {
     try {
@@ -209,6 +233,8 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
                   onReply={() => handleReply({ id: msg.id, content: msg.content, isOwn: msg.isOwn })}
                   onReaction={(type) => handleReaction(msg.id, type)}
                   hasISeenYou={hasReacted(msg.id, 'i_see_you')}
+                  audioUrl={msg.audioUrl}
+                  transcript={msg.transcript}
                 />
               );
             })}
@@ -238,6 +264,20 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
           <p className="text-xs text-muted-foreground text-center py-1">
             {isBlocked ? t('floatingChat.blockedByYou') : t('floatingChat.blockedByThem')}
           </p>
+        ) : isRecording ? (
+          <div className="flex items-center gap-1.5">
+            <div className="flex-1 flex items-center gap-1.5 bg-background border border-red-500/50 h-8 rounded px-2">
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+              <span className="text-red-400 text-[10px] font-mono">{formatDuration(duration)}</span>
+            </div>
+            <Button
+              onClick={handleVoiceToggle}
+              size="icon"
+              className="h-8 w-8 shrink-0 bg-red-500 hover:bg-red-600"
+            >
+              <Square className="h-3 w-3 fill-current" />
+            </Button>
+          </div>
         ) : (
           <div className="flex items-center gap-1.5">
             {!isBotChat && (
@@ -258,14 +298,25 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
               className="h-8 text-xs bg-background text-foreground border-border"
               disabled={isSending || isRatingOpen}
             />
-            <Button
-              onClick={handleSend}
-              disabled={!inputValue.trim() || isSending || isRatingOpen}
-              size="icon"
-              className="h-8 w-8 shrink-0"
-            >
-              <Send className="h-3.5 w-3.5" />
-            </Button>
+            {inputValue.trim() ? (
+              <Button
+                onClick={handleSend}
+                disabled={isSending || isRatingOpen}
+                size="icon"
+                className="h-8 w-8 shrink-0"
+              >
+                <Send className="h-3.5 w-3.5" />
+              </Button>
+            ) : (
+              <Button
+                onClick={handleVoiceToggle}
+                disabled={isRatingOpen}
+                size="icon"
+                className="h-8 w-8 shrink-0"
+              >
+                <Mic className="h-3.5 w-3.5" />
+              </Button>
+            )}
           </div>
         )}
       </div>
