@@ -138,9 +138,35 @@ export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(function C
                   : 'bg-muted rounded-bl-md'
           }`}
         >
-          <p className={`text-sm leading-relaxed ${isBotMessage && !isOwn ? 'text-black' : isOwn && !isOpinion ? 'text-white' : 'text-foreground'}`}>
-            {content}
-          </p>
+          {audioUrl ? (
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2">
+                <Mic className={`w-3.5 h-3.5 flex-shrink-0 ${isOwn && !isOpinion ? 'text-white/70' : 'text-muted-foreground'}`} />
+                <audio
+                  controls
+                  preload="metadata"
+                  className="h-8 w-full max-w-[200px]"
+                  style={{ filter: isOwn && !isOpinion ? 'invert(1) brightness(2)' : undefined }}
+                >
+                  <source src={audioUrl} type="audio/webm" />
+                </audio>
+              </div>
+              {transcript ? (
+                <p className={`text-xs leading-relaxed italic ${isBotMessage && !isOwn ? 'text-black/70' : isOwn && !isOpinion ? 'text-white/80' : 'text-foreground/70'}`}>
+                  {transcript}
+                </p>
+              ) : (
+                <div className={`flex items-center gap-1 text-xs ${isOwn && !isOpinion ? 'text-white/60' : 'text-muted-foreground'}`}>
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                  <span>Transcribing...</span>
+                </div>
+              )}
+            </div>
+          ) : (
+            <p className={`text-sm leading-relaxed ${isBotMessage && !isOwn ? 'text-black' : isOwn && !isOpinion ? 'text-white' : 'text-foreground'}`}>
+              {content}
+            </p>
+          )}
         </motion.div>
 
         {/* Reactions display */}
