@@ -190,10 +190,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead }: TTHe
       <AnimatePresence>
         {bellOpen && (
           <motion.div
-            ref={(node) => {
-              // Extend bellRef to also contain this dropdown for outside-click detection
-              if (node) (bellRef as any)._dropdownEl = node;
-            }}
+            ref={bellDropdownRef}
             initial={{ opacity: 0, y: -8, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.96 }}
@@ -296,9 +293,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead }: TTHe
       <AnimatePresence>
         {accountOpen && (
           <motion.div
-            ref={(node) => {
-              if (node) (accountRef as any)._dropdownEl = node;
-            }}
+            ref={accountDropdownRef}
             initial={{ opacity: 0, y: -8, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.96 }}
