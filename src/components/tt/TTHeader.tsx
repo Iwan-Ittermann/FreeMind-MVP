@@ -18,6 +18,7 @@ export interface TTNotification {
 interface TTHeaderProps {
   topicTitle: string;
   notifications?: TTNotification[];
+  onMarkAllRead?: () => void;
 }
 
 /**

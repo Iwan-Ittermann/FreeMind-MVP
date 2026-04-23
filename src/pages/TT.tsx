@@ -66,6 +66,7 @@ export default function TT() {
     return activeData.opinions.find((o) => o.authorId === user.id)?.id ?? null;
   }, [user, activeData]);
   const hasOwnOpinion = !!ownOpinionId;
+  const { notifications: ttNotifications, markAllRead } = useTTNotifications(activeTopicId);
 
   // Lock viewport for this route only
   useEffect(() => {
