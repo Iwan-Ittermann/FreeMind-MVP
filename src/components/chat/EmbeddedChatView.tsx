@@ -264,62 +264,60 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
           <p className="text-xs text-muted-foreground text-center py-1">
             {isBlocked ? t('floatingChat.blockedByYou') : t('floatingChat.blockedByThem')}
           </p>
+        ) : isRecording ? (
+          <div className="flex items-center gap-1.5">
+            <div className="flex-1 flex items-center gap-1.5 bg-background border border-red-500/50 h-8 rounded px-2">
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+              <span className="text-red-400 text-[10px] font-mono">{formatDuration(duration)}</span>
+            </div>
+            <Button
+              onClick={handleVoiceToggle}
+              size="icon"
+              className="h-8 w-8 shrink-0 bg-red-500 hover:bg-red-600"
+            >
+              <Square className="h-3 w-3 fill-current" />
+            </Button>
+          </div>
         ) : (
-          {isRecording ? (
-            <div className="flex items-center gap-1.5">
-              <div className="flex-1 flex items-center gap-1.5 bg-background border border-red-500/50 h-8 rounded px-2">
-                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                <span className="text-red-400 text-[10px] font-mono">{formatDuration(duration)}</span>
-              </div>
+          <div className="flex items-center gap-1.5">
+            {!isBotChat && (
+              <Button
+                variant={isRatingOpen ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setIsRatingOpen(!isRatingOpen)}
+                className={`shrink-0 text-xs h-8 px-2.5 border-foreground/30 text-foreground ${!existingRating && !isRatingOpen ? 'animate-pulse' : ''}`}
+              >
+                {t('floatingChat.rate')}
+              </Button>
+            )}
+            <Input
+              value={inputValue}
+              onChange={(e) => handleInputChange(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
+              placeholder={t('floatingChat.typeMessage')}
+              className="h-8 text-xs bg-background text-foreground border-border"
+              disabled={isSending || isRatingOpen}
+            />
+            {inputValue.trim() ? (
+              <Button
+                onClick={handleSend}
+                disabled={isSending || isRatingOpen}
+                size="icon"
+                className="h-8 w-8 shrink-0"
+              >
+                <Send className="h-3.5 w-3.5" />
+              </Button>
+            ) : (
               <Button
                 onClick={handleVoiceToggle}
+                disabled={isRatingOpen}
                 size="icon"
-                className="h-8 w-8 shrink-0 bg-red-500 hover:bg-red-600"
+                className="h-8 w-8 shrink-0"
               >
-                <Square className="h-3 w-3 fill-current" />
+                <Mic className="h-3.5 w-3.5" />
               </Button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1.5">
-              {!isBotChat && (
-                <Button
-                  variant={isRatingOpen ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setIsRatingOpen(!isRatingOpen)}
-                  className={`shrink-0 text-xs h-8 px-2.5 border-foreground/30 text-foreground ${!existingRating && !isRatingOpen ? 'animate-pulse' : ''}`}
-                >
-                  {t('floatingChat.rate')}
-                </Button>
-              )}
-              <Input
-                value={inputValue}
-                onChange={(e) => handleInputChange(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-                placeholder={t('floatingChat.typeMessage')}
-                className="h-8 text-xs bg-background text-foreground border-border"
-                disabled={isSending || isRatingOpen}
-              />
-              {inputValue.trim() ? (
-                <Button
-                  onClick={handleSend}
-                  disabled={isSending || isRatingOpen}
-                  size="icon"
-                  className="h-8 w-8 shrink-0"
-                >
-                  <Send className="h-3.5 w-3.5" />
-                </Button>
-              ) : (
-                <Button
-                  onClick={handleVoiceToggle}
-                  disabled={isRatingOpen}
-                  size="icon"
-                  className="h-8 w-8 shrink-0"
-                >
-                  <Mic className="h-3.5 w-3.5" />
-                </Button>
-              )}
-            </div>
-          )}
+            )}
+          </div>
         )}
       </div>
     </div>
