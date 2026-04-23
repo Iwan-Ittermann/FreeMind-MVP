@@ -631,12 +631,13 @@
     "fullyDisagree": "Fully disagree",
     "notifSetup": {
       "title": "Stay in the loop",
-      "description": "Get notified when something happens in this topic. Choose what matters to you.",
+      "description": "Allow browser notifications so you never miss anything.",
       "enableButton": "Enable Notifications",
       "notNow": "Not now",
       "unsupported": "Your browser doesn't support notifications.",
       "denied": "Notifications are blocked. Please allow them in your browser settings.",
-      "enabled": "Notifications enabled!"
+      "enabled": "Notifications enabled!",
+      "previewHint": "Browser notifications are not available in preview mode. Please open the app directly at its published URL."
     },
     "notifFilter": {
       "newOpinion": "New opinions",

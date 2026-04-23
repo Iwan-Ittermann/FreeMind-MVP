@@ -144,6 +144,7 @@ export default function TT() {
           opinions={activeData?.opinions ?? []}
           chats={ttChats}
           topicId={activeTopicId}
+          unreadCount={totalUnread}
           onOpinionTap={(opinionId) => {
             const op = activeData?.opinions.find((o) => o.id === opinionId);
             if (op) {
