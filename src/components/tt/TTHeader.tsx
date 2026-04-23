@@ -103,8 +103,10 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead }: TTHe
             <div ref={bellRef}>
               <button
                 onClick={() => {
+                  const wasOpen = bellOpen;
                   setBellOpen((o) => !o);
                   setAccountOpen(false);
+                  if (!wasOpen && onMarkAllRead) onMarkAllRead();
                 }}
                 className="relative h-8 w-8 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground transition-colors"
                 aria-label={t('tt.notifications')}
