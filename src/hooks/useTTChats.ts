@@ -12,17 +12,8 @@ export interface TTChatItem {
   lastMessageAt?: string;
 }
 
-export interface TTPendingRequestItem {
-  id: string;
-  theirOpinionId: string;
-  opinionText: string;
-  direction: 'incoming' | 'outgoing';
-  createdAt: string;
-}
-
 /**
- * TT-specific chat data hook. Returns the current user's chats and pending
- * requests for a topic, polled every 4s and refreshed on realtime events.
+ * TT-specific chat data hook. Returns the current user's chats for a topic.
  */
 export function useTTChats(topicId: string) {
   const { user } = useAuth();
@@ -96,58 +87,11 @@ export function useTTChats(topicId: string) {
     refetchInterval: 4000,
   });
 
-  const { data: pendingRequests = [] } = useQuery({
-    queryKey: ['ttPendingRequests', topicId, myOpinion?.id],
-    queryFn: async (): Promise<TTPendingRequestItem[]> => {
-      if (!myOpinion?.id) return [];
-      const { data: reqData, error } = await supabase
-        .from('chat_requests')
-        .select('id, requester_opinion_id, target_opinion_id, created_at')
-        .eq('topic_id', topicId)
-        .eq('status', 'pending')
-        .or(`requester_opinion_id.eq.${myOpinion.id},target_opinion_id.eq.${myOpinion.id}`)
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      if (!reqData?.length) return [];
-
-      const otherIds = reqData.map((r) =>
-        r.requester_opinion_id === myOpinion.id ? r.target_opinion_id : r.requester_opinion_id,
-      );
-      const { data: opinionsData } = await supabase
-        .from('opinions_public')
-        .select('id, text')
-        .in('id', otherIds);
-      const textMap = new Map(opinionsData?.map((o) => [o.id, o.text]) || []);
-
-      return reqData.map((r) => {
-        const isOutgoing = r.requester_opinion_id === myOpinion.id;
-        const theirOpinionId = isOutgoing ? r.target_opinion_id : r.requester_opinion_id;
-        return {
-          id: r.id,
-          theirOpinionId,
-          opinionText: textMap.get(theirOpinionId) || '…',
-          direction: isOutgoing ? 'outgoing' : 'incoming',
-          createdAt: r.created_at,
-        };
-      });
-    },
-    enabled: !!myOpinion?.id,
-    refetchInterval: 4000,
-  });
-
-  // Realtime: refresh on chat / chat_request changes
+  // Realtime: refresh on chat changes
   useEffect(() => {
     if (!myOpinion?.id || !topicId) return;
     const channel = supabase
       .channel(`tt-chats-${topicId}-${Date.now()}`)
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'chat_requests', filter: `topic_id=eq.${topicId}` },
-        () => {
-          queryClient.refetchQueries({ queryKey: ['ttPendingRequests', topicId, myOpinion.id] });
-          queryClient.refetchQueries({ queryKey: ['ttChats', topicId, myOpinion.id] });
-        },
-      )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'chats', filter: `topic_id=eq.${topicId}` },
@@ -161,5 +105,5 @@ export function useTTChats(topicId: string) {
     };
   }, [topicId, myOpinion?.id, queryClient]);
 
-  return { chats, pendingRequests, myOpinionId: myOpinion?.id ?? null };
+  return { chats, myOpinionId: myOpinion?.id ?? null };
 }
