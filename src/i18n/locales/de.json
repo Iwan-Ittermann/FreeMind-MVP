@@ -616,6 +616,7 @@
     "opinions": "MEINUNGEN",
     "chats": "CHATS",
     "notifications": "Benachrichtigungen",
+    "notifFilterTitle": "Filter",
     "noNotifications": "Noch keine Benachrichtigungen.",
     "menu": "Menü",
     "yourPassphrase": "Deine Passphrase:",
@@ -643,12 +644,13 @@
     "fullyDisagree": "Volle Ablehnung",
     "notifSetup": {
       "title": "Bleib auf dem Laufenden",
-      "description": "Erhalte Benachrichtigungen, wenn in diesem Thema etwas passiert. Wähle aus, was dich interessiert.",
+      "description": "Erlaube Browser-Benachrichtigungen, damit du nichts verpasst.",
       "enableButton": "Benachrichtigungen aktivieren",
       "notNow": "Nicht jetzt",
       "unsupported": "Dein Browser unterstützt keine Benachrichtigungen.",
       "denied": "Benachrichtigungen sind blockiert. Bitte erlaube sie in deinen Browser-Einstellungen.",
-      "enabled": "Benachrichtigungen aktiviert!"
+      "enabled": "Benachrichtigungen aktiviert!",
+      "previewHint": "Browser-Benachrichtigungen sind im Vorschau-Modus nicht verfügbar. Bitte öffne die App direkt über die veröffentlichte URL."
     },
     "notifFilter": {
       "newOpinion": "Neue Meinungen",

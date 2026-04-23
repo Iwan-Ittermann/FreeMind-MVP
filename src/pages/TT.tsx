@@ -10,6 +10,7 @@ import { useTopicData } from '@/hooks/useTopicData';
 import { useTTChats } from '@/hooks/useTTChats';
 import { useAuth } from '@/hooks/useAuth';
 import { useTTNotifications } from '@/hooks/useTTNotifications';
+import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { GraphNode } from '@/types/graph';
 
 const PRIMARY_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
@@ -48,6 +49,13 @@ export default function TT() {
   }, [user, activeData]);
   const hasOwnOpinion = !!ownOpinionId;
   const { notifications: ttNotifications, markAllRead } = useTTNotifications(activeTopicId);
+  const { data: unreadMap } = useUnreadMessages(activeTopicId, ownOpinionId);
+  const totalUnread = useMemo(() => {
+    if (!unreadMap) return 0;
+    let sum = 0;
+    unreadMap.forEach((v) => { sum += v; });
+    return sum;
+  }, [unreadMap]);
 
   // Lock viewport for this route only
   useEffect(() => {
@@ -136,6 +144,7 @@ export default function TT() {
           opinions={activeData?.opinions ?? []}
           chats={ttChats}
           topicId={activeTopicId}
+          unreadCount={totalUnread}
           onOpinionTap={(opinionId) => {
             const op = activeData?.opinions.find((o) => o.id === opinionId);
             if (op) {
