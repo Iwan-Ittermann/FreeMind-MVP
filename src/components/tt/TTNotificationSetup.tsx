@@ -85,7 +85,7 @@ export function TTNotificationSetup({
       return;
     }
 
-    let perm = Notification.permission;
+    let perm: NotificationPermission = Notification.permission;
     if (perm !== 'granted') {
       perm = await Notification.requestPermission();
     }
