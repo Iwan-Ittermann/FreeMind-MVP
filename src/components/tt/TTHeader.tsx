@@ -64,6 +64,8 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead }: TTHe
   const [filters, setFilters] = useState<NotificationFilters>(getGlobalFilters);
   const accountRef = useRef<HTMLDivElement>(null);
   const bellRef = useRef<HTMLDivElement>(null);
+  const bellDropdownRef = useRef<HTMLDivElement>(null);
+  const accountDropdownRef = useRef<HTMLDivElement>(null);
 
   const phrase = user?.email ? emailToPassphrase(user.email) ?? '' : '';
   const hasUnread = notifications.some((n) => n.unread);
@@ -74,11 +76,11 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead }: TTHe
     if (!accountOpen && !bellOpen) return;
     const onDown = (e: MouseEvent) => {
       const target = e.target as Node;
-      if (accountOpen && accountRef.current && !accountRef.current.contains(target)) {
+      if (accountOpen && accountRef.current && !accountRef.current.contains(target) && (!accountDropdownRef.current || !accountDropdownRef.current.contains(target))) {
         setAccountOpen(false);
         setShowLogin(false);
       }
-      if (bellOpen && bellRef.current && !bellRef.current.contains(target)) {
+      if (bellOpen && bellRef.current && !bellRef.current.contains(target) && (!bellDropdownRef.current || !bellDropdownRef.current.contains(target))) {
         setBellOpen(false);
         setFiltersOpen(false);
       }
@@ -184,16 +186,17 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead }: TTHe
         </div>
       </header>
 
-      {/* Notifications dropdown (header bell) */}
+      {/* Notifications dropdown (header bell) — rendered outside header but checked via bellRef */}
       <AnimatePresence>
         {bellOpen && (
           <motion.div
+            ref={bellDropdownRef}
             initial={{ opacity: 0, y: -8, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.96 }}
             transition={{ type: 'spring', stiffness: 360, damping: 28 }}
             style={{ transformOrigin: '90% 0%' }}
-            className="absolute top-12 right-12 z-40 w-72 rounded-2xl bg-background/95 backdrop-blur-xl border border-border/40 shadow-2xl overflow-hidden"
+            className="absolute top-12 right-12 z-40 w-72 rounded-2xl bg-background/95 backdrop-blur-xl border border-border/40 shadow-2xl overflow-hidden pointer-events-auto"
           >
             <div className="px-4 py-3 border-b border-border/30 flex items-center justify-between">
               <h3 className="text-sm font-semibold">{t('tt.notifications')}</h3>
@@ -290,12 +293,13 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead }: TTHe
       <AnimatePresence>
         {accountOpen && (
           <motion.div
+            ref={accountDropdownRef}
             initial={{ opacity: 0, y: -8, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.96 }}
             transition={{ type: 'spring', stiffness: 360, damping: 28 }}
             style={{ transformOrigin: '95% 0%' }}
-            className="absolute top-12 right-3 z-40 w-72 space-y-2"
+            className="absolute top-12 right-3 z-40 w-72 space-y-2 pointer-events-auto"
           >
             <div className="rounded-2xl bg-background/95 backdrop-blur-xl border border-border/40 shadow-2xl p-3">
               <div className="text-xs text-muted-foreground mb-2">
