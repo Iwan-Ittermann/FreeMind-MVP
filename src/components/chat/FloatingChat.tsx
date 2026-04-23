@@ -423,26 +423,51 @@ export function FloatingChat({
                   {/* Input area */}
                   <div className="p-4">
                     <div className="max-w-lg mx-auto">
-                      <div className="flex gap-2 items-center">
-                        <Input
-                          value={inputValue}
-                          onChange={(e) => handleInputChange(e.target.value)}
-                          onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-                          placeholder="Type a message..."
-                          className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-12 rounded-full px-5 text-base"
-                          disabled={isSending}
-                        />
-                        <Button 
-                          onClick={handleSend}
-                          disabled={!inputValue.trim() || isSending}
-                          className="bg-primary hover:bg-primary/90 h-12 w-12 rounded-full p-0 flex-shrink-0"
-                        >
-                          <Send className="w-5 h-5" />
-                        </Button>
-                        <div className="hidden md:block">
-                          <AIConciliateButton compact />
+                      {isRecording ? (
+                        <div className="flex gap-2 items-center">
+                          <div className="flex-1 flex items-center gap-2 bg-white/5 border border-red-500/50 h-12 rounded-full px-5">
+                            <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
+                            <span className="text-red-400 text-sm font-mono">{formatDuration(duration)}</span>
+                            <span className="text-white/50 text-sm">Recording...</span>
+                          </div>
+                          <Button
+                            onClick={handleVoiceToggle}
+                            className="bg-red-500 hover:bg-red-600 h-12 w-12 rounded-full p-0 flex-shrink-0"
+                          >
+                            <Square className="w-4 h-4 fill-current" />
+                          </Button>
                         </div>
-                      </div>
+                      ) : (
+                        <div className="flex gap-2 items-center">
+                          <Input
+                            value={inputValue}
+                            onChange={(e) => handleInputChange(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
+                            placeholder="Type a message..."
+                            className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-12 rounded-full px-5 text-base"
+                            disabled={isSending}
+                          />
+                          {inputValue.trim() ? (
+                            <Button 
+                              onClick={handleSend}
+                              disabled={isSending}
+                              className="bg-primary hover:bg-primary/90 h-12 w-12 rounded-full p-0 flex-shrink-0"
+                            >
+                              <Send className="w-5 h-5" />
+                            </Button>
+                          ) : (
+                            <Button
+                              onClick={handleVoiceToggle}
+                              className="bg-primary hover:bg-primary/90 h-12 w-12 rounded-full p-0 flex-shrink-0"
+                            >
+                              <Mic className="w-5 h-5" />
+                            </Button>
+                          )}
+                          <div className="hidden md:block">
+                            <AIConciliateButton compact />
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
