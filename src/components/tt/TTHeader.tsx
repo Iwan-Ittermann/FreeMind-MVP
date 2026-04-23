@@ -1,11 +1,16 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { Bell, DoorOpen, Copy, Download, Eye, EyeOff, X } from 'lucide-react';
+import { Bell, DoorOpen, Copy, Download, Eye, EyeOff, X, SlidersHorizontal, MessageSquare, MessageCircle, Globe, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { emailToPassphrase } from '@/lib/passphrase';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuthForm } from '@/components/AuthForm';
+import {
+  NotificationFilters,
+  getGlobalFilters,
+  setGlobalFilters,
+} from '@/lib/tt-notification-prefs';
 
 export interface TTNotification {
   id: string;
@@ -21,10 +26,6 @@ interface TTHeaderProps {
   onMarkAllRead?: () => void;
 }
 
-/**
- * Parse markdown-style links `[label](url)` in the topic title.
- * Plain titles (no `[..](..)`) render unchanged.
- */
 function parseTitleSegments(title: string): Array<{ label: string; href?: string }> {
   const re = /\[([^\]]+)\]\(([^)]+)\)/g;
   const out: Array<{ label: string; href?: string }> = [];
@@ -39,13 +40,28 @@ function parseTitleSegments(title: string): Array<{ label: string; href?: string
   return out;
 }
 
+const FILTER_ITEMS: {
+  key: keyof NotificationFilters;
+  iconEl: React.ReactNode;
+  labelKey: string;
+  disabled?: boolean;
+}[] = [
+  { key: 'newOpinion', iconEl: <Bell className="w-3.5 h-3.5" />, labelKey: 'tt.notifFilter.newOpinion' },
+  { key: 'newMessage', iconEl: <MessageSquare className="w-3.5 h-3.5" />, labelKey: 'tt.notifFilter.newMessage' },
+  { key: 'newChat', iconEl: <MessageCircle className="w-3.5 h-3.5" />, labelKey: 'tt.notifFilter.newChat' },
+  { key: 'newTopic', iconEl: <Globe className="w-3.5 h-3.5" />, labelKey: 'tt.notifFilter.newTopic' },
+  { key: 'newHighlight', iconEl: <Sparkles className="w-3.5 h-3.5" />, labelKey: 'tt.notifFilter.newHighlight', disabled: true },
+];
+
 export function TTHeader({ topicTitle, notifications = [], onMarkAllRead }: TTHeaderProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [accountOpen, setAccountOpen] = useState(false);
   const [bellOpen, setBellOpen] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [showPhrase, setShowPhrase] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+  const [filters, setFilters] = useState<NotificationFilters>(getGlobalFilters);
   const accountRef = useRef<HTMLDivElement>(null);
   const bellRef = useRef<HTMLDivElement>(null);
 
@@ -54,7 +70,6 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead }: TTHe
 
   const titleSegments = useMemo(() => parseTitleSegments(topicTitle), [topicTitle]);
 
-  // Click-outside closes both dropdowns
   useEffect(() => {
     if (!accountOpen && !bellOpen) return;
     const onDown = (e: MouseEvent) => {
@@ -65,6 +80,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead }: TTHe
       }
       if (bellOpen && bellRef.current && !bellRef.current.contains(target)) {
         setBellOpen(false);
+        setFiltersOpen(false);
       }
     };
     document.addEventListener('mousedown', onDown);
@@ -91,6 +107,15 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead }: TTHe
     URL.revokeObjectURL(url);
   };
 
+  const toggleFilter = (key: keyof NotificationFilters) => {
+    setFilters((f) => {
+      const next = { ...f, [key]: !f[key] };
+      setGlobalFilters(next);
+      window.dispatchEvent(new CustomEvent('tt:subscription-changed'));
+      return next;
+    });
+  };
+
   return (
     <>
       <div aria-hidden className="absolute top-0 inset-x-0 z-20 h-24 pointer-events-none bg-gradient-to-b from-background/70 via-background/30 to-transparent" />
@@ -106,6 +131,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead }: TTHe
                   const wasOpen = bellOpen;
                   setBellOpen((o) => !o);
                   setAccountOpen(false);
+                  setFiltersOpen(false);
                   if (!wasOpen && onMarkAllRead) onMarkAllRead();
                 }}
                 className="relative h-8 w-8 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground transition-colors"
@@ -169,9 +195,70 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead }: TTHe
             style={{ transformOrigin: '90% 0%' }}
             className="absolute top-12 right-12 z-40 w-72 rounded-2xl bg-background/95 backdrop-blur-xl border border-border/40 shadow-2xl overflow-hidden"
           >
-            <div className="px-4 py-3 border-b border-border/30">
+            <div className="px-4 py-3 border-b border-border/30 flex items-center justify-between">
               <h3 className="text-sm font-semibold">{t('tt.notifications')}</h3>
+              <button
+                onClick={() => setFiltersOpen((o) => !o)}
+                className={`p-1 rounded-md transition-colors ${filtersOpen ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                aria-label={t('tt.notifFilterTitle')}
+              >
+                <SlidersHorizontal className="w-3.5 h-3.5" />
+              </button>
             </div>
+
+            {/* Inline filter panel */}
+            <AnimatePresence>
+              {filtersOpen && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden border-b border-border/30"
+                >
+                  <div className="px-3 py-2 space-y-0.5">
+                    {FILTER_ITEMS.map((item) => (
+                      <button
+                        key={item.key}
+                        onClick={() => !item.disabled && toggleFilter(item.key)}
+                        disabled={item.disabled}
+                        className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left text-xs transition-colors ${
+                          item.disabled
+                            ? 'opacity-40 cursor-not-allowed'
+                            : filters[item.key]
+                              ? 'bg-primary/10 text-foreground'
+                              : 'text-muted-foreground hover:bg-muted/50'
+                        }`}
+                      >
+                        <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${
+                          filters[item.key] && !item.disabled ? 'text-primary' : 'text-muted-foreground'
+                        }`}>
+                          {item.iconEl}
+                        </div>
+                        <span className="flex-1">{t(item.labelKey)}</span>
+                        {!item.disabled && (
+                          <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
+                            filters[item.key] ? 'bg-primary border-primary text-primary-foreground' : 'border-border'
+                          }`}>
+                            {filters[item.key] && (
+                              <svg className="w-2.5 h-2.5" viewBox="0 0 12 12" fill="none">
+                                <path d="M2 6l3 3 5-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                              </svg>
+                            )}
+                          </div>
+                        )}
+                        {item.disabled && (
+                          <span className="text-[9px] uppercase tracking-wider text-muted-foreground">
+                            {t('tt.notifFilter.comingSoon')}
+                          </span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <div className="max-h-72 overflow-auto">
               {notifications.length === 0 ? (
                 <p className="text-xs text-muted-foreground text-center py-6 px-4">
@@ -241,7 +328,6 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead }: TTHe
                 </button>
               </div>
 
-              {/* Switch account link (no "Konto wechseln" copy) */}
               <button
                 onClick={() => setShowLogin((s) => !s)}
                 className="mt-3 w-full text-[11px] text-muted-foreground hover:text-foreground transition-colors underline-offset-4 hover:underline"
