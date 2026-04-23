@@ -59,7 +59,7 @@ export function FloatingChat({
   isBotChat = false,
 }: FloatingChatProps) {
   const { t } = useTranslation();
-  const { messages: dbMessages, sendMessage, isSending, isBotTyping } = useChatMessages(
+  const { messages: dbMessages, sendMessage, sendVoiceMessage, isSending, isBotTyping } = useChatMessages(
     chatId,
     isBotChat,
     topicId && myOpinionId && theirOpinionId
@@ -68,6 +68,7 @@ export function FloatingChat({
   );
   const { partnerTyping, setTyping } = useTypingIndicator(chatId);
   const { isBlocked, isBlockedByOther, blockUser, unblockUser, isBlocking, isUnblocking } = useUserBlocks(chatId, theirUserId || null);
+  const { isRecording, duration, startRecording, stopRecording, cancelRecording } = useVoiceRecorder();
   const [inputValue, setInputValue] = useState('');
   const [translateEnabled, setTranslateEnabled] = useState(false);
   // Empathy only: -50 to +50
