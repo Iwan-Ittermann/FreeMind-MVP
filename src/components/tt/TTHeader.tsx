@@ -18,6 +18,7 @@ export interface TTNotification {
 interface TTHeaderProps {
   topicTitle: string;
   notifications?: TTNotification[];
+  onMarkAllRead?: () => void;
 }
 
 /**
@@ -38,7 +39,7 @@ function parseTitleSegments(title: string): Array<{ label: string; href?: string
   return out;
 }
 
-export function TTHeader({ topicTitle, notifications = [] }: TTHeaderProps) {
+export function TTHeader({ topicTitle, notifications = [], onMarkAllRead }: TTHeaderProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [accountOpen, setAccountOpen] = useState(false);
@@ -102,8 +103,10 @@ export function TTHeader({ topicTitle, notifications = [] }: TTHeaderProps) {
             <div ref={bellRef}>
               <button
                 onClick={() => {
+                  const wasOpen = bellOpen;
                   setBellOpen((o) => !o);
                   setAccountOpen(false);
+                  if (!wasOpen && onMarkAllRead) onMarkAllRead();
                 }}
                 className="relative h-8 w-8 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground transition-colors"
                 aria-label={t('tt.notifications')}
