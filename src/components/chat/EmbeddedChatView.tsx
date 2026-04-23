@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Send, Heart, HeartCrack, Check, X, Quote, Mic, Square } from 'lucide-react';
+import { Send, Heart, HeartCrack, Check, X, Quote, Mic, Square, Ban, Unlock } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -37,7 +37,7 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
       : undefined,
   );
   const { partnerTyping, setTyping } = useTypingIndicator(chatId);
-  const { isBlocked, isBlockedByOther } = useUserBlocks(chatId, theirUserId);
+  const { isBlocked, isBlockedByOther, blockUser, unblockUser, isBlocking, isUnblocking } = useUserBlocks(chatId, theirUserId);
   const { getReactionsForMessage, hasReacted, addReaction, removeReaction } = useChatReactions(chatId);
   const { isRecording, duration, startRecording, stopRecording } = useVoiceRecorder();
 
