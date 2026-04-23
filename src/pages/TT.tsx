@@ -10,6 +10,7 @@ import { useTopicData } from '@/hooks/useTopicData';
 import { useTTChats } from '@/hooks/useTTChats';
 import { useAuth } from '@/hooks/useAuth';
 import { useTTNotifications } from '@/hooks/useTTNotifications';
+import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { GraphNode } from '@/types/graph';
 
 const PRIMARY_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
