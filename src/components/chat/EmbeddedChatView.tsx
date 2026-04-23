@@ -210,6 +210,8 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
                   onReply={() => handleReply({ id: msg.id, content: msg.content, isOwn: msg.isOwn })}
                   onReaction={(type) => handleReaction(msg.id, type)}
                   hasISeenYou={hasReacted(msg.id, 'i_see_you')}
+                  audioUrl={msg.audioUrl}
+                  transcript={msg.transcript}
                 />
               );
             })}

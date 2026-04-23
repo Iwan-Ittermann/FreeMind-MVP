@@ -323,6 +323,8 @@ export function FloatingChat({
                     visible={msg.visible}
                     noticeText={msg.noticeText}
                     isBotMessage={isBotChat && !msg.isOwn}
+                    audioUrl={msg.audioUrl}
+                    transcript={msg.transcript}
                   />
                 ))}
               </AnimatePresence>
