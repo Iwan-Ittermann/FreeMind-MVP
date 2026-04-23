@@ -144,6 +144,28 @@ export function FloatingChat({
     }
   };
 
+  const handleVoiceToggle = async () => {
+    if (isRecording) {
+      const blob = await stopRecording();
+      if (blob && blob.size > 0) {
+        try {
+          await sendVoiceMessage(blob);
+        } catch (err) {
+          console.error('Failed to send voice message:', err);
+          toast.error('Failed to send voice message');
+        }
+      }
+    } else {
+      try {
+        await startRecording();
+      } catch {
+        toast.error('Microphone access denied');
+      }
+    }
+  };
+
+  const formatDuration = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+
   const handleReaction = (messageId: string, reaction: string) => {
     console.log('Reaction:', messageId, reaction);
   };
