@@ -12,6 +12,8 @@ export interface ChatMessage {
   isOwn: boolean;
   createdAt: Date;
   replyToId: string | null;
+  audioUrl: string | null;
+  transcript: string | null;
 }
 
 interface UseChatMessagesResult {
