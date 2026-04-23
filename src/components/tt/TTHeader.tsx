@@ -125,7 +125,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead }: TTHe
             freemind
           </span>
           <div className="flex items-center gap-1">
-            <div ref={bellRef}>
+            <div ref={bellRef} className="relative">
               <button
                 onClick={() => {
                   const wasOpen = bellOpen;
