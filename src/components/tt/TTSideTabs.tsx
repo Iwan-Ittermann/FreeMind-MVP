@@ -15,13 +15,14 @@ interface TTSideTabsProps {
   chats?: TTChatItem[];
   topicId: string;
   onOpinionTap?: (opinionId: string) => void;
+  unreadCount?: number;
 }
 
 const SPRING = { type: 'spring' as const, stiffness: 320, damping: 28 };
 
 export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
   function TTSideTabs(
-    { opinions = [], chats = [], topicId, onOpinionTap },
+    { opinions = [], chats = [], topicId, onOpinionTap, unreadCount = 0 },
     ref,
   ) {
     const { t } = useTranslation();
@@ -73,9 +74,9 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
           >
             {t('tt.chats')}
           </span>
-          {chats.length > 0 && (
-            <span className="absolute -top-1 -left-1 min-w-[16px] h-4 rounded-full bg-accent text-accent-foreground text-[9px] font-bold flex items-center justify-center px-1">
-              {chats.length}
+          {unreadCount > 0 && (
+            <span className="absolute -top-1 -left-1 min-w-[16px] h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center px-1">
+              {unreadCount}
             </span>
           )}
         </button>
