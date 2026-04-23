@@ -101,6 +101,8 @@ export function FloatingChat({
       isOpinion: true,
       visible: theirOpinion.visible,
       noticeText: theirOpinion.notice_text,
+      audioUrl: null as string | null,
+      transcript: null as string | null,
     },
     {
       id: 'opinion-mine',
@@ -111,6 +113,8 @@ export function FloatingChat({
       isOpinion: true,
       visible: myOpinion.visible,
       noticeText: myOpinion.notice_text,
+      audioUrl: null as string | null,
+      transcript: null as string | null,
     },
     ...dbMessages.map(msg => ({
       id: msg.id,
