@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, ArrowLeft, Languages, Check, ChevronRight, ChevronLeft, Ban, Unlock } from 'lucide-react';
+import { Send, ArrowLeft, Languages, Check, ChevronRight, ChevronLeft, Ban, Unlock, Mic, Square } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ChatBubble } from './ChatBubble';
@@ -13,6 +13,7 @@ import { useTypingIndicator } from '@/hooks/useTypingIndicator';
 import { useUserBlocks } from '@/hooks/useUserBlocks';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+import { useVoiceRecorder } from '@/hooks/useVoiceRecorder';
 
 interface OpinionData {
   text: string;
