@@ -38,9 +38,14 @@ serve(async (req) => {
     const audioResponse = await fetch(message.audio_url);
     if (!audioResponse.ok) throw new Error("Failed to download audio");
     const audioBuffer = await audioResponse.arrayBuffer();
-    const audioBase64 = btoa(
-      String.fromCharCode(...new Uint8Array(audioBuffer))
-    );
+    const bytes = new Uint8Array(audioBuffer);
+    let binary = "";
+    const CHUNK_SIZE = 8192;
+    for (let i = 0; i < bytes.length; i += CHUNK_SIZE) {
+      const chunk = bytes.subarray(i, Math.min(i + CHUNK_SIZE, bytes.length));
+      binary += String.fromCharCode.apply(null, Array.from(chunk));
+    }
+    const audioBase64 = btoa(binary);
 
     // 3. Send to Lovable AI (Gemini) for transcription
     const aiResponse = await fetch(
