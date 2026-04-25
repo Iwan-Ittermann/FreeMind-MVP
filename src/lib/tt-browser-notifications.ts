@@ -4,11 +4,7 @@ export type TTNotificationPermissionResult = NotificationPermission | 'unsupport
 
 export function browserNotificationsUnavailable() {
   if (typeof window === 'undefined' || !('Notification' in window)) return true;
-  try {
-    return window.self !== window.top;
-  } catch {
-    return true;
-  }
+  return false;
 }
 
 export async function requestBrowserNotificationPermission(): Promise<TTNotificationPermissionResult> {
