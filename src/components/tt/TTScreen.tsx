@@ -91,8 +91,8 @@ function TTScreenInnerImpl({
       data-tt-topic={topicId}
       data-tt-real-topic={isLoopClone ? undefined : topicId}
       data-tt-clone={isLoopClone ? 'true' : undefined}
-      className="relative w-full h-[100dvh] snap-start snap-always overflow-hidden"
-      style={{ contain: 'strict', backgroundColor: '#eef2f4', transform: 'translateZ(0)' }}
+      className="relative w-full h-[100dvh] snap-start snap-always overflow-visible"
+      style={{ contain: 'layout size', backgroundColor: '#eef2f4', transform: 'translateZ(0)' }}
     >
       {/* Full-bleed background, sized so the blue ring spans the viewport width.
           Lives outside the graph wrapper so it isn't clipped. */}
@@ -126,10 +126,10 @@ function TTScreenInnerImpl({
 
       {/* Graph stays centered in its own square wrapper. Both the background's
           dark core and this wrapper are centered on the section, so they align. */}
-      <div className="absolute inset-0 flex items-center justify-center">
+      <div className="absolute inset-0 z-10 flex items-center justify-center overflow-visible">
         <div
           ref={wrapperRef}
-          className="relative"
+          className="relative overflow-visible"
           style={{
             width: 'min(85vmin, 480px)',
             height: 'min(85vmin, 480px)',
@@ -139,7 +139,7 @@ function TTScreenInnerImpl({
         >
           {/* Graph layer — sized to match wrapper so SVG center aligns with background center */}
           {size > 0 && ttLandmarks && (
-            <div data-tt-graph className="absolute inset-0 flex items-center justify-center will-change-transform">
+            <div data-tt-graph className="absolute inset-0 flex items-center justify-center overflow-visible will-change-transform">
               <OpinionGraph
                 opinions={data?.opinions ?? []}
                 ratings={data?.ratings ?? []}

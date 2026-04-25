@@ -123,7 +123,7 @@ export function SignalRenderer({
       width={width}
       height={height}
       className="overflow-visible"
-      style={{ contain: 'paint', transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}
+      style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}
     >
       <rect width={width} height={height} fill="transparent" onClick={() => onNodeClick(null as unknown as GraphNode)} />
       {showZones && <SignalZones zones={zoneTokens} config={config} />}
