@@ -119,12 +119,17 @@ export function SignalRenderer({
   const nodeScale = ttMode ? (config.nodeRadius / 6) * 1.6 : config.nodeRadius / 6;
 
   return (
-    <svg width={width} height={height} className="overflow-visible">
+    <svg
+      width={width}
+      height={height}
+      className="overflow-visible"
+      style={{ contain: 'paint', transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}
+    >
       <rect width={width} height={height} fill="transparent" onClick={() => onNodeClick(null as unknown as GraphNode)} />
       {showZones && <SignalZones zones={zoneTokens} config={config} />}
 
       {ttLandmarks && (
-        <g className="tt-level-rings" pointerEvents="none" style={{ filter: 'blur(0.6px)' }}>
+        <g className="tt-level-rings" pointerEvents="none">
           {getTTLevelRadii(ttLandmarks).map(({ level, r }) => (
             <circle
               key={level}
