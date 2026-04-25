@@ -5,7 +5,6 @@ import { TTHeader } from '@/components/tt/TTHeader';
 import { TTSideTabs, TTSideTabsHandle } from '@/components/tt/TTSideTabs';
 import { TTBottomPanel } from '@/components/tt/TTBottomPanel';
 import { TTNotificationsBell } from '@/components/tt/TTNotificationsBell';
-import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTTTopics, useTTSwipeWindow } from '@/hooks/useTTTopics';
@@ -24,7 +23,6 @@ const PRIMARY_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
 export default function TT() {
   const { topicId: routeId } = useParams<{ topicId?: string }>();
   const navigate = useNavigate();
-  const { t } = useTranslation();
   const { user } = useAuth();
 
   const initialTopicId = routeId ?? PRIMARY_TOPIC_ID;
@@ -154,7 +152,7 @@ export default function TT() {
         <div
           ref={containerRef}
           className="absolute inset-0 overflow-y-scroll snap-y snap-mandatory"
-          style={{ scrollSnapType: 'y mandatory', scrollbarWidth: 'none' }}
+          style={{ scrollSnapType: 'y mandatory', scrollbarWidth: 'none', overscrollBehaviorY: 'contain', willChange: 'scroll-position' }}
         >
           {renderedTopics.map((topic, i) => (
             <TTScreenInner
@@ -196,14 +194,13 @@ export default function TT() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 8 }}
-              className="pointer-events-none absolute left-1/2 top-[18%] z-30 -translate-x-1/2 rounded-full border border-border/40 bg-background/80 px-3 py-2 shadow-md backdrop-blur-md"
+              className="pointer-events-none absolute bottom-[calc(env(safe-area-inset-bottom)+104px)] left-1/2 z-30 -translate-x-1/2 rounded-full border border-border/40 bg-background/80 px-2.5 py-2 shadow-md backdrop-blur-md"
             >
-              <div className="flex items-center gap-2 text-[11px] font-medium text-foreground/75">
+              <div className="flex items-center justify-center text-foreground/75">
                 <motion.div animate={{ y: [-2, 2, -2] }} transition={{ repeat: Infinity, duration: 1.2 }}>
-                  <ChevronUp className="h-3.5 w-3.5" />
-                  <ChevronDown className="-mt-1 h-3.5 w-3.5" />
+                  <ChevronUp className="h-5 w-5" />
+                  <ChevronDown className="-mt-1.5 h-5 w-5" />
                 </motion.div>
-                <span>{t('tt.scrollHint')}</span>
               </div>
             </motion.div>
           )}
