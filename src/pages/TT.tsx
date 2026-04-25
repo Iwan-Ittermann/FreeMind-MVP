@@ -1,11 +1,14 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { TTScreenInner } from '@/components/tt/TTScreen';
 import { TTHeader } from '@/components/tt/TTHeader';
 import { TTSideTabs, TTSideTabsHandle } from '@/components/tt/TTSideTabs';
 import { TTBottomPanel } from '@/components/tt/TTBottomPanel';
 import { TTNotificationsBell } from '@/components/tt/TTNotificationsBell';
-import { useTTSwipeWindow } from '@/hooks/useTTTopics';
+import { useTranslation } from 'react-i18next';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useTTTopics, useTTSwipeWindow } from '@/hooks/useTTTopics';
 import { useTopicData } from '@/hooks/useTopicData';
 import { useTTChats } from '@/hooks/useTTChats';
 import { useAuth } from '@/hooks/useAuth';
@@ -21,6 +24,7 @@ const PRIMARY_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
 export default function TT() {
   const { topicId: routeId } = useParams<{ topicId?: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user } = useAuth();
 
   const initialTopicId = routeId ?? PRIMARY_TOPIC_ID;
@@ -33,7 +37,21 @@ export default function TT() {
   }, [routeId, activeTopicId]);
 
   const { topics } = useTTSwipeWindow(activeTopicId);
+  const { data: topicList = [] } = useTTTopics();
+  const renderedTopics = useMemo(() => {
+    if (topics.length <= 1) return topics.map((id) => ({ id, key: id, clone: false }));
+    const first = topics[0];
+    const last = topics[topics.length - 1];
+    return [
+      { id: last, key: `clone-start-${last}`, clone: true },
+      ...topics.map((id) => ({ id, key: id, clone: false })),
+      { id: first, key: `clone-end-${first}`, clone: true },
+    ];
+  }, [topics]);
   const containerRef = useRef<HTMLDivElement>(null);
+  const ignoreObserverRef = useRef(false);
+  const [scrollHintCount, setScrollHintCount] = useState(() => Number(localStorage.getItem('tt:topic-scroll-count') || '0'));
+  const showScrollHint = topics.length > 1 && scrollHintCount < 2;
   const sideTabsRef = useRef<TTSideTabsHandle>(null);
 
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
@@ -42,6 +60,7 @@ export default function TT() {
   }, [activeTopicId]);
 
   const { data: activeData } = useTopicData(activeTopicId);
+  const activeTopicTitle = topicList.find((topic) => topic.id === activeTopicId)?.title ?? activeData?.title ?? '...';
   const { chats: ttChats } = useTTChats(activeTopicId);
   const ownOpinionId = useMemo(() => {
     if (!user || !activeData) return null;
@@ -72,16 +91,21 @@ export default function TT() {
     };
   }, []);
 
-  useEffect(() => {
+  const jumpToRealTopic = useCallback((id: string) => {
     const root = containerRef.current;
     if (!root) return;
-    const target = root.querySelector<HTMLElement>(`[data-tt-topic="${activeTopicId}"]`);
-    if (target) {
-      requestAnimationFrame(() => {
-        target.scrollIntoView({ behavior: 'auto', block: 'start' });
-      });
-    }
-  }, [activeTopicId, topics.length]);
+    const target = root.querySelector<HTMLElement>(`[data-tt-real-topic="${id}"]`);
+    if (!target) return;
+    ignoreObserverRef.current = true;
+    target.scrollIntoView({ behavior: 'auto', block: 'start' });
+    requestAnimationFrame(() => {
+      ignoreObserverRef.current = false;
+    });
+  }, []);
+
+  useEffect(() => {
+    requestAnimationFrame(() => jumpToRealTopic(activeTopicId));
+  }, [activeTopicId, renderedTopics.length, jumpToRealTopic]);
 
   useEffect(() => {
     const root = containerRef.current;
@@ -94,12 +118,24 @@ export default function TT() {
           if (!e.isIntersecting) continue;
           if (!best || e.intersectionRatio > best.intersectionRatio) best = e;
         }
+        if (ignoreObserverRef.current) return;
         if (best && best.intersectionRatio > 0.6) {
-          const id = (best.target as HTMLElement).dataset.ttTopic;
-          if (id && id !== activeTopicId) {
+          const el = best.target as HTMLElement;
+          const id = el.dataset.ttTopic;
+          if (!id) return;
+          if (el.dataset.ttClone === 'true') {
+            jumpToRealTopic(id);
+            return;
+          }
+          if (id !== activeTopicId) {
             window.dispatchEvent(new CustomEvent('tt:close-all-chats'));
             setActiveTopicId(id);
             setSelectedNode(null);
+            setScrollHintCount((count) => {
+              const next = Math.min(2, count + 1);
+              localStorage.setItem('tt:topic-scroll-count', String(next));
+              return next;
+            });
             navigate(`/tt/${id}`, { replace: true });
           }
         }
@@ -110,7 +146,7 @@ export default function TT() {
     const sections = root.querySelectorAll('[data-tt-topic]');
     sections.forEach((s) => observer.observe(s));
     return () => observer.disconnect();
-  }, [activeTopicId, navigate, topics.join('|')]);
+  }, [activeTopicId, navigate, renderedTopics.map((topic) => topic.key).join('|'), jumpToRealTopic]);
 
   return (
     <div className="fixed inset-0 bg-black flex items-center justify-center">
@@ -120,14 +156,15 @@ export default function TT() {
           className="absolute inset-0 overflow-y-scroll snap-y snap-mandatory"
           style={{ scrollSnapType: 'y mandatory', scrollbarWidth: 'none' }}
         >
-          {topics.map((id, i) => (
+          {renderedTopics.map((topic, i) => (
             <TTScreenInner
-              key={id}
-              topicId={id}
+              key={topic.key}
+              topicId={topic.id}
               hue={(i * 47) % 360}
-              selectedNodeId={id === activeTopicId ? selectedNode?.id ?? null : null}
+              isLoopClone={topic.clone}
+              selectedNodeId={topic.id === activeTopicId && !topic.clone ? selectedNode?.id ?? null : null}
               onNodeSelect={(n) => {
-                if (id === activeTopicId) setSelectedNode(n);
+                if (topic.id === activeTopicId && !topic.clone) setSelectedNode(n);
               }}
             />
           ))}
@@ -135,7 +172,7 @@ export default function TT() {
 
         {/* Persistent chrome */}
         <TTHeader
-          topicTitle={activeData?.title ?? '...'}
+          topicTitle={activeTopicTitle}
           notifications={ttNotifications}
           onMarkAllRead={markAllRead}
         />
@@ -152,6 +189,25 @@ export default function TT() {
             }
           }}
         />
+
+        <AnimatePresence>
+          {showScrollHint && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              className="pointer-events-none absolute left-1/2 top-[18%] z-30 -translate-x-1/2 rounded-full border border-border/40 bg-background/80 px-3 py-2 shadow-md backdrop-blur-md"
+            >
+              <div className="flex items-center gap-2 text-[11px] font-medium text-foreground/75">
+                <motion.div animate={{ y: [-2, 2, -2] }} transition={{ repeat: Infinity, duration: 1.2 }}>
+                  <ChevronUp className="h-3.5 w-3.5" />
+                  <ChevronDown className="-mt-1 h-3.5 w-3.5" />
+                </motion.div>
+                <span>{t('tt.scrollHint')}</span>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
         <TTNotificationsBell topicId={activeTopicId} />
         <TTBottomPanel
           topicId={activeTopicId}
