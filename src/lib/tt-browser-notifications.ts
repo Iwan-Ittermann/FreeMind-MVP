@@ -24,12 +24,16 @@ export async function requestBrowserNotificationPermission(): Promise<TTNotifica
 export async function enableTopicNotificationsWithPermission(topicId: string) {
   const permission = await requestBrowserNotificationPermission();
   if (permission === 'granted') {
-    setPrefs(topicId, { enabled: true });
-    window.dispatchEvent(
-      new CustomEvent('tt:subscription-changed', {
-        detail: { topicId, enabled: true },
-      }),
-    );
+    enableTopicNotifications(topicId);
   }
   return permission;
+}
+
+export function enableTopicNotifications(topicId: string) {
+  setPrefs(topicId, { enabled: true });
+  window.dispatchEvent(
+    new CustomEvent('tt:subscription-changed', {
+      detail: { topicId, enabled: true },
+    }),
+  );
 }
