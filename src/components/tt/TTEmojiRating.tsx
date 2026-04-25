@@ -1,14 +1,16 @@
 import { cn } from '@/lib/utils';
 
 /**
- * Compact 5-step disagreement picker using naturally-colored circle emojis.
+ * Responsive 5-step disagreement picker.
  * Maps to 0–100 (0 = full agreement, 100 = full disagreement).
- *
- * Index → value:  0:0  1:25  2:50  3:75  4:100
  */
-const VALUES = [0, 25, 50, 75, 100] as const;
-// Native colored circles — no backdrop needed
-const ICONS = ['🟢', '🟡', '🟠', '🔴', '⚫'];
+const OPTIONS = [
+  { label: 'Yes!', value: 0, className: 'bg-emerald-900 text-white border-emerald-950' },
+  { label: 'Yes', value: 25, className: 'bg-emerald-600 text-white border-emerald-700' },
+  { label: 'Neutral', value: 50, className: 'bg-muted text-foreground border-border' },
+  { label: 'No', value: 75, className: 'bg-red-600 text-white border-red-700' },
+  { label: 'No!', value: 100, className: 'bg-red-900 text-white border-red-950' },
+] as const;
 
 interface TTEmojiRatingProps {
   value: number;
@@ -19,8 +21,8 @@ interface TTEmojiRatingProps {
 function nearestIndex(value: number): number {
   let best = 0;
   let bestDist = Infinity;
-  VALUES.forEach((v, i) => {
-    const d = Math.abs(v - value);
+  OPTIONS.forEach((option, i) => {
+    const d = Math.abs(option.value - value);
     if (d < bestDist) {
       bestDist = d;
       best = i;
@@ -33,24 +35,26 @@ export function TTEmojiRating({ value, onChange, disabled }: TTEmojiRatingProps)
   const activeIdx = nearestIndex(value);
 
   return (
-    <div className="flex items-center gap-1">
-      {ICONS.map((icon, i) => {
+    <div className="grid w-full grid-cols-5 gap-1" role="radiogroup" aria-label="Disagreement rating">
+      {OPTIONS.map((option, i) => {
         const isActive = i === activeIdx;
         return (
           <button
-            key={i}
+            key={option.value}
             type="button"
             disabled={disabled}
-            onClick={() => onChange(VALUES[i])}
+            onClick={() => onChange(option.value)}
             className={cn(
-              'text-base leading-none transition-all p-0.5',
-              isActive ? 'scale-125 opacity-100' : 'opacity-50 hover:opacity-90',
-              disabled && 'opacity-30 cursor-not-allowed',
+              'h-8 min-w-0 rounded-full border px-1 text-[10px] font-semibold transition-all',
+              option.className,
+              isActive ? 'scale-105 opacity-100 shadow-md ring-2 ring-foreground/20' : 'opacity-55 hover:opacity-90',
+              disabled && 'cursor-not-allowed opacity-30',
             )}
-            aria-label={`Rate ${VALUES[i]}`}
-            aria-pressed={isActive}
+            aria-label={option.label}
+            aria-checked={isActive}
+            role="radio"
           >
-            {icon}
+            <span className="block truncate">{option.label}</span>
           </button>
         );
       })}
