@@ -5,11 +5,11 @@ import { cn } from '@/lib/utils';
  * Maps to 0–100 (0 = full agreement, 100 = full disagreement).
  */
 const OPTIONS = [
-  { label: 'Yes!', value: 0, className: 'bg-emerald-900 text-white border-emerald-950' },
-  { label: 'Yes', value: 25, className: 'bg-emerald-600 text-white border-emerald-700' },
-  { label: 'Neutral', value: 50, className: 'bg-muted text-foreground border-border' },
-  { label: 'No', value: 75, className: 'bg-red-600 text-white border-red-700' },
-  { label: 'No!', value: 100, className: 'bg-red-900 text-white border-red-950' },
+  { label: 'Yes!', value: 0, className: 'tt-disagree-yes-strong' },
+  { label: 'Yes', value: 25, className: 'tt-disagree-yes' },
+  { label: 'Neutral', value: 50, className: 'tt-disagree-neutral' },
+  { label: 'No', value: 75, className: 'tt-disagree-no' },
+  { label: 'No!', value: 100, className: 'tt-disagree-no-strong' },
 ] as const;
 
 interface TTEmojiRatingProps {
