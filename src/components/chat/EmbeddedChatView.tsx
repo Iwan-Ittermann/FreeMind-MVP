@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Send, Heart, HeartCrack, Check, X, Quote, Mic, Square, Ban, Unlock } from 'lucide-react';
+import { Send, Heart, HeartCrack, Check, X, Quote, Mic, Square, Ban, Unlock, Sparkles } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -46,6 +46,7 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
   const [empathy, setEmpathy] = useState(0);
   const [initialized, setInitialized] = useState(false);
   const [replyingTo, setReplyingTo] = useState<{ id: string; content: string; isOwn: boolean } | null>(null);
+  const [showUnlockSpark, setShowUnlockSpark] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -134,6 +135,18 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
   // Build a map of message ID -> content for reply previews
   const messageContentMap = new Map<string, string>();
   dbMessages.forEach(msg => messageContentMap.set(msg.id, msg.content));
+  const ownSentCount = dbMessages.filter((msg) => msg.isOwn).length;
+  const canRateRespect = !isBotChat && ownSentCount >= 2;
+
+  useEffect(() => {
+    if (!chatId || !canRateRespect) return;
+    const key = `tt:respect-unlocked:${chatId}`;
+    if (sessionStorage.getItem(key) === 'true') return;
+    sessionStorage.setItem(key, 'true');
+    setShowUnlockSpark(true);
+    const timer = setTimeout(() => setShowUnlockSpark(false), 1400);
+    return () => clearTimeout(timer);
+  }, [chatId, canRateRespect]);
 
   const isLoading = !myOpinion || !theirOpinion;
 
@@ -302,24 +315,46 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
           </div>
         ) : (
           <div className="flex items-center gap-1.5">
-            {!isBotChat && (
-              <Button
-                variant={isRatingOpen ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setIsRatingOpen(!isRatingOpen)}
-                className={`shrink-0 text-xs h-8 px-2.5 border-foreground/30 text-foreground ${!existingRating && !isRatingOpen ? 'animate-pulse' : ''}`}
-              >
-                {t('floatingChat.rate')}
-              </Button>
-            )}
-            <Input
-              value={inputValue}
-              onChange={(e) => handleInputChange(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-              placeholder={t('floatingChat.typeMessage')}
-              className="h-8 text-xs bg-background text-foreground border-border"
-              disabled={isSending || isRatingOpen}
-            />
+            <div className="relative min-w-0 flex-1">
+              {!isBotChat && (
+                <button
+                  type="button"
+                  onClick={() => canRateRespect && setIsRatingOpen(!isRatingOpen)}
+                  disabled={!canRateRespect}
+                  className={`absolute left-1.5 top-1/2 z-10 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full transition-colors ${
+                    canRateRespect
+                      ? isRatingOpen
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-rose-400 hover:bg-muted'
+                      : 'text-muted-foreground/40 cursor-not-allowed'
+                  }`}
+                  title={canRateRespect ? t('floatingChat.rateConversation') : t('tt.respectUnlockHint')}
+                  aria-label={t('floatingChat.respect')}
+                >
+                  <Heart className="h-3.5 w-3.5" />
+                  <AnimatePresence>
+                    {showUnlockSpark && (
+                      <motion.span
+                        initial={{ opacity: 0, scale: 0.4, rotate: -20 }}
+                        animate={{ opacity: 1, scale: 1.6, rotate: 10 }}
+                        exit={{ opacity: 0, scale: 2 }}
+                        className="pointer-events-none absolute -right-2 -top-2 text-primary"
+                      >
+                        <Sparkles className="h-3.5 w-3.5" />
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </button>
+              )}
+              <Input
+                value={inputValue}
+                onChange={(e) => handleInputChange(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
+                placeholder={t('floatingChat.typeMessage')}
+                className={`h-8 text-xs bg-background text-foreground border-border ${!isBotChat ? 'pl-8' : ''}`}
+                disabled={isSending || isRatingOpen}
+              />
+            </div>
             {inputValue.trim() ? (
               <Button
                 onClick={handleSend}
