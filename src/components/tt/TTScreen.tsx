@@ -16,6 +16,7 @@ interface TTScreenInnerProps {
   index?: number;
   selectedNodeId: string | null;
   onNodeSelect: (node: GraphNode | null) => void;
+  isLoopClone?: boolean;
   /** Called from parent so it can read opinions for the side panel. */
   onDataReady?: (data: ReturnType<typeof useTopicData>['data']) => void;
 }
@@ -33,6 +34,7 @@ function TTScreenInnerImpl({
   hue = 0,
   selectedNodeId,
   onNodeSelect,
+  isLoopClone = false,
 }: TTScreenInnerProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -87,6 +89,8 @@ function TTScreenInnerImpl({
   return (
     <section
       data-tt-topic={topicId}
+      data-tt-real-topic={isLoopClone ? undefined : topicId}
+      data-tt-clone={isLoopClone ? 'true' : undefined}
       className="relative w-full h-[100dvh] snap-start overflow-hidden"
       style={{ contain: 'layout paint', backgroundColor: '#eef2f4' }}
     >

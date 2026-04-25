@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import { useDisagreementRating } from '@/hooks/useOpinionRating';
 import { ReportDialog } from '@/components/moderation/ReportDialog';
 import { ensureSilentAuth } from '@/lib/silent-auth';
+import { enableTopicNotificationsWithPermission } from '@/lib/tt-browser-notifications';
 
 interface SelectedOpinion {
   id: string;
@@ -108,9 +109,13 @@ export function TTBottomPanel({
         _ip_address: ip,
       });
       if (error) throw error;
+      const permission = await enableTopicNotificationsWithPermission(topicId);
       setText('');
       setFocused(false);
       toast.success(t('tt.opinionPosted'));
+      if (permission === 'denied') {
+        toast.error(t('tt.notifSetup.denied'));
+      }
       onOpinionSubmitted?.();
     } catch (e: any) {
       toast.error(e.message ?? t('tt.opinionFailed'));
@@ -147,8 +152,8 @@ export function TTBottomPanel({
             </div>
 
             {/* Emoji rating + Let's chat (inline row) */}
-            <div className="mt-3 flex items-center justify-between gap-3">
-              <div className="flex flex-col gap-0.5">
+            <div className="mt-3 flex items-center justify-between gap-2">
+              <div className="min-w-0 flex-1 flex flex-col gap-0.5">
                 {canRate ? (
                   <>
                     <TTEmojiRating value={disagreement} onChange={setDisagreement} />

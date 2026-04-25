@@ -354,7 +354,10 @@
     "loginToStart": "Zum Login"
   },
   "unifiedTutorial": {
-    "welcome": { "title": "Willkommen!", "text": "Willkommen bei FreeMind! Wir zeigen dir die Grundlagen." },
+    "welcome": {
+      "title": "Willkommen!",
+      "text": "Willkommen bei FreeMind! Wir zeigen dir die Grundlagen."
+    },
     "addOpinion": {
       "title": "Teile deine Meinung",
       "text": "Klicke auf 'Meinung hinzufügen' um deine Perspektive zum Thema zu teilen."
@@ -363,7 +366,6 @@
       "title": "Deine Meinung",
       "text": "Das ist deine Meinung auf der Karte! Wenn du mit anderen chattest, wird es zu einem Haus."
     },
-
     "requestChat": {
       "title": "Chat anfragen",
       "text": "Klicke jetzt auf 'Chat anfragen' bei einer Meinung, um ein Gespräch zu starten."
@@ -664,6 +666,8 @@
       "newHighlight": "Highlights",
       "newHighlightDesc": "Besondere Aktivität in abonnierten Themen",
       "comingSoon": "bald"
-    }
+    },
+    "scrollHint": "Wische für mehr Themen",
+    "respectUnlockHint": "Nach 2 Nachrichten freigeschaltet"
   }
 }
