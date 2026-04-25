@@ -7,8 +7,8 @@ export interface TTTopicLite {
 }
 
 /**
- * Fetch a small ordered list of public topics for the TT swipe feed.
- * Kept intentionally minimal — single fetch, cached.
+ * Fetch all public topics for the TT swipe feed.
+ * Kept intentionally lightweight (id + title only) so headers can update fast.
  */
 export function useTTTopics() {
   return useQuery({
@@ -18,8 +18,7 @@ export function useTTTopics() {
         .from('topics')
         .select('id, title')
         .eq('status', 'Active')
-        .order('created_at', { ascending: false })
-        .limit(20);
+        .order('created_at', { ascending: false });
       if (error) throw error;
       return (data ?? []) as TTTopicLite[];
     },
@@ -28,23 +27,10 @@ export function useTTTopics() {
 }
 
 /**
- * Returns a [prev, current, next] window around currentTopicId.
+ * Returns all topic ids for the TT feed. The page adds loop clones around them.
  */
 export function useTTSwipeWindow(currentTopicId: string) {
   const { data: topics = [], isLoading } = useTTTopics();
-
-  if (topics.length === 0) {
-    return { topics: [currentTopicId], current: currentTopicId, isLoading };
-  }
-
-  const idx = topics.findIndex((t) => t.id === currentTopicId);
-  if (idx === -1) {
-    // Current isn't in the list — render it standalone with first known after it
-    return { topics: [currentTopicId, ...topics.slice(0, 1).map((t) => t.id)], current: currentTopicId, isLoading };
-  }
-
-  const prev = idx > 0 ? topics[idx - 1].id : null;
-  const next = idx < topics.length - 1 ? topics[idx + 1].id : null;
-  const window = [prev, topics[idx].id, next].filter(Boolean) as string[];
-  return { topics: window, current: currentTopicId, isLoading };
+  const ids = topics.map((t) => t.id);
+  return { topics: ids.length ? ids : [currentTopicId], current: currentTopicId, isLoading };
 }
