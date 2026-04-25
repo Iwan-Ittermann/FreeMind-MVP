@@ -354,7 +354,10 @@
     "loginToStart": "Go to Login"
   },
   "unifiedTutorial": {
-    "welcome": { "title": "Welcome!", "text": "Welcome to FreeMind! Let's walk you through the basics." },
+    "welcome": {
+      "title": "Welcome!",
+      "text": "Welcome to FreeMind! Let's walk you through the basics."
+    },
     "addOpinion": {
       "title": "Share Your Opinion",
       "text": "Click the 'Add Opinion' button to share your perspective on the topic."
@@ -363,8 +366,10 @@
       "title": "Your Opinion",
       "text": "This is your opinion on the map! As you chat with others, it will move to the middle."
     },
-
-    "requestChat": { "title": "Request a Chat", "text": "Now click 'Request to Chat' to start a conversation." },
+    "requestChat": {
+      "title": "Request a Chat",
+      "text": "Now click 'Request to Chat' to start a conversation."
+    },
     "nowWeWait": {
       "title": "Now We Wait!",
       "text": "Your request has been sent! Wait for someone to accept, or accept an incoming request."
@@ -424,7 +429,10 @@
         "title": "Polarization",
         "desc": "Debates drift to extremes – productive exchange barely happens."
       },
-      "volume": { "title": "Volume Over Quality", "desc": "The most visible voices are not the most constructive." },
+      "volume": {
+        "title": "Volume Over Quality",
+        "desc": "The most visible voices are not the most constructive."
+      },
       "structure": {
         "title": "Missing Structure",
         "desc": "There is no space where opposing views can meet in an orderly way."
@@ -440,7 +448,10 @@
         "title": "Respect × Opposition",
         "desc": "Only those who engage respectfully with real opposites move to the center."
       },
-      "quality": { "title": "Visible Quality", "desc": "Constructive exchanges become measurable – not volume." }
+      "quality": {
+        "title": "Visible Quality",
+        "desc": "Constructive exchanges become measurable – not volume."
+      }
     },
     "useCases": {
       "headline": "Designed for",
@@ -481,7 +492,10 @@
         "q": "How is abuse prevented?",
         "a": "Through topic-specific IP logging, legally compliant reporting procedures, and transparent deletion logic under German law."
       },
-      "public": { "q": "Are the discussions public?", "a": "Opinions are visible, identities remain anonymous." }
+      "public": {
+        "q": "Are the discussions public?",
+        "a": "Opinions are visible, identities remain anonymous."
+      }
     },
     "cta": {
       "headline": "Ready for a new form of public discourse?",
@@ -652,6 +666,8 @@
       "newHighlight": "Highlights",
       "newHighlightDesc": "Notable activity in subscribed topics",
       "comingSoon": "soon"
-    }
+    },
+    "scrollHint": "Swipe for more topics",
+    "respectUnlockHint": "Unlocked after 2 messages"
   }
 }
