@@ -6,6 +6,7 @@ import { emailToPassphrase } from '@/lib/passphrase';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuthForm } from '@/components/AuthForm';
+import { StartTourButton } from '@/onboarding/StartTourButton';
 import {
   NotificationFilters,
   getGlobalFilters,
@@ -338,6 +339,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead }: TTHe
               >
                 {showLogin ? t('common.cancel') : t('tt.alreadyHavePassphrase')}
               </button>
+              <StartTourButton onStart={() => setAccountOpen(false)} />
 
               <AnimatePresence>
                 {showLogin && (

@@ -181,6 +181,17 @@
     animation: gentle-ring-pulse 2s ease-in-out infinite;
   }
 
+  @keyframes freemind-tour-pulse {
+    0%, 100% {
+      opacity: 0.9;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.45;
+      transform: scale(1.025);
+    }
+  }
+
   /* Hide scrollbar on mobile but keep functionality */
   @media (max-width: 768px) {
     .hide-scrollbar {

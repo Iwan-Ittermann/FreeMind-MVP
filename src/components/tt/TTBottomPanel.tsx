@@ -136,6 +136,7 @@ export function TTBottomPanel({
         <div className="absolute bottom-0 inset-x-0 z-20 px-3 pb-3">
           <div
             ref={panelRef}
+            data-onboarding="selected-opinion-panel"
             className="rounded-2xl bg-background/95 backdrop-blur-md border border-border/40 shadow-lg p-4 relative"
           >
             {/* Report button (top-right) */}
@@ -160,7 +161,9 @@ export function TTBottomPanel({
               <div className="min-w-0 flex-1 flex flex-col gap-0.5">
                 {canRate ? (
                   <>
-                    <TTEmojiRating value={disagreement} onChange={setDisagreement} />
+                    <div data-onboarding="disagreement-rating">
+                      <TTEmojiRating value={disagreement} onChange={setDisagreement} />
+                    </div>
                     <div className="flex items-center justify-between text-[9px] text-muted-foreground tracking-wide px-0.5">
                       <span>{t('tt.fullyAgree')}</span>
                       <span>{t('tt.fullyDisagree')}</span>
@@ -178,6 +181,7 @@ export function TTBottomPanel({
               <Button
                 variant="outline"
                 size="sm"
+                data-onboarding="lets-chat-button"
                 className="rounded-full shrink-0 h-8 text-xs"
                 onClick={() => {
                   if (!user) {
@@ -207,7 +211,7 @@ export function TTBottomPanel({
   // STATE 2: No opinion yet (or browsing) → expanding input with floating button
   if (!hasOwnOpinion) {
     return (
-      <div ref={wrapperRef} className="absolute bottom-0 inset-x-0 z-20 px-3 pb-3">
+      <div ref={wrapperRef} data-onboarding="opinion-cta" className="absolute bottom-0 inset-x-0 z-20 px-3 pb-3">
         <div className="relative">
           {/* Floating Posten button — appears when focused */}
           <AnimatePresence>
@@ -221,6 +225,7 @@ export function TTBottomPanel({
               >
                 <Button
                   size="sm"
+                  data-onboarding="post-button"
                   className="rounded-full uppercase tracking-wider text-xs h-9 shadow-lg bg-primary text-primary-foreground hover:bg-primary/90"
                   onClick={handleSubmit}
                   disabled={submitting || text.trim().length < 10}
@@ -254,7 +259,7 @@ export function TTBottomPanel({
 
   // STATE 3: Has own opinion, nothing selected → empty placeholder
   return (
-    <div className="absolute bottom-0 inset-x-0 z-20 px-3 pb-3 pointer-events-none">
+    <div data-onboarding="opinion-cta" className="absolute bottom-0 inset-x-0 z-20 px-3 pb-3 pointer-events-none">
       <div className="rounded-2xl bg-background/70 backdrop-blur-sm border border-border/30 shadow p-3 text-center">
         <p className="text-xs text-muted-foreground">{t('tt.tapNodeHint')}</p>
       </div>
