@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 import { useDisagreementRating } from '@/hooks/useOpinionRating';
 import { ReportDialog } from '@/components/moderation/ReportDialog';
 import { ensureSilentAuth } from '@/lib/silent-auth';
-import { enableTopicNotificationsWithPermission } from '@/lib/tt-browser-notifications';
+import { enableTopicNotifications, requestBrowserNotificationPermission } from '@/lib/tt-browser-notifications';
 
 interface SelectedOpinion {
   id: string;
@@ -98,6 +98,7 @@ export function TTBottomPanel({
       toast.error(t('tt.opinionTooShort'));
       return;
     }
+    const permissionPromise = requestBrowserNotificationPermission();
     setSubmitting(true);
     try {
       // Silent signup if needed — keeps `auth.users` empty for pure browsers
@@ -109,7 +110,10 @@ export function TTBottomPanel({
         _ip_address: ip,
       });
       if (error) throw error;
-      const permission = await enableTopicNotificationsWithPermission(topicId);
+      const permission = await permissionPromise;
+      if (permission === 'granted') {
+        enableTopicNotifications(topicId);
+      }
       setText('');
       setFocused(false);
       toast.success(t('tt.opinionPosted'));
