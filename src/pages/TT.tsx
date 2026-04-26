@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { TTScreenInner } from '@/components/tt/TTScreen';
 import { TTHeader } from '@/components/tt/TTHeader';
 import { TTSideTabs, TTSideTabsHandle } from '@/components/tt/TTSideTabs';
@@ -15,6 +16,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useTTNotifications } from '@/hooks/useTTNotifications';
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { GraphNode } from '@/types/graph';
+import { supabase } from '@/integrations/supabase/client';
 
 const PRIMARY_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
 const TT_ONBOARDING_DONE_KEY = 'tt:onboarding:first-step-done';
@@ -27,7 +29,8 @@ const TT_ONBOARDING_ADD_OPINION_STEP = 2;
 export default function TT() {
   const { topicId: routeId } = useParams<{ topicId?: string }>();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const { user, loading: authLoading } = useAuth();
 
   const initialTopicId = routeId ?? PRIMARY_TOPIC_ID;
   const [activeTopicId, setActiveTopicId] = useState(initialTopicId);
@@ -68,14 +71,32 @@ export default function TT() {
     setSelectedNode(null);
   }, [activeTopicId]);
 
-  const { data: activeData } = useTopicData(activeTopicId);
+  const { data: activeData, isLoading: activeDataLoading } = useTopicData(activeTopicId);
   const activeTopicTitle = topicList.find((topic) => topic.id === activeTopicId)?.title ?? activeData?.title ?? '...';
   const { chats: ttChats } = useTTChats(activeTopicId);
-  const ownOpinionId = useMemo(() => {
+  const visibleOwnOpinionId = useMemo(() => {
     if (!user || !activeData) return null;
     return activeData.opinions.find((o) => o.authorId === user.id)?.id ?? null;
   }, [user, activeData]);
+  const { data: directOwnOpinionId = null, isLoading: directOwnOpinionLoading } = useQuery({
+    queryKey: ['tt-own-opinion', activeTopicId, user?.id],
+    enabled: !!activeTopicId && !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('opinions_public')
+        .select('id')
+        .eq('topic_id', activeTopicId)
+        .eq('user_id', user!.id)
+        .eq('visible', true)
+        .maybeSingle();
+
+      if (error) throw error;
+      return data?.id ?? null;
+    },
+  });
+  const ownOpinionId = visibleOwnOpinionId ?? directOwnOpinionId;
   const hasOwnOpinion = !!ownOpinionId;
+  const ownOpinionKnown = !authLoading && !activeDataLoading && (!user || !directOwnOpinionLoading);
   const { notifications: ttNotifications, markAllRead } = useTTNotifications(activeTopicId);
   const { data: unreadMap } = useUnreadMessages(activeTopicId, ownOpinionId);
   const totalUnread = useMemo(() => {
