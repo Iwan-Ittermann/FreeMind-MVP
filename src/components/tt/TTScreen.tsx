@@ -16,6 +16,7 @@ interface TTScreenInnerProps {
   index?: number;
   selectedNodeId: string | null;
   onNodeSelect: (node: GraphNode | null) => void;
+  highlightAllNodes?: boolean;
   isLoopClone?: boolean;
   /** Called from parent so it can read opinions for the side panel. */
   onDataReady?: (data: ReturnType<typeof useTopicData>['data']) => void;
@@ -34,6 +35,7 @@ function TTScreenInnerImpl({
   hue = 0,
   selectedNodeId,
   onNodeSelect,
+  highlightAllNodes = false,
   isLoopClone = false,
 }: TTScreenInnerProps) {
   const { t } = useTranslation();
@@ -149,6 +151,7 @@ function TTScreenInnerImpl({
                 currentUserOpinionId={ownOpinionId}
                 onNodeSelect={onNodeSelect}
                 selectedNodeId={selectedNodeId}
+                highlightAllNodes={highlightAllNodes}
                 width={size}
                 height={size}
                 showLabels="none"
@@ -171,6 +174,7 @@ export const TTScreenInner = memo(TTScreenInnerImpl, (prev, next) => {
   return (
     prev.topicId === next.topicId &&
     prev.selectedNodeId === next.selectedNodeId &&
+    prev.highlightAllNodes === next.highlightAllNodes &&
     prev.hue === next.hue
   );
 });

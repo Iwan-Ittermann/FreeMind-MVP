@@ -29,6 +29,7 @@ interface OpinionGraphProps {
   useMockData?: boolean;
   selectedNodeId?: string | null;
   showLabels?: 'none' | 'highlighted-only';
+  highlightAllNodes?: boolean;
   /** 'naked' = transparent, no zones/glows/rings (TT mode). Default 'full'. */
   chrome?: 'full' | 'naked';
   /** TT mode: re-color/re-size nodes per zone (gold/emerald/black). */
@@ -54,6 +55,7 @@ export function OpinionGraph({
   useMockData = false,
   selectedNodeId = null,
   showLabels = 'highlighted-only',
+  highlightAllNodes = false,
   chrome = 'full',
   ttMode = false,
   ttLandmarks,
@@ -168,7 +170,7 @@ export function OpinionGraph({
           onNodeClick={handleNodeClick}
           onNodeHover={handleNodeHover}
           onEdgeClick={onEdgeClick}
-          {...(theme === 'signal' ? { showLabels, showZones: chrome !== 'naked', ttMode, ttLandmarks } : {})}
+          {...(theme === 'signal' ? { showLabels, highlightAllNodes, showZones: chrome !== 'naked', ttMode, ttLandmarks } : {})}
         />
       </div>
     );

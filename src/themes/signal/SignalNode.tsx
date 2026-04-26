@@ -123,6 +123,7 @@ interface SignalNodeProps {
   token: SemanticNodeToken;
   isHighlighted: boolean;
   isDimmed: boolean;
+  highlightForTour?: boolean;
   showSpeechBubble: boolean;
   scale?: number;
   /** TT mode: gold core stars, emerald middle circles, smaller black extreme nodes. */
@@ -134,7 +135,7 @@ interface SignalNodeProps {
 }
 
 export const SignalNode = memo(function SignalNode({
-  token, isHighlighted, isDimmed, showSpeechBubble, scale = 1, ttMode = false,
+  token, isHighlighted, isDimmed, highlightForTour = false, showSpeechBubble, scale = 1, ttMode = false,
   onClick, onPointerDown, onMouseEnter, onMouseLeave,
 }: SignalNodeProps) {
   const shapeSet = ttMode
@@ -189,7 +190,7 @@ export const SignalNode = memo(function SignalNode({
       >
         <circle cx="20" cy="20" r="22" fill="transparent" />
         {/* Selection highlight — gold to match warm earth palette */}
-        {isHighlighted && !isDimmed && (
+        {(highlightForTour || (isHighlighted && !isDimmed)) && (
           <circle cx="20" cy="20" r="18" fill="none" stroke="#00e5ff" strokeWidth={2} filter="url(#signal-select-glow)" />
         )}
         <Shape />
