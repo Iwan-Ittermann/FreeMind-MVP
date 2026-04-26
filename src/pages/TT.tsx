@@ -254,7 +254,7 @@ export default function TT() {
           hasOwnOpinion={hasOwnOpinion}
           ownOpinionKnown={ownOpinionKnown}
           ownOpinionId={ownOpinionId}
-          highlightAddOpinionForm={tourOpen && tourStep === TT_ONBOARDING_ADD_OPINION_STEP && !hasOwnOpinion}
+          highlightAddOpinionForm={tourOpen && tourStep === TT_ONBOARDING_ADD_OPINION_STEP}
           forceShowAddOpinionForm={tourOpen && tourStep === TT_ONBOARDING_ADD_OPINION_STEP}
           suppressHintPanel={tourOpen}
           selected={
