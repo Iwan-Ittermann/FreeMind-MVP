@@ -259,7 +259,7 @@ export function TTBottomPanel({
 
   // STATE 3: Has own opinion, nothing selected → empty placeholder
   return (
-    <div className="absolute bottom-0 inset-x-0 z-20 px-3 pb-3 pointer-events-none">
+    <div data-onboarding="opinion-cta" className="absolute bottom-0 inset-x-0 z-20 px-3 pb-3 pointer-events-none">
       <div className="rounded-2xl bg-background/70 backdrop-blur-sm border border-border/30 shadow p-3 text-center">
         <p className="text-xs text-muted-foreground">{t('tt.tapNodeHint')}</p>
       </div>
