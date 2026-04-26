@@ -22,7 +22,7 @@ interface SignalRendererProps {
   currentUserOpinionId: string | null;
   activeChats: ActiveChat[];
   messageAnimations: MessageAnimationData[];
-  onNodeClick: (node: GraphNode) => void;
+  onNodeClick: (node: GraphNode | null) => void;
   onNodeHover: (node: GraphNode | null) => void;
   onEdgeClick?: (edge: GraphEdge) => void;
   showLabels?: 'none' | 'highlighted-only';
@@ -129,7 +129,7 @@ export function SignalRenderer({
       className="overflow-visible"
       style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}
     >
-      <rect width={width} height={height} fill="transparent" onClick={() => onNodeClick(null as unknown as GraphNode)} />
+      <rect width={width} height={height} fill="transparent" onClick={() => onNodeClick(null)} />
       {showZones && <SignalZones zones={zoneTokens} config={config} />}
 
       {ttLandmarks && (
