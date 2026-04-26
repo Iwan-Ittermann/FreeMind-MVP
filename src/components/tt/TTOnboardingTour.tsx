@@ -51,7 +51,7 @@ export function TTOnboardingTour({ open, step, onBack, onNext, onDone }: TTOnboa
             >
               <X className="h-4 w-4" />
             </button>
-            <p className="px-4 py-5 text-lg font-medium leading-snug text-foreground">
+            <p className="whitespace-pre-line px-4 py-5 text-lg font-medium leading-snug text-foreground">
               {t(stepKey)}
             </p>
             <div className="flex items-center justify-center gap-2">
