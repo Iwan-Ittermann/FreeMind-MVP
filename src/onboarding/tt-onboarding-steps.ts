@@ -16,7 +16,7 @@ export const ttOnboardingSteps: TTOnboardingStep[] = [
   {
     target: 'body',
     placement: 'center',
-    disableBeacon: true,
+    skipBeacon: true,
     title: 'Willkommen bei Freemind',
     content: 'Hey, hier kannst du produktiv diskutieren.',
     data: { id: 'welcome' },
@@ -24,7 +24,7 @@ export const ttOnboardingSteps: TTOnboardingStep[] = [
   {
     target: '[data-onboarding="tt-graph"]',
     placement: 'bottom',
-    disableBeacon: true,
+    skipBeacon: true,
     title: 'Meinungskreis',
     content: 'Das sind die Meinungen.',
     spotlightPadding: 18,
@@ -36,7 +36,7 @@ export const ttOnboardingSteps: TTOnboardingStep[] = [
   {
     target: '[data-onboarding="opinion-cta"]',
     placement: 'top',
-    disableBeacon: true,
+    skipBeacon: true,
     title: 'Eigene Meinung',
     content: 'Hier kannst du deine eigene Meinung posten.',
     spotlightPadding: 12,
@@ -48,7 +48,7 @@ export const ttOnboardingSteps: TTOnboardingStep[] = [
   {
     target: '[data-onboarding="selected-opinion-panel"], [data-onboarding="chat-tab"]',
     placement: 'left',
-    disableBeacon: true,
+    skipBeacon: true,
     title: 'Dialog starten',
     content: 'Dann kannst du mit anderen chatten.',
     spotlightPadding: 12,
@@ -61,7 +61,7 @@ export const ttOnboardingSteps: TTOnboardingStep[] = [
   {
     target: '[data-onboarding="disagreement-rating"], [data-onboarding="chat-productivity-rating"]',
     placement: 'top',
-    disableBeacon: true,
+    skipBeacon: true,
     title: 'Bewerten und einordnen',
     content: 'Du kannst anderen Meinungen zustimmen oder widersprechen.\nUnd die Produktivität deiner Chats bewerten.\nDadurch entsteht die Verteilung im Kreis.',
     spotlightPadding: 12,
