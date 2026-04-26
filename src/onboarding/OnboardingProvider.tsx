@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import Joyride, { type Step } from 'react-joyride';
+import { Joyride, type Step } from 'react-joyride';
 import { useOnboardingTour } from './useOnboardingTour';
 
 type PulseRect = Pick<DOMRect, 'top' | 'left' | 'width' | 'height'>;
