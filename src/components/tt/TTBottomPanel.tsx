@@ -26,6 +26,7 @@ interface TTBottomPanelProps {
   ownOpinionId: string | null;
   selected: SelectedOpinion | null;
   highlightAddOpinionForm?: boolean;
+  forceShowAddOpinionForm?: boolean;
   onLetsChat?: (targetOpinionId: string) => void;
   onOpinionSubmitted?: () => void;
   onOpinionCommitted?: () => void;
@@ -47,6 +48,7 @@ export function TTBottomPanel({
   ownOpinionId,
   selected,
   highlightAddOpinionForm = false,
+  forceShowAddOpinionForm = false,
   onLetsChat,
   onOpinionSubmitted,
   onOpinionCommitted,
@@ -201,7 +203,7 @@ export function TTBottomPanel({
   })() : null;
 
   // STATE 2: No opinion yet (or browsing) → expanding input with floating button
-  if (!ownOpinionKnown || !hasOwnOpinion) {
+  if (!ownOpinionKnown || !hasOwnOpinion || forceShowAddOpinionForm) {
     return (
       <>
       {selectedOpinionPanel}
@@ -247,6 +249,15 @@ export function TTBottomPanel({
           </motion.div>
         </div>
       </div>
+      {selected && (
+        <ReportDialog
+          open={reportOpen}
+          onOpenChange={setReportOpen}
+          contentId={selected.id}
+          contentType="Opinion"
+          contentPreview={selected.text}
+        />
+      )}
       </>
     );
   }
