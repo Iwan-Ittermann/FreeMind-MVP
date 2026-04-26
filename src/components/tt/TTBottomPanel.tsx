@@ -27,6 +27,7 @@ interface TTBottomPanelProps {
   selected: SelectedOpinion | null;
   highlightAddOpinionForm?: boolean;
   highlightLetsChatButton?: boolean;
+  highlightDisagreementScale?: boolean;
   forceShowAddOpinionForm?: boolean;
   suppressHintPanel?: boolean;
   onLetsChat?: (targetOpinionId: string) => void;
@@ -51,6 +52,7 @@ export function TTBottomPanel({
   selected,
   highlightAddOpinionForm = false,
   highlightLetsChatButton = false,
+  highlightDisagreementScale = false,
   forceShowAddOpinionForm = false,
   suppressHintPanel = false,
   onLetsChat,
@@ -169,7 +171,7 @@ export function TTBottomPanel({
 
             {/* Emoji rating + Let's chat (inline row) */}
             <div className="mt-3 flex items-center justify-between gap-2">
-              <div className="min-w-0 flex-1 flex flex-col gap-0.5">
+              <div className={`min-w-0 flex-1 flex flex-col gap-0.5 rounded-xl transition-all duration-300 ${highlightDisagreementScale ? 'relative z-[60] bg-background border border-primary px-2 py-1.5 ring-4 ring-primary/60 shadow-[0_0_30px_hsl(var(--primary)/0.65)] scale-[1.02]' : ''}`}>
                 {canRate ? (
                   <>
                     <TTEmojiRating value={disagreement} onChange={setDisagreement} />
