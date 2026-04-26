@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { TTScreenInner } from '@/components/tt/TTScreen';
 import { TTHeader } from '@/components/tt/TTHeader';
 import { TTSideTabs, TTSideTabsHandle } from '@/components/tt/TTSideTabs';
@@ -16,6 +16,7 @@ import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { GraphNode } from '@/types/graph';
 
 const PRIMARY_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
+const OnboardingProvider = lazy(() => import('@/onboarding/OnboardingProvider'));
 
 /**
  * TikTok-style mobile UI.
@@ -65,6 +66,9 @@ export default function TT() {
     return activeData.opinions.find((o) => o.authorId === user.id)?.id ?? null;
   }, [user, activeData]);
   const hasOwnOpinion = !!ownOpinionId;
+  const firstOtherOpinion = useMemo(() => {
+    return activeData?.opinions.find((op) => op.id !== ownOpinionId) ?? activeData?.opinions[0] ?? null;
+  }, [activeData?.opinions, ownOpinionId]);
   const { notifications: ttNotifications, markAllRead } = useTTNotifications(activeTopicId);
   const { data: unreadMap } = useUnreadMessages(activeTopicId, ownOpinionId);
   const totalUnread = useMemo(() => {
@@ -222,6 +226,19 @@ export default function TT() {
           onOpinionSubmitted={() => setSelectedNode(null)}
           onCloseSelection={() => setSelectedNode(null)}
         />
+        <Suspense fallback={null}>
+          <OnboardingProvider
+            onRevealOpinion={() => {
+              if (firstOtherOpinion) {
+                setSelectedNode({ id: firstOtherOpinion.id, x: 0, y: 0, opinion: firstOtherOpinion } as GraphNode);
+              }
+            }}
+            onOpenChat={() => {
+              const targetId = selectedNode?.id ?? firstOtherOpinion?.id;
+              if (targetId) sideTabsRef.current?.openChat(targetId);
+            }}
+          />
+        </Suspense>
       </div>
     </div>
   );
