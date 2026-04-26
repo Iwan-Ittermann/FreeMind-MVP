@@ -674,7 +674,11 @@
       "firstStep": "Hier kannst du produktiv diskutieren!",
       "opinionsStep": "Hier stehen die Meinungen",
       "addOpinionStep": "Du kannst deine Meinung hinzufügen.",
-      "next": "Weiter"
+      "chatStep": "Dann kannst du mit anderen chatten!",
+      "back": "Back",
+      "skip": "Skip",
+      "next": "Next",
+      "done": "Done"
     }
   }
 }

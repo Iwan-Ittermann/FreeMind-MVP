@@ -26,6 +26,7 @@ interface TTBottomPanelProps {
   ownOpinionId: string | null;
   selected: SelectedOpinion | null;
   highlightAddOpinionForm?: boolean;
+  highlightLetsChatButton?: boolean;
   forceShowAddOpinionForm?: boolean;
   suppressHintPanel?: boolean;
   onLetsChat?: (targetOpinionId: string) => void;
@@ -49,6 +50,7 @@ export function TTBottomPanel({
   ownOpinionId,
   selected,
   highlightAddOpinionForm = false,
+  highlightLetsChatButton = false,
   forceShowAddOpinionForm = false,
   suppressHintPanel = false,
   onLetsChat,
@@ -71,6 +73,7 @@ export function TTBottomPanel({
     ownOpinionId,
     selected?.id ?? null,
   );
+  const chatDisabled = !hasOwnOpinion;
 
   // Click outside collapses the textarea (if empty)
   useEffect(() => {
@@ -187,14 +190,16 @@ export function TTBottomPanel({
               <Button
                 variant="outline"
                 size="sm"
-                className="rounded-full shrink-0 h-8 text-xs"
+                className={`rounded-full shrink-0 h-8 text-xs transition-all duration-300 ${highlightLetsChatButton ? 'relative z-[60] border-primary ring-4 ring-primary/60 shadow-[0_0_30px_hsl(var(--primary)/0.65)] animate-pulse' : ''}`}
                 onClick={() => {
+                  if (chatDisabled) return;
                   if (!user) {
                     ensureSilentAuth().catch(() => {});
                   }
                   onLetsChat?.(selected.id);
                 }}
-                disabled={!hasOwnOpinion}
+                disabled={chatDisabled}
+                title={chatDisabled ? t('chat.submitOpinionRequired') : t('tt.letsChat')}
               >
                 {t('tt.letsChat')}
               </Button>

@@ -14,6 +14,7 @@ interface TTSideTabsProps {
   opinions?: Opinion[];
   chats?: TTChatItem[];
   topicId: string;
+  hasOwnOpinion?: boolean;
   onOpinionTap?: (opinionId: string) => void;
   unreadCount?: number;
 }
@@ -22,7 +23,7 @@ const SPRING = { type: 'spring' as const, stiffness: 320, damping: 28 };
 
 export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
   function TTSideTabs(
-    { opinions = [], chats = [], topicId, onOpinionTap, unreadCount = 0 },
+    { opinions = [], chats = [], topicId, hasOwnOpinion = false, onOpinionTap, unreadCount = 0 },
     ref,
   ) {
     const { t } = useTranslation();
@@ -31,10 +32,11 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
 
     useImperativeHandle(ref, () => ({
       openChat(opinionId: string) {
+        if (!hasOwnOpinion) return;
         setSide('right');
         setActiveChatOpinionId(opinionId);
       },
-    }));
+    }), [hasOwnOpinion]);
 
     const closeAndRun = (fn?: () => void) => {
       setSide(null);
@@ -64,9 +66,14 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
 
         {/* Right tab — chats */}
         <button
-          onClick={() => setSide(side === 'right' ? null : 'right')}
-          className="absolute right-0 bottom-[28%] z-30 h-28 w-7 rounded-l-xl bg-background/85 backdrop-blur-md border border-r-0 border-border/40 shadow-md flex items-center justify-center hover:bg-background/95 transition-colors"
+          onClick={() => {
+            if (!hasOwnOpinion) return;
+            setSide(side === 'right' ? null : 'right');
+          }}
+          disabled={!hasOwnOpinion}
+          className="absolute right-0 bottom-[28%] z-30 h-28 w-7 rounded-l-xl bg-background/85 backdrop-blur-md border border-r-0 border-border/40 shadow-md flex items-center justify-center hover:bg-background/95 transition-colors disabled:cursor-not-allowed disabled:opacity-45"
           aria-label={t('tt.chats')}
+          title={!hasOwnOpinion ? t('chat.submitOpinionRequired') : t('tt.chats')}
         >
           <span
             className="text-[10px] tracking-[0.2em] font-semibold text-foreground/80 uppercase"
@@ -189,7 +196,11 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                           {chats.map((c) => (
                             <li key={c.id}>
                               <button
-                                onClick={() => setActiveChatOpinionId(c.theirOpinionId)}
+                                onClick={() => {
+                                  if (!hasOwnOpinion) return;
+                                  setActiveChatOpinionId(c.theirOpinionId);
+                                }}
+                                disabled={!hasOwnOpinion}
                                 className="w-full text-left px-4 py-3 hover:bg-muted/40 transition-colors"
                               >
                                 <p className="text-sm text-foreground line-clamp-2 leading-snug">

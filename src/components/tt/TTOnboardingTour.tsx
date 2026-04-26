@@ -5,15 +5,24 @@ import { useTranslation } from 'react-i18next';
 interface TTOnboardingTourProps {
   open: boolean;
   step: number;
+  onBack: () => void;
   onNext: () => void;
   onDone: () => void;
 }
 
-export function TTOnboardingTour({ open, step, onNext, onDone }: TTOnboardingTourProps) {
+export function TTOnboardingTour({ open, step, onBack, onNext, onDone }: TTOnboardingTourProps) {
   const { t } = useTranslation();
   const isOpinionsStep = step === 1;
   const isAddOpinionStep = step === 2;
-  const canContinue = step < 2;
+  const isChatStep = step === 3;
+  const canGoBack = step > 0;
+  const stepKey = isChatStep
+    ? 'tt.onboarding.chatStep'
+    : isAddOpinionStep
+      ? 'tt.onboarding.addOpinionStep'
+      : isOpinionsStep
+        ? 'tt.onboarding.opinionsStep'
+        : 'tt.onboarding.firstStep';
 
   return (
     <AnimatePresence>
@@ -22,7 +31,7 @@ export function TTOnboardingTour({ open, step, onNext, onDone }: TTOnboardingTou
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className={`absolute inset-0 z-50 flex items-center justify-center px-6 ${isOpinionsStep ? 'pointer-events-none' : isAddOpinionStep ? 'pointer-events-none' : 'bg-background/20 backdrop-blur-[1px] pointer-events-auto'}`}
+          className={`absolute inset-0 z-50 flex items-center justify-center px-6 ${isOpinionsStep || isAddOpinionStep || isChatStep ? 'pointer-events-none' : 'bg-background/20 backdrop-blur-[1px] pointer-events-auto'}`}
         >
           <motion.div
             initial={{ opacity: 0, y: 10, scale: 0.96 }}
@@ -40,17 +49,33 @@ export function TTOnboardingTour({ open, step, onNext, onDone }: TTOnboardingTou
               <X className="h-4 w-4" />
             </button>
             <p className="px-4 py-5 text-lg font-medium leading-snug text-foreground">
-              {t(isAddOpinionStep ? 'tt.onboarding.addOpinionStep' : isOpinionsStep ? 'tt.onboarding.opinionsStep' : 'tt.onboarding.firstStep')}
+              {t(stepKey)}
             </p>
-            {canContinue && (
+            <div className="flex items-center justify-center gap-2">
+              {canGoBack && (
+                <button
+                  type="button"
+                  onClick={onBack}
+                  className="h-8 rounded-full border border-border/50 px-3 text-xs font-medium text-foreground/75 transition-colors hover:bg-muted hover:text-foreground"
+                >
+                  {t('tt.onboarding.back')}
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={onDone}
+                className="h-8 rounded-full px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              >
+                {t('tt.onboarding.skip')}
+              </button>
               <button
                 type="button"
                 onClick={onNext}
-                className="mx-auto rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+                className="h-8 rounded-full bg-primary px-4 text-xs font-medium text-primary-foreground shadow-sm transition-opacity hover:opacity-90"
               >
-                {t('tt.onboarding.next')}
+                {t(isChatStep ? 'tt.onboarding.done' : 'tt.onboarding.next')}
               </button>
-            )}
+            </div>
           </motion.div>
         </motion.div>
       )}
