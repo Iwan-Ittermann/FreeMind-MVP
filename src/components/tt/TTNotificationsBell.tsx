@@ -48,10 +48,10 @@ export function TTNotificationsBell({ topicId }: TTNotificationsBellProps) {
   };
 
   return (
-    <div className="absolute bottom-[8.5rem] left-3 z-20 flex flex-col gap-1.5">
+    <div className="pointer-events-auto absolute bottom-[8.5rem] left-3 z-40 flex flex-col gap-1.5">
       <button
         onClick={toggle}
-        className={`h-10 w-10 rounded-full backdrop-blur-md border shadow-md flex items-center justify-center transition-colors ${
+        className={`h-12 w-12 rounded-full backdrop-blur-md border shadow-md flex items-center justify-center transition-colors ${
           enabled
             ? 'bg-primary/90 border-primary/60 text-primary-foreground'
             : 'bg-background/85 border-border/40 text-foreground/70 hover:text-foreground'
@@ -59,7 +59,7 @@ export function TTNotificationsBell({ topicId }: TTNotificationsBellProps) {
         aria-label={enabled ? t('tt.notifyOff') : t('tt.notifyOn')}
         title={enabled ? t('tt.subscribed') : t('tt.notSubscribed')}
       >
-        {enabled ? <Bell className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
+        {enabled ? <Bell className="w-5 h-5" /> : <BellOff className="w-5 h-5" />}
       </button>
     </div>
   );
