@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { CallBackProps, Step, STATUS } from 'react-joyride';
+import type { EventData, Step } from 'react-joyride';
 import { FREEMIND_ONBOARDING_COMPLETED_KEY, ttOnboardingSteps } from './tt-onboarding-steps';
 
 const FINISHED_STATUSES: string[] = ['finished', 'skipped'];
@@ -57,10 +57,10 @@ export function useOnboardingTour({ autoStart = true, onPrepareStep }: UseOnboar
     if (step) onPrepareStep?.(step);
   }, [onPrepareStep, run, stepIndex, steps]);
 
-  const handleJoyrideCallback = useCallback((data: CallBackProps) => {
+  const handleJoyrideCallback = useCallback((data: EventData) => {
     const { action, index, status, type } = data;
 
-    if (FINISHED_STATUSES.includes(status as STATUS)) {
+    if (FINISHED_STATUSES.includes(status)) {
       completeTour();
       return;
     }
