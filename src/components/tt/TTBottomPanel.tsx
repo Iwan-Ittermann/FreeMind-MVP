@@ -22,11 +22,13 @@ interface SelectedOpinion {
 interface TTBottomPanelProps {
   topicId: string;
   hasOwnOpinion: boolean;
+  ownOpinionKnown: boolean;
   ownOpinionId: string | null;
   selected: SelectedOpinion | null;
   highlightAddOpinionForm?: boolean;
   onLetsChat?: (targetOpinionId: string) => void;
   onOpinionSubmitted?: () => void;
+  onOpinionCommitted?: () => void;
   onCloseSelection?: () => void;
 }
 
@@ -41,11 +43,13 @@ function getOpinionFontClass(len: number): string {
 export function TTBottomPanel({
   topicId,
   hasOwnOpinion,
+  ownOpinionKnown,
   ownOpinionId,
   selected,
   highlightAddOpinionForm = false,
   onLetsChat,
   onOpinionSubmitted,
+  onOpinionCommitted,
   onCloseSelection,
 }: TTBottomPanelProps) {
   const { t } = useTranslation();
@@ -119,6 +123,7 @@ export function TTBottomPanel({
       setText('');
       setFocused(false);
       toast.success(t('tt.opinionPosted'));
+      onOpinionCommitted?.();
       if (permission === 'denied') {
         toast.error(t('tt.notifSetup.denied'));
       }
