@@ -244,7 +244,7 @@ export function TTBottomPanel({
           <motion.div
             animate={{ height: focused ? 152 : 56 }}
             transition={{ type: 'spring', stiffness: 320, damping: 30 }}
-            className={`rounded-2xl bg-background/95 backdrop-blur-md border shadow-lg overflow-hidden transition-all duration-300 ${highlightAddOpinionForm ? 'border-primary ring-4 ring-primary/60 shadow-[0_0_36px_hsl(var(--primary)/0.65)] scale-[1.02]' : 'border-border/40'}`}
+            className={`rounded-2xl bg-background/95 backdrop-blur-md border shadow-lg overflow-hidden transition-all duration-300 ${highlightAddOpinionForm ? 'border-primary ring-4 ring-primary/60 shadow-[0_0_36px_hsl(var(--primary)/0.65)] scale-[1.02] animate-pulse-fast' : 'border-border/40'}`}
           >
             <Textarea
               ref={taRef}
