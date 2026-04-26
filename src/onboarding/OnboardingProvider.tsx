@@ -78,13 +78,13 @@ export default function OnboardingProvider({ onRevealOpinion, onOpenChat }: Onbo
         stepIndex={tour.stepIndex}
         onEvent={tour.handleJoyrideCallback}
         continuous
-        scrollOffset={96}
         options={{
           buttons: ['back', 'skip', 'close', 'primary'],
           blockTargetInteraction: false,
           dismissKeyAction: 'close',
           overlayClickAction: 'close',
           showProgress: false,
+          scrollOffset: 96,
           skipScroll: true,
           zIndex: 80,
           arrowColor: 'hsl(var(--background) / 0.94)',
