@@ -150,8 +150,9 @@ export default function TT() {
       ? pool.find((opinion) => opinion.id === existingPick.opinionId)
       : null;
     const randomOpinion = reusableOpinion ?? pool[Math.floor(Math.random() * pool.length)];
-    if (!randomOpinion || selectedNode?.id === randomOpinion.id) return;
+    if (!randomOpinion) return;
     tourDemoSelectionRef.current = { topicId: activeTopicId, step: tourStep, opinionId: randomOpinion.id };
+    if (selectedNode?.id === randomOpinion.id) return;
     setSelectedNode({ id: randomOpinion.id, x: 0, y: 0, opinion: randomOpinion } as GraphNode);
   }, [tourOpen, tourStep, activeTopicId, activeData?.opinions, ownOpinionId, selectedNode?.id, hasOwnOpinion]);
   const { notifications: ttNotifications, markAllRead } = useTTNotifications(activeTopicId);
