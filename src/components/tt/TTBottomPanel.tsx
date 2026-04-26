@@ -147,7 +147,7 @@ export function TTBottomPanel({
   const selectedOpinionPanel = selected ? (() => {
     const fontClass = getOpinionFontClass(selected.text.length);
     return (
-      <div className="absolute bottom-[76px] inset-x-0 z-30 px-3">
+      <div className={`absolute bottom-[76px] inset-x-0 px-3 ${highlightDisagreementScale ? 'z-[60]' : 'z-30'}`}>
           <div
             ref={panelRef}
             className="rounded-2xl bg-background/95 backdrop-blur-md border border-border/40 shadow-lg p-4 relative"
