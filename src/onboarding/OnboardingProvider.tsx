@@ -114,7 +114,7 @@ export default function OnboardingProvider({ onRevealOpinion, onOpenChat }: Onbo
             padding: '10px 18px 14px',
             whiteSpace: 'pre-line',
           },
-          buttonNext: {
+          buttonPrimary: {
             borderRadius: 999,
             fontSize: 12,
             fontWeight: 700,
