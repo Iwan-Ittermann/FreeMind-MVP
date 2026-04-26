@@ -7,7 +7,7 @@ import { TTSideTabs, TTSideTabsHandle } from '@/components/tt/TTSideTabs';
 import { TTBottomPanel } from '@/components/tt/TTBottomPanel';
 import { TTNotificationsBell } from '@/components/tt/TTNotificationsBell';
 import { TTOnboardingTour } from '@/components/tt/TTOnboardingTour';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, Heart, HeartCrack, Send } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTTTopics, useTTSwipeWindow } from '@/hooks/useTTTopics';
 import { useTopicData } from '@/hooks/useTopicData';
@@ -23,6 +23,43 @@ const TT_ONBOARDING_DONE_KEY = 'tt:onboarding:first-step-done';
 const TT_ONBOARDING_OPINIONS_STEP = 1;
 const TT_ONBOARDING_ADD_OPINION_STEP = 2;
 const TT_ONBOARDING_CHAT_STEP = 3;
+const TT_ONBOARDING_RATING_STEP = 4;
+
+function TTFakeChatPreview() {
+  return (
+    <div className="absolute bottom-[92px] left-4 right-4 z-[60] rounded-2xl border border-border/40 bg-background/95 shadow-2xl backdrop-blur-xl overflow-hidden">
+      <div className="space-y-2 px-3 py-3">
+        <div className="ml-auto max-w-[72%] rounded-2xl rounded-br-sm bg-primary px-3 py-2 text-xs leading-relaxed text-primary-foreground">
+          Ich sehe deinen Punkt.
+        </div>
+        <div className="max-w-[76%] rounded-2xl rounded-bl-sm bg-muted px-3 py-2 text-xs leading-relaxed text-foreground">
+          Danke, so habe ich das noch nicht betrachtet.
+        </div>
+      </div>
+      <div className="border-t border-border/40 bg-muted/80 p-2">
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-primary bg-background text-primary ring-4 ring-primary/60 shadow-[0_0_30px_hsl(var(--primary)/0.65)] animate-pulse"
+            aria-label="Respect rating"
+          >
+            <Heart className="h-4 w-4" />
+          </button>
+          <div className="flex-1 rounded-full border border-border bg-background px-3 py-2 text-xs text-muted-foreground">
+            Nachricht schreiben
+          </div>
+          <button type="button" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+            <Send className="h-3.5 w-3.5" />
+          </button>
+        </div>
+        <div className="mt-2 flex items-center justify-between px-1">
+          <HeartCrack className="h-4 w-4 text-primary/70" />
+          <Heart className="h-4 w-4 text-primary" />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /**
  * TikTok-style mobile UI.
@@ -99,13 +136,14 @@ export default function TT() {
   const hasOwnOpinion = !!ownOpinionId;
   const ownOpinionKnown = !authLoading && !activeDataLoading && (!user || !directOwnOpinionLoading);
   useEffect(() => {
-    if (!tourOpen || tourStep !== TT_ONBOARDING_CHAT_STEP || !activeData?.opinions.length) return;
+    const shouldOpenOpinionPanel = tourStep === TT_ONBOARDING_CHAT_STEP || (tourStep === TT_ONBOARDING_RATING_STEP && hasOwnOpinion);
+    if (!tourOpen || !shouldOpenOpinionPanel || !activeData?.opinions.length) return;
     const candidates = activeData.opinions.filter((opinion) => opinion.id !== ownOpinionId);
     const pool = candidates.length > 0 ? candidates : activeData.opinions;
     const randomOpinion = pool[Math.floor(Math.random() * pool.length)];
     if (!randomOpinion || selectedNode?.id === randomOpinion.id) return;
     setSelectedNode({ id: randomOpinion.id, x: 0, y: 0, opinion: randomOpinion } as GraphNode);
-  }, [tourOpen, tourStep, activeData?.opinions, ownOpinionId, selectedNode?.id]);
+  }, [tourOpen, tourStep, activeData?.opinions, ownOpinionId, selectedNode?.id, hasOwnOpinion]);
   const { notifications: ttNotifications, markAllRead } = useTTNotifications(activeTopicId);
   const { data: unreadMap } = useUnreadMessages(activeTopicId, ownOpinionId);
   const totalUnread = useMemo(() => {
