@@ -131,7 +131,7 @@ export function TTBottomPanel({
   };
 
   // STATE 1: Selected opinion view
-  if (selected) {
+  if (selected && hasOwnOpinion) {
     const fontClass = getOpinionFontClass(selected.text.length);
     return (
       <>
