@@ -22,11 +22,15 @@ interface SelectedOpinion {
 interface TTBottomPanelProps {
   topicId: string;
   hasOwnOpinion: boolean;
+  ownOpinionKnown: boolean;
   ownOpinionId: string | null;
   selected: SelectedOpinion | null;
   highlightAddOpinionForm?: boolean;
+  forceShowAddOpinionForm?: boolean;
+  suppressHintPanel?: boolean;
   onLetsChat?: (targetOpinionId: string) => void;
   onOpinionSubmitted?: () => void;
+  onOpinionCommitted?: () => void;
   onCloseSelection?: () => void;
 }
 
@@ -41,11 +45,15 @@ function getOpinionFontClass(len: number): string {
 export function TTBottomPanel({
   topicId,
   hasOwnOpinion,
+  ownOpinionKnown,
   ownOpinionId,
   selected,
   highlightAddOpinionForm = false,
+  forceShowAddOpinionForm = false,
+  suppressHintPanel = false,
   onLetsChat,
   onOpinionSubmitted,
+  onOpinionCommitted,
   onCloseSelection,
 }: TTBottomPanelProps) {
   const { t } = useTranslation();
@@ -119,6 +127,7 @@ export function TTBottomPanel({
       setText('');
       setFocused(false);
       toast.success(t('tt.opinionPosted'));
+      onOpinionCommitted?.();
       if (permission === 'denied') {
         toast.error(t('tt.notifSetup.denied'));
       }
@@ -130,12 +139,10 @@ export function TTBottomPanel({
     }
   };
 
-  // STATE 1: Selected opinion view
-  if (selected && hasOwnOpinion) {
+  const selectedOpinionPanel = selected ? (() => {
     const fontClass = getOpinionFontClass(selected.text.length);
     return (
-      <>
-        <div className="absolute bottom-0 inset-x-0 z-20 px-3 pb-3">
+      <div className="absolute bottom-[76px] inset-x-0 z-30 px-3">
           <div
             ref={panelRef}
             className="rounded-2xl bg-background/95 backdrop-blur-md border border-border/40 shadow-lg p-4 relative"
@@ -193,23 +200,16 @@ export function TTBottomPanel({
               </Button>
             </div>
           </div>
-        </div>
-
-        <ReportDialog
-          open={reportOpen}
-          onOpenChange={setReportOpen}
-          contentId={selected.id}
-          contentType="Opinion"
-          contentPreview={selected.text}
-        />
-      </>
+      </div>
     );
-  }
+  })() : null;
 
   // STATE 2: No opinion yet (or browsing) → expanding input with floating button
-  if (!hasOwnOpinion) {
+  if (!ownOpinionKnown || !hasOwnOpinion || forceShowAddOpinionForm) {
     return (
-      <div ref={wrapperRef} className="absolute bottom-0 inset-x-0 z-20 px-3 pb-3">
+      <>
+      {selectedOpinionPanel}
+      <div ref={wrapperRef} data-tt-add-opinion-form className={`absolute bottom-0 inset-x-0 px-3 pb-3 ${highlightAddOpinionForm ? 'z-[60]' : 'z-20'}`}>
         <div className="relative">
           {/* Floating Posten button — appears when focused */}
           <AnimatePresence>
@@ -237,7 +237,7 @@ export function TTBottomPanel({
           <motion.div
             animate={{ height: focused ? 152 : 56 }}
             transition={{ type: 'spring', stiffness: 320, damping: 30 }}
-            className={`rounded-2xl bg-background/95 backdrop-blur-md border shadow-lg overflow-hidden transition-shadow ${highlightAddOpinionForm ? 'border-primary/80 ring-4 ring-primary/30 shadow-primary/30 animate-pulse' : 'border-border/40'}`}
+            className={`rounded-2xl bg-background/95 backdrop-blur-md border shadow-lg overflow-hidden transition-all duration-300 ${highlightAddOpinionForm ? 'border-primary ring-4 ring-primary/60 shadow-[0_0_36px_hsl(var(--primary)/0.65)] scale-[1.02]' : 'border-border/40'}`}
           >
             <Textarea
               ref={taRef}
@@ -251,15 +251,54 @@ export function TTBottomPanel({
           </motion.div>
         </div>
       </div>
+      {selected && (
+        <ReportDialog
+          open={reportOpen}
+          onOpenChange={setReportOpen}
+          contentId={selected.id}
+          contentType="Opinion"
+          contentPreview={selected.text}
+        />
+      )}
+      </>
     );
   }
 
   // STATE 3: Has own opinion, nothing selected → empty placeholder
+  if (suppressHintPanel) {
+    return (
+      <>
+        {selectedOpinionPanel}
+        {selected && (
+          <ReportDialog
+            open={reportOpen}
+            onOpenChange={setReportOpen}
+            contentId={selected.id}
+            contentType="Opinion"
+            contentPreview={selected.text}
+          />
+        )}
+      </>
+    );
+  }
+
   return (
-    <div className="absolute bottom-0 inset-x-0 z-20 px-3 pb-3 pointer-events-none">
-      <div className="rounded-2xl bg-background/70 backdrop-blur-sm border border-border/30 shadow p-3 text-center">
-        <p className="text-xs text-muted-foreground">{t('tt.tapNodeHint')}</p>
+    <>
+      {selectedOpinionPanel}
+      <div className="absolute bottom-0 inset-x-0 z-20 px-3 pb-3 pointer-events-none">
+        <div className="rounded-2xl bg-background/70 backdrop-blur-sm border border-border/30 shadow p-3 text-center">
+          <p className="text-xs text-muted-foreground">{t('tt.tapNodeHint')}</p>
+        </div>
       </div>
-    </div>
+      {selected && (
+        <ReportDialog
+          open={reportOpen}
+          onOpenChange={setReportOpen}
+          contentId={selected.id}
+          contentType="Opinion"
+          contentPreview={selected.text}
+        />
+      )}
+    </>
   );
 }

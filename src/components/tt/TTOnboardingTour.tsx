@@ -22,7 +22,7 @@ export function TTOnboardingTour({ open, step, onNext, onDone }: TTOnboardingTou
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className={`absolute inset-0 z-50 flex items-center justify-center px-6 ${isOpinionsStep ? 'pointer-events-none' : 'bg-background/20 backdrop-blur-[1px] pointer-events-auto'}`}
+          className={`absolute inset-0 z-50 flex items-center justify-center px-6 ${isOpinionsStep ? 'pointer-events-none' : isAddOpinionStep ? 'pointer-events-none' : 'bg-background/20 backdrop-blur-[1px] pointer-events-auto'}`}
         >
           <motion.div
             initial={{ opacity: 0, y: 10, scale: 0.96 }}
