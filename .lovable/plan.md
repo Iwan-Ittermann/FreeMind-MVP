@@ -1,19 +1,31 @@
-Plan:
+I’ll implement this in the TT mobile flow with four focused changes:
 
-1. Fix the bottom-panel state source so it is reliably topic-specific:
-  - Stop relying only on `activeData.opinions.find(authorId === user.id)` for the visible panel decision.
-  - Add an explicit “current user has an opinion in this active topic” check that is tied to `activeTopicId` and waits until auth/topic data are loaded.
-  - Until that check is known, do not show the “Tippe auf einen Punkt …” hint.
-2. Make the add-opinion form the default when the user has no opinion for the current topic:
-  - If the active user has no opinion for the active topic, always render the add-opinion form.
-  - When user selects a nodes, show the opinion information panel above the add opinion form. 
-  - Show the “Tippe auf einen Punkt im Auge …” hint only when the user definitely has an own opinion for that exact topic and no node is selected.
-3. Make the tour highlight impossible to miss:
-  - Add a stronger visual highlight to the add-opinion form during tour step 3: prominent ring/glow plus a small lifted z-index so it is not visually hidden behind the tour card.
-  - Add a stable marker/data attribute to the form wrapper so it is clear what element is being targeted.
-  - Keep the form interactive while highlighted.
-4. Verify the exact reload scenario:
-  - Test `/tt/00000000-0000-0000-0000-000000000001` and another topic such as “Was ist das größte Problem” after page reload.
-  - Confirm: users without an opinion see the add-opinion form, not the hint.
-  - Confirm: users with an opinion see the hint only after their opinion exists for that active topic.
-  - Confirm: tour step 3 highlights the add-opinion form.
+1. Add the next onboarding step
+- Add step 4 text: “Dann kannst du mit anderen chatten!”
+- During this step, automatically select/open a random existing opinion panel for the active topic.
+- Prefer a non-own opinion if the user already has an opinion; otherwise pick any visible opinion so the panel can be demonstrated.
+- Highlight the “Let’s chat” button clearly with a ring/glow/pulse so it is visibly the target of the step.
+
+2. Improve tour controls
+- Replace the current single “Weiter” button layout with elegant compact controls:
+  - “Zurück” / “Back” on all steps after the first
+  - “Weiter” until the last step
+  - “Überspringen” / “Skip” always available
+- Keep button sizing balanced and unobtrusive inside the tour card.
+- Keep close behavior consistent: X and Skip both finish the tour.
+
+3. Enforce chat gating when no opinion exists
+- In every selected opinion panel, keep “Let’s chat” disabled unless the user has already posted their own opinion for the current topic.
+- Add disabled styling and a helpful title/tooltip text explaining that the user must add their opinion first.
+- Prevent the click handler from opening chats if `hasOwnOpinion` is false, so it is not just visually disabled.
+- Keep the chat side-tab/list inaccessible when no own opinion exists by disabling the right “CHATS” tab or showing a “post your opinion first” locked state instead of opening `EmbeddedChatView`.
+- Also guard the imperative `openChat()` path in `TTSideTabs`, so no code path can open a chat without `hasOwnOpinion`.
+
+4. Technical touchpoints
+- Update `TT.tsx` to manage the new tour step constant, Back/Next/Skip handlers, and random opinion selection for the chat step.
+- Update `TTOnboardingTour.tsx` to support Back, Skip, final-step completion, and the new body text.
+- Update `TTBottomPanel.tsx` to add `highlightLetsChatButton`, stronger disabled behavior, and safer `onLetsChat` gating.
+- Update `TTSideTabs.tsx` to accept `hasOwnOpinion` / locked chat state and prevent chat opening without it.
+- Update German and English locale keys for the new step and controls.
+
+I’ll also make sure the previous fix remains intact: users without an opinion should still see the add-opinion form as the default, not the “Tippe auf einen Punkt…” hint panel.
