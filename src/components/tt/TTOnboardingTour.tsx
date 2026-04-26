@@ -12,6 +12,8 @@ interface TTOnboardingTourProps {
 export function TTOnboardingTour({ open, step, onNext, onDone }: TTOnboardingTourProps) {
   const { t } = useTranslation();
   const isOpinionsStep = step === 1;
+  const isAddOpinionStep = step === 2;
+  const canContinue = step < 2;
 
   return (
     <AnimatePresence>
@@ -38,9 +40,9 @@ export function TTOnboardingTour({ open, step, onNext, onDone }: TTOnboardingTou
               <X className="h-4 w-4" />
             </button>
             <p className="px-4 py-5 text-lg font-medium leading-snug text-foreground">
-              {t(isOpinionsStep ? 'tt.onboarding.opinionsStep' : 'tt.onboarding.firstStep')}
+              {t(isAddOpinionStep ? 'tt.onboarding.addOpinionStep' : isOpinionsStep ? 'tt.onboarding.opinionsStep' : 'tt.onboarding.firstStep')}
             </p>
-            {!isOpinionsStep && (
+            {canContinue && (
               <button
                 type="button"
                 onClick={onNext}

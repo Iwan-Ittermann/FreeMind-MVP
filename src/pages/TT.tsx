@@ -19,6 +19,7 @@ import { GraphNode } from '@/types/graph';
 const PRIMARY_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
 const TT_ONBOARDING_DONE_KEY = 'tt:onboarding:first-step-done';
 const TT_ONBOARDING_OPINIONS_STEP = 1;
+const TT_ONBOARDING_ADD_OPINION_STEP = 2;
 
 /**
  * TikTok-style mobile UI.
@@ -224,13 +225,14 @@ export default function TT() {
         <TTOnboardingTour
           open={tourOpen}
           step={tourStep}
-          onNext={() => setTourStep((step) => Math.min(TT_ONBOARDING_OPINIONS_STEP, step + 1))}
+          onNext={() => setTourStep((step) => Math.min(TT_ONBOARDING_ADD_OPINION_STEP, step + 1))}
           onDone={completeTour}
         />
         <TTBottomPanel
           topicId={activeTopicId}
           hasOwnOpinion={hasOwnOpinion}
           ownOpinionId={ownOpinionId}
+          highlightAddOpinionForm={tourOpen && tourStep === TT_ONBOARDING_ADD_OPINION_STEP && !hasOwnOpinion}
           selected={
             selectedNode
               ? { id: selectedNode.id, text: selectedNode.opinion?.text ?? '' }

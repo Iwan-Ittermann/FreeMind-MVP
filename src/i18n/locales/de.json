@@ -673,6 +673,7 @@
     "onboarding": {
       "firstStep": "Hier kannst du produktiv diskutieren!",
       "opinionsStep": "Hier stehen die Meinungen",
+      "addOpinionStep": "Du kannst deine Meinung hinzufügen.",
       "next": "Weiter"
     }
   }
