@@ -26,6 +26,7 @@ interface SignalRendererProps {
   onNodeHover: (node: GraphNode | null) => void;
   onEdgeClick?: (edge: GraphEdge) => void;
   showLabels?: 'none' | 'highlighted-only';
+  highlightAllNodes?: boolean;
   /** When false, omit SignalZones (dark core + atmospheric glows). */
   showZones?: boolean;
   /** TT mode: gold core stars, emerald middle circles, small black extreme nodes. */
@@ -40,6 +41,7 @@ export function SignalRenderer({
   activeChats, messageAnimations,
   onNodeClick, onNodeHover, onEdgeClick,
   showLabels = 'highlighted-only',
+  highlightAllNodes = false,
   showZones = true,
   ttMode = false,
   ttLandmarks,
@@ -167,6 +169,7 @@ export function SignalRenderer({
             token={nt}
             isHighlighted={highlightedNode === nt.id}
             isDimmed={!!(highlightedNode && highlightedNode !== nt.id)}
+            highlightForTour={highlightAllNodes}
             showSpeechBubble={shouldShowBubble(nt.id)}
             scale={nodeScale}
             ttMode={ttMode}
