@@ -668,6 +668,10 @@
       "comingSoon": "bald"
     },
     "scrollHint": "Wische für mehr Themen",
-    "respectUnlockHint": "Nach 2 Nachrichten freigeschaltet"
+    "respectUnlockHint": "Nach 2 Nachrichten freigeschaltet",
+    "restartTour": "Tour neu starten",
+    "onboarding": {
+      "firstStep": "Hier kannst du produktiv diskutieren!"
+    }
   }
 }
