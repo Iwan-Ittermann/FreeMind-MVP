@@ -24,6 +24,7 @@ interface TTBottomPanelProps {
   hasOwnOpinion: boolean;
   ownOpinionId: string | null;
   selected: SelectedOpinion | null;
+  highlightAddOpinionForm?: boolean;
   onLetsChat?: (targetOpinionId: string) => void;
   onOpinionSubmitted?: () => void;
   onCloseSelection?: () => void;
@@ -42,6 +43,7 @@ export function TTBottomPanel({
   hasOwnOpinion,
   ownOpinionId,
   selected,
+  highlightAddOpinionForm = false,
   onLetsChat,
   onOpinionSubmitted,
   onCloseSelection,
@@ -235,7 +237,7 @@ export function TTBottomPanel({
           <motion.div
             animate={{ height: focused ? 152 : 56 }}
             transition={{ type: 'spring', stiffness: 320, damping: 30 }}
-            className="rounded-2xl bg-background/95 backdrop-blur-md border border-border/40 shadow-lg overflow-hidden"
+            className={`rounded-2xl bg-background/95 backdrop-blur-md border shadow-lg overflow-hidden transition-shadow ${highlightAddOpinionForm ? 'border-primary/80 ring-4 ring-primary/30 shadow-primary/30 animate-pulse' : 'border-border/40'}`}
           >
             <Textarea
               ref={taRef}
