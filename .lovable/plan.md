@@ -1,22 +1,19 @@
 Plan:
-1. Add the next TT onboarding step:
-   - Step 3 text: “Du kannst deine Meinung hinzufügen.”
-   - Keep the existing flow: step 1 intro, step 2 opinions/nodes, step 3 add-opinion form.
-   - Add a “Weiter” button on step 2 so users can continue to step 3.
-   - Step 3 can be dismissed/completed with the close button.
 
-2. Highlight the add-opinion form during step 3:
-   - Pass a new `highlightAddOpinionForm` flag from `TT.tsx` into `TTBottomPanel` when the tour is open on step 3.
-   - Add a visible ring/glow/pulse around the textarea panel, without changing the form behavior.
-   - Keep the form clickable/usable during the tour.
-
-3. Ensure the add-opinion form is shown when needed:
-   - Keep the existing rule: if the user has not added an opinion for the active topic, show the add-opinion form.
-   - Ensure the “Tippe auf einen Punkt …” hint panel is only rendered after `hasOwnOpinion` is true and no opinion is selected.
-   - During the step-3 tour, avoid letting the hint panel replace the add-opinion target; the tour highlight should only target the form when the form is available.
-
-Technical details:
-- Update `TT_ONBOARDING_OPINIONS_STEP` logic in `src/pages/TT.tsx` to include an additional add-opinion step constant.
-- Update `TTOnboardingTour.tsx` to treat step 1 and step 2 as continuable, and step 3 as the final instructional step.
-- Update `TTBottomPanel.tsx` with an optional `highlightAddOpinionForm` prop and apply highlight classes to the add-opinion panel wrapper.
-- Add translation key `tt.onboarding.addOpinionStep` with “Du kannst deine Meinung hinzufügen.” in both locale files, matching the German-first tour wording.
+1. Fix the bottom-panel state source so it is reliably topic-specific:
+  - Stop relying only on `activeData.opinions.find(authorId === user.id)` for the visible panel decision.
+  - Add an explicit “current user has an opinion in this active topic” check that is tied to `activeTopicId` and waits until auth/topic data are loaded.
+  - Until that check is known, do not show the “Tippe auf einen Punkt …” hint.
+2. Make the add-opinion form the default when the user has no opinion for the current topic:
+  - If the active user has no opinion for the active topic, always render the add-opinion form.
+  - When user selects a nodes, show the opinion information panel above the add opinion form. 
+  - Show the “Tippe auf einen Punkt im Auge …” hint only when the user definitely has an own opinion for that exact topic and no node is selected.
+3. Make the tour highlight impossible to miss:
+  - Add a stronger visual highlight to the add-opinion form during tour step 3: prominent ring/glow plus a small lifted z-index so it is not visually hidden behind the tour card.
+  - Add a stable marker/data attribute to the form wrapper so it is clear what element is being targeted.
+  - Keep the form interactive while highlighted.
+4. Verify the exact reload scenario:
+  - Test `/tt/00000000-0000-0000-0000-000000000001` and another topic such as “Was ist das größte Problem” after page reload.
+  - Confirm: users without an opinion see the add-opinion form, not the hint.
+  - Confirm: users with an opinion see the hint only after their opinion exists for that active topic.
+  - Confirm: tour step 3 highlights the add-opinion form.
