@@ -252,6 +252,7 @@ export default function TT() {
         <TTBottomPanel
           topicId={activeTopicId}
           hasOwnOpinion={hasOwnOpinion}
+          ownOpinionKnown={ownOpinionKnown}
           ownOpinionId={ownOpinionId}
           highlightAddOpinionForm={tourOpen && tourStep === TT_ONBOARDING_ADD_OPINION_STEP && !hasOwnOpinion}
           selected={
@@ -264,6 +265,10 @@ export default function TT() {
             sideTabsRef.current?.openChat(targetOpinionId);
           }}
           onOpinionSubmitted={() => setSelectedNode(null)}
+          onOpinionCommitted={() => {
+            queryClient.invalidateQueries({ queryKey: ['tt-own-opinion', activeTopicId, user?.id] });
+            queryClient.invalidateQueries({ queryKey: ['topic', activeTopicId] });
+          }}
           onCloseSelection={() => setSelectedNode(null)}
         />
       </div>
