@@ -15,8 +15,11 @@ export function TTOnboardingTour({ open, step, onBack, onNext, onDone }: TTOnboa
   const isOpinionsStep = step === 1;
   const isAddOpinionStep = step === 2;
   const isChatStep = step === 3;
+  const isRatingStep = step === 4;
   const canGoBack = step > 0;
-  const stepKey = isChatStep
+  const stepKey = isRatingStep
+    ? 'tt.onboarding.ratingStep'
+    : isChatStep
     ? 'tt.onboarding.chatStep'
     : isAddOpinionStep
       ? 'tt.onboarding.addOpinionStep'
@@ -31,7 +34,7 @@ export function TTOnboardingTour({ open, step, onBack, onNext, onDone }: TTOnboa
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className={`absolute inset-0 z-50 flex items-center justify-center px-6 ${isOpinionsStep || isAddOpinionStep || isChatStep ? 'pointer-events-none' : 'bg-background/20 backdrop-blur-[1px] pointer-events-auto'}`}
+          className={`absolute inset-0 z-[70] flex items-center justify-center px-6 ${isOpinionsStep || isAddOpinionStep || isChatStep || isRatingStep ? 'pointer-events-none' : 'bg-background/20 backdrop-blur-[1px] pointer-events-auto'}`}
         >
           <motion.div
             initial={{ opacity: 0, y: 10, scale: 0.96 }}
@@ -48,7 +51,7 @@ export function TTOnboardingTour({ open, step, onBack, onNext, onDone }: TTOnboa
             >
               <X className="h-4 w-4" />
             </button>
-            <p className="px-4 py-5 text-lg font-medium leading-snug text-foreground">
+            <p className="whitespace-pre-line px-4 py-5 text-lg font-medium leading-snug text-foreground">
               {t(stepKey)}
             </p>
             <div className="flex items-center justify-center gap-2">
@@ -73,7 +76,7 @@ export function TTOnboardingTour({ open, step, onBack, onNext, onDone }: TTOnboa
                 onClick={onNext}
                 className="h-8 rounded-full bg-primary px-4 text-xs font-medium text-primary-foreground shadow-sm transition-opacity hover:opacity-90"
               >
-                {t(isChatStep ? 'tt.onboarding.done' : 'tt.onboarding.next')}
+                {t(isRatingStep ? 'tt.onboarding.done' : 'tt.onboarding.next')}
               </button>
             </div>
           </motion.div>
