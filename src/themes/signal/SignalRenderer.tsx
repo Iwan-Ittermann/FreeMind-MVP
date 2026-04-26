@@ -80,7 +80,11 @@ export function SignalRenderer({
   }, [messageAnimations, nodeMap]);
 
   const handleNodeClick = useCallback(
-    (id: string) => { const node = nodeMap.get(id); if (node) onNodeClick(node); },
+    (id: string, event?: React.MouseEvent<SVGGElement> | React.PointerEvent<SVGGElement>) => {
+      event?.stopPropagation();
+      const node = nodeMap.get(id);
+      if (node) onNodeClick(node);
+    },
     [nodeMap, onNodeClick],
   );
 
@@ -166,7 +170,8 @@ export function SignalRenderer({
             showSpeechBubble={shouldShowBubble(nt.id)}
             scale={nodeScale}
             ttMode={ttMode}
-            onClick={() => handleNodeClick(nt.id)}
+            onClick={(event) => handleNodeClick(nt.id, event)}
+            onPointerDown={(event) => event.stopPropagation()}
             onMouseEnter={() => handleNodeHover(nt.id)}
             onMouseLeave={() => handleNodeHover(null)}
           />
