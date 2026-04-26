@@ -85,17 +85,17 @@ export default function OnboardingProvider({ onRevealOpinion, onOpenChat }: Onbo
         disableOverlayClose={false}
         hideCloseButton={false}
         scrollOffset={96}
+        options={{
+          zIndex: 80,
+          arrowColor: 'hsl(var(--background) / 0.94)',
+          backgroundColor: 'hsl(var(--background) / 0.9)',
+          overlayColor: 'hsl(var(--foreground) / 0.18)',
+          primaryColor: 'hsl(var(--primary))',
+          textColor: 'hsl(var(--foreground))',
+          width: 330,
+        }}
         locale={{ back: 'Zurück', close: 'Schließen', last: "Let's go!", next: 'Weiter', skip: 'Überspringen' }}
         styles={{
-          options: {
-            zIndex: 80,
-            arrowColor: 'hsl(var(--background) / 0.94)',
-            backgroundColor: 'hsl(var(--background) / 0.9)',
-            overlayColor: 'hsl(var(--foreground) / 0.18)',
-            primaryColor: 'hsl(var(--primary))',
-            textColor: 'hsl(var(--foreground))',
-            width: 330,
-          },
           tooltip: {
             borderRadius: 20,
             border: '1px solid hsl(var(--border) / 0.55)',
