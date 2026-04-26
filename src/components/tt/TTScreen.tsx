@@ -139,7 +139,7 @@ function TTScreenInnerImpl({
         >
           {/* Graph layer — sized to match wrapper so SVG center aligns with background center */}
           {size > 0 && ttLandmarks && (
-            <div data-tt-graph data-onboarding="tt-graph" className="absolute inset-0 flex items-center justify-center overflow-visible will-change-transform">
+            <div data-tt-graph className="absolute inset-0 flex items-center justify-center overflow-visible will-change-transform">
               <OpinionGraph
                 opinions={data?.opinions ?? []}
                 ratings={data?.ratings ?? []}

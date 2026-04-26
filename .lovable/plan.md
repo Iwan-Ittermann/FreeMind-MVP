@@ -1,91 +1,139 @@
-Implement a polished first-time onboarding tour for the /tt experience as an additive overlay only.
+## Plan: Fix TT bugs and improve mobile interaction UI
 
-Scope
+### Goals
 
-- Add a guided-tour layer on top of the existing /tt UI.
-- Do not change graph rendering, node selection logic, chat behavior, rating behavior, auth, routing, or persistence beyond the new onboarding localStorage key.
-- Use React Joyride and lazy-load the tour bundle so normal /tt loading stays light.
+- Browser notification permission should be requested (if not already allowed) every time right after a user successfully posts their opinion to a topic.
+- The left-side bell should return to being a simple per-topic subscription toggle.
+- `/tt` should clearly indicate vertical topic scrolling until the user has scrolled twice.
+- `/tt` should load all active topics and loop endlessly instead of only using a previous/current/next window.
+- Topic headlines should appear quickly while full graph data can continue loading.
+- The selected-opinion disagreement rating should become a responsive 5-option scale.
+- The chat respect-rating button should be a heart icon inside the message input, unlocked after two sent messages with a spark animation.
 
-Implementation plan
+### Implementation
 
-1. Add tour package and structure
-  - Add `react-joyride` as the guided-tour library.
-  - Create a small onboarding module:
-    - `src/onboarding/tt-onboarding-steps.ts`
-    - `src/onboarding/useOnboardingTour.ts`
-    - `src/onboarding/OnboardingProvider.tsx`
-    - `src/onboarding/StartTourButton.tsx`
-  - Lazy-load `OnboardingProvider` from `src/pages/TT.tsx` with `React.lazy`/`Suspense` so Joyride is split into its own bundle.
-2. Add stable additive tour anchors
-  - Add `data-onboarding-*` attributes to existing rendered elements only; no behavior changes.
-  - Planned anchors:
-    - center welcome: no DOM target, Joyride centered modal
-    - graph: wrapper around `[data-tt-graph]`
-    - visible nodes: use the graph target plus an additive pulse overlay around the graph area
-    - opinion CTA: bottom textarea/create-opinion panel and the floating Post button when available
-    - chat sidebar: right chat tab/panel area
-    - disagreement rating: `TTEmojiRating` row inside the selected-opinion panel
-    - chat productivity rating: rating button in `EmbeddedChatView`
-  - Missing targets will not crash the tour; steps will fall back to the closest available target or skip gracefully.
-3. Create tour state and persistence
-  - `useOnboardingTour()` will manage:
-    - `isRunning`
-    - current step index
-    - `startTour()`
-    - `skipTour()` / `completeTour()`
-    - first-time auto-launch
-  - Persist completion exactly as requested:
-    - `localStorage.setItem('freemind-onboarding-completed', 'true')`
-  - Auto-launch only on `/tt` or `/tt/:topicId` when the key is not set.
-  - Manual restart will clear/reset the key and start the tour.
-4. Integrate provider into /tt
-  - Wrap the existing TT page content with the lazy-loaded `OnboardingProvider`.
-  - Pass safe orchestration callbacks only where needed, for example:
-    - open the right chat panel for the chat step if available
-    - optionally select an existing visible opinion to expose the `Let's chat` and disagreement-rating UI
-  - Keep these actions reversible and non-destructive; they only reveal existing UI for explanation.
-5. Manual restart from settings
-  - Add a compact `StartTourButton` to the TT account/settings dropdown.
-  - The button will use the onboarding context, close/open nothing destructive, and restart the tour on demand.
-  - This is separate from the older tutorial system already used elsewhere, avoiding conflicts.
-6. Visual polish and accessibility
-  - Use Joyride with custom styles/classes matching Freemind:
-    - glassmorphism tooltip
-    - rounded corners
-    - soft shadow
-    - subtle border/backdrop blur
-    - premium dark/neutral styling
-  - Provide Back, Next, Skip controls.
-  - Final button text: `Let's go!`
-  - Enable keyboard navigation and ESC close.
-  - Keep spotlight clicks enabled so users can still interact with highlighted UI.
-  - Keep scrolling smooth and avoid body scroll locking where possible.
-  - Add a lightweight pulse overlay for graph/nodes and primary CTA emphasis.
-7. Tour flow content
-  - Step 1: centered welcome modal
-    - “Hey, hier kannst du produktiv diskutieren.”
-  - Step 2: graph canvas
-    - “Das sind die Meinungen.”
-    - Highlight graph/all visible nodes with subtle pulse.
-  - Step 3: opinion creation CTA
-    - “Hier kannst du deine eigene Meinung posten.”
-    - Emphasize the primary create/post area.
-  - Step 4: chat
-    - “Dann kannst du mit anderen chatten.”
-    - Highlight chat side tab/panel and the selected-opinion panel containing `Let's chat`.
-  - Step 5: ratings and completion
-    - “Du kannst anderen Meinungen zustimmen oder widersprechen.\nUnd die Produktivität deiner Chats bewerten.\nDadurch entsteht die Verteilung im Kreis.”
-    - Highlight both rating systems using additive overlay highlights; if one target is unavailable, still explain and highlight the available one.
+#### 1. Browser notification permission after posting an opinion
 
-Technical notes
+In `TTBottomPanel`, after `submit_opinion` succeeds:
 
-- `react-joyride` supports continuous tours, keyboard navigation, ESC close, spotlight interaction, and callbacks for missing targets/step changes.
-- Multi-target highlighting will be handled by a small additive overlay component controlled by the provider, because Joyride itself spotlights one primary target at a time.
-- No database or Lovable Cloud changes are needed.
-- No changes to generated backend/client files.
+- call a shared permission helper that checks `Notification.permission`
+- if permission is `default`, request permission after the user-initiated posting flow
+- if granted, auto-enable notification prefs for the current topic
+- dispatch `tt:subscription-changed` so the bell and notification listener update
 
-Validation
+The existing bottom-sheet permission prompt can be bypassed/removed from this flow, because the browser permission request must happen from a direct user action.
 
-- Run TypeScript/build checks after implementation.
-- Verify `/tt` first-time auto-launch, completion persistence, manual restart, skip, back/next, ESC close, and missing-target resilience.
-- Confirm no console errors and no regressions to graph interactions, side tabs, opinion posting, chat opening, and rating controls.
+#### 2. Make the left-side bell a subscription toggle again
+
+In `TTNotificationsBell`:
+
+- remove the setup modal behavior from the main bell tap
+- make first tap subscribe/unsubscribe the current topic directly
+- if browser permission is missing, request it from this bell tap
+- keep subscription state in `tt-notification-prefs`
+- keep the header notification dropdown for notification history + global filters
+
+Result: the left bell becomes simple and predictable: on/off for this topic.
+
+#### 3. Add a temporary scroll hint on `/tt`
+
+In `TT.tsx`, add a lightweight overlay cue:
+
+- small vertical swipe indicator near the upper/lower center, e.g. “Swipe for more topics” / “Wische für mehr Themen” with animated up/down chevrons
+- store a local scroll count in `localStorage`
+- hide the hint permanently after two topic-changing scrolls
+- keep it non-blocking with `pointer-events-none`
+
+#### 4. Load all topics and loop endlessly
+
+Update `useTTTopics` / `useTTSwipeWindow`:
+
+- remove `.limit(20)` so all active topics are fetched
+- return lightweight topic objects `{ id, title }`
+- replace the `[prev,current,next]` window with a cyclic rendered sequence
+
+In `TT.tsx`:
+
+- render all topic sections in the scroll container
+- when the user scrolls past the last topic, jump seamlessly to the first equivalent section
+- when the user scrolls before the first topic, jump seamlessly to the last equivalent section
+- preserve route updates with `navigate('/tt/:id', { replace: true })`
+
+Practical looping approach:
+
+```text
+[clone of last topic] [real topic 1] [real topic 2] ... [real last topic] [clone of first topic]
+```
+
+When a clone becomes active, instantly reposition to the matching real topic.
+
+#### 5. Minimize headline loading latency
+
+Use the already-light `topics` query as the source of header titles:
+
+- derive `activeTopicTitle` from `useTTTopics()` immediately
+- pass that title to `TTHeader`
+- only fall back to `activeData?.title` if needed
+
+This avoids waiting for `useTopicData(activeTopicId)`, which fetches opinions, ratings, fake nodes, graph pairs, and chat activity.
+
+#### 6. Replace selected-opinion disagreement UI with a responsive 5-option scale
+
+Replace/extend `TTEmojiRating`:
+
+- labels: `Yes!`, `Yes`, `Neutral`, `No`, `No!`
+- values: `0`, `25`, `50`, `75`, `100`
+- colors from dark green to dark red
+- render as a full-width segmented scale
+- in `TTBottomPanel`, make the row layout:
+  - scale fills available width from the left edge
+  - “Let’s chat” button stays fixed-width on the right
+
+This preserves existing DB semantics: `0 = agreement`, `100 = disagreement`.
+
+#### 7. Move respect rating button into the chat input
+
+Update `EmbeddedChatView` for the `/tt` side chat panel:
+
+- replace the external “Rate!” button with a heart icon button positioned inside the message input field
+- input expands to use the space gained by removing the external button
+- use `Heart` as the icon
+- when rating panel opens, keep existing save behavior for `chat_ratings.empathy`
+
+Apply the same pattern to `FloatingChatWindow` if we want desktop consistency; otherwise prioritize `EmbeddedChatView`, since this request targets `/tt`.
+
+#### 8. Unlock respect rating after two sent messages
+
+In `EmbeddedChatView`:
+
+- count messages sent by the current user in this chat
+- disable/hide the heart rating button until at least 2 own messages exist
+- when the second own message appears, trigger a one-time spark/unlock animation around the heart button
+- persist the unlock animation flag per chat in `sessionStorage` or component state so it does not replay repeatedly during the same open chat
+
+The rating remains unavailable for bot chats and blocked chats as currently appropriate.
+
+#### 9. Localization and small polish
+
+Update `de.json` and `en.json` with:
+
+- scroll hint text
+- 5 scale labels if not hardcoded
+- respect-rating locked tooltip/hint, e.g. “Unlocked after 2 messages”
+- notification permission success/blocked copy where needed
+
+### Files expected to change
+
+- `src/pages/TT.tsx`
+- `src/hooks/useTTTopics.ts`
+- `src/components/tt/TTBottomPanel.tsx`
+- `src/components/tt/TTNotificationsBell.tsx`
+- `src/components/tt/TTEmojiRating.tsx`
+- `src/components/chat/EmbeddedChatView.tsx`
+- optionally `src/components/chat/FloatingChatWindow.tsx`
+- `src/i18n/locales/de.json`
+- `src/i18n/locales/en.json`
+
+### No backend changes needed
+
+All requested changes can be implemented with existing tables and browser APIs. No database migration or new backend function is required.

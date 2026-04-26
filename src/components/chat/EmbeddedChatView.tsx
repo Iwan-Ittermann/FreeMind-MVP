@@ -321,7 +321,6 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
                   type="button"
                   onClick={() => canRateRespect && setIsRatingOpen(!isRatingOpen)}
                   disabled={!canRateRespect}
-                  data-onboarding="chat-productivity-rating"
                   className={`absolute left-1.5 top-1/2 z-10 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full transition-colors ${
                     canRateRespect
                       ? isRatingOpen

@@ -65,7 +65,6 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
         {/* Right tab — chats */}
         <button
           onClick={() => setSide(side === 'right' ? null : 'right')}
-          data-onboarding="chat-tab"
           className="absolute right-0 bottom-[28%] z-30 h-28 w-7 rounded-l-xl bg-background/85 backdrop-blur-md border border-r-0 border-border/40 shadow-md flex items-center justify-center hover:bg-background/95 transition-colors"
           aria-label={t('tt.chats')}
         >
@@ -144,7 +143,6 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
               {side === 'right' && (
                 <motion.div
                   key="panel-right"
-                  data-onboarding="chat-panel"
                   initial={{ opacity: 0, scaleX: 0.05, scaleY: 0.4 }}
                   animate={{ opacity: 1, scaleX: 1, scaleY: 1 }}
                   exit={{ opacity: 0, scaleX: 0.05, scaleY: 0.4 }}
