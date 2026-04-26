@@ -671,7 +671,9 @@
     "respectUnlockHint": "Nach 2 Nachrichten freigeschaltet",
     "restartTour": "Tour neu starten",
     "onboarding": {
-      "firstStep": "Hier kannst du produktiv diskutieren!"
+      "firstStep": "Hier kannst du produktiv diskutieren!",
+      "opinionsStep": "Hier stehen die Meinungen",
+      "next": "Weiter"
     }
   }
 }
