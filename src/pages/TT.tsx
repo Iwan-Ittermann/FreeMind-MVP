@@ -311,13 +311,12 @@ export default function TT() {
         </AnimatePresence>
         <TTNotificationsBell topicId={activeTopicId} />
         {showTourSpotlightOverlay && (
-          <div className="pointer-events-none absolute inset-0 z-50 bg-background/75 backdrop-blur-[1px]" />
+          <div className="pointer-events-none absolute inset-0 z-50 bg-tt-spotlight-overlay/70" />
         )}
         {showFakeChatPreview && <TTFakeChatPreview />}
         <TTOnboardingTour
           open={tourOpen}
           step={tourStep}
-          onBack={() => setTourStep((step) => Math.max(0, step - 1))}
           onNext={() => {
             if (tourStep >= TT_ONBOARDING_RATING_STEP) {
               completeTour();
