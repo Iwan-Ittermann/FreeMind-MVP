@@ -76,7 +76,7 @@ export default function OnboardingProvider({ onRevealOpinion, onOpenChat }: Onbo
         steps={tour.steps}
         run={tour.run}
         stepIndex={tour.stepIndex}
-        callback={tour.handleJoyrideCallback}
+        onEvent={tour.handleJoyrideCallback}
         continuous
         showSkipButton
         showProgress={false}
