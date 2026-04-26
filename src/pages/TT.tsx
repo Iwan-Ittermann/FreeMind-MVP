@@ -152,6 +152,15 @@ export default function TT() {
     unreadMap.forEach((v) => { sum += v; });
     return sum;
   }, [unreadMap]);
+  const showTourSpotlightOverlay = tourOpen && (
+    tourStep === TT_ONBOARDING_ADD_OPINION_STEP
+    || tourStep === TT_ONBOARDING_RATING_STEP
+  );
+  const showFakeChatPreview = tourOpen && tourStep === TT_ONBOARDING_RATING_STEP && !hasOwnOpinion;
+
+  useEffect(() => {
+    if (showFakeChatPreview) setSelectedNode(null);
+  }, [showFakeChatPreview]);
 
   // Lock viewport for this route only
   useEffect(() => {
@@ -291,16 +300,20 @@ export default function TT() {
           )}
         </AnimatePresence>
         <TTNotificationsBell topicId={activeTopicId} />
+        {showTourSpotlightOverlay && (
+          <div className="pointer-events-none absolute inset-0 z-50 bg-background/75 backdrop-blur-[1px]" />
+        )}
+        {showFakeChatPreview && <TTFakeChatPreview />}
         <TTOnboardingTour
           open={tourOpen}
           step={tourStep}
           onBack={() => setTourStep((step) => Math.max(0, step - 1))}
           onNext={() => {
-            if (tourStep >= TT_ONBOARDING_CHAT_STEP) {
+            if (tourStep >= TT_ONBOARDING_RATING_STEP) {
               completeTour();
               return;
             }
-            setTourStep((step) => Math.min(TT_ONBOARDING_CHAT_STEP, step + 1));
+            setTourStep((step) => Math.min(TT_ONBOARDING_RATING_STEP, step + 1));
           }}
           onDone={completeTour}
         />
@@ -311,6 +324,7 @@ export default function TT() {
           ownOpinionId={ownOpinionId}
           highlightAddOpinionForm={tourOpen && tourStep === TT_ONBOARDING_ADD_OPINION_STEP}
           highlightLetsChatButton={tourOpen && tourStep === TT_ONBOARDING_CHAT_STEP}
+          highlightDisagreementScale={tourOpen && tourStep === TT_ONBOARDING_RATING_STEP && hasOwnOpinion}
           forceShowAddOpinionForm={tourOpen && tourStep === TT_ONBOARDING_ADD_OPINION_STEP}
           suppressHintPanel={tourOpen}
           selected={
