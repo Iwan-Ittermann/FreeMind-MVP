@@ -22,7 +22,7 @@ interface SignalRendererProps {
   currentUserOpinionId: string | null;
   activeChats: ActiveChat[];
   messageAnimations: MessageAnimationData[];
-  onNodeClick: (node: GraphNode) => void;
+  onNodeClick: (node: GraphNode | null) => void;
   onNodeHover: (node: GraphNode | null) => void;
   onEdgeClick?: (edge: GraphEdge) => void;
   showLabels?: 'none' | 'highlighted-only';
@@ -80,7 +80,11 @@ export function SignalRenderer({
   }, [messageAnimations, nodeMap]);
 
   const handleNodeClick = useCallback(
-    (id: string) => { const node = nodeMap.get(id); if (node) onNodeClick(node); },
+    (id: string, event?: React.MouseEvent<SVGGElement> | React.PointerEvent<SVGGElement>) => {
+      event?.stopPropagation();
+      const node = nodeMap.get(id);
+      if (node) onNodeClick(node);
+    },
     [nodeMap, onNodeClick],
   );
 
@@ -125,7 +129,7 @@ export function SignalRenderer({
       className="overflow-visible"
       style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}
     >
-      <rect width={width} height={height} fill="transparent" onClick={() => onNodeClick(null as unknown as GraphNode)} />
+      <rect width={width} height={height} fill="transparent" onClick={() => onNodeClick(null)} />
       {showZones && <SignalZones zones={zoneTokens} config={config} />}
 
       {ttLandmarks && (
@@ -166,7 +170,8 @@ export function SignalRenderer({
             showSpeechBubble={shouldShowBubble(nt.id)}
             scale={nodeScale}
             ttMode={ttMode}
-            onClick={() => handleNodeClick(nt.id)}
+            onClick={(event) => handleNodeClick(nt.id, event)}
+            onPointerDown={(event) => event.stopPropagation()}
             onMouseEnter={() => handleNodeHover(nt.id)}
             onMouseLeave={() => handleNodeHover(null)}
           />

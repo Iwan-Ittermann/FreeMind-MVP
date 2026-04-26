@@ -668,6 +668,10 @@
       "comingSoon": "soon"
     },
     "scrollHint": "Swipe for more topics",
-    "respectUnlockHint": "Unlocked after 2 messages"
+    "respectUnlockHint": "Unlocked after 2 messages",
+    "restartTour": "Restart tour",
+    "onboarding": {
+      "firstStep": "Hier kannst du produktiv diskutieren!"
+    }
   }
 }

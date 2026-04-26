@@ -12,11 +12,13 @@ type AuthMode = "login" | "signup";
 interface AuthFormProps {
   onSuccess?: () => void;
   compact?: boolean;
+  initialMode?: AuthMode;
+  showModeSwitch?: boolean;
 }
 
-export function AuthForm({ onSuccess, compact = false }: AuthFormProps) {
+export function AuthForm({ onSuccess, compact = false, initialMode = "signup", showModeSwitch = true }: AuthFormProps) {
   const { t } = useTranslation();
-  const [mode, setMode] = useState<AuthMode>("signup");
+  const [mode, setMode] = useState<AuthMode>(initialMode);
   const [passphrase, setPassphrase] = useState("");
   const [generatedPassphrase, setGeneratedPassphrase] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -151,15 +153,17 @@ export function AuthForm({ onSuccess, compact = false }: AuthFormProps) {
         ) : mode === "signup" ? t("common.signUp") : t("common.logIn")}
       </Button>
 
-      <p className="text-center text-xs">
-        <button
-          type="button"
-          onClick={() => { setMode(mode === "signup" ? "login" : "signup"); setError(null); }}
-          className="text-muted-foreground hover:text-foreground transition-colors"
-        >
-          {mode === "signup" ? t("auth.alreadyHavePassphrase") : t("auth.dontHavePassphrase")}
-        </button>
-      </p>
+      {showModeSwitch && (
+        <p className="text-center text-xs">
+          <button
+            type="button"
+            onClick={() => { setMode(mode === "signup" ? "login" : "signup"); setError(null); }}
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {mode === "signup" ? t("auth.alreadyHavePassphrase") : t("auth.dontHavePassphrase")}
+          </button>
+        </p>
+      )}
     </form>
   );
 }

@@ -5,6 +5,7 @@ import { TTHeader } from '@/components/tt/TTHeader';
 import { TTSideTabs, TTSideTabsHandle } from '@/components/tt/TTSideTabs';
 import { TTBottomPanel } from '@/components/tt/TTBottomPanel';
 import { TTNotificationsBell } from '@/components/tt/TTNotificationsBell';
+import { TTOnboardingTour } from '@/components/tt/TTOnboardingTour';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTTTopics, useTTSwipeWindow } from '@/hooks/useTTTopics';
@@ -16,6 +17,7 @@ import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { GraphNode } from '@/types/graph';
 
 const PRIMARY_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
+const TT_ONBOARDING_DONE_KEY = 'tt:onboarding:first-step-done';
 
 /**
  * TikTok-style mobile UI.
@@ -51,6 +53,7 @@ export default function TT() {
   const [scrollHintCount, setScrollHintCount] = useState(() => Number(localStorage.getItem('tt:topic-scroll-count') || '0'));
   const showScrollHint = topics.length > 1 && scrollHintCount < 2;
   const sideTabsRef = useRef<TTSideTabsHandle>(null);
+  const [tourOpen, setTourOpen] = useState(() => localStorage.getItem(TT_ONBOARDING_DONE_KEY) !== 'true');
 
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   useEffect(() => {
@@ -173,6 +176,7 @@ export default function TT() {
           topicTitle={activeTopicTitle}
           notifications={ttNotifications}
           onMarkAllRead={markAllRead}
+          onRestartTour={() => setTourOpen(true)}
         />
         <TTSideTabs
           ref={sideTabsRef}
@@ -206,6 +210,13 @@ export default function TT() {
           )}
         </AnimatePresence>
         <TTNotificationsBell topicId={activeTopicId} />
+        <TTOnboardingTour
+          open={tourOpen}
+          onDone={() => {
+            localStorage.setItem(TT_ONBOARDING_DONE_KEY, 'true');
+            setTourOpen(false);
+          }}
+        />
         <TTBottomPanel
           topicId={activeTopicId}
           hasOwnOpinion={hasOwnOpinion}

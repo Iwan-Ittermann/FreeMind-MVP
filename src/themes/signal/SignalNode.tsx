@@ -127,14 +127,15 @@ interface SignalNodeProps {
   scale?: number;
   /** TT mode: gold core stars, emerald middle circles, smaller black extreme nodes. */
   ttMode?: boolean;
-  onClick: () => void;
+  onClick: (event: React.MouseEvent<SVGGElement>) => void;
+  onPointerDown?: (event: React.PointerEvent<SVGGElement>) => void;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
 }
 
 export const SignalNode = memo(function SignalNode({
   token, isHighlighted, isDimmed, showSpeechBubble, scale = 1, ttMode = false,
-  onClick, onMouseEnter, onMouseLeave,
+  onClick, onPointerDown, onMouseEnter, onMouseLeave,
 }: SignalNodeProps) {
   const shapeSet = ttMode
     ? (token.isCurrentUser ? ZONE_SHAPE_TT_USER : ZONE_SHAPE_TT)
@@ -157,6 +158,7 @@ export const SignalNode = memo(function SignalNode({
         data-user-node={token.isCurrentUser ? 'true' : undefined}
       data-node-clickable
       onClick={onClick}
+      onPointerDown={onPointerDown}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >

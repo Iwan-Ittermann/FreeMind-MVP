@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { Bell, DoorOpen, Copy, Download, Eye, EyeOff, X, SlidersHorizontal, MessageSquare, MessageCircle, Globe, Sparkles } from 'lucide-react';
+import { Bell, DoorOpen, Copy, Download, Eye, EyeOff, X, SlidersHorizontal, MessageSquare, MessageCircle, Globe, Sparkles, CircleHelp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { emailToPassphrase } from '@/lib/passphrase';
@@ -24,6 +24,7 @@ interface TTHeaderProps {
   topicTitle: string;
   notifications?: TTNotification[];
   onMarkAllRead?: () => void;
+  onRestartTour?: () => void;
 }
 
 function parseTitleSegments(title: string): Array<{ label: string; href?: string }> {
@@ -53,7 +54,7 @@ const FILTER_ITEMS: {
   { key: 'newHighlight', iconEl: <Sparkles className="w-3.5 h-3.5" />, labelKey: 'tt.notifFilter.newHighlight', disabled: true },
 ];
 
-export function TTHeader({ topicTitle, notifications = [], onMarkAllRead }: TTHeaderProps) {
+export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRestartTour }: TTHeaderProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [accountOpen, setAccountOpen] = useState(false);
@@ -332,6 +333,20 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead }: TTHe
                 </button>
               </div>
 
+              {onRestartTour && (
+                <button
+                  onClick={() => {
+                    setAccountOpen(false);
+                    setShowLogin(false);
+                    onRestartTour();
+                  }}
+                  className="mt-3 w-full flex items-center justify-center gap-1.5 rounded-md px-2 py-2 text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                >
+                  <CircleHelp className="w-3.5 h-3.5" />
+                  {t('tt.restartTour')}
+                </button>
+              )}
+
               <button
                 onClick={() => setShowLogin((s) => !s)}
                 className="mt-3 w-full text-[11px] text-muted-foreground hover:text-foreground transition-colors underline-offset-4 hover:underline"
@@ -351,7 +366,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead }: TTHe
                     <p className="text-[11px] text-muted-foreground mb-2">
                       {t('tt.switchAccountHint')}
                     </p>
-                    <AuthForm compact onSuccess={() => { setAccountOpen(false); setShowLogin(false); }} />
+                    <AuthForm compact initialMode="login" showModeSwitch={false} onSuccess={() => { setAccountOpen(false); setShowLogin(false); }} />
                   </motion.div>
                 )}
               </AnimatePresence>
