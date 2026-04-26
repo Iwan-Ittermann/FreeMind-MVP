@@ -18,6 +18,7 @@ import { GraphNode } from '@/types/graph';
 
 const PRIMARY_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
 const TT_ONBOARDING_DONE_KEY = 'tt:onboarding:first-step-done';
+const TT_ONBOARDING_OPINIONS_STEP = 1;
 
 /**
  * TikTok-style mobile UI.
@@ -54,6 +55,12 @@ export default function TT() {
   const showScrollHint = topics.length > 1 && scrollHintCount < 2;
   const sideTabsRef = useRef<TTSideTabsHandle>(null);
   const [tourOpen, setTourOpen] = useState(() => localStorage.getItem(TT_ONBOARDING_DONE_KEY) !== 'true');
+  const [tourStep, setTourStep] = useState(0);
+
+  const completeTour = useCallback(() => {
+    localStorage.setItem(TT_ONBOARDING_DONE_KEY, 'true');
+    setTourOpen(false);
+  }, []);
 
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   useEffect(() => {
@@ -164,6 +171,7 @@ export default function TT() {
               hue={(i * 47) % 360}
               isLoopClone={topic.clone}
               selectedNodeId={topic.id === activeTopicId && !topic.clone ? selectedNode?.id ?? null : null}
+              highlightAllNodes={topic.id === activeTopicId && !topic.clone && tourOpen && tourStep === TT_ONBOARDING_OPINIONS_STEP}
               onNodeSelect={(n) => {
                 if (topic.id === activeTopicId && !topic.clone) setSelectedNode(n);
               }}
@@ -176,7 +184,10 @@ export default function TT() {
           topicTitle={activeTopicTitle}
           notifications={ttNotifications}
           onMarkAllRead={markAllRead}
-          onRestartTour={() => setTourOpen(true)}
+          onRestartTour={() => {
+            setTourStep(0);
+            setTourOpen(true);
+          }}
         />
         <TTSideTabs
           ref={sideTabsRef}
@@ -212,10 +223,9 @@ export default function TT() {
         <TTNotificationsBell topicId={activeTopicId} />
         <TTOnboardingTour
           open={tourOpen}
-          onDone={() => {
-            localStorage.setItem(TT_ONBOARDING_DONE_KEY, 'true');
-            setTourOpen(false);
-          }}
+          step={tourStep}
+          onNext={() => setTourStep((step) => Math.min(TT_ONBOARDING_OPINIONS_STEP, step + 1))}
+          onDone={completeTour}
         />
         <TTBottomPanel
           topicId={activeTopicId}
