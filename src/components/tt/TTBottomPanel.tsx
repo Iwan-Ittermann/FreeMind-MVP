@@ -27,6 +27,7 @@ interface TTBottomPanelProps {
   selected: SelectedOpinion | null;
   highlightAddOpinionForm?: boolean;
   forceShowAddOpinionForm?: boolean;
+  suppressHintPanel?: boolean;
   onLetsChat?: (targetOpinionId: string) => void;
   onOpinionSubmitted?: () => void;
   onOpinionCommitted?: () => void;
@@ -49,6 +50,7 @@ export function TTBottomPanel({
   selected,
   highlightAddOpinionForm = false,
   forceShowAddOpinionForm = false,
+  suppressHintPanel = false,
   onLetsChat,
   onOpinionSubmitted,
   onOpinionCommitted,
@@ -207,7 +209,7 @@ export function TTBottomPanel({
     return (
       <>
       {selectedOpinionPanel}
-      <div ref={wrapperRef} data-tt-add-opinion-form className={`absolute bottom-0 inset-x-0 px-3 pb-3 ${highlightAddOpinionForm ? 'z-50' : 'z-20'}`}>
+      <div ref={wrapperRef} data-tt-add-opinion-form className={`absolute bottom-0 inset-x-0 px-3 pb-3 ${highlightAddOpinionForm ? 'z-[60]' : 'z-20'}`}>
         <div className="relative">
           {/* Floating Posten button — appears when focused */}
           <AnimatePresence>
@@ -263,6 +265,23 @@ export function TTBottomPanel({
   }
 
   // STATE 3: Has own opinion, nothing selected → empty placeholder
+  if (suppressHintPanel) {
+    return (
+      <>
+        {selectedOpinionPanel}
+        {selected && (
+          <ReportDialog
+            open={reportOpen}
+            onOpenChange={setReportOpen}
+            contentId={selected.id}
+            contentType="Opinion"
+            contentPreview={selected.text}
+          />
+        )}
+      </>
+    );
+  }
+
   return (
     <>
       {selectedOpinionPanel}
