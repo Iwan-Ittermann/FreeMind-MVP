@@ -129,9 +129,6 @@ export default function OnboardingProvider({ onRevealOpinion, onOpenChat }: Onbo
             color: 'hsl(var(--muted-foreground))',
             fontSize: 12,
           },
-          spotlight: {
-            borderRadius: 20,
-          },
         }}
       />
 
