@@ -1,43 +1,32 @@
-I’ll update the TT onboarding tour with a proper spotlight behavior and the next rating-focused step.
+I’ll tighten the TT onboarding tour behavior with these focused changes:
 
-1. Darken the UI during spotlight steps
-- For step 2 (“Du kannst deine Meinung hinzufügen.”), add a full-screen dark overlay.
-- Keep only these elements above the overlay:
-  - the add-opinion form
-  - the tutorial box
-- This will make the highlighted form clearly visible instead of blending into the rest of the UI.
+1. Remove Back and Skip buttons
+- In `TTOnboardingTour.tsx`, remove the Back and Skip buttons from the tutorial card.
+- Keep only one primary action button.
+- Keep the close “X” as an escape/close option unless you want that removed too.
+- Remove unused `onBack` wiring from the component and page.
 
-2. Add the next onboarding step
-- Add the new body text:
-  “Du kannst anderen zustimmen oder widersprechen.\nUnd du kannst deine Chats bewerten.”
-- Add this as the step after the chat step, before the tour finishes.
-- Update Back / Next / Skip / Done behavior so the longer tour sequence works correctly.
+2. Fix the flickering node selection in step 4
+- Replace the current random selection effect with a stable “pick once per tour step/topic” approach.
+- Store the already-picked demo opinion ID in a ref/state so React re-renders do not keep choosing new random nodes.
+- Only select a new random opinion when entering the chat/rating demo step, changing topic, or when the chosen opinion no longer exists.
+- This should stop the rapid node flashing/flickering before the panel opens.
 
-3. Show the correct highlighted target for the new step
-- If the user has already added an opinion to the current topic:
-  - open/select a random opinion panel, preferably not their own opinion
-  - highlight the disagreement scale inside that opinion panel
-  - darken the rest of the UI while keeping the scale and tutorial box above the overlay
-- If the user has not added an opinion yet:
-  - show a non-functional fake chat preview/window
-  - highlight the heart rating icon in that fake chat UI
-  - darken the rest of the UI while keeping the fake chat preview and tutorial box above the overlay
+3. Make the spotlight overlay dark
+- Replace the current `bg-background/75 backdrop-blur-[1px]` spotlight overlay with a dark transparent overlay such as `bg-black/70`.
+- Remove backdrop blur from the overlay to avoid performance issues over animated graph content.
+- Keep highlighted elements above the overlay: tutorial card, add-opinion form, disagreement scale, or fake chat preview.
 
-4. Implementation details
-- `TT.tsx`
-  - add a new onboarding rating step constant
-  - drive overlay mode per step
-  - keep random opinion selection for chat/rating demonstration steps
-  - pass new highlight flags into the bottom panel
-  - render the fake chat preview only for the no-own-opinion version of the rating step
-- `TTOnboardingTour.tsx`
-  - add support for the new step key
-  - keep the tour card above the dark overlay
-  - preserve elegant Back / Skip / Next button sizing
-- `TTBottomPanel.tsx`
-  - add a `highlightDisagreementScale` prop
-  - wrap the disagreement scale area with a clear ring/glow and elevated z-index when active
-- Add a small TT-only fake chat preview component or inline block using existing styling and the heart icon, with no real chat actions.
-- Update `de.json` and `en.json` with the new tour step text.
+4. Rename the final button
+- Change the final onboarding button label from:
+  - German: `Fertig` → `Los geht's!`
+  - English: `Done` → `Let's go!`
+- Keep intermediate steps labeled `Weiter` / `Next`.
 
-I’ll preserve the previous behavior: users without an opinion still see the add-opinion form by default, and real chat access remains blocked until they have posted their own opinion.
+Technical files to update
+- `src/components/tt/TTOnboardingTour.tsx`
+- `src/pages/TT.tsx`
+- `src/i18n/locales/de.json`
+- `src/i18n/locales/en.json`
+
+I’ll preserve the existing step order and the current chat gating behavior.

@@ -83,6 +83,7 @@
     --blue: 242 96% 43%;
     --blue-light: 242 92% 71%;
     --blue-lighter: 242 90% 91%;
+    --tt-spotlight-overlay: 0 0% 0%;
   }
 
   .dark {
@@ -126,6 +127,7 @@
     --sidebar-accent-foreground: 0 0% 0%;
     --sidebar-border: 0 0% 20%;
     --sidebar-ring: 160 90% 17%;
+    --tt-spotlight-overlay: 0 0% 0%;
   }
 }
 

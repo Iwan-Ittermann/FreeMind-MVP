@@ -5,18 +5,16 @@ import { useTranslation } from 'react-i18next';
 interface TTOnboardingTourProps {
   open: boolean;
   step: number;
-  onBack: () => void;
   onNext: () => void;
   onDone: () => void;
 }
 
-export function TTOnboardingTour({ open, step, onBack, onNext, onDone }: TTOnboardingTourProps) {
+export function TTOnboardingTour({ open, step, onNext, onDone }: TTOnboardingTourProps) {
   const { t } = useTranslation();
   const isOpinionsStep = step === 1;
   const isAddOpinionStep = step === 2;
   const isChatStep = step === 3;
   const isRatingStep = step === 4;
-  const canGoBack = step > 0;
   const stepKey = isRatingStep
     ? 'tt.onboarding.ratingStep'
     : isChatStep
@@ -54,27 +52,11 @@ export function TTOnboardingTour({ open, step, onBack, onNext, onDone }: TTOnboa
             <p className="whitespace-pre-line px-4 py-5 text-lg font-medium leading-snug text-foreground">
               {t(stepKey)}
             </p>
-            <div className="flex items-center justify-center gap-2">
-              {canGoBack && (
-                <button
-                  type="button"
-                  onClick={onBack}
-                  className="h-8 rounded-full border border-border/50 px-3 text-xs font-medium text-foreground/75 transition-colors hover:bg-muted hover:text-foreground"
-                >
-                  {t('tt.onboarding.back')}
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={onDone}
-                className="h-8 rounded-full px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-              >
-                {t('tt.onboarding.skip')}
-              </button>
+            <div className="flex items-center justify-center">
               <button
                 type="button"
                 onClick={onNext}
-                className="h-8 rounded-full bg-primary px-4 text-xs font-medium text-primary-foreground shadow-sm transition-opacity hover:opacity-90"
+                className="h-9 min-w-28 rounded-full bg-primary px-5 text-sm font-medium text-primary-foreground shadow-sm transition-opacity hover:opacity-90"
               >
                 {t(isRatingStep ? 'tt.onboarding.done' : 'tt.onboarding.next')}
               </button>

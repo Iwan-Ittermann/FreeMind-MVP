@@ -98,6 +98,7 @@ export default function TT() {
   const sideTabsRef = useRef<TTSideTabsHandle>(null);
   const [tourOpen, setTourOpen] = useState(() => localStorage.getItem(TT_ONBOARDING_DONE_KEY) !== 'true');
   const [tourStep, setTourStep] = useState(0);
+  const tourDemoSelectionRef = useRef<{ topicId: string; step: number; opinionId: string } | null>(null);
 
   const completeTour = useCallback(() => {
     localStorage.setItem(TT_ONBOARDING_DONE_KEY, 'true');
@@ -106,6 +107,7 @@ export default function TT() {
 
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   useEffect(() => {
+    tourDemoSelectionRef.current = null;
     setSelectedNode(null);
   }, [activeTopicId]);
 
@@ -137,13 +139,22 @@ export default function TT() {
   const ownOpinionKnown = !authLoading && !activeDataLoading && (!user || !directOwnOpinionLoading);
   useEffect(() => {
     const shouldOpenOpinionPanel = tourStep === TT_ONBOARDING_CHAT_STEP || (tourStep === TT_ONBOARDING_RATING_STEP && hasOwnOpinion);
-    if (!tourOpen || !shouldOpenOpinionPanel || !activeData?.opinions.length) return;
+    if (!tourOpen || !shouldOpenOpinionPanel || !activeData?.opinions.length) {
+      if (!shouldOpenOpinionPanel) tourDemoSelectionRef.current = null;
+      return;
+    }
     const candidates = activeData.opinions.filter((opinion) => opinion.id !== ownOpinionId);
     const pool = candidates.length > 0 ? candidates : activeData.opinions;
-    const randomOpinion = pool[Math.floor(Math.random() * pool.length)];
-    if (!randomOpinion || selectedNode?.id === randomOpinion.id) return;
+    const existingPick = tourDemoSelectionRef.current;
+    const reusableOpinion = existingPick?.topicId === activeTopicId && existingPick.step === tourStep
+      ? pool.find((opinion) => opinion.id === existingPick.opinionId)
+      : null;
+    const randomOpinion = reusableOpinion ?? pool[Math.floor(Math.random() * pool.length)];
+    if (!randomOpinion) return;
+    tourDemoSelectionRef.current = { topicId: activeTopicId, step: tourStep, opinionId: randomOpinion.id };
+    if (selectedNode?.id === randomOpinion.id) return;
     setSelectedNode({ id: randomOpinion.id, x: 0, y: 0, opinion: randomOpinion } as GraphNode);
-  }, [tourOpen, tourStep, activeData?.opinions, ownOpinionId, selectedNode?.id, hasOwnOpinion]);
+  }, [tourOpen, tourStep, activeTopicId, activeData?.opinions, ownOpinionId, selectedNode?.id, hasOwnOpinion]);
   const { notifications: ttNotifications, markAllRead } = useTTNotifications(activeTopicId);
   const { data: unreadMap } = useUnreadMessages(activeTopicId, ownOpinionId);
   const totalUnread = useMemo(() => {
@@ -301,13 +312,12 @@ export default function TT() {
         </AnimatePresence>
         <TTNotificationsBell topicId={activeTopicId} />
         {showTourSpotlightOverlay && (
-          <div className="pointer-events-none absolute inset-0 z-50 bg-background/75 backdrop-blur-[1px]" />
+          <div className="pointer-events-none absolute inset-0 z-50 bg-tt-spotlight-overlay/70" />
         )}
         {showFakeChatPreview && <TTFakeChatPreview />}
         <TTOnboardingTour
           open={tourOpen}
           step={tourStep}
-          onBack={() => setTourStep((step) => Math.max(0, step - 1))}
           onNext={() => {
             if (tourStep >= TT_ONBOARDING_RATING_STEP) {
               completeTour();
