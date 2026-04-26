@@ -1,31 +1,43 @@
-I’ll implement this in the TT mobile flow with four focused changes:
+I’ll update the TT onboarding tour with a proper spotlight behavior and the next rating-focused step.
 
-1. Add the next onboarding step
-- Add step 4 text: “Dann kannst du mit anderen chatten!”
-- During this step, automatically select/open a random existing opinion panel for the active topic.
-- Prefer a non-own opinion if the user already has an opinion; otherwise pick any visible opinion so the panel can be demonstrated.
-- Highlight the “Let’s chat” button clearly with a ring/glow/pulse so it is visibly the target of the step.
+1. Darken the UI during spotlight steps
+- For step 2 (“Du kannst deine Meinung hinzufügen.”), add a full-screen dark overlay.
+- Keep only these elements above the overlay:
+  - the add-opinion form
+  - the tutorial box
+- This will make the highlighted form clearly visible instead of blending into the rest of the UI.
 
-2. Improve tour controls
-- Replace the current single “Weiter” button layout with elegant compact controls:
-  - “Zurück” / “Back” on all steps after the first
-  - “Weiter” until the last step
-  - “Überspringen” / “Skip” always available
-- Keep button sizing balanced and unobtrusive inside the tour card.
-- Keep close behavior consistent: X and Skip both finish the tour.
+2. Add the next onboarding step
+- Add the new body text:
+  “Du kannst anderen zustimmen oder widersprechen.\nUnd du kannst deine Chats bewerten.”
+- Add this as the step after the chat step, before the tour finishes.
+- Update Back / Next / Skip / Done behavior so the longer tour sequence works correctly.
 
-3. Enforce chat gating when no opinion exists
-- In every selected opinion panel, keep “Let’s chat” disabled unless the user has already posted their own opinion for the current topic.
-- Add disabled styling and a helpful title/tooltip text explaining that the user must add their opinion first.
-- Prevent the click handler from opening chats if `hasOwnOpinion` is false, so it is not just visually disabled.
-- Keep the chat side-tab/list inaccessible when no own opinion exists by disabling the right “CHATS” tab or showing a “post your opinion first” locked state instead of opening `EmbeddedChatView`.
-- Also guard the imperative `openChat()` path in `TTSideTabs`, so no code path can open a chat without `hasOwnOpinion`.
+3. Show the correct highlighted target for the new step
+- If the user has already added an opinion to the current topic:
+  - open/select a random opinion panel, preferably not their own opinion
+  - highlight the disagreement scale inside that opinion panel
+  - darken the rest of the UI while keeping the scale and tutorial box above the overlay
+- If the user has not added an opinion yet:
+  - show a non-functional fake chat preview/window
+  - highlight the heart rating icon in that fake chat UI
+  - darken the rest of the UI while keeping the fake chat preview and tutorial box above the overlay
 
-4. Technical touchpoints
-- Update `TT.tsx` to manage the new tour step constant, Back/Next/Skip handlers, and random opinion selection for the chat step.
-- Update `TTOnboardingTour.tsx` to support Back, Skip, final-step completion, and the new body text.
-- Update `TTBottomPanel.tsx` to add `highlightLetsChatButton`, stronger disabled behavior, and safer `onLetsChat` gating.
-- Update `TTSideTabs.tsx` to accept `hasOwnOpinion` / locked chat state and prevent chat opening without it.
-- Update German and English locale keys for the new step and controls.
+4. Implementation details
+- `TT.tsx`
+  - add a new onboarding rating step constant
+  - drive overlay mode per step
+  - keep random opinion selection for chat/rating demonstration steps
+  - pass new highlight flags into the bottom panel
+  - render the fake chat preview only for the no-own-opinion version of the rating step
+- `TTOnboardingTour.tsx`
+  - add support for the new step key
+  - keep the tour card above the dark overlay
+  - preserve elegant Back / Skip / Next button sizing
+- `TTBottomPanel.tsx`
+  - add a `highlightDisagreementScale` prop
+  - wrap the disagreement scale area with a clear ring/glow and elevated z-index when active
+- Add a small TT-only fake chat preview component or inline block using existing styling and the heart icon, with no real chat actions.
+- Update `de.json` and `en.json` with the new tour step text.
 
-I’ll also make sure the previous fix remains intact: users without an opinion should still see the add-opinion form as the default, not the “Tippe auf einen Punkt…” hint panel.
+I’ll preserve the previous behavior: users without an opinion still see the add-opinion form by default, and real chat access remains blocked until they have posted their own opinion.
