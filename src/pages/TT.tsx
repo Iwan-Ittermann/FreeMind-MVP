@@ -22,6 +22,7 @@ const PRIMARY_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
 const TT_ONBOARDING_DONE_KEY = 'tt:onboarding:first-step-done';
 const TT_ONBOARDING_OPINIONS_STEP = 1;
 const TT_ONBOARDING_ADD_OPINION_STEP = 2;
+const TT_ONBOARDING_CHAT_STEP = 3;
 
 /**
  * TikTok-style mobile UI.
@@ -97,6 +98,14 @@ export default function TT() {
   const ownOpinionId = visibleOwnOpinionId ?? directOwnOpinionId;
   const hasOwnOpinion = !!ownOpinionId;
   const ownOpinionKnown = !authLoading && !activeDataLoading && (!user || !directOwnOpinionLoading);
+  useEffect(() => {
+    if (!tourOpen || tourStep !== TT_ONBOARDING_CHAT_STEP || !activeData?.opinions.length) return;
+    const candidates = activeData.opinions.filter((opinion) => opinion.id !== ownOpinionId);
+    const pool = candidates.length > 0 ? candidates : activeData.opinions;
+    const randomOpinion = pool[Math.floor(Math.random() * pool.length)];
+    if (!randomOpinion || selectedNode?.id === randomOpinion.id) return;
+    setSelectedNode({ id: randomOpinion.id, x: 0, y: 0, opinion: randomOpinion } as GraphNode);
+  }, [tourOpen, tourStep, activeData?.opinions, ownOpinionId, selectedNode?.id]);
   const { notifications: ttNotifications, markAllRead } = useTTNotifications(activeTopicId);
   const { data: unreadMap } = useUnreadMessages(activeTopicId, ownOpinionId);
   const totalUnread = useMemo(() => {
@@ -216,6 +225,7 @@ export default function TT() {
           opinions={activeData?.opinions ?? []}
           chats={ttChats}
           topicId={activeTopicId}
+          hasOwnOpinion={hasOwnOpinion}
           unreadCount={totalUnread}
           onOpinionTap={(opinionId) => {
             const op = activeData?.opinions.find((o) => o.id === opinionId);
@@ -246,7 +256,14 @@ export default function TT() {
         <TTOnboardingTour
           open={tourOpen}
           step={tourStep}
-          onNext={() => setTourStep((step) => Math.min(TT_ONBOARDING_ADD_OPINION_STEP, step + 1))}
+          onBack={() => setTourStep((step) => Math.max(0, step - 1))}
+          onNext={() => {
+            if (tourStep >= TT_ONBOARDING_CHAT_STEP) {
+              completeTour();
+              return;
+            }
+            setTourStep((step) => Math.min(TT_ONBOARDING_CHAT_STEP, step + 1));
+          }}
           onDone={completeTour}
         />
         <TTBottomPanel
@@ -255,6 +272,7 @@ export default function TT() {
           ownOpinionKnown={ownOpinionKnown}
           ownOpinionId={ownOpinionId}
           highlightAddOpinionForm={tourOpen && tourStep === TT_ONBOARDING_ADD_OPINION_STEP}
+          highlightLetsChatButton={tourOpen && tourStep === TT_ONBOARDING_CHAT_STEP}
           forceShowAddOpinionForm={tourOpen && tourStep === TT_ONBOARDING_ADD_OPINION_STEP}
           suppressHintPanel={tourOpen}
           selected={
@@ -263,6 +281,7 @@ export default function TT() {
               : null
           }
           onLetsChat={(targetOpinionId) => {
+            if (!hasOwnOpinion) return;
             // Directly open the chat in the side panel
             sideTabsRef.current?.openChat(targetOpinionId);
           }}
