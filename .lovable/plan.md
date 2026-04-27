@@ -1,50 +1,48 @@
-Plan to implement both requested changes safely
+There is a good reason the topic IDs are currently long: they are UUIDs, which are the database-safe internal identifiers. They avoid collisions, are supported by the existing database functions, and are already used by related records like opinions, chats, ratings, chat requests, memberships, reports, etc.
 
-1. Add URL links to topic headlines
-- Keep the topic title stored as normal text, but support Markdown-style links inside it:
-  - Example: `Should we regulate [AI](https://example.com/report)?`
-- Reuse the existing linked-title rendering already present in `TTHeader`, but harden it so only valid `http://` and `https://` links become clickable.
-- Add the same linked-title renderer anywhere topic headlines are shown outside the TT feed, so raw Markdown does not leak into the UI.
-- Add a short helper text in the admin create/edit topic dialogs explaining the syntax.
-- Increase the topic title validation limit if needed so a headline plus link URL is not blocked by the current 200-character limit.
+I do not recommend changing the internal `topics.id` from UUID to a 4-character code. A 4-character code like `83fh` has a much higher collision risk and would require rewriting many existing UUID-based columns/functions.
 
-2. Safely swap `/` and `/tt`
-- Make `/` render the TT feed.
-- Make `/tt` render the current discovery/home page.
-- Keep `/tt/:topicId` working temporarily as a backwards-compatible redirect to the new root topic route, so existing links do not break immediately.
-- Add a new root-level topic route for the TT feed, e.g. `/:topicId`, while protecting reserved paths such as `/admin`, `/legal`, `/about`, `/eching`, `/test-diskussion`, `/t/:slug`, etc. by keeping those routes declared before the catch-all topic route.
-- Update TT internal navigation when swiping topics from `/tt/${id}` to `/${id}`.
-- Update header/home/back links so “home” points to the TT feed at `/`, while the old discovery page is reachable at `/tt`.
+Safer implementation: keep UUIDs internally, but add short public topic codes for URLs.
 
-3. Update affected links and admin actions
-- Change topic cards and recent opinion links on the discovery page from `/topic/:id` to the new TT topic URL `/:id` where appropriate.
-- Update the admin topic preview/open button to open the new TT topic URL instead of `/topic/:id`.
-- Decide whether the old full graph route `/topic/:topicId` should remain as a legacy/deep technical view. My safe recommendation is to keep it for now rather than remove it, because several older components and flows still reference it.
+Plan
 
-4. Avoid route collisions
-- Ensure exact static routes are listed before the dynamic root topic route.
-- Add explicit redirects for old paths:
-  - `/home` -> `/tt` if it is intended to mean the discovery page.
-  - `/auth` and `/chat` can continue to route to `/` unless you prefer them to route to `/tt`.
-  - `/tt/:topicId` -> `/:topicId`.
-- Keep `/t/:slug` unchanged for invite/join links.
+1. Add short public topic codes
+- Add a `short_code` column to topics.
+- Format: exactly 4 characters, made from two numbers and two lowercase letters, e.g. `83fh`, `4g8l`.
+- Enforce uniqueness at the database level.
+- Backfill existing topics with generated codes.
+- Update topic creation so every new topic gets a short code automatically.
 
-5. Technical files likely changed
-- `src/App.tsx`: route swap and redirects.
-- `src/pages/TT.tsx`: navigation path updates for swiping topics.
-- `src/pages/Home.tsx`: update topic links and linked-title display.
-- `src/components/tt/TTHeader.tsx`: extract or replace title parsing with a safer shared renderer.
-- `src/components/admin/CreateTopicDialog.tsx`: helper text and title length handling.
-- `src/components/admin/EditTopicTitleDialog.tsx`: helper text and title length handling.
-- `src/components/admin/TopicPanel.tsx`: linked-title display and admin open URL.
-- Possibly `src/pages/TopicJoin.tsx`, `src/components/Header.tsx`, `src/pages/About.tsx`, `src/pages/Legal.tsx`, `src/pages/NotFound.tsx`, and `src/components/ConfigPanel.tsx` for adjusted “home” links.
+2. Change public TT URLs to use the short code
+- Current public route after the previous change: `/<uuid>`.
+- New public route: `/<short_code>`, for example `/83fh`.
+- Keep `/` as the TT feed.
+- Keep `/tt` as the discovery/home page.
+- Keep old UUID URLs working temporarily by resolving UUIDs too, so existing links do not break.
 
-6. Validation after implementation
-- Run a production build/type check to catch route and typing regressions.
-- Verify these paths conceptually after build:
-  - `/` shows TT feed.
-  - `/<topic-id>` shows TT feed focused on that topic.
-  - `/tt` shows the old discovery/home page.
-  - `/tt/<topic-id>` redirects to `/<topic-id>`.
-  - `/admin`, `/legal`, `/about`, `/eching`, `/test-diskussion`, and `/t/<slug>` still resolve correctly.
-- Verify a topic headline with `[label](https://...)` renders as a clickable external link in the TT header and as readable linked text in admin/discovery views.
+3. Resolve short codes safely in the app
+- Update the TT page so route params can be either:
+  - a short code like `83fh`, resolved to the internal UUID, or
+  - a UUID legacy link, used directly.
+- Internally, all hooks and database queries continue using the real UUID after resolution.
+
+4. Update admin and discovery links
+- Admin topic cards will show/copy/open the short URL, e.g. `https://.../83fh`.
+- Discovery topic cards and recent opinion links will navigate to `/<short_code>` instead of UUID URLs.
+- Invite links `/t/:slug` can remain unchanged unless you also want those shortened later.
+
+5. Update backend topic creation
+- Update the topic creation logic so new topics get:
+  - internal UUID `id` for database relations
+  - public `short_code` for clean URLs
+  - existing `url_slug` can remain for legacy invite links
+
+6. Validation
+- Build the app to catch type/route errors.
+- Verify:
+  - `/` opens TT feed.
+  - `/83fh` opens that topic in TT.
+  - old `/<uuid>` still works.
+  - `/tt` still opens discovery/home.
+  - `/admin`, `/legal`, `/about`, `/eching`, `/test-diskussion`, and `/t/:slug` still work.
+  - Newly created admin topics receive a short URL automatically.
