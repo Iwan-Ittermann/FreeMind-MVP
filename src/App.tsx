@@ -73,7 +73,8 @@ function LegacyTTTopicRedirect() {
 function RootTopicRoute() {
   const { topicId } = useParams<{ topicId: string }>();
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(topicId ?? '');
-  return isUuid ? <TT /> : <NotFound />;
+  const isShortCode = /^[a-z0-9]{4}$/i.test(topicId ?? '');
+  return isUuid || isShortCode ? <TT /> : <NotFound />;
 }
 
 const App = () => (
