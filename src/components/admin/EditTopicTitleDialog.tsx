@@ -26,7 +26,7 @@ import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
 const formSchema = z.object({
-  title: z.string().min(3, 'Title must be at least 3 characters').max(200, 'Title must be less than 200 characters'),
+  title: z.string().min(3, 'Title must be at least 3 characters').max(500, 'Title must be less than 500 characters'),
   description: z.string().max(500, 'Description must be less than 500 characters').optional().or(z.literal('')),
 });
 
@@ -107,6 +107,9 @@ export function EditTopicTitleDialog({ open, onOpenChange, topic }: EditTopicTit
                       {...field} 
                     />
                   </FormControl>
+                  <p className="text-xs text-muted-foreground">
+                    {t('admin.topicTitleLinkHint')}
+                  </p>
                   <FormMessage />
                 </FormItem>
               )}
