@@ -644,6 +644,7 @@ export type Database = {
           description: string | null
           id: string
           is_active: boolean
+          short_code: string
           status: string | null
           title: string
           url_slug: string
@@ -654,6 +655,7 @@ export type Database = {
           description?: string | null
           id?: string
           is_active?: boolean
+          short_code: string
           status?: string | null
           title: string
           url_slug: string
@@ -664,6 +666,7 @@ export type Database = {
           description?: string | null
           id?: string
           is_active?: boolean
+          short_code?: string
           status?: string | null
           title?: string
           url_slug?: string
@@ -875,6 +878,7 @@ export type Database = {
         Args: { _opinion_id: string }
         Returns: undefined
       }
+      generate_topic_short_code: { Args: never; Returns: string }
       get_graph_pairs: {
         Args: { topic_uuid: string }
         Returns: {
