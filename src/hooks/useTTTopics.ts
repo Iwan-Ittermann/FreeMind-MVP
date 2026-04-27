@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 export interface TTTopicLite {
   id: string;
   title: string;
+  short_code: string;
 }
 
 /**
@@ -16,7 +17,7 @@ export function useTTTopics() {
     queryFn: async (): Promise<TTTopicLite[]> => {
       const { data, error } = await supabase
         .from('topics')
-        .select('id, title')
+        .select('id, title, short_code')
         .eq('status', 'Active')
         .order('created_at', { ascending: false });
       if (error) throw error;
