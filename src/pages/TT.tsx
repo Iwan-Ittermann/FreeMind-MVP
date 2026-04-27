@@ -19,6 +19,7 @@ import { GraphNode } from '@/types/graph';
 import { supabase } from '@/integrations/supabase/client';
 
 const PRIMARY_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const TT_ONBOARDING_DONE_KEY = 'tt:onboarding:first-step-done';
 const TT_ONBOARDING_OPINIONS_STEP = 1;
 const TT_ONBOARDING_ADD_OPINION_STEP = 2;
@@ -33,18 +34,27 @@ export default function TT() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { user, loading: authLoading } = useAuth();
+  const { data: topicList = [] } = useTTTopics();
+  const routeTopic = useMemo(() => {
+    if (!routeId) return { id: PRIMARY_TOPIC_ID, code: null as string | null };
+    if (UUID_RE.test(routeId)) {
+      const topic = topicList.find((item) => item.id === routeId);
+      return { id: routeId, code: topic?.short_code ?? null };
+    }
+    const topic = topicList.find((item) => item.short_code === routeId.toLowerCase());
+    return { id: topic?.id ?? PRIMARY_TOPIC_ID, code: routeId.toLowerCase() };
+  }, [routeId, topicList]);
 
-  const initialTopicId = routeId ?? PRIMARY_TOPIC_ID;
+  const initialTopicId = routeTopic.id;
   const [activeTopicId, setActiveTopicId] = useState(initialTopicId);
 
   useEffect(() => {
-    if (routeId && routeId !== activeTopicId) {
-      setActiveTopicId(routeId);
+    if (routeTopic.id !== activeTopicId) {
+      setActiveTopicId(routeTopic.id);
     }
-  }, [routeId, activeTopicId]);
+  }, [routeTopic.id, activeTopicId]);
 
   const { topics } = useTTSwipeWindow(activeTopicId);
-  const { data: topicList = [] } = useTTTopics();
   const renderedTopics = useMemo(() => {
     if (topics.length <= 1) return topics.map((id) => ({ id, key: id, clone: false }));
     const first = topics[0];
@@ -191,7 +201,8 @@ export default function TT() {
               localStorage.setItem('tt:topic-scroll-count', String(next));
               return next;
             });
-            navigate(`/${id}`, { replace: true });
+            const code = topicList.find((topic) => topic.id === id)?.short_code ?? id;
+            navigate(`/${code}`, { replace: true });
           }
         }
       },
@@ -201,7 +212,7 @@ export default function TT() {
     const sections = root.querySelectorAll('[data-tt-topic]');
     sections.forEach((s) => observer.observe(s));
     return () => observer.disconnect();
-  }, [activeTopicId, navigate, renderedTopics.map((topic) => topic.key).join('|'), jumpToRealTopic]);
+  }, [activeTopicId, navigate, renderedTopics.map((topic) => topic.key).join('|'), jumpToRealTopic, topicList]);
 
   return (
     <div className="fixed inset-0 bg-black flex items-center justify-center">
