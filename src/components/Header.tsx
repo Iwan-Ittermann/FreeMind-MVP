@@ -4,6 +4,7 @@ import { LogIn, ArrowLeft, Bell, BellOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { TopicTitleWithLinks } from '@/components/TopicTitleWithLinks';
 
 interface HeaderProps {
   title?: string;
@@ -47,7 +48,7 @@ export function Header({ title, enlarged, user, onSignIn, notificationsEnabled, 
 
         {title && !enlarged && (
           <h1 className={`absolute left-1/2 -translate-x-1/2 max-w-[65%] text-sm lg:text-lg font-semibold text-foreground truncate text-center`}>
-            {title}
+            <TopicTitleWithLinks title={title} />
           </h1>
         )}
 

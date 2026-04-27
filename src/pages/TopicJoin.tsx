@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useTopicBySlug, useJoinTopic, useHasJoinedTopic } from '@/hooks/useTopics';
 import { toast } from 'sonner';
+import { TopicTitleWithLinks } from '@/components/TopicTitleWithLinks';
 
 export default function TopicJoin() {
   const { slug } = useParams<{ slug: string }>();
@@ -22,7 +23,7 @@ export default function TopicJoin() {
   // Redirect to topic view if already joined
   useEffect(() => {
     if (hasJoined && topic) {
-      navigate(`/topic/${topic.id}`);
+      navigate(`/${topic.id}`);
     }
   }, [hasJoined, topic, navigate]);
 
@@ -33,7 +34,7 @@ export default function TopicJoin() {
     try {
       const topicId = await joinTopic.mutateAsync(slug);
       toast.success(t('topicJoin.joinedSuccess'));
-      navigate(`/topic/${topicId}`);
+      navigate(`/${topicId}`);
     } catch (err: any) {
       toast.error(err.message || t('topicJoin.failedToJoin'));
     } finally {
@@ -88,7 +89,7 @@ export default function TopicJoin() {
           </div>
           
           <h1 className="text-2xl font-bold text-foreground text-center mb-2">
-            {topic.title}
+            <TopicTitleWithLinks title={topic.title} />
           </h1>
           
           {topic.description && (

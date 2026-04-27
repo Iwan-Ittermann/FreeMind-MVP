@@ -191,7 +191,7 @@ export default function TT() {
               localStorage.setItem('tt:topic-scroll-count', String(next));
               return next;
             });
-            navigate(`/tt/${id}`, { replace: true });
+            navigate(`/${id}`, { replace: true });
           }
         }
       },

@@ -69,6 +69,9 @@ export function CreateTopicDialog({ open, onOpenChange }: CreateTopicDialogProps
               onChange={(e) => setTitle(e.target.value)}
               disabled={createTopic.isPending}
             />
+            <p className="text-xs text-muted-foreground">
+              {t('admin.topicTitleLinkHint')}
+            </p>
           </div>
           
           <div className="space-y-2">

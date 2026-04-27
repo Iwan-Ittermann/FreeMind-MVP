@@ -10,6 +10,7 @@ import { AuthDialog } from '@/components/AuthDialog';
 import { MiniGraph } from '@/components/chat/MiniGraph';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { useAuth } from '@/hooks/useAuth';
+import { TopicTitleWithLinks } from '@/components/TopicTitleWithLinks';
 
 interface TopicWithStats {
   id: string;
@@ -241,7 +242,7 @@ export default function Home() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  onClick={() => navigate(`/topic/${topic.id}`)}
+                  onClick={() => navigate(`/${topic.id}`)}
                   className="group cursor-pointer rounded-xl border border-border/40 bg-card hover:border-primary/40 hover:shadow-lg transition-all duration-200 p-5 flex flex-col items-center gap-4"
                 >
                   <div className="w-full flex justify-center py-2">
@@ -250,7 +251,7 @@ export default function Home() {
 
                   <div className="w-full text-center">
                     <h3 className="text-base font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2">
-                      {topic.title}
+                      <TopicTitleWithLinks title={topic.title} />
                     </h3>
                     {topic.description && (
                       <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{topic.description}</p>
@@ -308,14 +309,14 @@ export default function Home() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: i * 0.03 }}
-                onClick={() => navigate(`/topic/${op.topic_id}`)}
+                onClick={() => navigate(`/${op.topic_id}`)}
                 className="cursor-pointer rounded-2xl border border-border/40 bg-card hover:border-primary/30 transition-all px-4 py-3 max-w-xs flex flex-col gap-2"
               >
                 <p className="text-sm text-foreground line-clamp-2 leading-snug">
                   "{op.text}"
                 </p>
                 <span className={`self-start text-[10px] font-medium rounded-full px-2 py-0.5 ${colorForTopic(op.topic_id)}`}>
-                  {op.topic_title}
+                  <TopicTitleWithLinks title={op.topic_title} />
                 </span>
               </motion.div>
             ))}

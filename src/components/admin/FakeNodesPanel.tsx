@@ -14,6 +14,7 @@ import {
 } from '@/hooks/useFakeNodes';
 import { useAppSetting, useUpdateAppSetting } from '@/hooks/useAppSettings';
 import { useAllTopics } from '@/hooks/useTopics';
+import { TopicTitleWithLinks } from '@/components/TopicTitleWithLinks';
 
 interface TopicFakeNodesProps {
   topicId: string;
@@ -83,7 +84,9 @@ function TopicFakeNodes({ topicId, topicTitle }: TopicFakeNodesProps) {
     <div className="border border-border rounded-lg p-4 space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h3 className="font-medium text-sm text-foreground truncate">{topicTitle}</h3>
+          <h3 className="font-medium text-sm text-foreground truncate">
+            <TopicTitleWithLinks title={topicTitle} />
+          </h3>
           <Badge variant="secondary" className="text-xs">
             {fakeNodes.length} nodes
           </Badge>

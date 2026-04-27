@@ -557,6 +557,7 @@
       "statusChanged": "Status geändert",
       "updateFailed": "Fehler bei der Aktualisierung"
     },
+    "topicTitleLinkHint": "Optional: Links mit [Linktext](https://example.com) einfügen.",
     "toast": {
       "noTopicFound": "Kein Thema gefunden",
       "aiBotSaved": "KI-Bot Einstellungen gespeichert",

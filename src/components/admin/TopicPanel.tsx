@@ -10,6 +10,7 @@ import { EditTopicTitleDialog } from './EditTopicTitleDialog';
 import { EditSiteTitleDialog } from './EditSiteTitleDialog';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import { TopicTitleWithLinks } from '@/components/TopicTitleWithLinks';
 
 interface TopicCardProps {
   topic: Topic;
@@ -45,7 +46,9 @@ function TopicCard({ topic, onArchive, onDelete, onRestore, onEdit, isUpdating }
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-semibold text-foreground truncate">{topic.title}</h3>
+            <h3 className="font-semibold text-foreground truncate">
+              <TopicTitleWithLinks title={topic.title} />
+            </h3>
             {statusBadge}
           </div>
           {topic.description && (
@@ -76,7 +79,7 @@ function TopicCard({ topic, onArchive, onDelete, onRestore, onEdit, isUpdating }
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => window.open(`/topic/${topic.id}`, '_blank')}
+                onClick={() => window.open(`/${topic.id}`, '_blank')}
               >
                 <ExternalLink className="w-4 h-4" />
               </Button>

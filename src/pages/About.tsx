@@ -255,7 +255,7 @@ export default function About() {
 
       {/* Floating CTA Button */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
-        <Link to="/home">
+        <Link to="/">
           <Button 
             size="lg" 
             className="shadow-2xl shadow-primary/30 animate-pulse-fast px-8"
