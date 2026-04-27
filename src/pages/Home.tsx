@@ -15,6 +15,7 @@ import { TopicTitleWithLinks } from '@/components/TopicTitleWithLinks';
 interface TopicWithStats {
   id: string;
   title: string;
+  short_code: string;
   description: string | null;
   opinionCount: number;
   chatCount: number;
@@ -28,7 +29,7 @@ function useActiveTopicsWithStats() {
     queryFn: async (): Promise<TopicWithStats[]> => {
       const { data: topics, error } = await supabase
         .from('topics')
-        .select('id, title, description')
+        .select('id, title, short_code, description')
         .eq('status', 'Active')
         .order('created_at', { ascending: false });
 
@@ -61,6 +62,7 @@ function useActiveTopicsWithStats() {
         results.push({
           id: topic.id,
           title: topic.title,
+          short_code: topic.short_code,
           description: topic.description,
           opinionCount: opRes.count || 0,
           chatCount: chatRes.count || 0,
@@ -86,6 +88,7 @@ interface OpinionWithTopic {
   text: string;
   topic_id: string;
   topic_title: string;
+  topic_short_code: string;
   created_at: string;
 }
 
@@ -108,10 +111,11 @@ function useLatestOpinions() {
       const topicIds = [...new Set(opinions.map(o => o.topic_id).filter(Boolean))];
       const { data: topics } = await supabase
         .from('topics')
-        .select('id, title')
+        .select('id, title, short_code')
         .in('id', topicIds as string[]);
 
       const topicMap = new Map((topics || []).map(t => [t.id, t.title]));
+      const topicCodeMap = new Map((topics || []).map(t => [t.id, t.short_code]));
 
       return opinions
         .filter(o => o.id && o.text && o.topic_id)
@@ -120,6 +124,7 @@ function useLatestOpinions() {
           text: o.text!,
           topic_id: o.topic_id!,
           topic_title: topicMap.get(o.topic_id!) || '',
+          topic_short_code: topicCodeMap.get(o.topic_id!) || o.topic_id!,
           created_at: o.created_at!,
         }));
     },
@@ -242,7 +247,7 @@ export default function Home() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  onClick={() => navigate(`/${topic.id}`)}
+                  onClick={() => navigate(`/${topic.short_code}`)}
                   className="group cursor-pointer rounded-xl border border-border/40 bg-card hover:border-primary/40 hover:shadow-lg transition-all duration-200 p-5 flex flex-col items-center gap-4"
                 >
                   <div className="w-full flex justify-center py-2">
@@ -309,7 +314,7 @@ export default function Home() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: i * 0.03 }}
-                onClick={() => navigate(`/${op.topic_id}`)}
+                onClick={() => navigate(`/${op.topic_short_code}`)}
                 className="cursor-pointer rounded-2xl border border-border/40 bg-card hover:border-primary/30 transition-all px-4 py-3 max-w-xs flex flex-col gap-2"
               >
                 <p className="text-sm text-foreground line-clamp-2 leading-snug">

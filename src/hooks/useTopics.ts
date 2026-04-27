@@ -7,6 +7,7 @@ export interface Topic {
   title: string;
   description: string | null;
   url_slug: string;
+  short_code: string;
   status: 'Active' | 'Archived' | 'Deleted';
   created_by: string | null;
   created_at: string;
