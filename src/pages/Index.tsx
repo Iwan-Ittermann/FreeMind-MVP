@@ -37,6 +37,7 @@ import { useDisagreementRating } from '@/hooks/useOpinionRating';
 import { calculateLayout, getNodeAngles, calculateFreeMindScore } from '@/lib/freemind-layout';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { TopicTitleWithLinks } from '@/components/TopicTitleWithLinks';
 import { getClientIP } from '@/hooks/useClientIP';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -551,7 +552,9 @@ const Index = () => {
       {/* Standalone mobile title when no panel open */}
       {isMobile && !activeMobilePanel && topicTitle && (
         <div className="px-4 py-2 text-center">
-          <h1 className="text-lg font-semibold text-foreground truncate">{topicTitle}</h1>
+          <h1 className="text-lg font-semibold text-foreground truncate">
+            <TopicTitleWithLinks title={topicTitle} />
+          </h1>
         </div>
       )}
 
