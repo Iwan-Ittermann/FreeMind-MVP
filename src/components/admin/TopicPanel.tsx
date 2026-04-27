@@ -24,10 +24,10 @@ interface TopicCardProps {
 function TopicCard({ topic, onArchive, onDelete, onRestore, onEdit, isUpdating }: TopicCardProps) {
   const { t } = useTranslation();
   const baseUrl = window.location.origin;
-  const joinUrl = `${baseUrl}/t/${topic.url_slug}`;
+  const topicUrl = `${baseUrl}/${topic.short_code}`;
 
   const copyUrl = () => {
-    navigator.clipboard.writeText(joinUrl);
+    navigator.clipboard.writeText(topicUrl);
     toast.success(t('admin.toast.urlCopied'));
   };
 
@@ -58,7 +58,7 @@ function TopicCard({ topic, onArchive, onDelete, onRestore, onEdit, isUpdating }
           )}
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Link2 className="w-3 h-3" />
-            <span className="truncate">{topic.url_slug}</span>
+            <span className="truncate">/{topic.short_code}</span>
             <button onClick={copyUrl} className="hover:text-foreground">
               <Copy className="w-3 h-3" />
             </button>
@@ -79,7 +79,7 @@ function TopicCard({ topic, onArchive, onDelete, onRestore, onEdit, isUpdating }
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => window.open(`/${topic.id}`, '_blank')}
+                onClick={() => window.open(`/${topic.short_code}`, '_blank')}
               >
                 <ExternalLink className="w-4 h-4" />
               </Button>
