@@ -14,6 +14,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import { TopicTitleWithLinks } from '@/components/TopicTitleWithLinks';
 
 const opinionSchema = z.object({
   text: z.string()
@@ -101,7 +102,9 @@ export function SubmitOpinionDialog({
         <DialogHeader>
           <DialogTitle>{t('opinion.shareYourOpinion')}</DialogTitle>
           {topicTitle && (
-            <p className="text-sm text-muted-foreground mt-1">{topicTitle}</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              <TopicTitleWithLinks title={topicTitle} />
+            </p>
           )}
         </DialogHeader>
 
