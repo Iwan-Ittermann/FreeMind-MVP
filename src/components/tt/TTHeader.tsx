@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Bell, DoorOpen, Copy, Download, Eye, EyeOff, X, SlidersHorizontal, MessageSquare, MessageCircle, Globe, Sparkles, CircleHelp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
@@ -6,6 +6,7 @@ import { emailToPassphrase } from '@/lib/passphrase';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuthForm } from '@/components/AuthForm';
+import { TopicTitleWithLinks } from '@/components/TopicTitleWithLinks';
 import {
   NotificationFilters,
   getGlobalFilters,
@@ -25,20 +26,6 @@ interface TTHeaderProps {
   notifications?: TTNotification[];
   onMarkAllRead?: () => void;
   onRestartTour?: () => void;
-}
-
-function parseTitleSegments(title: string): Array<{ label: string; href?: string }> {
-  const re = /\[([^\]]+)\]\(([^)]+)\)/g;
-  const out: Array<{ label: string; href?: string }> = [];
-  let lastIdx = 0;
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(title)) !== null) {
-    if (m.index > lastIdx) out.push({ label: title.slice(lastIdx, m.index) });
-    out.push({ label: m[1], href: m[2] });
-    lastIdx = re.lastIndex;
-  }
-  if (lastIdx < title.length) out.push({ label: title.slice(lastIdx) });
-  return out;
 }
 
 const FILTER_ITEMS: {
@@ -70,8 +57,6 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
 
   const phrase = user?.email ? emailToPassphrase(user.email) ?? '' : '';
   const hasUnread = notifications.some((n) => n.unread);
-
-  const titleSegments = useMemo(() => parseTitleSegments(topicTitle), [topicTitle]);
 
   useEffect(() => {
     if (!accountOpen && !bellOpen) return;
@@ -168,21 +153,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
             {t('tt.discussionQuestion')}
           </div>
           <h1 className="mt-1 text-xl font-serif italic leading-tight text-foreground px-6">
-            {titleSegments.map((seg, i) =>
-              seg.href ? (
-                <a
-                  key={i}
-                  href={seg.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline decoration-foreground/60 underline-offset-4"
-                >
-                  {seg.label}
-                </a>
-              ) : (
-                <span key={i}>{seg.label}</span>
-              ),
-            )}
+            <TopicTitleWithLinks title={topicTitle} />
           </h1>
         </div>
       </header>
