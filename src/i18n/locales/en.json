@@ -557,6 +557,7 @@
       "statusChanged": "Status changed",
       "updateFailed": "Failed to update"
     },
+    "topicTitleLinkHint": "Optional: add links with [link text](https://example.com).",
     "toast": {
       "noTopicFound": "No topic found",
       "aiBotSaved": "AI Bot settings saved",
