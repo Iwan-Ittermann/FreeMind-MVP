@@ -58,7 +58,7 @@ function AppRoutes() {
       <Route path="/test-diskussion" element={<TestDiskussion />} />
       <Route path="/tt" element={<Home />} />
       <Route path="/tt/:topicId" element={<LegacyTTTopicRedirect />} />
-      <Route path="/:topicId" element={<TT />} />
+      <Route path="/:topicId" element={<RootTopicRoute />} />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
     </Routes>
@@ -68,6 +68,12 @@ function AppRoutes() {
 function LegacyTTTopicRedirect() {
   const { topicId } = useParams<{ topicId: string }>();
   return <Navigate to={`/${topicId ?? ''}`} replace />;
+}
+
+function RootTopicRoute() {
+  const { topicId } = useParams<{ topicId: string }>();
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(topicId ?? '');
+  return isUuid ? <TT /> : <NotFound />;
 }
 
 const App = () => (
