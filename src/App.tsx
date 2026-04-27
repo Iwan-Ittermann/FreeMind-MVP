@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useParams } from "react-router-dom";
 import { TutorialProvider } from "@/contexts/TutorialContext";
 import { ChatTutorialProvider } from "@/contexts/ChatTutorialContext";
 import { useDynamicSiteTitle } from "@/hooks/useDynamicSiteTitle";
@@ -46,22 +46,28 @@ function AppRoutes() {
     <Routes>
       <Route path="/eching" element={<Splash />} />
       <Route path="/old-lp" element={<OldLanding />} />
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<TT />} />
       <Route path="/topic/:topicId" element={<Index />} />
       <Route path="/about" element={<About />} />
-      <Route path="/home" element={<Navigate to="/" replace />} />
+      <Route path="/home" element={<Navigate to="/tt" replace />} />
       <Route path="/auth" element={<Navigate to="/" replace />} />
       <Route path="/chat" element={<Navigate to="/" replace />} />
       <Route path="/admin" element={<Admin />} />
       <Route path="/legal" element={<Legal />} />
       <Route path="/t/:slug" element={<TopicJoin />} />
       <Route path="/test-diskussion" element={<TestDiskussion />} />
-      <Route path="/tt" element={<TT />} />
-      <Route path="/tt/:topicId" element={<TT />} />
+      <Route path="/tt" element={<Home />} />
+      <Route path="/tt/:topicId" element={<LegacyTTTopicRedirect />} />
+      <Route path="/:topicId" element={<TT />} />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
+}
+
+function LegacyTTTopicRedirect() {
+  const { topicId } = useParams<{ topicId: string }>();
+  return <Navigate to={`/${topicId ?? ''}`} replace />;
 }
 
 const App = () => (
