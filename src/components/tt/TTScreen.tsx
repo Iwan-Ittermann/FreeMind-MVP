@@ -118,14 +118,14 @@ function TTScreenInnerImpl({
         {/* Moderat — inside the blue ring, above center */}
         <span
           className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10px] tracking-[0.2em] uppercase text-foreground/40 font-medium"
-          style={{ top: 'calc(50% - 35vw)' }}
+          style={{ top: phoneViewportW ? `calc(50% - ${phoneViewportW * 0.35}px)` : '15%' }}
         >
           {t('tt.moderate')}
         </span>
         {/* Extrem — outside the white ring, below */}
         <span
           className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10px] tracking-[0.2em] uppercase text-foreground/30 font-medium"
-          style={{ top: 'calc(50% + 62vw)' }}
+          style={{ top: phoneViewportW ? `calc(50% + ${phoneViewportW * 0.62}px)` : '112%' }}
         >
           {t('tt.extreme')}
         </span>
@@ -138,8 +138,8 @@ function TTScreenInnerImpl({
           ref={wrapperRef}
           className="relative overflow-visible"
           style={{
-            width: 'min(85vmin, 480px)',
-            height: 'min(85vmin, 480px)',
+            width: 'min(85%, 480px)',
+            aspectRatio: '1 / 1',
             transform: 'translateZ(0)',
             backfaceVisibility: 'hidden',
           }}
