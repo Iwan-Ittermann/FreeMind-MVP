@@ -44,9 +44,7 @@ function TTScreenInnerImpl({
 
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const [size, setSize] = useState<number>(0);
-  const [viewportW, setViewportW] = useState<number>(
-    typeof window !== 'undefined' ? window.innerWidth : 0,
-  );
+  const [phoneViewportW, setPhoneViewportW] = useState<number>(0);
 
   useEffect(() => {
     const el = wrapperRef.current;
@@ -63,26 +61,33 @@ function TTScreenInnerImpl({
   }, []);
 
   useEffect(() => {
-    const onResize = () => setViewportW(window.innerWidth);
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
+    const el = wrapperRef.current?.closest('[data-tt-phone-viewport]') as HTMLElement | null;
+    if (!el) return;
+    const update = () => {
+      const rect = el.getBoundingClientRect();
+      const next = Math.round(rect.width);
+      if (next > 0) setPhoneViewportW(next);
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
   }, []);
 
-  // Convert background landmarks (viewport units) to graph-SVG px.
-  // Background SVG is sized so the blue ring (r=300 of viewBox 1000) spans 100vw,
-  // so 1 viewBox unit = (viewportW / 600) px. Landmarks in graph coords = the SAME
-  // pixel distance because the graph SVG is rendered 1:1 at size × size.
+  // Convert background landmarks to graph-SVG px.
+  // Background SVG is sized so the blue ring (r=300 of viewBox 1000) spans the
+  // TT phone viewport width, not the desktop browser width.
   // Rcore = 140 viewBox-units → coreR_vw ≈ 23.33vw → (140/600) × viewportW px
   // Rblue = 300 → 50vw → (300/600) × viewportW
   // Rwhite = 360 → 60vw → (360/600) × viewportW
   const ttLandmarks = useMemo(() => {
-    if (!viewportW) return undefined;
+    if (!phoneViewportW) return undefined;
     return {
-      coreR: (140 / 600) * viewportW,
-      blueR: (300 / 600) * viewportW,
-      whiteR: (360 / 600) * viewportW,
+      coreR: (140 / 600) * phoneViewportW,
+      blueR: (300 / 600) * phoneViewportW,
+      whiteR: (360 / 600) * phoneViewportW,
     };
-  }, [viewportW]);
+  }, [phoneViewportW]);
 
   const ownOpinionId = user
     ? data?.opinions.find((o) => o.authorId === user.id)?.id ?? null
@@ -93,12 +98,12 @@ function TTScreenInnerImpl({
       data-tt-topic={topicId}
       data-tt-real-topic={isLoopClone ? undefined : topicId}
       data-tt-clone={isLoopClone ? 'true' : undefined}
-      className="relative w-full h-[100dvh] snap-start snap-always overflow-visible"
+      className="relative w-full h-[100dvh] snap-start snap-always overflow-hidden"
       style={{ contain: 'layout size', backgroundColor: '#eef2f4', transform: 'translateZ(0)' }}
     >
       {/* Full-bleed background, sized so the blue ring spans the viewport width.
           Lives outside the graph wrapper so it isn't clipped. */}
-      <TTBackground hue={hue} />
+      <TTBackground hue={hue} viewportWidth={phoneViewportW} />
 
       {/* Zone labels — positioned relative to the section center using viewport
           units so they align with the background's blue/white ring landmarks. */}
