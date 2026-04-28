@@ -878,6 +878,7 @@ export type Database = {
         Args: { _opinion_id: string }
         Returns: undefined
       }
+      fake_node_user_id: { Args: { _fake_node_id: string }; Returns: string }
       generate_topic_short_code: { Args: never; Returns: string }
       get_graph_pairs: {
         Args: { topic_uuid: string }

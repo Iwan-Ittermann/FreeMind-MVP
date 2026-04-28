@@ -1,45 +1,69 @@
-## Goal
-Make `/` and short topic URLs like `/8nv5` always present a clean mobile-style TT interface, even on desktop screens.
+I’ll redo only the Fake Nodes tab fix, with no routing, topic URL, layout, or unrelated changes.
 
-The issue is caused by parts of the TT screen using `100vw` / `window.innerWidth` for background rings and graph landmarks. On desktop, the TT phone container is correctly capped at `480px`, but the background/landmarks are still calculated from the full browser width, so the graph/rings become huge and the next topic/page break can appear.
+Scope:
+- Update `src/components/admin/FakeNodesPanel.tsx`
+- Update `src/hooks/useFakeNodes.ts`
+- No database changes
+- No changes to topic IDs, routes, landing pages, TT UI, or other admin tabs
 
-## Plan
+Implementation plan:
 
-1. **Use the TT container width as the source of truth**
-   - Update `TTScreenInner` so TT background sizing and graph landmarks are based on the actual mobile viewport/container width, not the desktop browser width.
-   - Replace the current `window.innerWidth`-based landmark calculation with measurements from the TT section/wrapper.
+1. Show all active topics in the Fake Nodes tab
+- Keep `useAllTopics(true)` in `FakeNodesPanel.tsx`.
+- Filter to active topics:
+  ```ts
+  const activeTopics = topics.filter(t => t.status === 'Active');
+  ```
+- Render one `TopicFakeNodes` block for every active topic, using the real topic id and title.
 
-2. **Make `TTBackground` container-aware**
-   - Change `TTBackground` so it can size itself from its parent/mobile viewport width instead of always using `100vw`.
-   - This keeps the concentric background rings aligned with the graph inside the `max-w-[480px]` phone frame.
+2. Do not hide topics with zero fake nodes
+- Remove the early return that currently hides empty topics:
+  ```ts
+  if (fakeNodes.length === 0 && !expanded) return null;
+  ```
+- This is the key bug: new topics with no fake nodes currently disappear from the Fake Nodes tab.
 
-3. **Harden the desktop phone frame**
-   - Keep the outer desktop backdrop black and the inner TT UI centered.
-   - Ensure the inner phone container has a strict width cap and clips visual overflow so no part of adjacent swipe sections/page breaks leaks into view.
-   - Preserve full-width behavior on actual mobile screens.
+3. Keep each topic collapsed by default, but visible
+Each topic section will show while collapsed:
+- Topic title
+- Fake-node count badge
+- Per-topic visibility toggle
+- Expand button
 
-4. **Preserve vertical swipe behavior**
-   - Keep the existing vertical snap/swipe topic browsing.
-   - Only constrain what is visible inside the phone frame; do not remove looping/cloned topic sections.
+Button text will be:
+```tsx
+{expanded
+  ? 'Collapse'
+  : fakeNodes.length === 0
+    ? 'Add fake nodes'
+    : `Show ${fakeNodes.length} fake nodes`}
+```
 
-5. **Regression-check responsive behavior**
-   - Verify `/` at desktop sizes such as `1366x768` and `1920x1080`.
-   - Verify `/` and a short topic URL at mobile `390x844`.
-   - Confirm the graph is centered, the rings align, the bottom opinion input remains visible, and no next-topic page break is visible at rest.
+4. Preserve per-topic visibility settings
+- Keep the existing topic-specific app setting key:
+  ```ts
+  hide_fake_nodes_${topicId}
+  ```
+- This keeps fake-node visibility independent per topic.
 
-## Technical details
+5. Preserve create/edit/delete behavior
+- Keep using the existing hooks:
+  - `useFakeNodes(topicId)`
+  - `useCreateFakeNode()`
+  - `useUpdateFakeNode()`
+  - `useDeleteFakeNode()`
 
-Likely edits:
-- `src/components/tt/TTScreen.tsx`
-  - Replace `viewportW` state with measured section/container width.
-  - Use that width for `ttLandmarks`:
-    - `coreR = (140 / 600) * mobileWidth`
-    - `blueR = (300 / 600) * mobileWidth`
-    - `whiteR = (360 / 600) * mobileWidth`
-- `src/components/tt/TTBackground.tsx`
-  - Add a prop or CSS sizing mode so the background uses the parent TT viewport width (`100%`) rather than global `100vw`.
-- `src/pages/TT.tsx`
-  - Keep the centered `max-w-[480px]` mobile shell.
-  - Add/adjust overflow containment if needed so the desktop view is clean.
+6. Add the missing cache invalidation requested in your notes
+In `src/hooks/useFakeNodes.ts`, after create/update/delete, invalidate:
+```ts
+['fakeNodes', topicId]
+['topic', topicId]
+['opinionCount', topicId]
+```
 
-No database changes are needed.
+This ensures the graph/topic counts refresh correctly after fake-node changes.
+
+Expected result:
+- Newly created active topics appear immediately in the Fake Nodes admin tab even if they have zero fake nodes.
+- Admins can click “Add fake nodes” on an empty topic.
+- Existing fake-node creation, editing, deletion, and visibility toggles continue to work per topic.
