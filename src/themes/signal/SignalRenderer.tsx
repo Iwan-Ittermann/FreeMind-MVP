@@ -4,7 +4,6 @@ import { ActiveChat, MessageAnimationData } from '@/hooks/useTopicData';
 import { tokenizeNodes, tokenizeEdge, tokenizeZones } from '../tokenizer';
 import { SemanticNodeToken, SemanticEdgeToken, SemanticEventToken } from '../types';
 import { SignalZones } from './SignalZones';
-import { SignalCluster } from './SignalCluster';
 import { SignalEdge } from './SignalEdge';
 import { SignalNode } from './SignalNode';
 import { SignalEventMarker } from './SignalEventMarker';
@@ -134,7 +133,6 @@ export function SignalRenderer({
     >
       <rect width={width} height={height} fill="transparent" onClick={() => onNodeClick(null)} />
       {showZones && <SignalZones zones={zoneTokens} config={config} />}
-      {ttMode && <SignalCluster nodes={nodeTokens} />}
 
       {ttLandmarks && (
         <g className="tt-level-rings" pointerEvents="none">

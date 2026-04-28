@@ -37,7 +37,6 @@ export interface GraphNode {
   y: number;
   opinion: Opinion;
   cluster?: number;
-  clusterColor?: string;
   isBridge?: boolean;
   distanceToCenter?: number;
   hasPendingRequest?: boolean; // This node has a pending incoming request
