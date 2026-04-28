@@ -76,10 +76,6 @@ function TopicFakeNodes({ topicId, topicTitle }: TopicFakeNodesProps) {
     deleteFakeNode.mutate({ id, topicId });
   };
 
-  if (fakeNodes.length === 0 && !expanded) {
-    return null; // Don't show topics with no fake nodes unless expanded
-  }
-
   return (
     <div className="border border-border rounded-lg p-4 space-y-3">
       <div className="flex items-center justify-between">
@@ -126,6 +122,11 @@ function TopicFakeNodes({ topicId, topicTitle }: TopicFakeNodesProps) {
 
           {/* List of fake nodes */}
           <div className="space-y-2 max-h-[300px] overflow-y-auto">
+            {fakeNodes.length === 0 && (
+              <p className="text-xs text-muted-foreground text-center py-3">
+                No fake nodes yet for this topic.
+              </p>
+            )}
             {fakeNodes.map((node, index) => (
               <div
                 key={node.id}
@@ -172,7 +173,7 @@ function TopicFakeNodes({ topicId, topicTitle }: TopicFakeNodesProps) {
       )}
 
       <Button variant="ghost" size="sm" className="text-xs w-full" onClick={() => setExpanded(!expanded)}>
-        {expanded ? 'Collapse' : `Show ${fakeNodes.length} fake nodes`}
+        {expanded ? 'Collapse' : fakeNodes.length === 0 ? 'Add fake nodes' : `Show ${fakeNodes.length} fake nodes`}
       </Button>
     </div>
   );
