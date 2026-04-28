@@ -1,45 +1,77 @@
-## Goal
-Make `/` and short topic URLs like `/8nv5` always present a clean mobile-style TT interface, even on desktop screens.
+Plan
 
-The issue is caused by parts of the TT screen using `100vw` / `window.innerWidth` for background rings and graph landmarks. On desktop, the TT phone container is correctly capped at `480px`, but the background/landmarks are still calculated from the full browser width, so the graph/rings become huge and the next topic/page break can appear.
+1. Fix the Fake Nodes admin tab so newly added topics are usable
 
-## Plan
+- Update the Fake Nodes panel behavior so every active topic is visible in the tab, even if it currently has zero fake nodes.
+- Keep the per-topic fake-node list, create/edit/delete controls, and visibility toggle.
+- Improve the collapsed empty-state text so a new topic shows something like “Add fake nodes” instead of being hidden or showing “Show 0 fake nodes”.
+- Keep using the existing `useAllTopics(true)` source, so new topics appear after the existing topic query is invalidated by topic creation.
 
-1. **Use the TT container width as the source of truth**
-   - Update `TTScreenInner` so TT background sizing and graph landmarks are based on the actual mobile viewport/container width, not the desktop browser width.
-   - Replace the current `window.innerWidth`-based landmark calculation with measurements from the TT section/wrapper.
+2. Verify and, if needed, repair fake-node graph integration
 
-2. **Make `TTBackground` container-aware**
-   - Change `TTBackground` so it can size itself from its parent/mobile viewport width instead of always using `100vw`.
-   - This keeps the concentric background rings aligned with the graph inside the `max-w-[480px]` phone frame.
+- The current fake-node admin table stores `fake_nodes`, while the graph reads visible graph nodes from `opinions_public` and only uses `fake_nodes` to identify which opinions are fake by matching text.
+- I will check the current runtime behavior while implementing. If creating a fake node currently only writes to `fake_nodes` and does not create a corresponding graph opinion, I will add the missing safe bridge so fake nodes actually appear on the selected topic’s graph.
+- Preferred approach: make `useCreateFakeNode`, `useUpdateFakeNode`, and `useDeleteFakeNode` keep the fake-node record and its matching graph opinion in sync, using the existing bot/fake system conventions and without changing IP handling.
+- If a backend migration/RPC is needed for reliable admin-only syncing, I will add it with RLS-safe admin checks.
 
-3. **Harden the desktop phone frame**
-   - Keep the outer desktop backdrop black and the inner TT UI centered.
-   - Ensure the inner phone container has a strict width cap and clips visual overflow so no part of adjacent swipe sections/page breaks leaks into view.
-   - Preserve full-width behavior on actual mobile screens.
+3. Add spectral clustering based only on disagreement patterns
 
-4. **Preserve vertical swipe behavior**
-   - Keep the existing vertical snap/swipe topic browsing.
-   - Only constrain what is visible inside the phone frame; do not remove looping/cloned topic sections.
+- Add a deterministic clustering module for graph data that uses only opinion-to-opinion disagreement values, never node x/y position.
+- Input will be the existing `opinions` and merged `ratings` data after `opinion_ratings` have overridden disagreement, so clustering follows the same disagreement source used for angular layout.
+- Build an affinity matrix from disagreement similarity. Conceptually:
 
-5. **Regression-check responsive behavior**
-   - Verify `/` at desktop sizes such as `1366x768` and `1920x1080`.
-   - Verify `/` and a short topic URL at mobile `390x844`.
-   - Confirm the graph is centered, the rings align, the bottom opinion input remains visible, and no next-topic page break is visible at rest.
+```text
+high similarity = two nodes have low direct disagreement
+or have similar disagreement profiles toward the rest of the graph
+position on screen is ignored completely
+```
 
-## Technical details
+- Compute the normalized graph Laplacian and use eigengap to choose the number of clusters within safe bounds, for example:
+  - no clustering for fewer than 3 meaningful connected nodes
+  - cap cluster count to a small number, likely 6, to avoid noisy color overload
+  - ignore singleton clusters visually unless needed for node coloring
+- Implement a small in-app numeric routine rather than adding a heavy dependency, unless an existing lightweight dependency is already suitable. The expected node counts are small enough for this.
 
-Likely edits:
-- `src/components/tt/TTScreen.tsx`
-  - Replace `viewportW` state with measured section/container width.
-  - Use that width for `ttLandmarks`:
-    - `coreR = (140 / 600) * mobileWidth`
-    - `blueR = (300 / 600) * mobileWidth`
-    - `whiteR = (360 / 600) * mobileWidth`
-- `src/components/tt/TTBackground.tsx`
-  - Add a prop or CSS sizing mode so the background uses the parent TT viewport width (`100%`) rather than global `100vw`.
-- `src/pages/TT.tsx`
-  - Keep the centered `max-w-[480px]` mobile shell.
-  - Add/adjust overflow containment if needed so the desktop view is clean.
+4. Attach cluster identity to nodes in both graph layouts
 
-No database changes are needed.
+- Update `calculateLayout()` and `calculateTTLayout()` so each returned `GraphNode` gets `cluster` from spectral clustering.
+- This keeps regular graph routes and the `/` mobile/TT UI consistent.
+- Collision resolution and layout positioning will remain unchanged; clustering only affects color/background rendering.
+
+5. Render cluster colors on nodes
+
+- Extend the semantic token layer to expose a deterministic cluster color or cluster index.
+- In the Signal theme, update node rendering so nodes in the same cluster share the same visible color while preserving important overrides:
+  - current user remains clearly identifiable
+  - bot remains distinguishable
+  - selected/highlighted states still work
+  - hidden/moderation state remains dimmed
+- &nbsp;
+
+7. Safety and edge cases
+
+- If there are too few ratings, no reliable eigengap, or the graph is mostly disconnected, fall back to no cluster fill or one neutral cluster rather than inventing misleading groups.
+- Clustering will be deterministic: stable opinion ordering by ID and stable tie-breaking.
+- Position data will not be read by the clustering algorithm.
+- The visual fills will be subtle enough not to obscure zone rings, node labels, pending requests, or selected states.
+
+Files likely to change
+
+- `src/components/admin/FakeNodesPanel.tsx`
+- `src/hooks/useFakeNodes.ts`
+- `src/hooks/useTopicData.ts` if fake-node/opinion syncing needs frontend repair
+- `src/lib/freemind-layout.ts`
+- `src/lib/tt-layout.ts`
+- new helper such as `src/lib/spectral-clustering.ts`
+- `src/types/graph.ts`
+- `src/themes/tokenizer.ts`
+- `src/themes/types.ts`
+- `src/themes/signal/SignalRenderer.tsx`
+- `src/themes/signal/SignalNode.tsx`
+- new `src/themes/signal/SignalCluster.tsx`
+- possibly `src/themes/city/CityCluster.tsx` and `src/themes/arcane/ArcaneCluster.tsx` for palette alignment
+
+Database/backend note
+
+- The “all topics appear” part should be frontend-only.
+- If fake nodes do not currently become actual graph opinions for newly selected topics, I will add the smallest safe backend or client-side sync needed. Any database change will use the migration workflow and existing admin-role protection.
