@@ -44,6 +44,7 @@ export function useCreateFakeNode() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['fakeNodes', variables.topicId] });
       queryClient.invalidateQueries({ queryKey: ['topic', variables.topicId] });
+      queryClient.invalidateQueries({ queryKey: ['opinionCount', variables.topicId] });
       toast.success('Fake node created');
     },
     onError: (error: Error) => {
@@ -70,6 +71,7 @@ export function useUpdateFakeNode() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['fakeNodes', variables.topicId] });
       queryClient.invalidateQueries({ queryKey: ['topic', variables.topicId] });
+      queryClient.invalidateQueries({ queryKey: ['opinionCount', variables.topicId] });
       toast.success('Fake node updated');
     },
     onError: (error: Error) => {
@@ -93,6 +95,7 @@ export function useDeleteFakeNode() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['fakeNodes', variables.topicId] });
       queryClient.invalidateQueries({ queryKey: ['topic', variables.topicId] });
+      queryClient.invalidateQueries({ queryKey: ['opinionCount', variables.topicId] });
       toast.success('Fake node deleted');
     },
     onError: (error: Error) => {
