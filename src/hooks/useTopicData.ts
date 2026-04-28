@@ -276,13 +276,14 @@ export function useTopicData(topicId: string) {
       // Fetch fake nodes for this topic (used to identify which opinions are fake)
       const { data: fakeNodes, error: fakeNodesError } = await supabase
         .from('fake_nodes')
-        .select('opinion_text')
+        .select('id, opinion_text')
         .eq('topic_id', topicId);
 
       if (fakeNodesError) throw fakeNodesError;
 
       // Build a set of fake opinion texts for matching
       const fakeTexts = new Set((fakeNodes || []).map(fn => fn.opinion_text));
+      const fakeNodeIds = new Set((fakeNodes || []).map(fn => fn.id));
 
       // Fetch canonical graph pairs (empathy from chat_ratings via accepted chat_requests)
       const { data: ratingsData, error: ratingsError } = await supabase
@@ -313,7 +314,7 @@ export function useTopicData(topicId: string) {
       // Identify fake opinion IDs by matching text
       const fakeOpinionIds = new Set<string>();
       for (const op of formattedOpinions) {
-        if (fakeTexts.has(op.text)) {
+        if (fakeTexts.has(op.text) || fakeNodeIds.has(op.id)) {
           fakeOpinionIds.add(op.id);
         }
       }
