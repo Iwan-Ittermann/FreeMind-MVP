@@ -216,7 +216,7 @@ export default function TT() {
 
   return (
     <div className="fixed inset-0 bg-black flex items-center justify-center">
-      <div className="relative h-[100dvh] w-full max-w-[480px] bg-background overflow-hidden">
+      <div data-tt-phone-viewport className="relative h-[100dvh] w-full max-w-[480px] shrink-0 bg-background overflow-hidden">
         <div
           ref={containerRef}
           className="absolute inset-0 overflow-y-scroll snap-y snap-mandatory"

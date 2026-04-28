@@ -2,17 +2,22 @@ interface TTBackgroundProps {
   /** Hue rotation 0-360 to differentiate topics. Default 0. */
   hue?: number;
   className?: string;
+  /** Width of the TT phone viewport. Falls back to container width. */
+  viewportWidth?: number;
 }
 
 /**
  * Concentric background for the TT mobile UI.
  *
  * Sized so the blue ring (r=300 in a 1000-unit viewBox → 60% of width) spans
- * exactly the viewport width: SVG width = 100vw / 0.6 ≈ 166.67vw, square,
- * centered. The white ring + outer gradient/grain bleed off the top and
- * bottom intentionally.
+ * exactly the TT phone viewport width. On desktop this must use the centered
+ * mobile shell width, not the browser's global viewport width.
  */
-export function TTBackground({ hue = 0, className }: TTBackgroundProps) {
+export function TTBackground({ hue = 0, className, viewportWidth }: TTBackgroundProps) {
+  const backgroundSize = viewportWidth && viewportWidth > 0
+    ? `${viewportWidth / 0.6}px`
+    : 'calc(100% / 0.6)';
+
   return (
     <div
       className={className}
@@ -20,8 +25,8 @@ export function TTBackground({ hue = 0, className }: TTBackgroundProps) {
         position: 'absolute',
         left: '50%',
         top: '50%',
-        width: 'calc(100vw / 0.6)',
-        height: 'calc(100vw / 0.6)',
+        width: backgroundSize,
+        height: backgroundSize,
         transform: 'translate(-50%, -50%)',
         pointerEvents: 'none',
         filter: hue ? `hue-rotate(${hue}deg)` : undefined,
