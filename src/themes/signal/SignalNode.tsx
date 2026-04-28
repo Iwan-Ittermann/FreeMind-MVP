@@ -4,13 +4,18 @@ import { SemanticNodeToken, SemanticZone } from '../types';
 const NODE_SIZE = 40;
 const HALF = NODE_SIZE / 2;
 
-function CoreShape() {
+interface ShapeProps {
+  color?: string | null;
+}
+
+function CoreShape({ color = '#00e5ff' }: ShapeProps) {
+  const glowId = color ? `signal-glow-core-${color.replace(/[^a-zA-Z0-9]/g, '')}` : 'signal-glow-cyan';
   return (
     <>
       <defs>
-        <filter id="signal-glow-cyan">
+        <filter id={glowId}>
           <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
-          <feFlood floodColor="#00e5ff" floodOpacity="0.5" result="cyanColor"/>
+          <feFlood floodColor={color ?? '#00e5ff'} floodOpacity="0.5" result="cyanColor"/>
           <feComposite in="cyanColor" in2="coloredBlur" operator="in" result="cyanGlow"/>
           <feMerge><feMergeNode in="cyanGlow"/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
@@ -18,28 +23,29 @@ function CoreShape() {
           <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#00e5ff" floodOpacity="0.7"/>
         </filter>
       </defs>
-      <path d="M20 8 L23 17 L32 20 L23 23 L20 32 L17 23 L8 20 L17 17 Z" fill="#00e5ff" filter="url(#signal-glow-cyan)" />
+      <path d="M20 8 L23 17 L32 20 L23 23 L20 32 L17 23 L8 20 L17 17 Z" fill={color ?? '#00e5ff'} filter={`url(#${glowId})`} />
     </>
   );
 }
 
-function CoreShapeGold() {
+function CoreShapeGold({ color = '#F5C542' }: ShapeProps) {
+  const glowId = color ? `signal-glow-gold-${color.replace(/[^a-zA-Z0-9]/g, '')}` : 'signal-glow-gold';
   return (
     <>
       <defs>
-        <filter id="signal-glow-gold">
+        <filter id={glowId}>
           <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
-          <feFlood floodColor="#F5C542" floodOpacity="0.55" result="goldColor"/>
+          <feFlood floodColor={color ?? '#F5C542'} floodOpacity="0.55" result="goldColor"/>
           <feComposite in="goldColor" in2="coloredBlur" operator="in" result="goldGlow"/>
           <feMerge><feMergeNode in="goldGlow"/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
       </defs>
-      <path d="M20 8 L23 17 L32 20 L23 23 L20 32 L17 23 L8 20 L17 17 Z" fill="#F5C542" filter="url(#signal-glow-gold)" />
+      <path d="M20 8 L23 17 L32 20 L23 23 L20 32 L17 23 L8 20 L17 17 Z" fill={color ?? '#F5C542'} filter={`url(#${glowId})`} />
     </>
   );
 }
 
-function CoreShapeRed() {
+function CoreShapeRed(_props: ShapeProps) {
   return (
     <>
       <defs>
@@ -55,43 +61,43 @@ function CoreShapeRed() {
   );
 }
 
-function MiddleShape() {
+function MiddleShape({ color = '#14B866' }: ShapeProps) {
   return (
-    <circle cx="20" cy="20" r="9" fill="#14B866" />
+    <circle cx="20" cy="20" r="9" fill={color ?? '#14B866'} />
   );
 }
 
-function MiddleShapeEmerald() {
+function MiddleShapeEmerald({ color = '#10B981' }: ShapeProps) {
   return (
-    <circle cx="20" cy="20" r="9" fill="#10B981" />
+    <circle cx="20" cy="20" r="9" fill={color ?? '#10B981'} />
   );
 }
 
-function MiddleShapeRed() {
+function MiddleShapeRed(_props: ShapeProps) {
   return (
     <circle cx="20" cy="20" r="9" fill="#FF3B3B" />
   );
 }
 
-function OuterShape() {
+function OuterShape({ color = '#CC5500' }: ShapeProps) {
   return (
-    <rect x="12" y="12" width="16" height="16" fill="#CC5500" stroke="none" />
+    <rect x="12" y="12" width="16" height="16" fill={color ?? '#CC5500'} stroke="none" />
   );
 }
 
-function OuterShapeBlack() {
+function OuterShapeBlack({ color = '#0a0a0a' }: ShapeProps) {
   return (
-    <rect x="15" y="15" width="10" height="10" fill="#0a0a0a" stroke="none" />
+    <rect x="15" y="15" width="10" height="10" fill={color ?? '#0a0a0a'} stroke="none" />
   );
 }
 
-function OuterShapeRed() {
+function OuterShapeRed(_props: ShapeProps) {
   return (
     <rect x="15" y="15" width="10" height="10" fill="#FF3B3B" stroke="none" />
   );
 }
 
-function BotShape() {
+function BotShape(_props: ShapeProps) {
   return (
     <>
       <circle cx="20" cy="20" r="14" stroke="#A855F7" strokeWidth="2" fill="none" />
@@ -101,19 +107,19 @@ function BotShape() {
   );
 }
 
-const ZONE_SHAPE: Record<SemanticZone, () => JSX.Element> = {
+const ZONE_SHAPE: Record<SemanticZone, (props: ShapeProps) => JSX.Element> = {
   core: CoreShape,
   middle: MiddleShape,
   outer: OuterShape,
 };
 
-const ZONE_SHAPE_TT: Record<SemanticZone, () => JSX.Element> = {
+const ZONE_SHAPE_TT: Record<SemanticZone, (props: ShapeProps) => JSX.Element> = {
   core: CoreShapeGold,
   middle: MiddleShapeEmerald,
   outer: OuterShapeBlack,
 };
 
-const ZONE_SHAPE_TT_USER: Record<SemanticZone, () => JSX.Element> = {
+const ZONE_SHAPE_TT_USER: Record<SemanticZone, (props: ShapeProps) => JSX.Element> = {
   core: CoreShapeRed,
   middle: MiddleShapeRed,
   outer: OuterShapeRed,
@@ -142,6 +148,7 @@ export const SignalNode = memo(function SignalNode({
     ? (token.isCurrentUser ? ZONE_SHAPE_TT_USER : ZONE_SHAPE_TT)
     : ZONE_SHAPE;
   const Shape = token.isBot ? BotShape : (shapeSet[token.zone] ?? MiddleShape);
+  const clusterColor = !token.isCurrentUser && !token.isBot ? token.clusterColor : null;
   const opacity = isDimmed ? 0.4 : token.isHidden ? 0.3 : 1;
   const isScaled = isHighlighted && !isDimmed;
   const bubbleText = token.opinionText
@@ -193,7 +200,7 @@ export const SignalNode = memo(function SignalNode({
         {(highlightForTour || (isHighlighted && !isDimmed)) && (
           <circle cx="20" cy="20" r="18" fill="none" stroke="#00e5ff" strokeWidth={2} filter="url(#signal-select-glow)" />
         )}
-        <Shape />
+        <Shape color={clusterColor} />
       </svg>
 
       {/* "YOU" badge — hidden in TT mode where red color suffices */}

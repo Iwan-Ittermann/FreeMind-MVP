@@ -24,6 +24,7 @@ export type SemanticNodeToken = Readonly<{
   radius: number;           // base display radius
   bridgingScore: number;    // raw FreeMind score
   clusterId: number | null;
+  clusterColor: string | null;
   isBridge: boolean;
   isCurrentUser: boolean;
   isOnline: boolean;

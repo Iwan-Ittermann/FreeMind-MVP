@@ -26,6 +26,8 @@
 import { GraphNode, GraphEdge, GraphData, ChatRating, Opinion, LayoutConfig, RespectfulZoneSlot } from '@/types/graph';
 import { BOT_USER_ID } from '@/lib/constants';
 import { calculateFreeMindScore } from '@/lib/freemind-layout';
+import { detectDisagreementClusters } from '@/lib/spectral-clustering';
+import { getClusterColor } from '@/lib/cluster-colors';
 
 export interface TTLandmarks {
   /** Radius of the dark core (graph-SVG units). */
@@ -332,6 +334,7 @@ export function calculateTTLayout(
   }));
 
   const angleMap = calculateDeterministicAngles(opinions, ratings);
+  const clusterMap = detectDisagreementClusters(opinions, ratings);
 
   // Distribute multiple level-10 nodes around a tiny inner orbit so they don't all stack at R=0.
   const level10Ids = opinions
@@ -355,6 +358,8 @@ export function calculateTTLayout(
       hasChats: s.hasChats,
       level: s.level,
       zone: levelToZone(s.level),
+      cluster: clusterMap.get(op.id),
+      clusterColor: getClusterColor(clusterMap.get(op.id)),
     };
   });
 
