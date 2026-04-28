@@ -80,6 +80,7 @@ export function tokenizeNode(
     radius: config.nodeRadius,
     bridgingScore,
     clusterId: node.cluster ?? null,
+    clusterColor: node.clusterColor ?? null,
     isBridge: node.isBridge ?? false,
     isCurrentUser: !!(currentUserId && node.opinion.authorId === currentUserId),
     isOnline: node.isOnline ?? false,
