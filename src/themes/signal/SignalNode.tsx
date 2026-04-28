@@ -4,13 +4,18 @@ import { SemanticNodeToken, SemanticZone } from '../types';
 const NODE_SIZE = 40;
 const HALF = NODE_SIZE / 2;
 
-function CoreShape() {
+interface ShapeProps {
+  color?: string | null;
+}
+
+function CoreShape({ color = '#00e5ff' }: ShapeProps) {
+  const glowId = color ? `signal-glow-core-${color.replace(/[^a-zA-Z0-9]/g, '')}` : 'signal-glow-cyan';
   return (
     <>
       <defs>
-        <filter id="signal-glow-cyan">
+        <filter id={glowId}>
           <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
-          <feFlood floodColor="#00e5ff" floodOpacity="0.5" result="cyanColor"/>
+          <feFlood floodColor={color ?? '#00e5ff'} floodOpacity="0.5" result="cyanColor"/>
           <feComposite in="cyanColor" in2="coloredBlur" operator="in" result="cyanGlow"/>
           <feMerge><feMergeNode in="cyanGlow"/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
@@ -18,7 +23,7 @@ function CoreShape() {
           <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#00e5ff" floodOpacity="0.7"/>
         </filter>
       </defs>
-      <path d="M20 8 L23 17 L32 20 L23 23 L20 32 L17 23 L8 20 L17 17 Z" fill="#00e5ff" filter="url(#signal-glow-cyan)" />
+      <path d="M20 8 L23 17 L32 20 L23 23 L20 32 L17 23 L8 20 L17 17 Z" fill={color ?? '#00e5ff'} filter={`url(#${glowId})`} />
     </>
   );
 }
@@ -55,9 +60,9 @@ function CoreShapeRed() {
   );
 }
 
-function MiddleShape() {
+function MiddleShape({ color = '#14B866' }: ShapeProps) {
   return (
-    <circle cx="20" cy="20" r="9" fill="#14B866" />
+    <circle cx="20" cy="20" r="9" fill={color ?? '#14B866'} />
   );
 }
 
@@ -73,9 +78,9 @@ function MiddleShapeRed() {
   );
 }
 
-function OuterShape() {
+function OuterShape({ color = '#CC5500' }: ShapeProps) {
   return (
-    <rect x="12" y="12" width="16" height="16" fill="#CC5500" stroke="none" />
+    <rect x="12" y="12" width="16" height="16" fill={color ?? '#CC5500'} stroke="none" />
   );
 }
 
@@ -101,7 +106,7 @@ function BotShape() {
   );
 }
 
-const ZONE_SHAPE: Record<SemanticZone, () => JSX.Element> = {
+const ZONE_SHAPE: Record<SemanticZone, (props: ShapeProps) => JSX.Element> = {
   core: CoreShape,
   middle: MiddleShape,
   outer: OuterShape,
@@ -142,6 +147,7 @@ export const SignalNode = memo(function SignalNode({
     ? (token.isCurrentUser ? ZONE_SHAPE_TT_USER : ZONE_SHAPE_TT)
     : ZONE_SHAPE;
   const Shape = token.isBot ? BotShape : (shapeSet[token.zone] ?? MiddleShape);
+  const clusterColor = !token.isCurrentUser && !token.isBot ? token.clusterColor : null;
   const opacity = isDimmed ? 0.4 : token.isHidden ? 0.3 : 1;
   const isScaled = isHighlighted && !isDimmed;
   const bubbleText = token.opinionText
@@ -193,7 +199,7 @@ export const SignalNode = memo(function SignalNode({
         {(highlightForTour || (isHighlighted && !isDimmed)) && (
           <circle cx="20" cy="20" r="18" fill="none" stroke="#00e5ff" strokeWidth={2} filter="url(#signal-select-glow)" />
         )}
-        <Shape />
+        <Shape color={clusterColor} />
       </svg>
 
       {/* "YOU" badge — hidden in TT mode where red color suffices */}
