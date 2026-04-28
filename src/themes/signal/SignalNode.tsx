@@ -45,7 +45,7 @@ function CoreShapeGold({ color = '#F5C542' }: ShapeProps) {
   );
 }
 
-function CoreShapeRed() {
+function CoreShapeRed(_props: ShapeProps) {
   return (
     <>
       <defs>
@@ -73,7 +73,7 @@ function MiddleShapeEmerald({ color = '#10B981' }: ShapeProps) {
   );
 }
 
-function MiddleShapeRed() {
+function MiddleShapeRed(_props: ShapeProps) {
   return (
     <circle cx="20" cy="20" r="9" fill="#FF3B3B" />
   );
@@ -91,13 +91,13 @@ function OuterShapeBlack({ color = '#0a0a0a' }: ShapeProps) {
   );
 }
 
-function OuterShapeRed() {
+function OuterShapeRed(_props: ShapeProps) {
   return (
     <rect x="15" y="15" width="10" height="10" fill="#FF3B3B" stroke="none" />
   );
 }
 
-function BotShape() {
+function BotShape(_props: ShapeProps) {
   return (
     <>
       <circle cx="20" cy="20" r="14" stroke="#A855F7" strokeWidth="2" fill="none" />
@@ -119,7 +119,7 @@ const ZONE_SHAPE_TT: Record<SemanticZone, (props: ShapeProps) => JSX.Element> = 
   outer: OuterShapeBlack,
 };
 
-const ZONE_SHAPE_TT_USER: Record<SemanticZone, () => JSX.Element> = {
+const ZONE_SHAPE_TT_USER: Record<SemanticZone, (props: ShapeProps) => JSX.Element> = {
   core: CoreShapeRed,
   middle: MiddleShapeRed,
   outer: OuterShapeRed,
