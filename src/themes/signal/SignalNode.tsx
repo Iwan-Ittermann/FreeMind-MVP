@@ -28,18 +28,19 @@ function CoreShape({ color = '#00e5ff' }: ShapeProps) {
   );
 }
 
-function CoreShapeGold() {
+function CoreShapeGold({ color = '#F5C542' }: ShapeProps) {
+  const glowId = color ? `signal-glow-gold-${color.replace(/[^a-zA-Z0-9]/g, '')}` : 'signal-glow-gold';
   return (
     <>
       <defs>
-        <filter id="signal-glow-gold">
+        <filter id={glowId}>
           <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
-          <feFlood floodColor="#F5C542" floodOpacity="0.55" result="goldColor"/>
+          <feFlood floodColor={color ?? '#F5C542'} floodOpacity="0.55" result="goldColor"/>
           <feComposite in="goldColor" in2="coloredBlur" operator="in" result="goldGlow"/>
           <feMerge><feMergeNode in="goldGlow"/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
       </defs>
-      <path d="M20 8 L23 17 L32 20 L23 23 L20 32 L17 23 L8 20 L17 17 Z" fill="#F5C542" filter="url(#signal-glow-gold)" />
+      <path d="M20 8 L23 17 L32 20 L23 23 L20 32 L17 23 L8 20 L17 17 Z" fill={color ?? '#F5C542'} filter={`url(#${glowId})`} />
     </>
   );
 }
@@ -66,9 +67,9 @@ function MiddleShape({ color = '#14B866' }: ShapeProps) {
   );
 }
 
-function MiddleShapeEmerald() {
+function MiddleShapeEmerald({ color = '#10B981' }: ShapeProps) {
   return (
-    <circle cx="20" cy="20" r="9" fill="#10B981" />
+    <circle cx="20" cy="20" r="9" fill={color ?? '#10B981'} />
   );
 }
 
@@ -84,9 +85,9 @@ function OuterShape({ color = '#CC5500' }: ShapeProps) {
   );
 }
 
-function OuterShapeBlack() {
+function OuterShapeBlack({ color = '#0a0a0a' }: ShapeProps) {
   return (
-    <rect x="15" y="15" width="10" height="10" fill="#0a0a0a" stroke="none" />
+    <rect x="15" y="15" width="10" height="10" fill={color ?? '#0a0a0a'} stroke="none" />
   );
 }
 
@@ -112,7 +113,7 @@ const ZONE_SHAPE: Record<SemanticZone, (props: ShapeProps) => JSX.Element> = {
   outer: OuterShape,
 };
 
-const ZONE_SHAPE_TT: Record<SemanticZone, () => JSX.Element> = {
+const ZONE_SHAPE_TT: Record<SemanticZone, (props: ShapeProps) => JSX.Element> = {
   core: CoreShapeGold,
   middle: MiddleShapeEmerald,
   outer: OuterShapeBlack,
