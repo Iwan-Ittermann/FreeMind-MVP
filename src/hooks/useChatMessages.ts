@@ -36,6 +36,19 @@ interface ChatMessageRow {
   transcript?: string | null;
 }
 
+interface ChatMessagePayloadRow extends ChatMessageRow {
+  audio_url: string | null;
+  transcript: string | null;
+}
+
+interface ChatMessageInsertRow {
+  chat_id: string;
+  sender_id: string;
+  content: string;
+  reply_to_id?: string;
+  audio_url?: string;
+}
+
 interface SupabaseReadOnlyRpc {
   rpc: (
     fn: 'get_readonly_chat_messages',
@@ -153,7 +166,7 @@ export function useChatMessages(
           filter: `chat_id=eq.${chatId}`,
         },
         (payload) => {
-          const newMsg = payload.new as any;
+          const newMsg = payload.new as ChatMessagePayloadRow;
           const message: ChatMessage = {
             id: newMsg.id,
             content: newMsg.content,
@@ -180,7 +193,7 @@ export function useChatMessages(
           filter: `chat_id=eq.${chatId}`,
         },
         (payload) => {
-          const updated = payload.new as any;
+          const updated = payload.new as ChatMessagePayloadRow;
           queryClient.setQueryData(['chat-messages', chatId, user?.id], (old: ChatMessage[] = []) => {
             return old.map(m => m.id === updated.id ? {
               ...m,
@@ -205,7 +218,7 @@ export function useChatMessages(
     mutationFn: async ({ content, replyToId }: { content: string; replyToId?: string | null }) => {
       if (!chatId || !user?.id) throw new Error('Cannot send message');
       
-      const insertData: any = {
+      const insertData: ChatMessageInsertRow = {
         chat_id: chatId,
         sender_id: user.id,
         content,
@@ -291,7 +304,7 @@ export function useChatMessages(
         sender_id: user.id,
         content: '🎤 Voice message',
         audio_url: audioUrl,
-      } as any)
+      } as ChatMessageInsertRow)
       .select('id')
       .single();
 
