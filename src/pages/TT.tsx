@@ -82,7 +82,9 @@ export default function TT() {
 
   useEffect(() => {
     if (localStorage.getItem(TT_ONBOARDING_DONE_KEY) === 'true') return;
-    const timer = window.setTimeout(() => setTourOpen(true), TT_ONBOARDING_AUTO_OPEN_DELAY_MS);
+    const timer = window.setTimeout(() => {
+      if (localStorage.getItem(TT_ONBOARDING_DONE_KEY) !== 'true') setTourOpen(true);
+    }, TT_ONBOARDING_AUTO_OPEN_DELAY_MS);
     return () => window.clearTimeout(timer);
   }, []);
 
