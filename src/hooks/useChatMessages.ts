@@ -16,6 +16,33 @@ export interface ChatMessage {
   transcript: string | null;
 }
 
+interface ReadOnlyChatMessageRow {
+  id: string | null;
+  sender_id: string | null;
+  content: string | null;
+  created_at: string | null;
+  reply_to_id: string | null;
+  audio_url: string | null;
+  transcript: string | null;
+}
+
+interface ChatMessageRow {
+  id: string;
+  sender_id: string;
+  content: string;
+  created_at: string;
+  reply_to_id?: string | null;
+  audio_url?: string | null;
+  transcript?: string | null;
+}
+
+interface SupabaseReadOnlyRpc {
+  rpc: (
+    fn: 'get_readonly_chat_messages',
+    args: { _source_opinion_id: string; _target_opinion_id: string },
+  ) => Promise<{ data: ReadOnlyChatMessageRow[] | null; error: Error | null }>;
+}
+
 interface UseChatMessagesResult {
   messages: ChatMessage[];
   isLoading: boolean;
@@ -40,7 +67,7 @@ export function useChatMessages(
     queryKey: ['chat-messages', chatId, user?.id, readOnlyPair?.sourceOpinionId, readOnlyPair?.targetOpinionId, readOnlyPair?.sourceUserId],
     queryFn: async () => {
       if (readOnlyPair) {
-        const { data, error } = await (supabase as any).rpc('get_readonly_chat_messages', {
+        const { data, error } = await (supabase as unknown as SupabaseReadOnlyRpc).rpc('get_readonly_chat_messages', {
           _source_opinion_id: readOnlyPair.sourceOpinionId,
           _target_opinion_id: readOnlyPair.targetOpinionId,
         });
@@ -48,8 +75,8 @@ export function useChatMessages(
         if (error) throw error;
 
         return (data || [])
-          .filter((msg: any) => msg.id)
-          .map((msg: any): ChatMessage => ({
+          .filter((msg): msg is ReadOnlyChatMessageRow & { id: string; sender_id: string; content: string; created_at: string } => !!msg.id && !!msg.sender_id && !!msg.content && !!msg.created_at)
+          .map((msg): ChatMessage => ({
             id: msg.id,
             content: msg.content,
             senderId: msg.sender_id,
@@ -77,9 +104,9 @@ export function useChatMessages(
         senderId: msg.sender_id,
         isOwn: msg.sender_id === user.id,
         createdAt: new Date(msg.created_at),
-        replyToId: (msg as any).reply_to_id ?? null,
-        audioUrl: (msg as any).audio_url ?? null,
-        transcript: (msg as any).transcript ?? null,
+        replyToId: (msg as ChatMessageRow).reply_to_id ?? null,
+        audioUrl: (msg as ChatMessageRow).audio_url ?? null,
+        transcript: (msg as ChatMessageRow).transcript ?? null,
       }));
     },
     enabled: !!readOnlyPair || (!!chatId && !!user?.id),
