@@ -15,8 +15,10 @@ import { useTTChats } from '@/hooks/useTTChats';
 import { useAuth } from '@/hooks/useAuth';
 import { useTTNotifications } from '@/hooks/useTTNotifications';
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
-import { GraphNode } from '@/types/graph';
+import { GraphEdge, GraphNode } from '@/types/graph';
 import { supabase } from '@/integrations/supabase/client';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { FloatingChatManager, FloatingChatManagerHandle } from '@/components/chat/FloatingChatManager';
 
 const PRIMARY_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -34,6 +36,8 @@ export default function TT() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { user, loading: authLoading } = useAuth();
+  const isMobile = useIsMobile();
+  const chatManagerRef = useRef<FloatingChatManagerHandle>(null);
   const { data: topicList = [] } = useTTTopics();
   const routeTopic = useMemo(() => {
     if (!routeId) return { id: PRIMARY_TOPIC_ID, code: null as string | null };
@@ -131,6 +135,10 @@ export default function TT() {
   }, [tourOpen, tourStep, activeTopicId, activeData?.opinions, ownOpinionId, selectedNode?.id, hasOwnOpinion]);
   const { notifications: ttNotifications, markAllRead } = useTTNotifications(activeTopicId);
   const { data: unreadMap } = useUnreadMessages(activeTopicId, ownOpinionId);
+  const handleEdgeClick = useCallback((edge: GraphEdge) => {
+    if (isMobile) return;
+    chatManagerRef.current?.openReadOnlyChat(edge.source, edge.target);
+  }, [isMobile]);
   const totalUnread = useMemo(() => {
     if (!unreadMap) return 0;
     let sum = 0;
@@ -233,9 +241,17 @@ export default function TT() {
               onNodeSelect={(n) => {
                 if (topic.id === activeTopicId && !topic.clone) setSelectedNode(n);
               }}
+              onEdgeClick={topic.id === activeTopicId && !topic.clone ? handleEdgeClick : undefined}
             />
           ))}
         </div>
+
+        <FloatingChatManager
+          ref={chatManagerRef}
+          topicId={activeTopicId}
+          myOpinionId={ownOpinionId ?? undefined}
+          unreadMessageCounts={unreadMap}
+        />
 
         {/* Persistent chrome */}
         <TTHeader
