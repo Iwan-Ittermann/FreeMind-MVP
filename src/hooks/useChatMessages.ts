@@ -40,10 +40,10 @@ export function useChatMessages(
     queryKey: ['chat-messages', chatId, user?.id, readOnlyPair?.sourceOpinionId, readOnlyPair?.targetOpinionId, readOnlyPair?.sourceUserId],
     queryFn: async () => {
       if (readOnlyPair) {
-        const { data, error } = await supabase.rpc('get_readonly_chat_messages', {
+        const { data, error } = await (supabase as any).rpc('get_readonly_chat_messages', {
           _source_opinion_id: readOnlyPair.sourceOpinionId,
           _target_opinion_id: readOnlyPair.targetOpinionId,
-        } as any);
+        });
 
         if (error) throw error;
 
