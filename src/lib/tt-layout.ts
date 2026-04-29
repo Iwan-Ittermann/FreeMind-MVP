@@ -249,7 +249,7 @@ function calculateDeterministicAngles(opinions: Opinion[], ratings: ChatRating[]
 
 function resolveCollisions(nodes: GraphNode[], config: LayoutConfig, pinnedIds: Set<string>): GraphNode[] {
   if (nodes.length < 2) return nodes;
-  const VISUAL_NODE_SIZE = 48;
+  const VISUAL_NODE_SIZE = 26;
   const minDist = VISUAL_NODE_SIZE + 4;
 
   const sorted = [...nodes].map(n => ({ ...n }));
@@ -265,7 +265,7 @@ function resolveCollisions(nodes: GraphNode[], config: LayoutConfig, pinnedIds: 
     };
   });
 
-  for (let iter = 0; iter < 12; iter++) {
+  for (let iter = 0; iter < 20; iter++) {
     const deltas = new Array(polar.length).fill(0);
     let anyOverlap = false;
 
