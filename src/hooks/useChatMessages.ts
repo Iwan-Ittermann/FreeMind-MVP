@@ -29,7 +29,7 @@ export function useChatMessages(
   chatId: string | null,
   isBotChat = false,
   broadcastInfo?: { topicId: string; myOpinionId: string; theirOpinionId: string },
-  readOnlyPair?: { sourceOpinionId: string; targetOpinionId: string },
+  readOnlyPair?: { sourceOpinionId: string; targetOpinionId: string; sourceUserId?: string | null },
 ): UseChatMessagesResult {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -37,7 +37,7 @@ export function useChatMessages(
   // Fetch existing messages
   // Include user?.id in query key to refetch when user changes (fixes isOwn calculation)
   const { data: messages = [], isLoading } = useQuery({
-    queryKey: ['chat-messages', chatId, user?.id, readOnlyPair?.sourceOpinionId, readOnlyPair?.targetOpinionId],
+    queryKey: ['chat-messages', chatId, user?.id, readOnlyPair?.sourceOpinionId, readOnlyPair?.targetOpinionId, readOnlyPair?.sourceUserId],
     queryFn: async () => {
       if (readOnlyPair) {
         const { data, error } = await supabase.rpc('get_readonly_chat_messages', {
@@ -53,7 +53,7 @@ export function useChatMessages(
             id: msg.id,
             content: msg.content,
             senderId: msg.sender_id,
-            isOwn: msg.sender_id === user?.id || msg.sender_id === readOnlyPair.sourceOpinionId,
+            isOwn: msg.sender_id === readOnlyPair.sourceUserId,
             createdAt: new Date(msg.created_at),
             replyToId: msg.reply_to_id ?? null,
             audioUrl: msg.audio_url ?? null,
