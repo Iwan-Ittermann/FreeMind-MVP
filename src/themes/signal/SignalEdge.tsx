@@ -8,6 +8,11 @@ interface SignalEdgeProps {
   onClick: () => void;
 }
 
+function handleClickableEdgeClick(event: React.MouseEvent<SVGLineElement>, onClick: () => void) {
+  event.stopPropagation();
+  onClick();
+}
+
 export const SignalEdge = memo(function SignalEdge({
   token, isHighlighted, isDimmed, onClick,
 }: SignalEdgeProps) {
@@ -51,7 +56,7 @@ export const SignalEdge = memo(function SignalEdge({
         strokeDasharray={isPending ? '6 4' : 'none'}
         strokeLinecap="round"
         className="cursor-pointer"
-        onClick={onClick}
+        onClick={(event) => handleClickableEdgeClick(event, onClick)}
       />
     </g>
   );
