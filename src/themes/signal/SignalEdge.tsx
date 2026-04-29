@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import type { MouseEvent } from 'react';
 import { SemanticEdgeToken } from '../types';
 
 interface SignalEdgeProps {
@@ -8,7 +9,7 @@ interface SignalEdgeProps {
   onClick: () => void;
 }
 
-function handleClickableEdgeClick(event: React.MouseEvent<SVGLineElement>, onClick: () => void) {
+function handleClickableEdgeClick(event: MouseEvent<SVGLineElement>, onClick: () => void) {
   event.stopPropagation();
   onClick();
 }
