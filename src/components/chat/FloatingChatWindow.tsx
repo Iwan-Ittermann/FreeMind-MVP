@@ -30,7 +30,7 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
     chatId, myOpinion, theirOpinion, theirUserId,
     saveRating, isSavingRating, existingRating, averageBridgingScore,
     isBotChat,
-  } = useChatSession(theirOpinionId);
+  } = useChatSession(theirOpinionId, readOnly ? readOnlySourceId : undefined);
 
   const topicId = theirOpinion?.topic_id ?? null;
   const { messages: dbMessages, sendMessage, isSending, isBotTyping } = useChatMessages(
@@ -38,6 +38,9 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
     isBotChat,
     topicId && myOpinion && theirOpinion
       ? { topicId, myOpinionId: myOpinion.id, theirOpinionId: theirOpinion.id }
+      : undefined,
+    readOnly && readOnlySourceId && readOnlyTargetId
+      ? { sourceOpinionId: readOnlySourceId, targetOpinionId: readOnlyTargetId, sourceUserId: myOpinion?.user_id }
       : undefined,
   );
   const { partnerTyping, setTyping } = useTypingIndicator(chatId);
