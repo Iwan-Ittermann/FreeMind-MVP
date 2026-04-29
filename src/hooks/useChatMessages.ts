@@ -29,6 +29,7 @@ export function useChatMessages(
   chatId: string | null,
   isBotChat = false,
   broadcastInfo?: { topicId: string; myOpinionId: string; theirOpinionId: string },
+  readOnlyPair?: { sourceOpinionId: string; targetOpinionId: string },
 ): UseChatMessagesResult {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -36,8 +37,30 @@ export function useChatMessages(
   // Fetch existing messages
   // Include user?.id in query key to refetch when user changes (fixes isOwn calculation)
   const { data: messages = [], isLoading } = useQuery({
-    queryKey: ['chat-messages', chatId, user?.id],
+    queryKey: ['chat-messages', chatId, user?.id, readOnlyPair?.sourceOpinionId, readOnlyPair?.targetOpinionId],
     queryFn: async () => {
+      if (readOnlyPair) {
+        const { data, error } = await supabase.rpc('get_readonly_chat_messages', {
+          _source_opinion_id: readOnlyPair.sourceOpinionId,
+          _target_opinion_id: readOnlyPair.targetOpinionId,
+        } as any);
+
+        if (error) throw error;
+
+        return (data || [])
+          .filter((msg: any) => msg.id)
+          .map((msg: any): ChatMessage => ({
+            id: msg.id,
+            content: msg.content,
+            senderId: msg.sender_id,
+            isOwn: msg.sender_id === user?.id || msg.sender_id === readOnlyPair.sourceOpinionId,
+            createdAt: new Date(msg.created_at),
+            replyToId: msg.reply_to_id ?? null,
+            audioUrl: msg.audio_url ?? null,
+            transcript: msg.transcript ?? null,
+          }));
+      }
+
       if (!chatId || !user?.id) return [];
       
       const { data, error } = await supabase
@@ -59,12 +82,12 @@ export function useChatMessages(
         transcript: (msg as any).transcript ?? null,
       }));
     },
-    enabled: !!chatId && !!user?.id,
+    enabled: !!readOnlyPair || (!!chatId && !!user?.id),
   });
 
   // Mark other user's messages as read when chat is open
   useEffect(() => {
-    if (!chatId || !user?.id) return;
+    if (!chatId || !user?.id || readOnlyPair) return;
 
     const markAsRead = async () => {
       const { error } = await supabase
@@ -84,11 +107,11 @@ export function useChatMessages(
     };
 
     markAsRead();
-  }, [chatId, user?.id, messages.length, queryClient]);
+  }, [chatId, user?.id, messages.length, queryClient, readOnlyPair]);
 
   // Subscribe to real-time updates with unique channel name
   useEffect(() => {
-    if (!chatId) return;
+    if (!chatId || readOnlyPair) return;
 
     // Use unique channel name with timestamp to avoid subscription conflicts
     const channelName = `chat-messages-${chatId}-${Date.now()}`;
@@ -146,7 +169,7 @@ export function useChatMessages(
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [chatId, user?.id, queryClient]);
+  }, [chatId, user?.id, queryClient, readOnlyPair]);
 
   const [isBotTyping, setIsBotTyping] = useState(false);
 
