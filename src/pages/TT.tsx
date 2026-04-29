@@ -23,6 +23,7 @@ import { FloatingChatManager, FloatingChatManagerHandle } from '@/components/cha
 const PRIMARY_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const TT_ONBOARDING_DONE_KEY = 'tt:onboarding:first-step-done';
+const TT_ONBOARDING_AUTO_OPEN_DELAY_MS = 3000;
 const TT_ONBOARDING_OPINIONS_STEP = 1;
 const TT_ONBOARDING_ADD_OPINION_STEP = 2;
 const TT_ONBOARDING_CHAT_STEP = 3;
@@ -75,9 +76,17 @@ export default function TT() {
   const [scrollHintCount, setScrollHintCount] = useState(() => Number(localStorage.getItem('tt:topic-scroll-count') || '0'));
   const showScrollHint = topics.length > 1 && scrollHintCount < 2;
   const sideTabsRef = useRef<TTSideTabsHandle>(null);
-  const [tourOpen, setTourOpen] = useState(() => localStorage.getItem(TT_ONBOARDING_DONE_KEY) !== 'true');
+  const [tourOpen, setTourOpen] = useState(false);
   const [tourStep, setTourStep] = useState(0);
   const tourDemoSelectionRef = useRef<{ topicId: string; step: number; opinionId: string } | null>(null);
+
+  useEffect(() => {
+    if (localStorage.getItem(TT_ONBOARDING_DONE_KEY) === 'true') return;
+    const timer = window.setTimeout(() => {
+      if (localStorage.getItem(TT_ONBOARDING_DONE_KEY) !== 'true') setTourOpen(true);
+    }, TT_ONBOARDING_AUTO_OPEN_DELAY_MS);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   const completeTour = useCallback(() => {
     localStorage.setItem(TT_ONBOARDING_DONE_KEY, 'true');
