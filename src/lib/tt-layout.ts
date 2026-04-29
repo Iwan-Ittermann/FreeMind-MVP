@@ -266,7 +266,9 @@ function resolveCollisions(nodes: GraphNode[], config: LayoutConfig, pinnedIds: 
   });
 
   for (let iter = 0; iter < 12; iter++) {
+    const deltas = new Array(polar.length).fill(0);
     let anyOverlap = false;
+
     for (let i = 0; i < polar.length; i++) {
       for (let j = i + 1; j < polar.length; j++) {
         const a = polar[i];
@@ -283,16 +285,27 @@ function resolveCollisions(nodes: GraphNode[], config: LayoutConfig, pinnedIds: 
         const overlap = minDist - dist;
         const avgR = Math.max((a.radius + b.radius) / 2, 1);
         const angularPush = (overlap / avgR) * 0.5;
-        if (a.pinned && b.pinned) continue;
-        if (a.pinned) b.angle += angularPush * (b.angle >= a.angle ? 1 : -1);
-        else if (b.pinned) a.angle += angularPush * (a.angle >= b.angle ? 1 : -1);
-        else {
-          a.angle -= angularPush / 2;
-          b.angle += angularPush / 2;
+
+        if (a.pinned && b.pinned) {
+          // Both pinned — no push
+        } else if (a.pinned) {
+          deltas[j] -= angularPush * 2;
+        } else if (b.pinned) {
+          deltas[i] += angularPush * 2;
+        } else {
+          deltas[i] += angularPush;
+          deltas[j] -= angularPush;
         }
       }
     }
+
     if (!anyOverlap) break;
+
+    for (let i = 0; i < polar.length; i++) {
+      if (!polar[i].pinned) {
+        polar[i].angle += deltas[i];
+      }
+    }
   }
 
   const polarById = new Map(polar.map(p => [p.id, p]));
