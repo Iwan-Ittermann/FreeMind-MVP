@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Bell, DoorOpen, Copy, Download, Eye, EyeOff, X, SlidersHorizontal, MessageSquare, MessageCircle, Globe, Sparkles, CircleHelp } from 'lucide-react';
+import { Bell, DoorOpen, Copy, Download, Eye, EyeOff, X, SlidersHorizontal, MessageSquare, MessageCircle, Globe, Sparkles, CircleHelp, Flag } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { emailToPassphrase } from '@/lib/passphrase';
@@ -41,25 +41,34 @@ const FILTER_ITEMS: {
   { key: 'newHighlight', iconEl: <Sparkles className="w-3.5 h-3.5" />, labelKey: 'tt.notifFilter.newHighlight', disabled: true },
 ];
 
+const LANGUAGES = [
+  { code: 'de', flag: '🇩🇪', labelKey: 'common.german' },
+  { code: 'en', flag: '🇬🇧', labelKey: 'common.english' },
+];
+
 export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRestartTour }: TTHeaderProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const [accountOpen, setAccountOpen] = useState(false);
   const [bellOpen, setBellOpen] = useState(false);
+  const [languageOpen, setLanguageOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [showPhrase, setShowPhrase] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [filters, setFilters] = useState<NotificationFilters>(getGlobalFilters);
   const accountRef = useRef<HTMLDivElement>(null);
   const bellRef = useRef<HTMLDivElement>(null);
+  const languageRef = useRef<HTMLDivElement>(null);
   const bellDropdownRef = useRef<HTMLDivElement>(null);
   const accountDropdownRef = useRef<HTMLDivElement>(null);
+  const languageDropdownRef = useRef<HTMLDivElement>(null);
 
   const phrase = user?.email ? emailToPassphrase(user.email) ?? '' : '';
   const hasUnread = notifications.some((n) => n.unread);
+  const currentLanguage = LANGUAGES.find((lang) => i18n.language.startsWith(lang.code)) ?? LANGUAGES[0];
 
   useEffect(() => {
-    if (!accountOpen && !bellOpen) return;
+    if (!accountOpen && !bellOpen && !languageOpen) return;
     const onDown = (e: MouseEvent) => {
       const target = e.target as Node;
       if (accountOpen && accountRef.current && !accountRef.current.contains(target) && (!accountDropdownRef.current || !accountDropdownRef.current.contains(target))) {
@@ -70,10 +79,13 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
         setBellOpen(false);
         setFiltersOpen(false);
       }
+      if (languageOpen && languageRef.current && !languageRef.current.contains(target) && (!languageDropdownRef.current || !languageDropdownRef.current.contains(target))) {
+        setLanguageOpen(false);
+      }
     };
     document.addEventListener('mousedown', onDown);
     return () => document.removeEventListener('mousedown', onDown);
-  }, [accountOpen, bellOpen]);
+  }, [accountOpen, bellOpen, languageOpen]);
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -113,12 +125,28 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
             freemind
           </span>
           <div className="flex items-center gap-1">
+            <div ref={languageRef}>
+              <button
+                onClick={() => {
+                  setLanguageOpen((o) => !o);
+                  setBellOpen(false);
+                  setAccountOpen(false);
+                  setFiltersOpen(false);
+                  setShowLogin(false);
+                }}
+                className="h-8 w-8 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground transition-colors"
+                aria-label={t('common.language')}
+              >
+                <span className="text-base leading-none" aria-hidden>{currentLanguage.flag}</span>
+              </button>
+            </div>
             <div ref={bellRef}>
               <button
                 onClick={() => {
                   const wasOpen = bellOpen;
                   setBellOpen((o) => !o);
                   setAccountOpen(false);
+                  setLanguageOpen(false);
                   setFiltersOpen(false);
                   if (!wasOpen && onMarkAllRead) onMarkAllRead();
                 }}
@@ -136,6 +164,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                 onClick={() => {
                   setAccountOpen((o) => !o);
                   setBellOpen(false);
+                  setLanguageOpen(false);
                   setShowLogin(false);
                 }}
                 className="h-8 w-8 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground transition-colors"
@@ -157,6 +186,45 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
           </h1>
         </div>
       </header>
+
+      {/* Language dropdown */}
+      <AnimatePresence>
+        {languageOpen && (
+          <motion.div
+            ref={languageDropdownRef}
+            initial={{ opacity: 0, y: -8, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.96 }}
+            transition={{ type: 'spring', stiffness: 360, damping: 28 }}
+            style={{ transformOrigin: '90% 0%' }}
+            className="absolute top-12 right-[5.75rem] z-40 w-44 rounded-2xl bg-background/95 backdrop-blur-xl border border-border/40 shadow-2xl overflow-hidden pointer-events-auto"
+          >
+            <div className="px-3 py-2 border-b border-border/30 flex items-center gap-2">
+              <Flag className="w-3.5 h-3.5 text-muted-foreground" />
+              <h3 className="text-xs font-semibold">{t('common.language')}</h3>
+            </div>
+            <div className="p-1.5">
+              {LANGUAGES.map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => {
+                    i18n.changeLanguage(lang.code);
+                    setLanguageOpen(false);
+                  }}
+                  className={`w-full flex items-center gap-2 rounded-xl px-2.5 py-2 text-left text-sm transition-colors ${
+                    currentLanguage.code === lang.code
+                      ? 'bg-primary/10 text-foreground'
+                      : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                  }`}
+                >
+                  <span className="text-base leading-none" aria-hidden>{lang.flag}</span>
+                  <span>{t(lang.labelKey)}</span>
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Notifications dropdown (header bell) — rendered outside header but checked via bellRef */}
       <AnimatePresence>
