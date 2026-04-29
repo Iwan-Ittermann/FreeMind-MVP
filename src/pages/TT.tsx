@@ -69,6 +69,7 @@ export default function TT() {
       { id: first, key: `clone-end-${first}`, clone: true },
     ];
   }, [topics]);
+  const renderedTopicKeys = useMemo(() => renderedTopics.map((topic) => topic.key).join('|'), [renderedTopics]);
   const containerRef = useRef<HTMLDivElement>(null);
   const ignoreObserverRef = useRef(false);
   const [scrollHintCount, setScrollHintCount] = useState(() => Number(localStorage.getItem('tt:topic-scroll-count') || '0'));
@@ -220,7 +221,7 @@ export default function TT() {
     const sections = root.querySelectorAll('[data-tt-topic]');
     sections.forEach((s) => observer.observe(s));
     return () => observer.disconnect();
-  }, [activeTopicId, navigate, renderedTopics.map((topic) => topic.key).join('|'), jumpToRealTopic, topicList]);
+  }, [activeTopicId, navigate, renderedTopicKeys, jumpToRealTopic, topicList]);
 
   return (
     <div className="fixed inset-0 bg-black flex items-center justify-center">
