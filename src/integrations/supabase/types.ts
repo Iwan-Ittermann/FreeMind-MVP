@@ -908,6 +908,19 @@ export type Database = {
         }
         Returns: string
       }
+      get_readonly_chat_messages: {
+        Args: { _source_opinion_id: string; _target_opinion_id: string }
+        Returns: {
+          audio_url: string
+          chat_id: string
+          content: string
+          created_at: string
+          id: string
+          reply_to_id: string
+          sender_id: string
+          transcript: string
+        }[]
+      }
       get_user_topics: {
         Args: never
         Returns: {

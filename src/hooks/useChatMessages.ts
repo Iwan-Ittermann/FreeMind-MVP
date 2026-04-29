@@ -16,6 +16,46 @@ export interface ChatMessage {
   transcript: string | null;
 }
 
+interface ReadOnlyChatMessageRow {
+  id: string | null;
+  sender_id: string | null;
+  content: string | null;
+  created_at: string | null;
+  reply_to_id: string | null;
+  audio_url: string | null;
+  transcript: string | null;
+}
+
+interface ChatMessageRow {
+  id: string;
+  sender_id: string;
+  content: string;
+  created_at: string;
+  reply_to_id?: string | null;
+  audio_url?: string | null;
+  transcript?: string | null;
+}
+
+interface ChatMessagePayloadRow extends ChatMessageRow {
+  audio_url: string | null;
+  transcript: string | null;
+}
+
+interface ChatMessageInsertRow {
+  chat_id: string;
+  sender_id: string;
+  content: string;
+  reply_to_id?: string;
+  audio_url?: string;
+}
+
+interface SupabaseReadOnlyRpc {
+  rpc: (
+    fn: 'get_readonly_chat_messages',
+    args: { _source_opinion_id: string; _target_opinion_id: string },
+  ) => Promise<{ data: ReadOnlyChatMessageRow[] | null; error: Error | null }>;
+}
+
 interface UseChatMessagesResult {
   messages: ChatMessage[];
   isLoading: boolean;
@@ -29,6 +69,7 @@ export function useChatMessages(
   chatId: string | null,
   isBotChat = false,
   broadcastInfo?: { topicId: string; myOpinionId: string; theirOpinionId: string },
+  readOnlyPair?: { sourceOpinionId: string; targetOpinionId: string; sourceUserId?: string | null },
 ): UseChatMessagesResult {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -36,8 +77,30 @@ export function useChatMessages(
   // Fetch existing messages
   // Include user?.id in query key to refetch when user changes (fixes isOwn calculation)
   const { data: messages = [], isLoading } = useQuery({
-    queryKey: ['chat-messages', chatId, user?.id],
+    queryKey: ['chat-messages', chatId, user?.id, readOnlyPair?.sourceOpinionId, readOnlyPair?.targetOpinionId, readOnlyPair?.sourceUserId],
     queryFn: async () => {
+      if (readOnlyPair) {
+        const { data, error } = await (supabase as unknown as SupabaseReadOnlyRpc).rpc('get_readonly_chat_messages', {
+          _source_opinion_id: readOnlyPair.sourceOpinionId,
+          _target_opinion_id: readOnlyPair.targetOpinionId,
+        });
+
+        if (error) throw error;
+
+        return (data || [])
+          .filter((msg): msg is ReadOnlyChatMessageRow & { id: string; sender_id: string; content: string; created_at: string } => !!msg.id && !!msg.sender_id && !!msg.content && !!msg.created_at)
+          .map((msg): ChatMessage => ({
+            id: msg.id,
+            content: msg.content,
+            senderId: msg.sender_id,
+            isOwn: msg.sender_id === readOnlyPair.sourceUserId,
+            createdAt: new Date(msg.created_at),
+            replyToId: msg.reply_to_id ?? null,
+            audioUrl: msg.audio_url ?? null,
+            transcript: msg.transcript ?? null,
+          }));
+      }
+
       if (!chatId || !user?.id) return [];
       
       const { data, error } = await supabase
@@ -54,17 +117,17 @@ export function useChatMessages(
         senderId: msg.sender_id,
         isOwn: msg.sender_id === user.id,
         createdAt: new Date(msg.created_at),
-        replyToId: (msg as any).reply_to_id ?? null,
-        audioUrl: (msg as any).audio_url ?? null,
-        transcript: (msg as any).transcript ?? null,
+        replyToId: (msg as ChatMessageRow).reply_to_id ?? null,
+        audioUrl: (msg as ChatMessageRow).audio_url ?? null,
+        transcript: (msg as ChatMessageRow).transcript ?? null,
       }));
     },
-    enabled: !!chatId && !!user?.id,
+    enabled: !!readOnlyPair || (!!chatId && !!user?.id),
   });
 
   // Mark other user's messages as read when chat is open
   useEffect(() => {
-    if (!chatId || !user?.id) return;
+    if (!chatId || !user?.id || readOnlyPair) return;
 
     const markAsRead = async () => {
       const { error } = await supabase
@@ -84,11 +147,11 @@ export function useChatMessages(
     };
 
     markAsRead();
-  }, [chatId, user?.id, messages.length, queryClient]);
+  }, [chatId, user?.id, messages.length, queryClient, readOnlyPair]);
 
   // Subscribe to real-time updates with unique channel name
   useEffect(() => {
-    if (!chatId) return;
+    if (!chatId || readOnlyPair) return;
 
     // Use unique channel name with timestamp to avoid subscription conflicts
     const channelName = `chat-messages-${chatId}-${Date.now()}`;
@@ -103,7 +166,7 @@ export function useChatMessages(
           filter: `chat_id=eq.${chatId}`,
         },
         (payload) => {
-          const newMsg = payload.new as any;
+          const newMsg = payload.new as ChatMessagePayloadRow;
           const message: ChatMessage = {
             id: newMsg.id,
             content: newMsg.content,
@@ -130,7 +193,7 @@ export function useChatMessages(
           filter: `chat_id=eq.${chatId}`,
         },
         (payload) => {
-          const updated = payload.new as any;
+          const updated = payload.new as ChatMessagePayloadRow;
           queryClient.setQueryData(['chat-messages', chatId, user?.id], (old: ChatMessage[] = []) => {
             return old.map(m => m.id === updated.id ? {
               ...m,
@@ -146,7 +209,7 @@ export function useChatMessages(
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [chatId, user?.id, queryClient]);
+  }, [chatId, user?.id, queryClient, readOnlyPair]);
 
   const [isBotTyping, setIsBotTyping] = useState(false);
 
@@ -155,7 +218,7 @@ export function useChatMessages(
     mutationFn: async ({ content, replyToId }: { content: string; replyToId?: string | null }) => {
       if (!chatId || !user?.id) throw new Error('Cannot send message');
       
-      const insertData: any = {
+      const insertData: ChatMessageInsertRow = {
         chat_id: chatId,
         sender_id: user.id,
         content,
@@ -241,7 +304,7 @@ export function useChatMessages(
         sender_id: user.id,
         content: '🎤 Voice message',
         audio_url: audioUrl,
-      } as any)
+      } as ChatMessageInsertRow)
       .select('id')
       .single();
 

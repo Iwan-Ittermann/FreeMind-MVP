@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import type { MouseEvent } from 'react';
 import { SemanticEdgeToken } from '../types';
 
 interface SignalEdgeProps {
@@ -6,6 +7,11 @@ interface SignalEdgeProps {
   isHighlighted: boolean;
   isDimmed: boolean;
   onClick: () => void;
+}
+
+function handleClickableEdgeClick(event: MouseEvent<SVGLineElement>, onClick: () => void) {
+  event.stopPropagation();
+  onClick();
 }
 
 export const SignalEdge = memo(function SignalEdge({
@@ -51,7 +57,7 @@ export const SignalEdge = memo(function SignalEdge({
         strokeDasharray={isPending ? '6 4' : 'none'}
         strokeLinecap="round"
         className="cursor-pointer"
-        onClick={onClick}
+        onClick={(event) => handleClickableEdgeClick(event, onClick)}
       />
     </g>
   );

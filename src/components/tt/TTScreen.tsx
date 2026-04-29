@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { OpinionGraph } from '@/components/graph/OpinionGraph';
 import { TTBackground } from './TTBackground';
 import { useTranslation } from 'react-i18next';
-import { GraphNode } from '@/types/graph';
+import { GraphEdge, GraphNode } from '@/types/graph';
 
 interface TTScreenInnerProps {
   topicId: string;
@@ -16,6 +16,7 @@ interface TTScreenInnerProps {
   index?: number;
   selectedNodeId: string | null;
   onNodeSelect: (node: GraphNode | null) => void;
+  onEdgeClick?: (edge: GraphEdge) => void;
   highlightAllNodes?: boolean;
   isLoopClone?: boolean;
   /** Called from parent so it can read opinions for the side panel. */
@@ -35,6 +36,7 @@ function TTScreenInnerImpl({
   hue = 0,
   selectedNodeId,
   onNodeSelect,
+  onEdgeClick,
   highlightAllNodes = false,
   isLoopClone = false,
 }: TTScreenInnerProps) {
@@ -155,6 +157,7 @@ function TTScreenInnerImpl({
                 currentUserId={user?.id}
                 currentUserOpinionId={ownOpinionId}
                 onNodeSelect={onNodeSelect}
+                onEdgeClick={onEdgeClick}
                 selectedNodeId={selectedNodeId}
                 highlightAllNodes={highlightAllNodes}
                 width={size}
