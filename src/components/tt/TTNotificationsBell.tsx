@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { getPrefs, setPrefs } from '@/lib/tt-notification-prefs';
-import { requestBrowserNotificationPermission } from '@/lib/tt-browser-notifications';
 
 interface TTNotificationsBellProps {
   topicId: string;
@@ -21,22 +20,8 @@ export function TTNotificationsBell({ topicId }: TTNotificationsBellProps) {
     return () => window.removeEventListener('tt:subscription-changed', sync);
   }, [topicId]);
 
-  const toggle = async () => {
+  const toggle = () => {
     const next = !enabled;
-
-    if (next) {
-      const permission = await requestBrowserNotificationPermission();
-      if (permission === 'denied') {
-        toast.error(t('tt.notifSetup.denied'));
-        return;
-      }
-      if (permission === 'unsupported' || permission === 'unavailable') {
-        toast.error(t('tt.notifSetup.previewHint'));
-        return;
-      }
-      if (permission !== 'granted') return;
-    }
-
     setPrefs(topicId, { enabled: next });
     setEnabled(next);
     toast.success(next ? t('tt.notifyOn') : t('tt.notifyOff'));
