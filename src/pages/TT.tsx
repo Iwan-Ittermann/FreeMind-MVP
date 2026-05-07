@@ -6,6 +6,7 @@ import { TTHeader } from '@/components/tt/TTHeader';
 import { TTSideTabs, TTSideTabsHandle } from '@/components/tt/TTSideTabs';
 import { TTBottomPanel } from '@/components/tt/TTBottomPanel';
 import { TTNotificationsBell } from '@/components/tt/TTNotificationsBell';
+import { TTCenterCTA } from '@/components/tt/TTCenterCTA';
 import { TTOnboardingTour } from '@/components/tt/TTOnboardingTour';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -190,6 +191,22 @@ export default function TT() {
     requestAnimationFrame(() => jumpToRealTopic(activeTopicId));
   }, [activeTopicId, renderedTopics.length, jumpToRealTopic]);
 
+  // Re-snap on resize / visibility changes so the viewport never lands between two topics
+  useEffect(() => {
+    let timer: number | undefined;
+    const reSnap = () => {
+      if (timer) window.clearTimeout(timer);
+      timer = window.setTimeout(() => jumpToRealTopic(activeTopicId), 120);
+    };
+    window.addEventListener('resize', reSnap);
+    document.addEventListener('visibilitychange', reSnap);
+    return () => {
+      window.removeEventListener('resize', reSnap);
+      document.removeEventListener('visibilitychange', reSnap);
+      if (timer) window.clearTimeout(timer);
+    };
+  }, [activeTopicId, jumpToRealTopic]);
+
   useEffect(() => {
     const root = containerRef.current;
     if (!root) return;
@@ -238,7 +255,7 @@ export default function TT() {
         <div
           ref={containerRef}
           className="absolute inset-0 overflow-y-scroll snap-y snap-mandatory"
-          style={{ scrollSnapType: 'y mandatory', scrollbarWidth: 'none', overscrollBehaviorY: 'contain', willChange: 'scroll-position' }}
+          style={{ scrollSnapType: 'y mandatory', scrollSnapStop: 'always', scrollbarWidth: 'none', overscrollBehaviorY: 'contain', willChange: 'scroll-position' }}
         >
           {renderedTopics.map((topic, i) => (
             <TTScreenInner
@@ -306,6 +323,17 @@ export default function TT() {
           )}
         </AnimatePresence>
         <TTNotificationsBell topicId={activeTopicId} />
+        {ownOpinionKnown && !hasOwnOpinion && !selectedNode && (
+          <TTCenterCTA
+            topicId={activeTopicId}
+            topicTitle={activeTopicTitle}
+            highlight={tourOpen && tourStep === TT_ONBOARDING_ADD_OPINION_STEP}
+            onOpinionCommitted={() => {
+              queryClient.invalidateQueries({ queryKey: ['tt-own-opinion', activeTopicId, user?.id] });
+              queryClient.invalidateQueries({ queryKey: ['topic', activeTopicId] });
+            }}
+          />
+        )}
         {showTourSpotlightOverlay && (
           <div className="pointer-events-none absolute inset-0 z-50 bg-tt-spotlight-overlay/70" />
         )}
