@@ -69,6 +69,19 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
   const hasUnread = notifications.some((n) => n.unread);
   const currentLanguage = LANGUAGES.find((lang) => i18n.language.startsWith(lang.code)) ?? LANGUAGES[0];
 
+  const { data: topicList = [] } = useTTTopics();
+  const topicTitleMap = new Map(topicList.map((t) => [t.id, t.title]));
+  const groupedNotifications = (() => {
+    const groups = new Map<string, { title: string; items: typeof notifications }>();
+    for (const n of notifications) {
+      const key = n.topicId ?? '__other__';
+      const title = n.topicId ? (topicTitleMap.get(n.topicId) ?? t('tt.otherTopic', 'Other')) : t('tt.otherTopic', 'Other');
+      if (!groups.has(key)) groups.set(key, { title, items: [] });
+      groups.get(key)!.items.push(n);
+    }
+    return Array.from(groups.values());
+  })();
+
   useEffect(() => {
     if (!accountOpen && !bellOpen && !languageOpen) return;
     const onDown = (e: MouseEvent) => {
