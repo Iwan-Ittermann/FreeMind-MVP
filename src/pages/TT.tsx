@@ -266,7 +266,7 @@ export default function TT() {
               selectedNodeId={topic.id === activeTopicId && !topic.clone ? selectedNode?.id ?? null : null}
               highlightAllNodes={topic.id === activeTopicId && !topic.clone && tourOpen && tourStep === TT_ONBOARDING_OPINIONS_STEP}
               onNodeSelect={(n) => {
-                if (topic.id === activeTopicId && !topic.clone) setSelectedNode(n);
+                if (!topic.clone) setSelectedNode(n);
               }}
               onEdgeClick={topic.id === activeTopicId && !topic.clone ? handleEdgeClick : undefined}
             />
