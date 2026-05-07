@@ -323,21 +323,30 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                   {t('tt.noNotifications')}
                 </p>
               ) : (
-                <ul className="divide-y divide-border/30">
-                  {notifications.map((n) => (
-                    <li
-                      key={n.id}
-                      className="px-4 py-2.5 hover:bg-muted/40 cursor-pointer"
-                    >
-                      <p className={`text-sm ${n.unread ? 'font-semibold' : 'text-foreground/80'}`}>
-                        {n.title}
-                      </p>
-                      {n.body && (
-                        <p className="text-xs text-muted-foreground mt-0.5">{n.body}</p>
-                      )}
-                    </li>
+                <div>
+                  {groupedNotifications.map((group) => (
+                    <div key={group.title} className="border-b border-border/30 last:border-b-0">
+                      <div className="px-4 pt-2.5 pb-1 text-[10px] uppercase tracking-wider text-muted-foreground/80 font-semibold bg-muted/30">
+                        {group.title}
+                      </div>
+                      <ul className="divide-y divide-border/20">
+                        {group.items.map((n) => (
+                          <li
+                            key={n.id}
+                            className="px-4 py-2.5 hover:bg-muted/40 cursor-pointer"
+                          >
+                            <p className={`text-sm ${n.unread ? 'font-semibold' : 'text-foreground/80'}`}>
+                              {n.title}
+                            </p>
+                            {n.body && (
+                              <p className="text-xs text-muted-foreground mt-0.5">{n.body}</p>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   ))}
-                </ul>
+                </div>
               )}
             </div>
           </motion.div>
