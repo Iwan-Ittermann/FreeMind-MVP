@@ -19,6 +19,7 @@ export interface TTNotification {
   title: string;
   body?: string;
   unread?: boolean;
+  topicId?: string;
 }
 
 interface TTHeaderProps {
