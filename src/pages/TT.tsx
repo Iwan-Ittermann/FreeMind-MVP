@@ -191,6 +191,22 @@ export default function TT() {
     requestAnimationFrame(() => jumpToRealTopic(activeTopicId));
   }, [activeTopicId, renderedTopics.length, jumpToRealTopic]);
 
+  // Re-snap on resize / visibility changes so the viewport never lands between two topics
+  useEffect(() => {
+    let timer: number | undefined;
+    const reSnap = () => {
+      if (timer) window.clearTimeout(timer);
+      timer = window.setTimeout(() => jumpToRealTopic(activeTopicId), 120);
+    };
+    window.addEventListener('resize', reSnap);
+    document.addEventListener('visibilitychange', reSnap);
+    return () => {
+      window.removeEventListener('resize', reSnap);
+      document.removeEventListener('visibilitychange', reSnap);
+      if (timer) window.clearTimeout(timer);
+    };
+  }, [activeTopicId, jumpToRealTopic]);
+
   useEffect(() => {
     const root = containerRef.current;
     if (!root) return;
