@@ -109,7 +109,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                   animate={{ opacity: 1, scaleX: 1, scaleY: 1 }}
                   exit={{ opacity: 0, scaleX: 0.05, scaleY: 0.4 }}
                   transition={SPRING}
-                  style={{ transformOrigin: '0% 50%', top: '22%', height: '60vh', maxHeight: 520 }}
+                  style={{ transformOrigin: '0% 50%', top: '55%', transform: 'translateY(-50%)', height: '60vh', maxHeight: 520 }}
                   className="absolute left-7 z-30 w-[78vw] max-w-[360px] rounded-2xl bg-background/85 backdrop-blur-xl border border-border/40 shadow-2xl overflow-hidden flex flex-col"
                 >
                   <div className="flex items-center justify-between px-4 py-3 border-b border-border/30">
