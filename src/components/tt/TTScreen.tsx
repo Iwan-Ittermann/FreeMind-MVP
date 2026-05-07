@@ -110,26 +110,26 @@ function TTScreenInnerImpl({
       {/* Zone labels — positioned relative to the section center using viewport
           units so they align with the background's blue/white ring landmarks. */}
       <div className="absolute inset-0 pointer-events-none">
-        {/* Respektvoll — exact center (dark core) */}
+        {/* Extrem — outside the white ring (top) */}
         <span
-          className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10px] tracking-[0.2em] uppercase text-foreground/70 font-medium"
-          style={{ top: '50%' }}
+          className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10px] tracking-[0.2em] uppercase text-foreground/85 font-medium px-2 py-0.5 rounded-full bg-background/55 backdrop-blur-sm"
+          style={{ top: phoneViewportW ? `calc(50% - ${phoneViewportW * 0.62}px)` : '15%' }}
         >
-          {t('tt.respectful')}
+          {t('tt.extreme')}
         </span>
-        {/* Moderat — inside the blue ring, above center */}
+        {/* Moderat — between blue and white rings */}
         <span
-          className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10px] tracking-[0.2em] uppercase text-foreground/40 font-medium"
-          style={{ top: phoneViewportW ? `calc(50% - ${phoneViewportW * 0.35}px)` : '15%' }}
+          className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10px] tracking-[0.2em] uppercase text-foreground/85 font-medium px-2 py-0.5 rounded-full bg-background/55 backdrop-blur-sm"
+          style={{ top: phoneViewportW ? `calc(50% - ${phoneViewportW * 0.42}px)` : '30%' }}
         >
           {t('tt.moderate')}
         </span>
-        {/* Extrem — outside the white ring, below */}
+        {/* Respektvoll — exact center (dark core) */}
         <span
-          className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10px] tracking-[0.2em] uppercase text-foreground/30 font-medium"
-          style={{ top: phoneViewportW ? `calc(50% + ${phoneViewportW * 0.62}px)` : '112%' }}
+          className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10px] tracking-[0.2em] uppercase text-foreground/85 font-medium px-2 py-0.5 rounded-full bg-background/55 backdrop-blur-sm"
+          style={{ top: '50%' }}
         >
-          {t('tt.extreme')}
+          {t('tt.respectful')}
         </span>
       </div>
 
