@@ -194,6 +194,21 @@ export const SignalNode = memo(function SignalNode({
           <circle cx="20" cy="20" r="18" fill="none" stroke="#00e5ff" strokeWidth={2} filter="url(#signal-select-glow)" />
         )}
         <Shape />
+        {ttMode && token.isCurrentUser && (
+          <text
+            x="20"
+            y="20.5"
+            textAnchor="middle"
+            dominantBaseline="central"
+            fill="#FFFFFF"
+            fontSize="9"
+            fontWeight="bold"
+            fontFamily="monospace"
+            style={{ pointerEvents: 'none' }}
+          >
+            YOU
+          </text>
+        )}
       </svg>
 
       {/* "YOU" badge — hidden in TT mode where red color suffices */}

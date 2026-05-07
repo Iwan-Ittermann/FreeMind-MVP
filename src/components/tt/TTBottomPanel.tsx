@@ -113,7 +113,6 @@ export function TTBottomPanel({
       toast.error(t('tt.opinionTooShort'));
       return;
     }
-    const permissionPromise = requestBrowserNotificationPermission();
     setSubmitting(true);
     try {
       // Silent signup if needed — keeps `auth.users` empty for pure browsers
@@ -125,17 +124,36 @@ export function TTBottomPanel({
         _ip_address: ip,
       });
       if (error) throw error;
-      const permission = await permissionPromise;
-      if (permission === 'granted') {
+
+      // Increment opinion-submission counter and prompt for browser
+      // notification permission only on the 1st, 4th, and 10th opinion.
+      const prevCount = parseInt(localStorage.getItem('tt:opinion-submit-count') || '0', 10) || 0;
+      const newCount = prevCount + 1;
+      localStorage.setItem('tt:opinion-submit-count', String(newCount));
+      const shouldPrompt =
+        (newCount === 1 || newCount === 4 || newCount === 10) &&
+        typeof window !== 'undefined' &&
+        'Notification' in window &&
+        Notification.permission === 'default';
+      if (shouldPrompt) {
+        const permission = await requestBrowserNotificationPermission();
+        if (permission === 'granted') {
+          enableTopicNotifications(topicId);
+        } else if (permission === 'denied') {
+          toast.error(t('tt.notifSetup.denied'));
+        }
+      } else if (
+        typeof window !== 'undefined' &&
+        'Notification' in window &&
+        Notification.permission === 'granted'
+      ) {
         enableTopicNotifications(topicId);
       }
+
       setText('');
       setFocused(false);
       toast.success(t('tt.opinionPosted'));
       onOpinionCommitted?.();
-      if (permission === 'denied') {
-        toast.error(t('tt.notifSetup.denied'));
-      }
       onOpinionSubmitted?.();
     } catch (e: any) {
       toast.error(e.message ?? t('tt.opinionFailed'));
@@ -292,11 +310,6 @@ export function TTBottomPanel({
   return (
     <>
       {selectedOpinionPanel}
-      <div className="absolute bottom-0 inset-x-0 z-20 px-3 pb-3 pointer-events-none">
-        <div className="rounded-2xl bg-background/70 backdrop-blur-sm border border-border/30 shadow p-3 text-center">
-          <p className="text-xs text-muted-foreground">{t('tt.tapNodeHint')}</p>
-        </div>
-      </div>
       {selected && (
         <ReportDialog
           open={reportOpen}

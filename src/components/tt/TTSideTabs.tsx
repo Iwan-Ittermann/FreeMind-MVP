@@ -50,10 +50,10 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
 
     return (
       <>
-        {/* Left tab — opinions */}
+        {/* Left tab — opinions (slightly below center) */}
         <button
           onClick={() => setSide(side === 'left' ? null : 'left')}
-          className="absolute left-0 top-[22%] z-30 h-28 w-7 rounded-r-xl bg-background/85 backdrop-blur-md border border-l-0 border-border/40 shadow-md flex items-center justify-center hover:bg-background/95 transition-colors"
+          className="absolute left-0 top-[55%] -translate-y-1/2 z-30 h-28 w-7 rounded-r-xl bg-background/85 backdrop-blur-md border border-l-0 border-border/40 shadow-md flex items-center justify-center hover:bg-background/95 transition-colors"
           aria-label={t('tt.opinions')}
         >
           <span
@@ -64,14 +64,14 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
           </span>
         </button>
 
-        {/* Right tab — chats */}
+        {/* Right tab — chats (slightly above center) */}
         <button
           onClick={() => {
             if (!hasOwnOpinion) return;
             setSide(side === 'right' ? null : 'right');
           }}
           disabled={!hasOwnOpinion}
-          className="absolute right-0 bottom-[28%] z-30 h-28 w-7 rounded-l-xl bg-background/85 backdrop-blur-md border border-r-0 border-border/40 shadow-md flex items-center justify-center hover:bg-background/95 transition-colors disabled:cursor-not-allowed disabled:opacity-45"
+          className="absolute right-0 top-[45%] -translate-y-1/2 z-30 h-28 w-7 rounded-l-xl bg-background/85 backdrop-blur-md border border-r-0 border-border/40 shadow-md flex items-center justify-center hover:bg-background/95 transition-colors disabled:cursor-not-allowed disabled:opacity-45"
           aria-label={t('tt.chats')}
           title={!hasOwnOpinion ? t('chat.submitOpinionRequired') : t('tt.chats')}
         >
@@ -109,7 +109,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                   animate={{ opacity: 1, scaleX: 1, scaleY: 1 }}
                   exit={{ opacity: 0, scaleX: 0.05, scaleY: 0.4 }}
                   transition={SPRING}
-                  style={{ transformOrigin: '0% 50%', top: '22%', height: '60vh', maxHeight: 520 }}
+                  style={{ transformOrigin: '0% 50%', top: 'calc(55% - min(30vh, 260px))', height: '60vh', maxHeight: 520 }}
                   className="absolute left-7 z-30 w-[78vw] max-w-[360px] rounded-2xl bg-background/85 backdrop-blur-xl border border-border/40 shadow-2xl overflow-hidden flex flex-col"
                 >
                   <div className="flex items-center justify-between px-4 py-3 border-b border-border/30">
@@ -154,7 +154,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                   animate={{ opacity: 1, scaleX: 1, scaleY: 1 }}
                   exit={{ opacity: 0, scaleX: 0.05, scaleY: 0.4 }}
                   transition={SPRING}
-                  style={{ transformOrigin: '100% 50%', bottom: '28%', height: '60vh', maxHeight: 520 }}
+                  style={{ transformOrigin: '100% 50%', top: 'calc(45% - min(30vh, 260px))', height: '60vh', maxHeight: 520 }}
                   className="absolute right-7 z-30 w-[78vw] max-w-[360px] rounded-2xl bg-background/85 backdrop-blur-xl border border-border/40 shadow-2xl overflow-hidden flex flex-col"
                 >
                   {/* Header */}

@@ -21,10 +21,11 @@ export function useTTNotifications(activeTopicId: string) {
   const seenIds = useRef(new Set<string>());
 
   const addNotification = useCallback(
-    (n: TTNotification, topicId: string) => {
+    (n: Omit<TTNotification, 'topicId'>, topicId: string) => {
       if (seenIds.current.has(n.id)) return;
       seenIds.current.add(n.id);
-      setNotifications((prev) => [n, ...prev].slice(0, 50));
+      const withTopic: TTNotification = { ...n, topicId };
+      setNotifications((prev) => [withTopic, ...prev].slice(0, 50));
 
       // Fire browser notification if tab is not focused
       if (

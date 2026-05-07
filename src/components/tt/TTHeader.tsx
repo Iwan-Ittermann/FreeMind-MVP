@@ -12,6 +12,7 @@ import {
   getGlobalFilters,
   setGlobalFilters,
 } from '@/lib/tt-notification-prefs';
+import { useTTTopics } from '@/hooks/useTTTopics';
 
 export interface TTNotification {
   id: string;
@@ -19,6 +20,7 @@ export interface TTNotification {
   title: string;
   body?: string;
   unread?: boolean;
+  topicId?: string;
 }
 
 interface TTHeaderProps {
@@ -66,6 +68,19 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
   const phrase = user?.email ? emailToPassphrase(user.email) ?? '' : '';
   const hasUnread = notifications.some((n) => n.unread);
   const currentLanguage = LANGUAGES.find((lang) => i18n.language.startsWith(lang.code)) ?? LANGUAGES[0];
+
+  const { data: topicList = [] } = useTTTopics();
+  const topicTitleMap = new Map(topicList.map((t) => [t.id, t.title]));
+  const groupedNotifications = (() => {
+    const groups = new Map<string, { title: string; items: typeof notifications }>();
+    for (const n of notifications) {
+      const key = n.topicId ?? '__other__';
+      const title = n.topicId ? (topicTitleMap.get(n.topicId) ?? t('tt.otherTopic', 'Other')) : t('tt.otherTopic', 'Other');
+      if (!groups.has(key)) groups.set(key, { title, items: [] });
+      groups.get(key)!.items.push(n);
+    }
+    return Array.from(groups.values());
+  })();
 
   useEffect(() => {
     if (!accountOpen && !bellOpen && !languageOpen) return;
@@ -308,21 +323,30 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                   {t('tt.noNotifications')}
                 </p>
               ) : (
-                <ul className="divide-y divide-border/30">
-                  {notifications.map((n) => (
-                    <li
-                      key={n.id}
-                      className="px-4 py-2.5 hover:bg-muted/40 cursor-pointer"
-                    >
-                      <p className={`text-sm ${n.unread ? 'font-semibold' : 'text-foreground/80'}`}>
-                        {n.title}
-                      </p>
-                      {n.body && (
-                        <p className="text-xs text-muted-foreground mt-0.5">{n.body}</p>
-                      )}
-                    </li>
+                <div>
+                  {groupedNotifications.map((group) => (
+                    <div key={group.title} className="border-b border-border/30 last:border-b-0">
+                      <div className="px-4 pt-2.5 pb-1 text-[10px] uppercase tracking-wider text-muted-foreground/80 font-semibold bg-muted/30">
+                        {group.title}
+                      </div>
+                      <ul className="divide-y divide-border/20">
+                        {group.items.map((n) => (
+                          <li
+                            key={n.id}
+                            className="px-4 py-2.5 hover:bg-muted/40 cursor-pointer"
+                          >
+                            <p className={`text-sm ${n.unread ? 'font-semibold' : 'text-foreground/80'}`}>
+                              {n.title}
+                            </p>
+                            {n.body && (
+                              <p className="text-xs text-muted-foreground mt-0.5">{n.body}</p>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   ))}
-                </ul>
+                </div>
               )}
             </div>
           </motion.div>
