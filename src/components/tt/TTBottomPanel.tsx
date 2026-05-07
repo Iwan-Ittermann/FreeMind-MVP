@@ -229,84 +229,8 @@ export function TTBottomPanel({
     );
   })() : null;
 
-  // STATE 2: No opinion yet (or browsing) → expanding input with floating button
-  if (!ownOpinionKnown || !hasOwnOpinion || forceShowAddOpinionForm) {
-    return (
-      <>
-      {selectedOpinionPanel}
-      <div ref={wrapperRef} data-tt-add-opinion-form className={`absolute bottom-0 inset-x-0 px-3 pb-3 ${highlightAddOpinionForm ? 'z-[60]' : 'z-20'}`}>
-        <div className="relative">
-          {/* Floating Posten button — appears when focused */}
-          <AnimatePresence>
-            {focused && (
-              <motion.div
-                initial={{ opacity: 0, y: 8, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 8, scale: 0.9 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 28 }}
-                className="absolute right-2 -top-2 -translate-y-full z-10"
-              >
-                <Button
-                  size="sm"
-                  className="rounded-full uppercase tracking-wider text-xs h-9 shadow-lg bg-primary text-primary-foreground hover:bg-primary/90"
-                  onClick={handleSubmit}
-                  disabled={submitting || text.trim().length < 10}
-                >
-                  <Send className="w-3.5 h-3.5 mr-1.5" />
-                  {t('tt.post')}
-                </Button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <motion.div
-            animate={{ height: focused ? 152 : 56 }}
-            transition={{ type: 'spring', stiffness: 320, damping: 30 }}
-            className={`rounded-2xl bg-background/95 backdrop-blur-md border shadow-lg overflow-hidden transition-all duration-300 ${highlightAddOpinionForm ? 'border-primary ring-4 ring-primary/60 shadow-[0_0_36px_hsl(var(--primary)/0.65)] scale-[1.02] animate-pulse-fast' : 'border-border/40'}`}
-          >
-            <Textarea
-              ref={taRef}
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              onFocus={() => setFocused(true)}
-              placeholder={t('tt.opinionPlaceholder')}
-              className="h-full w-full resize-none border-0 bg-transparent focus-visible:ring-0 text-sm px-4 py-4 leading-relaxed"
-              maxLength={500}
-            />
-          </motion.div>
-        </div>
-      </div>
-      {selected && (
-        <ReportDialog
-          open={reportOpen}
-          onOpenChange={setReportOpen}
-          contentId={selected.id}
-          contentType="Opinion"
-          contentPreview={selected.text}
-        />
-      )}
-      </>
-    );
-  }
-
-  // STATE 3: Has own opinion, nothing selected → empty placeholder
-  if (suppressHintPanel) {
-    return (
-      <>
-        {selectedOpinionPanel}
-        {selected && (
-          <ReportDialog
-            open={reportOpen}
-            onOpenChange={setReportOpen}
-            contentId={selected.id}
-            contentType="Opinion"
-            contentPreview={selected.text}
-          />
-        )}
-      </>
-    );
-  }
-
+  // Add-opinion form has moved into the centered TTCenterCTA — this panel only
+  // hosts the selected-opinion read/rate UI now.
   return (
     <>
       {selectedOpinionPanel}
