@@ -239,7 +239,7 @@ export default function TT() {
         <div
           ref={containerRef}
           className="absolute inset-0 overflow-y-scroll snap-y snap-mandatory"
-          style={{ scrollSnapType: 'y mandatory', scrollbarWidth: 'none', overscrollBehaviorY: 'contain', willChange: 'scroll-position' }}
+          style={{ scrollSnapType: 'y mandatory', scrollSnapStop: 'always', scrollbarWidth: 'none', overscrollBehaviorY: 'contain', willChange: 'scroll-position' }}
         >
           {renderedTopics.map((topic, i) => (
             <TTScreenInner
