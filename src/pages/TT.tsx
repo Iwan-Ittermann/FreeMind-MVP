@@ -6,6 +6,7 @@ import { TTHeader } from '@/components/tt/TTHeader';
 import { TTSideTabs, TTSideTabsHandle } from '@/components/tt/TTSideTabs';
 import { TTBottomPanel } from '@/components/tt/TTBottomPanel';
 import { TTNotificationsBell } from '@/components/tt/TTNotificationsBell';
+import { TTCenterCTA } from '@/components/tt/TTCenterCTA';
 import { TTOnboardingTour } from '@/components/tt/TTOnboardingTour';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
