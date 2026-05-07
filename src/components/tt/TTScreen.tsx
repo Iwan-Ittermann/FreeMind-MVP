@@ -101,7 +101,7 @@ function TTScreenInnerImpl({
       data-tt-real-topic={isLoopClone ? undefined : topicId}
       data-tt-clone={isLoopClone ? 'true' : undefined}
       className="relative w-full h-[100dvh] snap-start snap-always overflow-hidden"
-      style={{ contain: 'layout size', backgroundColor: '#eef2f4', transform: 'translateZ(0)' }}
+      style={{ contain: 'layout size', backgroundColor: '#eef2f4', transform: 'translateZ(0)', scrollSnapStop: 'always' }}
     >
       {/* Full-bleed background, sized so the blue ring spans the viewport width.
           Lives outside the graph wrapper so it isn't clipped. */}
