@@ -1,53 +1,53 @@
-## UI Improvements
+# Plan: Center CTA + Zone/Snap/Node polish
 
-### 1. Bell never asks for browser permission
-- `TTNotificationsBell` (left bell): remove `requestBrowserNotificationPermission()` call. Toggle just flips `setPrefs(topicId, { enabled })` so the topic's notifications appear in the panel. If permission happens to be granted, browser notifications fire too — but we never prompt here.
-- Audit other entry points (`useBrowserNotification`, `TTNotificationSetup`) — none are currently mounted in `/`, but to be safe we keep them but ensure they're not invoked from the bell flow.
+## 1. Subtler zone labels & repositioning (`src/components/tt/TTScreen.tsx`)
 
-### 2. Permission only on 1st / 4th / 10th opinion
-- In `TTBottomPanel.handleSubmit`, replace the unconditional `requestBrowserNotificationPermission()` with a counter-based gate.
-- Store `tt:opinion-submit-count` in localStorage. After a successful `submit_opinion`, increment. If new count is 1, 4, or 10 AND `Notification.permission === 'default'`, then call `requestBrowserNotificationPermission()`. Otherwise no prompt.
-- On grant, call `enableTopicNotifications(topicId)` for the just-posted topic (as today).
+Make all three labels low-key and place them at zone *boundaries* (not the dead center), keeping the circular metaphor.
 
-### 3. Notification panel: per-topic sections
-- Add `topicId` field to `TTNotification` type.
-- `useTTNotifications`: include `topicId` on every emitted notification (already known in each handler).
-- For "new topic" events keep `topicId` as the new topic so it groups under itself.
-- `TTHeader` bell dropdown: group `notifications` by `topicId`. Resolve a title via `useTTTopics()` (lookup map). Render a small section header (topic title) above each group; "Other" fallback if title missing.
-- Empty state unchanged.
+- Drop the background chip (`bg-background/55 backdrop-blur-sm`) and reduce contrast: `text-foreground/45`, `font-normal`, keep `text-[10px] tracking-[0.25em] uppercase`.
+- Reposition (all `left-1/2 -translate-x-1/2`):
+  - **Extrem** → just outside the white ring (top): `top: 50% - phoneViewportW * 0.62`.
+  - **Moderat** → between white and blue ring: `top: 50% - phoneViewportW * 0.42`.
+  - **Respektvoll** → at the inner edge of the blue ring (just above the dark core), no longer dead center: `top: 50% - phoneViewportW * 0.235` (≈ coreR boundary).
 
-### 4. Zone labels — always readable, circular alignment
-- In `TTScreen.tsx`, restyle the three absolute labels:
-  - Add a subtle backdrop chip (`bg-background/55 backdrop-blur-sm rounded-full px-2 py-0.5`) so they're legible on any background hue.
-  - Slightly stronger text color (`text-foreground/80`).
-- Reorder vertically (top → bottom): **Extrem** (above white ring) → **Moderat** (between blue and white rings) → **Respektvoll** (center).
-  - Extrem: `top: calc(50% - viewportW * 0.62)` (above the outer white ring)
-  - Moderat: `top: calc(50% - viewportW * 0.40)` (between blue and white rings)
-  - Respektvoll: `top: 50%` (dark core center)
-- All centered with `left-1/2 -translate-x-1/2 -translate-y-1/2` so they sit on the same vertical axis through the rings — supporting the circular composition.
+## 2. Central pill CTA with 3 states (new component + wiring)
 
-### 5. Remove "Tippe auf einen Punkt …" hint
-- In `TTBottomPanel`, the final `return` block (the State 3 hint card) renders the `tt.tapNodeHint` panel. Replace with `return <>{selectedOpinionPanel}{report dialog}</>` — same as the `suppressHintPanel` branch. Keeps panel UI clean.
+The current bottom add-opinion form moves into a centered "ring CTA". Three states with framer-motion transitions:
 
-### 6. Sidebars vertically centered, slightly offset
-- `TTSideTabs`:
-  - Left "Opinions" tab: change `top-[22%]` → `top-[55%] -translate-y-1/2` (slightly below center).
-  - Right "Chats" tab: change `bottom-[28%]` → `top-[45%] -translate-y-1/2` (slightly above center).
-- Mirror the panel anchoring so the expanded panels also align around the center:
-  - Left panel `style={{ top: '55%', transform: 'translateY(-50%)', height: '60vh', maxHeight: 520 }}` (and remove `bottom`).
-  - Right panel `style={{ top: '45%', transform: 'translateY(-50%)', height: '60vh', maxHeight: 520 }}`.
-- Keep `transformOrigin` for the open animation.
+- **collapsed** — circle (`+` icon only, ~52px).
+- **half-expanded** (default) — pill, single line, placeholder = "Was ist deine Meinung?" (translated). Click anywhere outside → collapses.
+- **fully-expanded** — multi-line textarea (~150px tall), placeholder = the topic title, with a minimize chevron button (top-right) and POSTEN send button (bottom-right). Click outside (and text empty) → returns to half-expanded; clicking the minimize icon → collapsed.
 
-### 7. White "YOU" inside red user node
-- In `src/themes/signal/SignalNode.tsx`, when `ttMode && token.isCurrentUser`, render a centered "YOU" text inside the node shape:
-  - Add `<text x="0" y="0" textAnchor="middle" dominantBaseline="central" fill="#FFFFFF" fontSize="9" fontWeight="bold" fontFamily="monospace">YOU</text>` after the `<Shape />` SVG, positioned at node center (translate(0,0) inside the outer `g`).
-  - Remove the now-redundant suppression of the corner "YOU" badge in TT mode (keep it suppressed — center label is enough).
+Implementation:
+- New component `src/components/tt/TTCenterCTA.tsx` containing the state machine + animations + supabase `submit_opinion` call (logic moved from `TTBottomPanel`'s add-opinion branch, including the 1st/4th/10th browser-notification gating).
+- Positioned absolutely in `TT.tsx` centered on the graph (`top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2`, z-index above zones, below tour overlay). Hidden when an opinion node is selected (the selected-opinion panel still uses bottom-of-screen position) and hidden when user already has an own opinion.
+- Global `mousedown`/`pointerdown` listener: any click outside the CTA → collapse (animated). Tapping the CTA in collapsed/half states → half/full respectively.
+- `TTBottomPanel` loses its add-opinion form; it keeps only the selected-opinion panel + report dialog. The `forceShowAddOpinionForm` and `highlightAddOpinionForm` tour props get re-routed to the new center CTA (passed through from `TT.tsx`).
 
-### Files to modify
-- `src/components/tt/TTNotificationsBell.tsx`
-- `src/components/tt/TTBottomPanel.tsx`
-- `src/components/tt/TTHeader.tsx` (grouped notifications + `TTNotification` type extension)
-- `src/hooks/useTTNotifications.ts` (carry `topicId`)
-- `src/components/tt/TTScreen.tsx` (zone label restyling)
-- `src/components/tt/TTSideTabs.tsx` (vertical centering)
-- `src/themes/signal/SignalNode.tsx` (white "YOU" in red node)
+States diagram:
+```text
+       tap                tap
+collapsed ──▶ half-exp ──▶ full-exp
+   ▲           │            │
+   └───────────┴── click-outside ──┘
+                              minimize-icon
+```
+
+## 3. Harden vertical snap (avoid half/half display) (`src/pages/TT.tsx`)
+
+- Add `scroll-snap-stop: always` to each section style (`snap-always` is set, but reaffirm via inline style for older WebKit).
+- Add a `resize` + `visibilitychange` listener that re-runs `jumpToRealTopic(activeTopicId)` (only when no scroll-in-progress) so window resizes / devtools toggles don't leave the viewport between two topics.
+- Add a small "snap-correction" effect: after the IntersectionObserver picks a new active topic, schedule one `requestAnimationFrame` `scrollIntoView({ block: 'start' })` to lock alignment.
+- Set `scrollSnapStop: 'always'` in the inline scroll-container style.
+
+## 4. Center the "YOU" text in the red node (`src/themes/signal/SignalNode.tsx`)
+
+The star path is symmetric around (20,20) but the current text uses `y="20.5"` with `dominantBaseline="central"`, which biases low. Switch to `y="20"` and add `style={{ dominantBaseline: 'central' }}`. Slightly raise font to 8 with `letterSpacing="-0.3"` so it visually sits in the star's body. Verify visually after.
+
+## Files touched
+- `src/components/tt/TTScreen.tsx` — subtler & repositioned zone labels.
+- `src/components/tt/TTCenterCTA.tsx` — **new** 3-state pill CTA.
+- `src/components/tt/TTBottomPanel.tsx` — remove add-opinion branch; keep selected panel only.
+- `src/pages/TT.tsx` — render `TTCenterCTA`, snap hardening, prop wiring.
+- `src/themes/signal/SignalNode.tsx` — center YOU label.
+- `src/i18n/locales/{en,de}.json` — strings: `tt.centerCTAPlaceholderShort`, `tt.minimize`.
