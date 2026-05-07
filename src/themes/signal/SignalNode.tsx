@@ -197,13 +197,15 @@ export const SignalNode = memo(function SignalNode({
         {ttMode && token.isCurrentUser && (
           <text
             x="20"
-            y="20.5"
+            y="20"
             textAnchor="middle"
-            dominantBaseline="central"
+            dominantBaseline="middle"
+            alignmentBaseline="middle"
             fill="#FFFFFF"
-            fontSize="9"
+            fontSize="7"
             fontWeight="bold"
-            fontFamily="monospace"
+            fontFamily="ui-sans-serif, system-ui, sans-serif"
+            letterSpacing="-0.2"
             style={{ pointerEvents: 'none' }}
           >
             YOU
