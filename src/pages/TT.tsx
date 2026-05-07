@@ -323,6 +323,17 @@ export default function TT() {
           )}
         </AnimatePresence>
         <TTNotificationsBell topicId={activeTopicId} />
+        {ownOpinionKnown && !hasOwnOpinion && !selectedNode && (
+          <TTCenterCTA
+            topicId={activeTopicId}
+            topicTitle={activeTopicTitle}
+            highlight={tourOpen && tourStep === TT_ONBOARDING_ADD_OPINION_STEP}
+            onOpinionCommitted={() => {
+              queryClient.invalidateQueries({ queryKey: ['tt-own-opinion', activeTopicId, user?.id] });
+              queryClient.invalidateQueries({ queryKey: ['topic', activeTopicId] });
+            }}
+          />
+        )}
         {showTourSpotlightOverlay && (
           <div className="pointer-events-none absolute inset-0 z-50 bg-tt-spotlight-overlay/70" />
         )}
