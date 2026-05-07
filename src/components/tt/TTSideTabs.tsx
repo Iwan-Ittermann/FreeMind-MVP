@@ -154,7 +154,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                   animate={{ opacity: 1, scaleX: 1, scaleY: 1 }}
                   exit={{ opacity: 0, scaleX: 0.05, scaleY: 0.4 }}
                   transition={SPRING}
-                  style={{ transformOrigin: '100% 50%', top: '45%', transform: 'translateY(-50%)', height: '60vh', maxHeight: 520 }}
+                  style={{ transformOrigin: '100% 50%', top: 'calc(45% - min(30vh, 260px))', height: '60vh', maxHeight: 520 }}
                   className="absolute right-7 z-30 w-[78vw] max-w-[360px] rounded-2xl bg-background/85 backdrop-blur-xl border border-border/40 shadow-2xl overflow-hidden flex flex-col"
                 >
                   {/* Header */}
