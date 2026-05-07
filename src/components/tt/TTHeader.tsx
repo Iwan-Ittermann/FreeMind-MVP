@@ -12,6 +12,7 @@ import {
   getGlobalFilters,
   setGlobalFilters,
 } from '@/lib/tt-notification-prefs';
+import { useTTTopics } from '@/hooks/useTTTopics';
 
 export interface TTNotification {
   id: string;
