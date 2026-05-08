@@ -156,17 +156,39 @@ export const SignalNode = memo(function SignalNode({
   const effectiveScale = ttMode && !token.isBot && token.zone === 'outer' ? scale * 0.6 : scale;
   const scaledHalf = HALF * effectiveScale;
 
-  return (
-      <g
-        transform={`translate(${token.x}, ${token.y})`}
-        style={{ cursor: 'pointer', opacity }}
-        data-user-node={token.isCurrentUser ? 'true' : undefined}
-      data-node-clickable
-      onClick={onClick}
-      onPointerDown={onPointerDown}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-    >
+  // Detect "freshly added" own opinion: TTCenterCTA writes the opinion id +
+  // timestamp to sessionStorage right after submit. We animate the user node
+  // from the graph center to its target position once, then clear the flag.
+  const animateFromCenter = useMemo(() => {
+    if (!ttMode || !token.isCurrentUser || !token.opinionId || !graphSize) return false;
+    try {
+      const raw = sessionStorage.getItem('tt:fresh-opinion');
+      if (!raw) return false;
+      const parsed = JSON.parse(raw) as { id: string; ts: number };
+      if (parsed.id !== token.opinionId) return false;
+      if (Date.now() - parsed.ts > 8000) {
+        sessionStorage.removeItem('tt:fresh-opinion');
+        return false;
+      }
+      return true;
+    } catch { return false; }
+  }, [ttMode, token.isCurrentUser, token.opinionId, graphSize]);
+
+  const consumedRef = useRef(false);
+  const center = graphSize ? graphSize / 2 : 0;
+
+  const groupProps = {
+    style: { cursor: 'pointer' as const, opacity },
+    'data-user-node': token.isCurrentUser ? 'true' : undefined,
+    'data-node-clickable': true,
+    onClick,
+    onPointerDown,
+    onMouseEnter,
+    onMouseLeave,
+  };
+
+  const Inner = (
+    <>
       {/* Speech bubble */}
       {showSpeechBubble && bubbleText && (
         <g transform={`translate(0, ${-scaledHalf - 14})`} opacity={token.zone === 'core' || token.zone === 'middle' ? 0.5 : 0.92}>
