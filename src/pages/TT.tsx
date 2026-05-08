@@ -401,8 +401,23 @@ export default function TT() {
             queryClient.invalidateQueries({ queryKey: ['tt-own-opinion', activeTopicId, user?.id] });
             queryClient.invalidateQueries({ queryKey: ['topic', activeTopicId] });
           }}
-          onCloseSelection={() => setSelectedNode(null)}
+          onCloseSelection={() => {
+            if (positioningTour.active) positioningTour.stop();
+            setSelectedNode(null);
+          }}
         />
+
+        <PositioningTourCongrats
+          open={positioningTour.congratsOpen}
+          onStart={positioningTour.start}
+        />
+        {positioningTour.active && selectedNode && (
+          <PositioningTourControls
+            onNext={positioningTour.next}
+            onStop={positioningTour.stop}
+            canContinue={positioningTour.canContinue}
+          />
+        )}
       </div>
     </div>
   );
