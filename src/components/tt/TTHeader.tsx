@@ -193,10 +193,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
 
         {/* Topic question */}
         <div className="mt-3 text-center pointer-events-auto">
-          <div className="text-[11px] uppercase tracking-widest text-foreground/60">
-            {t('tt.discussionQuestion')}
-          </div>
-          <h1 className="mt-1 text-xl font-serif italic leading-tight text-foreground px-6">
+          <h1 className="text-xl font-serif italic leading-tight text-foreground px-6">
             <TopicTitleWithLinks title={topicTitle} />
           </h1>
         </div>
