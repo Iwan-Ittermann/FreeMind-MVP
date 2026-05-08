@@ -282,6 +282,29 @@ export const SignalNode = memo(function SignalNode({
           style={{ transformOrigin: 'center' }}
         />
       )}
+    </>
+  );
+
+  if (animateFromCenter) {
+    if (!consumedRef.current) {
+      consumedRef.current = true;
+      try { sessionStorage.removeItem('tt:fresh-opinion'); } catch { /* ignore */ }
+    }
+    return (
+      <motion.g
+        {...groupProps}
+        initial={{ x: center, y: center, scale: 0.4, opacity: 0 }}
+        animate={{ x: token.x, y: token.y, scale: 1, opacity }}
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+      >
+        {Inner}
+      </motion.g>
+    );
+  }
+
+  return (
+    <g {...groupProps} transform={`translate(${token.x}, ${token.y})`}>
+      {Inner}
     </g>
   );
 });
