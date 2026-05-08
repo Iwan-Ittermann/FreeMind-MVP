@@ -103,14 +103,6 @@ export function ConfigPanel({ open, onOpenChange }: ConfigPanelProps) {
           <div className="border-t border-border" />
 
           <div className="space-y-3">
-            <Link
-              to="/about"
-              onClick={() => onOpenChange(false)}
-              className="flex items-center gap-2 w-full p-2 rounded-lg hover:bg-muted transition-colors"
-            >
-              <Info className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm">{t('about.title', 'About FreeMind')}</span>
-            </Link>
             <button
               onClick={handleRestartTutorial}
               className="flex items-center gap-2 w-full p-2 rounded-lg hover:bg-muted transition-colors text-left"
