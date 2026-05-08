@@ -1,5 +1,5 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { Settings, Download, Copy, Check, Info, LogIn, LogOut, GraduationCap } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Settings, Download, Copy, Check, LogIn, LogOut, GraduationCap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/hooks/useAuth';
