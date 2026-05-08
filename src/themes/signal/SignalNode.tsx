@@ -1,4 +1,5 @@
-import { memo } from 'react';
+import { memo, useMemo, useRef } from 'react';
+import { motion } from 'framer-motion';
 import { SemanticNodeToken, SemanticZone } from '../types';
 
 const NODE_SIZE = 40;
@@ -128,6 +129,8 @@ interface SignalNodeProps {
   scale?: number;
   /** TT mode: gold core stars, emerald middle circles, smaller black extreme nodes. */
   ttMode?: boolean;
+  /** SVG width — needed to compute graph center for fresh-node entrance animation. */
+  graphSize?: number;
   onClick: (event: React.MouseEvent<SVGGElement>) => void;
   onPointerDown?: (event: React.PointerEvent<SVGGElement>) => void;
   onMouseEnter: () => void;
@@ -136,6 +139,7 @@ interface SignalNodeProps {
 
 export const SignalNode = memo(function SignalNode({
   token, isHighlighted, isDimmed, highlightForTour = false, showSpeechBubble, scale = 1, ttMode = false,
+  graphSize,
   onClick, onPointerDown, onMouseEnter, onMouseLeave,
 }: SignalNodeProps) {
   const shapeSet = ttMode
