@@ -160,6 +160,29 @@ export default function TT() {
     unreadMap.forEach((v) => { sum += v; });
     return sum;
   }, [unreadMap]);
+
+  // Auto-subscribe bell + trigger positioning tour on first opinion
+  const prevHasOwnRef = useRef<boolean | null>(null);
+  useEffect(() => {
+    if (!ownOpinionKnown) return;
+    const prev = prevHasOwnRef.current;
+    prevHasOwnRef.current = hasOwnOpinion;
+    if (prev === false && hasOwnOpinion) {
+      if (!getPrefs(activeTopicId)?.enabled) {
+        setPrefs(activeTopicId, { enabled: true });
+        window.dispatchEvent(new CustomEvent('tt:subscription-changed', { detail: { topicId: activeTopicId, enabled: true } }));
+      }
+    }
+  }, [hasOwnOpinion, ownOpinionKnown, activeTopicId]);
+
+  const positioningTour = useTTPositioningTour({
+    topicId: activeTopicId,
+    opinions: activeData?.opinions ?? [],
+    ownOpinionId,
+    hasOwnOpinion,
+    ownOpinionKnown,
+    onSelectNode: setSelectedNode,
+  });
   const showTourSpotlightOverlay = tourOpen && (
     tourStep === TT_ONBOARDING_ADD_OPINION_STEP
     || tourStep === TT_ONBOARDING_RATING_STEP
