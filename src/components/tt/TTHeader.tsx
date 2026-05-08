@@ -331,6 +331,34 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
               )}
             </AnimatePresence>
 
+            {/* Subscribed topics */}
+            <div className="border-b border-border/30">
+              <div className="px-4 pt-2.5 pb-1 text-[10px] uppercase tracking-wider text-muted-foreground/80 font-semibold bg-muted/30">
+                {t('tt.subscribedTopics')}
+              </div>
+              {subscribedTopics.length === 0 ? (
+                <p className="px-4 py-2 text-xs text-muted-foreground">
+                  {t('tt.noSubscribedTopics')}
+                </p>
+              ) : (
+                <div className="px-3 py-2 flex flex-wrap gap-1.5">
+                  {subscribedTopics.map((tp) => (
+                    <button
+                      key={tp.id}
+                      onClick={() => {
+                        navigate(`/${tp.code}`);
+                        setBellOpen(false);
+                      }}
+                      className="text-[11px] rounded-full px-2.5 py-1 bg-primary/10 hover:bg-primary/20 text-foreground/85 max-w-[14rem] truncate transition-colors"
+                      title={tp.title}
+                    >
+                      {tp.title}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <div className="max-h-72 overflow-auto">
               {notifications.length === 0 ? (
                 <p className="text-xs text-muted-foreground text-center py-6 px-4">
