@@ -160,19 +160,19 @@ export const SignalNode = memo(function SignalNode({
   // timestamp to sessionStorage right after submit. We animate the user node
   // from the graph center to its target position once, then clear the flag.
   const animateFromCenter = useMemo(() => {
-    if (!ttMode || !token.isCurrentUser || !token.opinionId || !graphSize) return false;
+    if (!ttMode || !token.isCurrentUser || !token.id || !graphSize) return false;
     try {
       const raw = sessionStorage.getItem('tt:fresh-opinion');
       if (!raw) return false;
       const parsed = JSON.parse(raw) as { id: string; ts: number };
-      if (parsed.id !== token.opinionId) return false;
+      if (parsed.id !== token.id) return false;
       if (Date.now() - parsed.ts > 8000) {
         sessionStorage.removeItem('tt:fresh-opinion');
         return false;
       }
       return true;
     } catch { return false; }
-  }, [ttMode, token.isCurrentUser, token.opinionId, graphSize]);
+  }, [ttMode, token.isCurrentUser, token.id, graphSize]);
 
   const consumedRef = useRef(false);
   const center = graphSize ? graphSize / 2 : 0;
