@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Bell, DoorOpen, Copy, Download, Eye, EyeOff, X, SlidersHorizontal, MessageSquare, MessageCircle, Globe, Sparkles, CircleHelp, Flag } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
@@ -11,6 +12,7 @@ import {
   NotificationFilters,
   getGlobalFilters,
   setGlobalFilters,
+  getSubscribedTopicIds,
 } from '@/lib/tt-notification-prefs';
 import { useTTTopics } from '@/hooks/useTTTopics';
 
@@ -50,6 +52,7 @@ const LANGUAGES = [
 
 export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRestartTour }: TTHeaderProps) {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [accountOpen, setAccountOpen] = useState(false);
   const [bellOpen, setBellOpen] = useState(false);
@@ -70,7 +73,21 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
   const currentLanguage = LANGUAGES.find((lang) => i18n.language.startsWith(lang.code)) ?? LANGUAGES[0];
 
   const { data: topicList = [] } = useTTTopics();
-  const topicTitleMap = new Map(topicList.map((t) => [t.id, t.title]));
+  const topicTitleMap = new Map(topicList.map((tp) => [tp.id, tp.title]));
+  const topicCodeMap = new Map(topicList.map((tp) => [tp.id, tp.short_code ?? tp.id]));
+
+  // Subscribed topics — refresh on subscription change events
+  const [subscribedIds, setSubscribedIds] = useState<string[]>(() => getSubscribedTopicIds());
+  useEffect(() => {
+    const sync = () => setSubscribedIds(getSubscribedTopicIds());
+    sync();
+    window.addEventListener('tt:subscription-changed', sync);
+    return () => window.removeEventListener('tt:subscription-changed', sync);
+  }, []);
+  const subscribedTopics = subscribedIds
+    .map((id) => ({ id, title: topicTitleMap.get(id) ?? id, code: topicCodeMap.get(id) ?? id }))
+    .filter((tp) => tp.title);
+
   const groupedNotifications = (() => {
     const groups = new Map<string, { title: string; items: typeof notifications }>();
     for (const n of notifications) {
@@ -193,10 +210,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
 
         {/* Topic question */}
         <div className="mt-3 text-center pointer-events-auto">
-          <div className="text-[11px] uppercase tracking-widest text-foreground/60">
-            {t('tt.discussionQuestion')}
-          </div>
-          <h1 className="mt-1 text-xl font-serif italic leading-tight text-foreground px-6">
+          <h1 className="text-xl font-serif italic leading-tight text-foreground px-6">
             <TopicTitleWithLinks title={topicTitle} />
           </h1>
         </div>
@@ -316,6 +330,34 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {/* Subscribed topics */}
+            <div className="border-b border-border/30">
+              <div className="px-4 pt-2.5 pb-1 text-[10px] uppercase tracking-wider text-muted-foreground/80 font-semibold bg-muted/30">
+                {t('tt.subscribedTopics')}
+              </div>
+              {subscribedTopics.length === 0 ? (
+                <p className="px-4 py-2 text-xs text-muted-foreground">
+                  {t('tt.noSubscribedTopics')}
+                </p>
+              ) : (
+                <div className="px-3 py-2 flex flex-wrap gap-1.5">
+                  {subscribedTopics.map((tp) => (
+                    <button
+                      key={tp.id}
+                      onClick={() => {
+                        navigate(`/${tp.code}`);
+                        setBellOpen(false);
+                      }}
+                      className="text-[11px] rounded-full px-2.5 py-1 bg-primary/10 hover:bg-primary/20 text-foreground/85 max-w-[14rem] truncate transition-colors"
+                      title={tp.title}
+                    >
+                      {tp.title}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             <div className="max-h-72 overflow-auto">
               {notifications.length === 0 ? (

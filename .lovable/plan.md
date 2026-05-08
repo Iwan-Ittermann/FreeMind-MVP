@@ -1,53 +1,136 @@
-# Plan: Center CTA + Zone/Snap/Node polish
+## 1. Route cleanup
 
-## 1. Subtler zone labels & repositioning (`src/components/tt/TTScreen.tsx`)
+### Routes to remove
 
-Make all three labels low-key and place them at zone *boundaries* (not the dead center), keeping the circular metaphor.
+- `/about` → `About` page
+- `/home` → currently redirects to `/tt` (legacy)
+- `/eching` → `Splash` (marketing/ad landing)
+- `/old-lp` → `OldLanding`
+- `/chat` → already redirects to `/`
+- `/tt` → `Home` (discovery/topic-list page) and `/tt/:topicId` (legacy redirect)
 
-- Drop the background chip (`bg-background/55 backdrop-blur-sm`) and reduce contrast: `text-foreground/45`, `font-normal`, keep `text-[10px] tracking-[0.25em] uppercase`.
-- Reposition (all `left-1/2 -translate-x-1/2`):
-  - **Extrem** → just outside the white ring (top): `top: 50% - phoneViewportW * 0.62`.
-  - **Moderat** → between white and blue ring: `top: 50% - phoneViewportW * 0.42`.
-  - **Respektvoll** → at the inner edge of the blue ring (just above the dark core), no longer dead center: `top: 50% - phoneViewportW * 0.235` (≈ coreR boundary).
+### Resulting routes
 
-## 2. Central pill CTA with 3 states (new component + wiring)
-
-The current bottom add-opinion form moves into a centered "ring CTA". Three states with framer-motion transitions:
-
-- **collapsed** — circle (`+` icon only, ~52px).
-- **half-expanded** (default) — pill, single line, placeholder = "Was ist deine Meinung?" (translated). Click anywhere outside → collapses.
-- **fully-expanded** — multi-line textarea (~150px tall), placeholder = the topic title, with a minimize chevron button (top-right) and POSTEN send button (bottom-right). Click outside (and text empty) → returns to half-expanded; clicking the minimize icon → collapsed.
-
-Implementation:
-- New component `src/components/tt/TTCenterCTA.tsx` containing the state machine + animations + supabase `submit_opinion` call (logic moved from `TTBottomPanel`'s add-opinion branch, including the 1st/4th/10th browser-notification gating).
-- Positioned absolutely in `TT.tsx` centered on the graph (`top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2`, z-index above zones, below tour overlay). Hidden when an opinion node is selected (the selected-opinion panel still uses bottom-of-screen position) and hidden when user already has an own opinion.
-- Global `mousedown`/`pointerdown` listener: any click outside the CTA → collapse (animated). Tapping the CTA in collapsed/half states → half/full respectively.
-- `TTBottomPanel` loses its add-opinion form; it keeps only the selected-opinion panel + report dialog. The `forceShowAddOpinionForm` and `highlightAddOpinionForm` tour props get re-routed to the new center CTA (passed through from `TT.tsx`).
-
-States diagram:
-```text
-       tap                tap
-collapsed ──▶ half-exp ──▶ full-exp
-   ▲           │            │
-   └───────────┴── click-outside ──┘
-                              minimize-icon
+```
+/                         → TT (single-topic immersive UI, primary topic)
+/:topicId                 → TT (UUID or short code)
+/topic/:topicId           → Index (legacy graph view, kept)
+/auth                     → redirect to /
+/admin                    → Admin
+/legal                    → Legal
+/t/:slug                  → TopicJoin
+/test-diskussion          → TestDiskussion
+*                         → NotFound
 ```
 
-## 3. Harden vertical snap (avoid half/half display) (`src/pages/TT.tsx`)
+### Cleanup steps
 
-- Add `scroll-snap-stop: always` to each section style (`snap-always` is set, but reaffirm via inline style for older WebKit).
-- Add a `resize` + `visibilitychange` listener that re-runs `jumpToRealTopic(activeTopicId)` (only when no scroll-in-progress) so window resizes / devtools toggles don't leave the viewport between two topics.
-- Add a small "snap-correction" effect: after the IntersectionObserver picks a new active topic, schedule one `requestAnimationFrame` `scrollIntoView({ block: 'start' })` to lock alignment.
-- Set `scrollSnapStop: 'always'` in the inline scroll-container style.
+- `src/App.tsx`: drop the six route entries + their imports (`Splash`, `OldLanding`, `About`, `Home`, `LegacyTTTopicRedirect`).
+- `src/pages/Home.tsx`: update `Link to="/about"` (currently the only nav link) — remove the link entirely (About page is gone).
+- `src/pages/Legal.tsx`: change `to="/tt"` → `to="/"`.
+- `src/components/ConfigPanel.tsx`: remove the `to="/about"` link (or point to `/`).
+- Delete files (no remaining imports): `src/pages/Home.tsx`, `src/pages/About.tsx`, `src/pages/Splash.tsx`, `src/pages/OldLanding.tsx`, `src/pages/Chat.tsx` (already orphaned).
+- Update `.lovable/memory/routing/app-navigation-structure-v6.md`.
 
-## 4. Center the "YOU" text in the red node (`src/themes/signal/SignalNode.tsx`)
+### Features that get lost (not yet ported to `/`)
 
-The star path is symmetric around (20,20) but the current text uses `y="20.5"` with `dominantBaseline="central"`, which biases low. Switch to `y="20"` and add `style={{ dominantBaseline: 'central' }}`. Slightly raise font to 8 with `letterSpacing="-0.3"` so it visually sits in the star's body. Verify visually after.
+1. **Topic discovery / multi-topic browser** (`Home.tsx`): grid of all active topics with opinion + chat counts, "Latest opinions" feed, MiniGraph thumbnails, sort by activity. (TT only swipes through the same topic list one at a time — no overview.)
+2. **About page** (`About.tsx`): long-form "How it works", platform mission, feature explanations.
+3. **Splash / `/eching**`: marketing landing page used for paid ad traffic, Facebook Pixel CTA tracking. Removing it breaks ad campaigns referencing this URL — confirm no live ads depend on it.
+4. **OldLanding (`/old-lp`)**: previous DiscourseGraph landing — pure archive, no live use expected.
+5. `**/chat**`: already a redirect to `/`, no functional loss.
+6. `**/home` legacy redirect**: anyone with old bookmarks lands on 404 instead of being forwarded.
 
-## Files touched
-- `src/components/tt/TTScreen.tsx` — subtler & repositioned zone labels.
-- `src/components/tt/TTCenterCTA.tsx` — **new** 3-state pill CTA.
-- `src/components/tt/TTBottomPanel.tsx` — remove add-opinion branch; keep selected panel only.
-- `src/pages/TT.tsx` — render `TTCenterCTA`, snap hardening, prop wiring.
-- `src/themes/signal/SignalNode.tsx` — center YOU label.
-- `src/i18n/locales/{en,de}.json` — strings: `tt.centerCTAPlaceholderShort`, `tt.minimize`.
+If any of these matter, we can add a 301-style redirect to `/` instead of deleting (let me know).  
+-> Please preserve the minigraph thumbnails in a litlte file. All the rest can go. 
+
+---
+
+## 2. Re-implement "Rate some opinions" tour after first opinion (max 4)
+
+Port the existing `Index.tsx` positioning tour into the TT flow:
+
+- Trigger: when `hasOwnOpinion` flips from `false` → `true` for the active topic (i.e. user just submitted their first opinion).
+- Show the same `PositioningTourCongrats` modal first ("Congrats! Want to rate a few opinions?").
+- On accept, sequentially pick **up to 4** random opinions (excluding own + AI bot + already-seen). Set `TOUR_MAX_RATINGS = 4`.
+- Each pick opens the `TTBottomPanel` with the disagreement scale (existing `highlightDisagreementScale` path) and `PositioningTourControls` (Next / Stop) anchored above the bottom panel.
+- "Done" / "Stop" / pool exhausted → finish, persist `tt:positioning-tour-done:<topicId>` in localStorage so it doesn't re-trigger.
+
+Implementation:
+
+- New hook `src/hooks/useTTPositioningTour.ts` encapsulating tour state (active, seen set, pickRandom).
+- Mount tour state in `src/pages/TT.tsx`; reuse existing `PositioningTourCongrats` and `PositioningTourControls` components unchanged (already i18n'd).
+- Drives `selectedNode` the same way the onboarding tour already does.
+
+---
+
+## 3. Auto-subscribe bell on first opinion
+
+In `TT.tsx`, when `hasOwnOpinion` transitions to `true` for `activeTopicId`:
+
+- If `getPrefs(activeTopicId)?.enabled !== true`, call `setPrefs(activeTopicId, { enabled: true })` and dispatch `tt:subscription-changed`.
+- `TTNotificationsBell` already listens to that event and will reflect the active state.
+- No browser permission prompt here — the prompt rules (1st / 4th / 10th opinion) stay as already wired.
+
+---
+
+## 4. Show subscribed topics in notifications panel
+
+In `src/components/tt/TTHeader.tsx` notifications dropdown:
+
+- Compute `subscribedTopicIds = getSubscribedTopicIds()` and resolve titles via `useTTTopics()`.
+- Add a top section "Subscribed topics" (i18n key `tt.subscribedTopics`) above the notification list.
+- Render each as a small clickable pill (rounded, muted bg). Click → `navigate(\`/${topic.short_code ?? topic.id})` and close the dropdown.
+- Re-read on `tt:subscription-changed` event so it updates live.
+
+---
+
+## 5. Empty chats sidebar copy
+
+In `src/components/tt/TTSideTabs.tsx` (right panel empty state):
+
+- Replace `t('tt.chatsEmpty')` text with new key `tt.chatsEmptyHint`:
+  - EN: "Click on nodes to start a chat!"
+  - DE: "Tippe auf einen Punkt, um zu chatten!"
+- Add the keys to `src/i18n/locales/{en,de}.json`.
+
+---
+
+## 6. Animated own-node entrance — options
+
+Pick one (default recommendation: **B**):
+
+- **A. Pop-in scale**: scale from 0 → 1 with overshoot (spring stiffness 280, damping 14). Snappy, ~400 ms. Familiar TikTok-style "appear".
+- **B. Drop from center pill** *(recommended)*: node starts at the center CTA position with `opacity: 0, scale: 0.4`, animates to its target (x, y) and full size in ~700 ms with easeOut. Tells the visual story "your opinion just took its place in the graph". Pairs nicely with the CTA collapsing.
+- **C. Pulse + ripple**: instant placement, then 2 expanding ring pulses in `--primary` for 1.2 s. Calmer, no movement; good if movement feels distracting.
+- **D. Type-on bubble**: bubble fades in first, opinion text types out character-by-character (~25 ms/char). Most "personal" but slower and risks layout jitter.
+
+Implementation lives in `src/themes/signal/SignalNode.tsx` (and the equivalent City/Arcane node renderers if we want parity), gated by an `isFreshlyAdded` flag computed in `TTScreen` by comparing the user's opinion `created_at` against a "first seen" timestamp held in a ref.  
+  
+Yes, Option B please!
+
+---
+
+## 7. Misc UI cleanup
+
+- **Remove "Diskussionsfrage" eyebrow** above the topic title in `TTHeader.tsx` (lines 196–198): delete the small uppercase `tt.discussionQuestion` `<div>` so only the topic title remains.
+- **Bottom white-space / footer**: the TT route does not import `Footer`, so there is no React footer to remove. The most likely culprit on the user's 1205×875 desktop view is empty space inside the 480 px phone frame below the bottom panel. We will:
+  - Audit the phone-viewport container in `TT.tsx` for any leftover padding / safe-area inset that's unused on desktop.
+  - Ensure `TTBottomPanel`'s wrapper extends to the bottom edge with no gap (remove `pb-[env(safe-area-inset-bottom)]` overrun on non-mobile).
+  If the user actually means a footer on a different page (e.g. `Home`), point it out and we'll handle it there — but `Home` is being deleted anyway.
+
+---
+
+## Files to edit / create
+
+**Edit**: `src/App.tsx`, `src/pages/Legal.tsx`, `src/components/ConfigPanel.tsx`, `src/pages/TT.tsx`, `src/components/tt/TTHeader.tsx`, `src/components/tt/TTSideTabs.tsx`, `src/themes/signal/SignalNode.tsx`, `src/i18n/locales/en.json`, `src/i18n/locales/de.json`, `.lovable/memory/routing/app-navigation-structure-v6.md`
+
+**Create**: `src/hooks/useTTPositioningTour.ts`
+
+**Delete**: `src/pages/Home.tsx`, `src/pages/About.tsx`, `src/pages/Splash.tsx`, `src/pages/OldLanding.tsx`, `src/pages/Chat.tsx`
+
+---
+
+## Open question
+
+Which **own-node entrance animation** do you want — A (pop), **B (drop from center, default)**, C (pulse), or D (type-on)? I'll implement only the chosen one.

@@ -173,6 +173,7 @@ export function SignalRenderer({
             showSpeechBubble={shouldShowBubble(nt.id)}
             scale={nodeScale}
             ttMode={ttMode}
+            graphSize={width}
             onClick={(event) => handleNodeClick(nt.id, event)}
             onPointerDown={(event) => event.stopPropagation()}
             onMouseEnter={() => handleNodeHover(nt.id)}

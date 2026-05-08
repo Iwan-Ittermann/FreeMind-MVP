@@ -2,23 +2,16 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useParams } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useParams, Navigate } from "react-router-dom";
 import { TutorialProvider } from "@/contexts/TutorialContext";
 import { ChatTutorialProvider } from "@/contexts/ChatTutorialContext";
 import { useDynamicSiteTitle } from "@/hooks/useDynamicSiteTitle";
 import { useGlobalPresence } from "@/hooks/useGlobalPresence";
 import { FreeMindThemeProvider } from "@/themes/ThemeContext";
-import Splash from "./pages/Splash";
-import Home from "./pages/Home";
 import Index from "./pages/Index";
-import Auth from "./pages/Auth";
-import { Navigate } from "react-router-dom";
 import Admin from "./pages/Admin";
 import TopicJoin from "./pages/TopicJoin";
-import About from "./pages/About";
 import Legal from "./pages/Legal";
-import Landing from "./pages/Landing";
-import OldLanding from "./pages/OldLanding";
 import NotFound from "./pages/NotFound";
 import TestDiskussion from "./pages/TestDiskussion";
 import TT from "./pages/TT";
@@ -44,30 +37,18 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/eching" element={<Splash />} />
-      <Route path="/old-lp" element={<OldLanding />} />
       <Route path="/" element={<TT />} />
       <Route path="/topic/:topicId" element={<Index />} />
-      <Route path="/about" element={<About />} />
-      <Route path="/home" element={<Navigate to="/tt" replace />} />
       <Route path="/auth" element={<Navigate to="/" replace />} />
-      <Route path="/chat" element={<Navigate to="/" replace />} />
       <Route path="/admin" element={<Admin />} />
       <Route path="/legal" element={<Legal />} />
       <Route path="/t/:slug" element={<TopicJoin />} />
       <Route path="/test-diskussion" element={<TestDiskussion />} />
-      <Route path="/tt" element={<Home />} />
-      <Route path="/tt/:topicId" element={<LegacyTTTopicRedirect />} />
       <Route path="/:topicId" element={<RootTopicRoute />} />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
-}
-
-function LegacyTTTopicRedirect() {
-  const { topicId } = useParams<{ topicId: string }>();
-  return <Navigate to={`/${topicId ?? ''}`} replace />;
 }
 
 function RootTopicRoute() {

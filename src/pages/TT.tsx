@@ -8,6 +8,8 @@ import { TTBottomPanel } from '@/components/tt/TTBottomPanel';
 import { TTNotificationsBell } from '@/components/tt/TTNotificationsBell';
 import { TTCenterCTA } from '@/components/tt/TTCenterCTA';
 import { TTOnboardingTour } from '@/components/tt/TTOnboardingTour';
+import { PositioningTourCongrats } from '@/components/PositioningTourCongrats';
+import { PositioningTourControls } from '@/components/PositioningTourControls';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTTTopics, useTTSwipeWindow } from '@/hooks/useTTTopics';
@@ -16,6 +18,8 @@ import { useTTChats } from '@/hooks/useTTChats';
 import { useAuth } from '@/hooks/useAuth';
 import { useTTNotifications } from '@/hooks/useTTNotifications';
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
+import { useTTPositioningTour } from '@/hooks/useTTPositioningTour';
+import { getPrefs, setPrefs } from '@/lib/tt-notification-prefs';
 import { GraphEdge, GraphNode } from '@/types/graph';
 import { supabase } from '@/integrations/supabase/client';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -156,6 +160,29 @@ export default function TT() {
     unreadMap.forEach((v) => { sum += v; });
     return sum;
   }, [unreadMap]);
+
+  // Auto-subscribe bell + trigger positioning tour on first opinion
+  const prevHasOwnRef = useRef<boolean | null>(null);
+  useEffect(() => {
+    if (!ownOpinionKnown) return;
+    const prev = prevHasOwnRef.current;
+    prevHasOwnRef.current = hasOwnOpinion;
+    if (prev === false && hasOwnOpinion) {
+      if (!getPrefs(activeTopicId)?.enabled) {
+        setPrefs(activeTopicId, { enabled: true });
+        window.dispatchEvent(new CustomEvent('tt:subscription-changed', { detail: { topicId: activeTopicId, enabled: true } }));
+      }
+    }
+  }, [hasOwnOpinion, ownOpinionKnown, activeTopicId]);
+
+  const positioningTour = useTTPositioningTour({
+    topicId: activeTopicId,
+    opinions: activeData?.opinions ?? [],
+    ownOpinionId,
+    hasOwnOpinion,
+    ownOpinionKnown,
+    onSelectNode: setSelectedNode,
+  });
   const showTourSpotlightOverlay = tourOpen && (
     tourStep === TT_ONBOARDING_ADD_OPINION_STEP
     || tourStep === TT_ONBOARDING_RATING_STEP
@@ -374,8 +401,23 @@ export default function TT() {
             queryClient.invalidateQueries({ queryKey: ['tt-own-opinion', activeTopicId, user?.id] });
             queryClient.invalidateQueries({ queryKey: ['topic', activeTopicId] });
           }}
-          onCloseSelection={() => setSelectedNode(null)}
+          onCloseSelection={() => {
+            if (positioningTour.active) positioningTour.stop();
+            setSelectedNode(null);
+          }}
         />
+
+        <PositioningTourCongrats
+          open={positioningTour.congratsOpen}
+          onStart={positioningTour.start}
+        />
+        {positioningTour.active && selectedNode && (
+          <PositioningTourControls
+            onNext={positioningTour.next}
+            onStop={positioningTour.stop}
+            canContinue={positioningTour.canContinue}
+          />
+        )}
       </div>
     </div>
   );

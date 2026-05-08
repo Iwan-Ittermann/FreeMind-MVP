@@ -71,12 +71,20 @@ export function TTCenterCTA({
     try {
       if (!user) await ensureSilentAuth();
       const ip = await getClientIP();
-      const { error } = await supabase.rpc('submit_opinion', {
+      const { data: opId, error } = await supabase.rpc('submit_opinion', {
         _topic_id: topicId,
         _text: text.trim(),
         _ip_address: ip,
       });
       if (error) throw error;
+
+      // Mark this opinion as freshly added so SignalNode animates its entrance
+      try {
+        const newId = typeof opId === 'string' ? opId : null;
+        if (newId) {
+          sessionStorage.setItem('tt:fresh-opinion', JSON.stringify({ id: newId, ts: Date.now() }));
+        }
+      } catch { /* ignore */ }
 
       const prevCount = parseInt(localStorage.getItem('tt:opinion-submit-count') || '0', 10) || 0;
       const newCount = prevCount + 1;

@@ -1,4 +1,5 @@
-import { memo } from 'react';
+import { memo, useMemo, useRef } from 'react';
+import { motion } from 'framer-motion';
 import { SemanticNodeToken, SemanticZone } from '../types';
 
 const NODE_SIZE = 40;
@@ -128,6 +129,8 @@ interface SignalNodeProps {
   scale?: number;
   /** TT mode: gold core stars, emerald middle circles, smaller black extreme nodes. */
   ttMode?: boolean;
+  /** SVG width — needed to compute graph center for fresh-node entrance animation. */
+  graphSize?: number;
   onClick: (event: React.MouseEvent<SVGGElement>) => void;
   onPointerDown?: (event: React.PointerEvent<SVGGElement>) => void;
   onMouseEnter: () => void;
@@ -136,6 +139,7 @@ interface SignalNodeProps {
 
 export const SignalNode = memo(function SignalNode({
   token, isHighlighted, isDimmed, highlightForTour = false, showSpeechBubble, scale = 1, ttMode = false,
+  graphSize,
   onClick, onPointerDown, onMouseEnter, onMouseLeave,
 }: SignalNodeProps) {
   const shapeSet = ttMode
@@ -152,17 +156,39 @@ export const SignalNode = memo(function SignalNode({
   const effectiveScale = ttMode && !token.isBot && token.zone === 'outer' ? scale * 0.6 : scale;
   const scaledHalf = HALF * effectiveScale;
 
-  return (
-      <g
-        transform={`translate(${token.x}, ${token.y})`}
-        style={{ cursor: 'pointer', opacity }}
-        data-user-node={token.isCurrentUser ? 'true' : undefined}
-      data-node-clickable
-      onClick={onClick}
-      onPointerDown={onPointerDown}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-    >
+  // Detect "freshly added" own opinion: TTCenterCTA writes the opinion id +
+  // timestamp to sessionStorage right after submit. We animate the user node
+  // from the graph center to its target position once, then clear the flag.
+  const animateFromCenter = useMemo(() => {
+    if (!ttMode || !token.isCurrentUser || !token.id || !graphSize) return false;
+    try {
+      const raw = sessionStorage.getItem('tt:fresh-opinion');
+      if (!raw) return false;
+      const parsed = JSON.parse(raw) as { id: string; ts: number };
+      if (parsed.id !== token.id) return false;
+      if (Date.now() - parsed.ts > 8000) {
+        sessionStorage.removeItem('tt:fresh-opinion');
+        return false;
+      }
+      return true;
+    } catch { return false; }
+  }, [ttMode, token.isCurrentUser, token.id, graphSize]);
+
+  const consumedRef = useRef(false);
+  const center = graphSize ? graphSize / 2 : 0;
+
+  const groupProps = {
+    style: { cursor: 'pointer' as const, opacity },
+    'data-user-node': token.isCurrentUser ? 'true' : undefined,
+    'data-node-clickable': true,
+    onClick,
+    onPointerDown,
+    onMouseEnter,
+    onMouseLeave,
+  };
+
+  const Inner = (
+    <>
       {/* Speech bubble */}
       {showSpeechBubble && bubbleText && (
         <g transform={`translate(0, ${-scaledHalf - 14})`} opacity={token.zone === 'core' || token.zone === 'middle' ? 0.5 : 0.92}>
@@ -256,6 +282,29 @@ export const SignalNode = memo(function SignalNode({
           style={{ transformOrigin: 'center' }}
         />
       )}
+    </>
+  );
+
+  if (animateFromCenter) {
+    if (!consumedRef.current) {
+      consumedRef.current = true;
+      try { sessionStorage.removeItem('tt:fresh-opinion'); } catch { /* ignore */ }
+    }
+    return (
+      <motion.g
+        {...groupProps}
+        initial={{ x: center, y: center, scale: 0.4, opacity: 0 }}
+        animate={{ x: token.x, y: token.y, scale: 1, opacity }}
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+      >
+        {Inner}
+      </motion.g>
+    );
+  }
+
+  return (
+    <g {...groupProps} transform={`translate(${token.x}, ${token.y})`}>
+      {Inner}
     </g>
   );
 });
