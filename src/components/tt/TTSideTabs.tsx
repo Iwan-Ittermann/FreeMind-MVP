@@ -17,6 +17,7 @@ interface TTSideTabsProps {
   hasOwnOpinion?: boolean;
   onOpinionTap?: (opinionId: string) => void;
   unreadCount?: number;
+  onActiveChatChange?: (theirOpinionId: string | null) => void;
 }
 
 const SPRING = { type: 'spring' as const, stiffness: 320, damping: 28 };
