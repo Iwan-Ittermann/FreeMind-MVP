@@ -398,6 +398,8 @@ export default function TT() {
             if (!hasOwnOpinion) return;
             // Directly open the chat in the side panel
             sideTabsRef.current?.openChat(targetOpinionId);
+            // Close the opinion panel so it doesn't overlap the chat panel.
+            setSelectedNode(null);
           }}
           onOpinionSubmitted={() => setSelectedNode(null)}
           onOpinionCommitted={() => {
