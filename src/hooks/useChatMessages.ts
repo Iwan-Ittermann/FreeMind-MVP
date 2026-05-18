@@ -153,6 +153,8 @@ export function useChatMessages(
   useEffect(() => {
     if (!chatId || readOnlyPair) return;
 
+    const queryKey = ['chat-messages', chatId, user?.id, undefined, undefined, undefined];
+
     // Use unique channel name with timestamp to avoid subscription conflicts
     const channelName = `chat-messages-${chatId}-${Date.now()}`;
     const channel = supabase
@@ -177,8 +179,8 @@ export function useChatMessages(
             audioUrl: newMsg.audio_url ?? null,
             transcript: newMsg.transcript ?? null,
           };
-          
-          queryClient.setQueryData(['chat-messages', chatId, user?.id], (old: ChatMessage[] = []) => {
+
+          queryClient.setQueryData<ChatMessage[]>(queryKey, (old = []) => {
             if (old.some(m => m.id === message.id)) return old;
             return [...old, message];
           });
@@ -194,7 +196,7 @@ export function useChatMessages(
         },
         (payload) => {
           const updated = payload.new as ChatMessagePayloadRow;
-          queryClient.setQueryData(['chat-messages', chatId, user?.id], (old: ChatMessage[] = []) => {
+          queryClient.setQueryData<ChatMessage[]>(queryKey, (old = []) => {
             return old.map(m => m.id === updated.id ? {
               ...m,
               content: updated.content,
@@ -232,6 +234,9 @@ export function useChatMessages(
       if (error) throw error;
     },
     onSuccess: async () => {
+      // Ensure the new message appears even if realtime is delayed
+      queryClient.invalidateQueries({ queryKey: ['chat-messages', chatId] });
+
       // Broadcast animation event for the graph using the shared channel
       if (broadcastInfo && chatId) {
         try {
