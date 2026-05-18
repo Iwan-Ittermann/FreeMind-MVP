@@ -39,6 +39,12 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
       },
     }), [hasOwnOpinion]);
 
+    // Notify parent which chat (= which node) is currently open, for glow effect.
+    useEffect(() => {
+      const id = side === 'right' ? activeChatOpinionId : null;
+      onActiveChatChange?.(id);
+    }, [side, activeChatOpinionId, onActiveChatChange]);
+
     const closeAndRun = (fn?: () => void) => {
       setSide(null);
       fn?.();
