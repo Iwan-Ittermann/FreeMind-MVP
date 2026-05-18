@@ -99,9 +99,11 @@ export default function TT() {
   }, []);
 
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
+  const [chatNodeId, setChatNodeId] = useState<string | null>(null);
   useEffect(() => {
     tourDemoSelectionRef.current = null;
     setSelectedNode(null);
+    setChatNodeId(null);
   }, [activeTopicId]);
 
   const { data: activeData, isLoading: activeDataLoading } = useTopicData(activeTopicId);
