@@ -234,6 +234,9 @@ export function useChatMessages(
       if (error) throw error;
     },
     onSuccess: async () => {
+      // Ensure the new message appears even if realtime is delayed
+      queryClient.invalidateQueries({ queryKey: ['chat-messages', chatId] });
+
       // Broadcast animation event for the graph using the shared channel
       if (broadcastInfo && chatId) {
         try {
