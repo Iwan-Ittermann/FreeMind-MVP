@@ -24,7 +24,7 @@ const SPRING = { type: 'spring' as const, stiffness: 320, damping: 28 };
 
 export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
   function TTSideTabs(
-    { opinions = [], chats = [], topicId, hasOwnOpinion = false, onOpinionTap, unreadCount = 0 },
+    { opinions = [], chats = [], topicId, hasOwnOpinion = false, onOpinionTap, unreadCount = 0, onActiveChatChange },
     ref,
   ) {
     const { t } = useTranslation();
