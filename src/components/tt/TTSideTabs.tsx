@@ -1,4 +1,4 @@
-import { useState, forwardRef, useImperativeHandle } from 'react';
+import { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ArrowLeft } from 'lucide-react';
@@ -17,13 +17,14 @@ interface TTSideTabsProps {
   hasOwnOpinion?: boolean;
   onOpinionTap?: (opinionId: string) => void;
   unreadCount?: number;
+  onActiveChatChange?: (theirOpinionId: string | null) => void;
 }
 
 const SPRING = { type: 'spring' as const, stiffness: 320, damping: 28 };
 
 export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
   function TTSideTabs(
-    { opinions = [], chats = [], topicId, hasOwnOpinion = false, onOpinionTap, unreadCount = 0 },
+    { opinions = [], chats = [], topicId, hasOwnOpinion = false, onOpinionTap, unreadCount = 0, onActiveChatChange },
     ref,
   ) {
     const { t } = useTranslation();
@@ -37,6 +38,12 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
         setActiveChatOpinionId(opinionId);
       },
     }), [hasOwnOpinion]);
+
+    // Notify parent which chat (= which node) is currently open, for glow effect.
+    useEffect(() => {
+      const id = side === 'right' ? activeChatOpinionId : null;
+      onActiveChatChange?.(id);
+    }, [side, activeChatOpinionId, onActiveChatChange]);
 
     const closeAndRun = (fn?: () => void) => {
       setSide(null);

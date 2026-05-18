@@ -99,9 +99,11 @@ export default function TT() {
   }, []);
 
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
+  const [chatNodeId, setChatNodeId] = useState<string | null>(null);
   useEffect(() => {
     tourDemoSelectionRef.current = null;
     setSelectedNode(null);
+    setChatNodeId(null);
   }, [activeTopicId]);
 
   const { data: activeData, isLoading: activeDataLoading } = useTopicData(activeTopicId);
@@ -290,7 +292,7 @@ export default function TT() {
               topicId={topic.id}
               hue={(i * 47) % 360}
               isLoopClone={topic.clone}
-              selectedNodeId={topic.id === activeTopicId && !topic.clone ? selectedNode?.id ?? null : null}
+              selectedNodeId={topic.id === activeTopicId && !topic.clone ? (selectedNode?.id ?? chatNodeId) : null}
               highlightAllNodes={topic.id === activeTopicId && !topic.clone && tourOpen && tourStep === TT_ONBOARDING_OPINIONS_STEP}
               onNodeSelect={(n) => {
                 if (!topic.clone) setSelectedNode(n);
@@ -324,6 +326,7 @@ export default function TT() {
           topicId={activeTopicId}
           hasOwnOpinion={hasOwnOpinion}
           unreadCount={totalUnread}
+          onActiveChatChange={setChatNodeId}
           onOpinionTap={(opinionId) => {
             const op = activeData?.opinions.find((o) => o.id === opinionId);
             if (op) {
@@ -395,6 +398,8 @@ export default function TT() {
             if (!hasOwnOpinion) return;
             // Directly open the chat in the side panel
             sideTabsRef.current?.openChat(targetOpinionId);
+            // Close the opinion panel so it doesn't overlap the chat panel.
+            setSelectedNode(null);
           }}
           onOpinionSubmitted={() => setSelectedNode(null)}
           onOpinionCommitted={() => {
