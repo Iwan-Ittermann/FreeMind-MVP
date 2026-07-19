@@ -34,10 +34,17 @@ serve(async (req) => {
       throw new Error("Message not found or no audio URL");
     }
 
-    // 2. Download the audio file
-    const audioResponse = await fetch(message.audio_url);
-    if (!audioResponse.ok) throw new Error("Failed to download audio");
-    const audioBuffer = await audioResponse.arrayBuffer();
+    // 2. Download the audio file via storage API (bucket is private)
+    const marker = "/voice-messages/";
+    const idx = message.audio_url.indexOf(marker);
+    const storagePath = idx >= 0
+      ? message.audio_url.substring(idx + marker.length)
+      : message.audio_url;
+    const { data: audioBlob, error: dlError } = await supabase.storage
+      .from("voice-messages")
+      .download(storagePath);
+    if (dlError || !audioBlob) throw new Error("Failed to download audio");
+    const audioBuffer = await audioBlob.arrayBuffer();
     const bytes = new Uint8Array(audioBuffer);
     let binary = "";
     const CHUNK_SIZE = 8192;
