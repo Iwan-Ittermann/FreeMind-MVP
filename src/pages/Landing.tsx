@@ -101,7 +101,7 @@ export default function Landing() {
   return (
     <main
       lang="de"
-      className="h-screen overflow-y-auto snap-y snap-proximity bg-background text-foreground font-sans relative"
+      className="landing-theme h-screen overflow-y-auto snap-y snap-proximity bg-background text-foreground font-sans relative"
     >
       <RainOverlay />
       <HeroFlash />
