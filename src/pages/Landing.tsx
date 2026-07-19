@@ -215,7 +215,7 @@ export default function Landing() {
           <p className="mt-6 text-xs text-muted-foreground whitespace-pre-line">
             Es gibt 500 € zu gewinnen. Alle Infos per E-Mail.{"\u00a0"}{"\n"}
             Auszahlung per Paypal oder Banküberweisung.{"\u00a0"}{"\n"}
-            Der Textweg ist ausgeschlossen.
+            Der Rechtsweg ist ausgeschlossen.
           </p>
           {status === "sent" && (
             <p className="mt-4 text-[13px] sm:text-sm font-bold normal-case sm:uppercase tracking-wide text-alert leading-snug">
