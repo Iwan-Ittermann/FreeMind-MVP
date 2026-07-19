@@ -84,7 +84,12 @@
     --blue-light: 242 92% 71%;
     --blue-lighter: 242 90% 91%;
     --tt-spotlight-overlay: 0 0% 0%;
+
+    /* Landing page tokens (ported from Open Discourse) */
+    --alert: 14 100% 56%;
+    --accent-warm: 42 85% 66%;
   }
+
 
   .dark {
     /* Dark mode: Sky blue background for testing */

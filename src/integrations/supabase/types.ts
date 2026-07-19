@@ -604,6 +604,33 @@ export type Database = {
         }
         Relationships: []
       }
+      signups: {
+        Row: {
+          confirm_token: string | null
+          confirm_token_expires_at: string | null
+          confirmed_at: string | null
+          created_at: string
+          email: string
+          id: string
+        }
+        Insert: {
+          confirm_token?: string | null
+          confirm_token_expires_at?: string | null
+          confirmed_at?: string | null
+          created_at?: string
+          email: string
+          id?: string
+        }
+        Update: {
+          confirm_token?: string | null
+          confirm_token_expires_at?: string | null
+          confirmed_at?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+        }
+        Relationships: []
+      }
       test_diskussion_replies: {
         Row: {
           created_at: string
