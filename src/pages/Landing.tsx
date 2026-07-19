@@ -47,9 +47,9 @@ export default function Landing() {
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "already">("idle");
 
   useEffect(() => {
-    document.title = "freemind — Die fairste politische Diskussion im Internet";
+    document.title = "Eine Frage - Eine Woche - 500€";
     const meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute("content", "20 Menschen. Eine Frage. Ein Tag. Ein Beweis, dass öffentliche Debatten anders funktionieren können.");
+    if (meta) meta.setAttribute("content", "Können wir eigentlich noch miteinander reden? Hilf mit, es herauszufinden.");
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
