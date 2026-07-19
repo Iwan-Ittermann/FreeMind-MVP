@@ -1,45 +1,30 @@
-## 1. German email templates
+## What I found
 
-Rewrite the copy (subject, preview, headings, body, button label, footer disclaimer) to German — no logic or styling changes — in:
+Nothing is broken on our side. The signup flow ran successfully for your test with `iwan_ittermann@hotmail.com`:
 
-**Auth emails** (`supabase/functions/_shared/email-templates/`)
-- `signup.tsx` — "Bestätige deine E-Mail-Adresse"
-- `magic-link.tsx` — "Dein Anmeldelink"
-- `recovery.tsx` — "Passwort zurücksetzen"
-- `invite.tsx` — "Du wurdest eingeladen"
-- `email-change.tsx` — "Bestätige deine neue E-Mail-Adresse"
-- `reauthentication.tsx` — "Dein Bestätigungscode"
+- `signup-request` returned `sent` (verified with a live test call).
+- `email_send_log` shows the confirmation email was accepted by the provider and marked **sent** to `iwan_ittermann@hotmail.com` at 16:06 UTC.
+- No suppression / bounce / complaint recorded for that address.
+- Sender domain `notify.freemind.chat` is verified.
 
-Also update the `EMAIL_SUBJECTS` map and log strings in `supabase/functions/auth-email-hook/index.ts` to German subjects.
+So the email left our system. The "nothing happened" is almost certainly delivery-side (Hotmail/Outlook is aggressive with brand-new sender domains and often silently drops or spam-foldes them, especially on the first sends).
 
-**App emails** (`supabase/functions/_shared/transactional-email-templates/`)
-- `signup-confirm.tsx` — Anmeldung bestätigen (user-facing double opt-in)
-- `signup-admin-notify.tsx` — Admin-Benachrichtigung (kept in German too for consistency)
+There is also one warning I want to address: the email domain reports "Send path not ready — Timed out waiting for email delivery path verification". Sending works despite it, but re-running setup clears the warning and improves deliverability signalling.
 
-Deploy `auth-email-hook`, `send-transactional-email`, `preview-transactional-email` after edits.
+## Plan
 
-Note: the auto-appended unsubscribe/footer text from Lovable's infrastructure isn't controlled by us — it will remain in its default language.
+1. **Verify inbox reality** — ask you to check the Hotmail *Junk/Spam* and *Other* folders for a mail from `notify.freemind.chat`. If it's there, mark as "Not junk" so future ones land in Inbox.
+2. **Re-run email infrastructure setup** to clear the "send path not ready" warning (idempotent — no data touched, no code changes).
+3. **Send a fresh confirmation** to an alternate address you can check (e.g. Gmail) as a cross-provider deliverability sanity check. If Gmail arrives instantly and Hotmail doesn't, it's confirmed as Hotmail filtering — not an app bug.
+4. If Hotmail keeps filtering, options:
+   - Use a Gmail-style address for the launch test.
+   - Wait 24–48h for sender-reputation warm-up (fresh domains usually improve after the first handful of sends).
+   - Longer term: add a short plain-text preheader and reduce link count in the confirm mail to look less "transactional-marketing".
 
-## 2. New color palette on `/` (Landing page)
+No code changes are needed for step 1–3. Step 4 only if Hotmail keeps filtering after warm-up.
 
-The four tokens map to existing CSS variables in `src/index.css`:
+## Technical notes
 
-| Token | OKLCH | Approx HSL |
-| --- | --- | --- |
-| `--background` | 0.965 0.018 240 | `210 40% 96%` |
-| `--foreground` / `--border` / `--input` | 0.22 0.06 265 | `225 42% 18%` |
-| `--alert` (CTA hover / accent) | 0.71 0.19 22 | `9 84% 66%` |
-| `--accent-warm` | 0.87 0.14 85 | `38 82% 72%` |
-
-Because these variables are global, changing them in `:root` would recolor the whole app. To scope to `/` only:
-
-- Add a `.landing-theme` class scope in `src/index.css` that overrides `--background`, `--foreground`, `--border`, `--input`, `--alert`, `--accent-warm` (and derived `--ring`) with the new HSL values.
-- In `src/pages/Landing.tsx`, apply the `landing-theme` class to the page root wrapper so tokens cascade only there.
-- Audit `Landing.tsx` for any hard-coded color utilities (`text-white`, `bg-[#…]`, `text-black`) and replace with the semantic tokens so the new palette actually takes effect.
-
-No changes to the TT interface at `/eine-woche-eine-frage` or other routes.
-
-## Out of scope
-- French/Spanish/Chinese translations
-- Auto-appended Lovable footer text
-- Global color scheme changes outside `/`
+- No changes to `signup-request`, `signup-confirm`, `send-transactional-email`, or the templates.
+- Step 2 calls `email_domain--setup_email_infra` (idempotent).
+- Step 3 is just an invocation of `signup-request` with an alternate email; no schema or function edits.
