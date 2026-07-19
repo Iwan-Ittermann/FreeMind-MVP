@@ -18,6 +18,7 @@ import TestDiskussion from "./pages/TestDiskussion";
 import EineWocheEineFrage from "./pages/EineWocheEineFrage";
 import Landing from "./pages/Landing";
 import Confirm from "./pages/Confirm";
+import Unsubscribe from "./pages/Unsubscribe";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,7 @@ function AppRoutes() {
       <Route path="/" element={<Landing />} />
       <Route path="/eine-woche-eine-frage" element={<EineWocheEineFrage />} />
       <Route path="/confirm" element={<Confirm />} />
+      <Route path="/unsubscribe" element={<Unsubscribe />} />
       <Route path="/admin2" element={<Admin2 />} />
       <Route path="/admin" element={<Admin />} />
       <Route path="/topic/:topicId" element={<Index />} />

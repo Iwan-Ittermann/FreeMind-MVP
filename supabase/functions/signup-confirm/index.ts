@@ -6,30 +6,24 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY")!;
 const ADMIN_NOTIFY_EMAIL = Deno.env.get("ADMIN_NOTIFY_EMAIL") ?? "iwan@freemind.chat";
-const FROM = "freemind <noreply@freemind.chat>";
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-const supabase = createClient(
-  Deno.env.get("SUPABASE_URL")!,
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-);
+const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
 
 async function notifyAdmin(signupEmail: string, confirmedAt: string) {
-  const html = `
-    <div style="font-family:Arial,sans-serif;color:#0a0a0a;max-width:560px;margin:0 auto;padding:32px 24px">
-      <h1 style="font-size:24px;font-weight:900;text-transform:uppercase;margin:0 0 24px">Neue Anmeldung</h1>
-      <p style="font-size:15px;line-height:1.6;margin:0 0 12px"><strong>E-Mail:</strong> ${signupEmail}</p>
-      <p style="font-size:15px;line-height:1.6;margin:0 0 12px"><strong>Bestätigt am:</strong> ${confirmedAt}</p>
-    </div>`;
-  const res = await fetch("https://api.resend.com/emails", {
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/send-transactional-email`, {
     method: "POST",
-    headers: { Authorization: `Bearer ${RESEND_API_KEY}`, "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${SERVICE_ROLE}`,
+    },
     body: JSON.stringify({
-      from: FROM,
-      to: [ADMIN_NOTIFY_EMAIL],
-      subject: `Neue freemind-Anmeldung: ${signupEmail}`,
-      html,
+      templateName: "signup-admin-notify",
+      recipientEmail: ADMIN_NOTIFY_EMAIL,
+      idempotencyKey: `signup-admin-${signupEmail}-${confirmedAt}`,
+      templateData: { email: signupEmail, confirmedAt },
     }),
   });
   if (!res.ok) console.error("Admin notify failed:", res.status, await res.text());
