@@ -921,6 +921,25 @@ export type Database = {
           transcript: string
         }[]
       }
+      get_topic_chat_request_edges: {
+        Args: { _topic_id: string }
+        Returns: {
+          created_at: string
+          id: string
+          requester_opinion_id: string
+          status: string
+          target_opinion_id: string
+          topic_id: string
+        }[]
+      }
+      get_topic_disagreement_pairs: {
+        Args: { _topic_id: string }
+        Returns: {
+          disagreement: number
+          rater_opinion_id: string
+          target_opinion_id: string
+        }[]
+      }
       get_user_topics: {
         Args: never
         Returns: {
