@@ -18,7 +18,7 @@ const buildCorsHeaders = (origin: string | null) => ({
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: buildCorsHeaders(req.headers.get("origin")) });
   }
 
   try {
@@ -29,7 +29,7 @@ Deno.serve(async (req) => {
       console.log('Unauthorized reset-database attempt');
       return new Response(
         JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 401, headers: { ...buildCorsHeaders(req.headers.get("origin")), 'Content-Type': 'application/json' } }
       );
     }
 
@@ -81,14 +81,14 @@ Deno.serve(async (req) => {
 
     return new Response(
       JSON.stringify({ success: true, message: 'Database reset successfully' }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { headers: { ...buildCorsHeaders(req.headers.get("origin")), 'Content-Type': 'application/json' } }
     );
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error('Reset database error:', error);
     return new Response(
       JSON.stringify({ error: errorMessage }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 500, headers: { ...buildCorsHeaders(req.headers.get("origin")), 'Content-Type': 'application/json' } }
     );
   }
 });
