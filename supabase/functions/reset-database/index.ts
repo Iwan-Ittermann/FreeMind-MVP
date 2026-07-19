@@ -2,10 +2,19 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 // Get password from environment variable - never hardcode!
 const getAdminPassword = () => Deno.env.get('ADMIN_PASSWORD') || '';
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+const ALLOWED_ORIGINS = [
+  'https://freemind.chat',
+  'https://www.freemind.chat',
+  'https://freemind.city',
+  'https://freemind-prototype.lovable.app',
+  'https://id-preview--263b4482-adcc-41e3-a0e0-126a5b67d787.lovable.app',
+  'http://localhost:8080',
+];
+const buildCorsHeaders = (origin: string | null) => ({
+  'Access-Control-Allow-Origin': origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0],
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+  'Vary': 'Origin',
+});
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
