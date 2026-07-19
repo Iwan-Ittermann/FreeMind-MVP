@@ -2,14 +2,23 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 // Get password from environment variable - never hardcode!
 const getAdminPassword = () => Deno.env.get('ADMIN_PASSWORD') || '';
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+const ALLOWED_ORIGINS = [
+  'https://freemind.chat',
+  'https://www.freemind.chat',
+  'https://freemind.city',
+  'https://freemind-prototype.lovable.app',
+  'https://id-preview--263b4482-adcc-41e3-a0e0-126a5b67d787.lovable.app',
+  'http://localhost:8080',
+];
+const buildCorsHeaders = (origin: string | null) => ({
+  'Access-Control-Allow-Origin': origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0],
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+  'Vary': 'Origin',
+});
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: buildCorsHeaders(req.headers.get("origin")) });
   }
 
   try {
@@ -20,7 +29,7 @@ Deno.serve(async (req) => {
       console.log('Unauthorized reset-database attempt');
       return new Response(
         JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 401, headers: { ...buildCorsHeaders(req.headers.get("origin")), 'Content-Type': 'application/json' } }
       );
     }
 
@@ -72,14 +81,14 @@ Deno.serve(async (req) => {
 
     return new Response(
       JSON.stringify({ success: true, message: 'Database reset successfully' }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { headers: { ...buildCorsHeaders(req.headers.get("origin")), 'Content-Type': 'application/json' } }
     );
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error('Reset database error:', error);
     return new Response(
       JSON.stringify({ error: errorMessage }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 500, headers: { ...buildCorsHeaders(req.headers.get("origin")), 'Content-Type': 'application/json' } }
     );
   }
 });

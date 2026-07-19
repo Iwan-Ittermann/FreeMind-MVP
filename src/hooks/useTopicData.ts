@@ -293,9 +293,7 @@ export function useTopicData(topicId: string) {
       // Fetch ALL standalone disagreement ratings for this topic
       // These drive angular separation and are the single source of truth for disagreement
       const { data: opinionRatingsData, error: opinionRatingsError } = await supabase
-        .from('opinion_ratings')
-        .select('rater_opinion_id, target_opinion_id, disagreement')
-        .eq('topic_id', topicId);
+        .rpc('get_topic_disagreement_pairs', { _topic_id: topicId });
 
       if (opinionRatingsError) throw opinionRatingsError;
 

@@ -1,7 +1,8 @@
-import { forwardRef, useState, useRef, useCallback } from 'react';
+import { forwardRef, useState, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Quote, AlertTriangle, Eye, Reply, Mic, Loader2 } from 'lucide-react';
 import type { ChatReaction } from '@/hooks/useChatReactions';
+import { getVoiceSignedUrl } from '@/lib/voice-message-url';
 
 interface ChatBubbleProps {
   id: string;
@@ -40,8 +41,19 @@ export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(function C
   transcript,
 }: ChatBubbleProps, ref) {
   const [showActions, setShowActions] = useState(false);
+  const [signedAudioUrl, setSignedAudioUrl] = useState<string | null>(null);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!audioUrl) { setSignedAudioUrl(null); return; }
+    getVoiceSignedUrl(audioUrl).then((url) => {
+      if (!cancelled) setSignedAudioUrl(url);
+    });
+    return () => { cancelled = true; };
+  }, [audioUrl]);
+
 
   const showMenu = useCallback(() => {
     if (hideTimer.current) { clearTimeout(hideTimer.current); hideTimer.current = null; }
@@ -147,9 +159,8 @@ export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(function C
                   preload="metadata"
                   className="h-8 w-full max-w-[200px]"
                   style={{ filter: isOwn && !isOpinion ? 'invert(1) brightness(2)' : undefined }}
-                >
-                  <source src={audioUrl} type="audio/webm" />
-                </audio>
+                  src={signedAudioUrl ?? undefined}
+                />
               </div>
               {transcript ? (
                 <p className={`text-xs leading-relaxed italic ${isBotMessage && !isOwn ? 'text-black/70' : isOwn && !isOpinion ? 'text-white/80' : 'text-foreground/70'}`}>

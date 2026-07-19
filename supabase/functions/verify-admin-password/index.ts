@@ -1,16 +1,25 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+const ALLOWED_ORIGINS = [
+  'https://freemind.chat',
+  'https://www.freemind.chat',
+  'https://freemind.city',
+  'https://freemind-prototype.lovable.app',
+  'https://id-preview--263b4482-adcc-41e3-a0e0-126a5b67d787.lovable.app',
+  'http://localhost:8080',
+];
+const buildCorsHeaders = (origin: string | null) => ({
+  'Access-Control-Allow-Origin': origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0],
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+  'Vary': 'Origin',
+});
 
 // Get password from environment variable - never hardcode!
 const getAdminPassword = () => Deno.env.get('ADMIN_PASSWORD') || '';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: buildCorsHeaders(req.headers.get("origin")) });
   }
 
   try {
@@ -22,7 +31,7 @@ Deno.serve(async (req) => {
       console.log('Failed admin password verification attempt');
       return new Response(
         JSON.stringify({ success: false, error: 'Invalid password' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 401, headers: { ...buildCorsHeaders(req.headers.get("origin")), 'Content-Type': 'application/json' } }
       );
     }
 
@@ -31,7 +40,7 @@ Deno.serve(async (req) => {
     if (!authHeader) {
       return new Response(
         JSON.stringify({ success: false, error: 'Not authenticated' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 401, headers: { ...buildCorsHeaders(req.headers.get("origin")), 'Content-Type': 'application/json' } }
       );
     }
 
@@ -52,7 +61,7 @@ Deno.serve(async (req) => {
       console.log('Failed to get user:', userError?.message);
       return new Response(
         JSON.stringify({ success: false, error: 'Not authenticated' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 401, headers: { ...buildCorsHeaders(req.headers.get("origin")), 'Content-Type': 'application/json' } }
       );
     }
 
@@ -68,7 +77,7 @@ Deno.serve(async (req) => {
       console.log('User already has admin role:', user.id);
       return new Response(
         JSON.stringify({ success: true, message: 'Already admin' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { headers: { ...buildCorsHeaders(req.headers.get("origin")), 'Content-Type': 'application/json' } }
       );
     }
 
@@ -81,7 +90,7 @@ Deno.serve(async (req) => {
       console.error('Failed to grant admin role:', insertError.message);
       return new Response(
         JSON.stringify({ success: false, error: 'Failed to grant admin role' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 500, headers: { ...buildCorsHeaders(req.headers.get("origin")), 'Content-Type': 'application/json' } }
       );
     }
 
@@ -103,7 +112,7 @@ Deno.serve(async (req) => {
     console.log('Admin role granted to user:', user.id);
     return new Response(
       JSON.stringify({ success: true }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { headers: { ...buildCorsHeaders(req.headers.get("origin")), 'Content-Type': 'application/json' } }
     );
 
   } catch (error: unknown) {
@@ -111,7 +120,7 @@ Deno.serve(async (req) => {
     console.error('Verify admin password error:', error);
     return new Response(
       JSON.stringify({ success: false, error: errorMessage }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 500, headers: { ...buildCorsHeaders(req.headers.get("origin")), 'Content-Type': 'application/json' } }
     );
   }
 });
