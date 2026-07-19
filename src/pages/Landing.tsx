@@ -39,21 +39,7 @@ function HeroFlash() {
 }
 
 function RainOverlay() {
-  return (
-    <div
-      aria-hidden="true"
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 0,
-        pointerEvents: "none",
-        opacity: 0.05,
-        backgroundImage:
-          "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='6' height='24' viewBox='0 0 6 24'><line x1='5' y1='0' x2='0' y2='24' stroke='%230f1b3d' stroke-width='1'/></svg>\")",
-        backgroundRepeat: "repeat",
-      }}
-    />
-  );
+  return null;
 }
 
 export default function Landing() {
