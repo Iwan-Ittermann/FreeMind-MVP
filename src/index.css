@@ -199,3 +199,22 @@
     }
   }
 }
+
+/* Landing page (/) — scoped palette override.
+   OKLCH source values from design:
+     bg    oklch(0.965 0.018 240) → very light sky blue
+     fg    oklch(0.22  0.06  265) → deep navy
+     alert oklch(0.71  0.19  22 ) → bright coral-red
+     warm  oklch(0.87  0.14  85 ) → warm peach
+*/
+.landing-theme {
+  --background: 210 40% 96%;
+  --foreground: 225 42% 18%;
+  --border: 225 42% 18%;
+  --input: 225 42% 18%;
+  --ring: 225 42% 18%;
+  --muted-foreground: 225 20% 40%;
+  --alert: 9 84% 66%;
+  --accent-warm: 38 82% 72%;
+}
+
