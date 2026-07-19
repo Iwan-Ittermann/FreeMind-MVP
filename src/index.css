@@ -208,7 +208,7 @@
      warm  oklch(0.87  0.14  85 ) → warm peach
 */
 .landing-theme {
-  --background: 210 40% 96%;
+  --background: 205 75% 90%;
   --foreground: 225 42% 18%;
   --border: 225 42% 18%;
   --input: 225 42% 18%;
