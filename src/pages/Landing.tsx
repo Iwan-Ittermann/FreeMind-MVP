@@ -213,7 +213,7 @@ export default function Landing() {
             </button>
           </form>
           <p className="mt-6 text-xs text-muted-foreground whitespace-pre-line">
-            Als Gewinn gibt es 500 € zu gewinnen.{"\n"}
+            Es gibt 500 € zu gewinnen. Alle Infos per E-Mail.{"\u00a0"}{"\n"}
             Auszahlung per Paypal oder Banküberweisung.{"\u00a0"}{"\n"}
             Der Rechtsweg ist ausgeschlossen.
           </p>
