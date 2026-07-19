@@ -14,7 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["'Plus Jakarta Sans'", "sans-serif"],
+        sans: ["Archivo", "'Plus Jakarta Sans'", "sans-serif"],
+        display: ["'Saira Condensed'", "Archivo", "sans-serif"],
+        hand: ["Caveat", "cursive"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -46,6 +48,8 @@ export default {
           DEFAULT: "hsl(var(--success))",
           foreground: "hsl(var(--success-foreground))",
         },
+        alert: "hsl(var(--alert))",
+        "accent-warm": "hsl(var(--accent-warm))",
         "tt-spotlight-overlay": "hsl(var(--tt-spotlight-overlay))",
         popover: {
           DEFAULT: "hsl(var(--popover))",
