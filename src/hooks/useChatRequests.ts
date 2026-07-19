@@ -21,11 +21,9 @@ export function useChatRequests(topicId: string) {
     queryKey: ['chatRequests', topicId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('chat_requests')
-        .select('*')
-        .eq('topic_id', topicId);
+        .rpc('get_topic_chat_request_edges', { _topic_id: topicId });
       if (error) throw error;
-      return data as ChatRequest[];
+      return (data ?? []) as ChatRequest[];
     },
     enabled: !!topicId,
   });
