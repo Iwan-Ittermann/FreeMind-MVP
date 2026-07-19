@@ -6,14 +6,11 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY")!;
-const SITE_URL = Deno.env.get("SITE_URL") ?? "https://freemind-prototype.lovable.app";
-const FROM = "freemind <noreply@freemind.chat>";
+const SITE_URL = Deno.env.get("SITE_URL") ?? "https://freemind.chat";
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-const supabase = createClient(
-  Deno.env.get("SUPABASE_URL")!,
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-);
+const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
 
 function generateToken(): string {
   const bytes = new Uint8Array(32);
@@ -25,43 +22,21 @@ function isValidEmail(e: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e) && e.length <= 255;
 }
 
-async function sendConfirmEmail(to: string, confirmUrl: string) {
-  const html = `
-    <div style="font-family:Arial,sans-serif;color:#0a0a0a;max-width:560px;margin:0 auto;padding:32px 24px">
-      <p style="font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#ff5a1f;margin:0 0 16px">
-        Produktive ideologische Reibung
-      </p>
-      <h1 style="font-size:32px;font-weight:900;line-height:1;text-transform:uppercase;letter-spacing:-.02em;margin:0 0 24px">
-        Bestätige deine Anmeldung
-      </h1>
-      <p style="font-size:16px;line-height:1.5;margin:0 0 16px">
-        Klick auf den Button, um deine Anmeldung bei freemind abzuschließen. Erst danach bist du wirklich dabei.
-      </p>
-      <p style="margin:32px 0">
-        <a href="${confirmUrl}" style="background:#0a0a0a;color:#fff;padding:14px 28px;font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;display:inline-block">
-          Anmeldung bestätigen
-        </a>
-      </p>
-      <p style="font-size:13px;line-height:1.5;color:#525252">
-        Falls der Button nicht funktioniert, kopiere diesen Link in deinen Browser:<br>
-        <span style="word-break:break-all">${confirmUrl}</span>
-      </p>
-      <p style="font-size:13px;line-height:1.5;color:#525252">
-        Der Link ist 48 Stunden gültig. Falls du dich nicht angemeldet hast, ignoriere diese E-Mail einfach.
-      </p>
-    </div>`;
-
-  const res = await fetch("https://api.resend.com/emails", {
+async function sendConfirmEmail(to: string, confirmUrl: string, token: string) {
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/send-transactional-email`, {
     method: "POST",
-    headers: { Authorization: `Bearer ${RESEND_API_KEY}`, "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${SERVICE_ROLE}`,
+    },
     body: JSON.stringify({
-      from: FROM,
-      to: [to],
-      subject: "Bestätige deine Anmeldung bei freemind",
-      html,
+      templateName: "signup-confirm",
+      recipientEmail: to,
+      idempotencyKey: `signup-confirm-${token}`,
+      templateData: { confirmUrl },
     }),
   });
-  if (!res.ok) console.error("Resend send failed:", res.status, await res.text());
+  if (!res.ok) console.error("send-transactional-email failed:", res.status, await res.text());
 }
 
 Deno.serve(async (req) => {
@@ -105,7 +80,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    await sendConfirmEmail(cleaned, `${SITE_URL}/confirm?token=${token}`);
+    await sendConfirmEmail(cleaned, `${SITE_URL}/confirm?token=${token}`, token);
     return Response.json({ status: "sent" }, { headers: corsHeaders });
   } catch (err) {
     console.error("signup-request error:", err);
