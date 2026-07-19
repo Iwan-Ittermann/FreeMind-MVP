@@ -10,11 +10,14 @@ import { useGlobalPresence } from "@/hooks/useGlobalPresence";
 import { FreeMindThemeProvider } from "@/themes/ThemeContext";
 import Index from "./pages/Index";
 import Admin from "./pages/Admin";
+import Admin2 from "./pages/Admin2";
 import TopicJoin from "./pages/TopicJoin";
 import Legal from "./pages/Legal";
 import NotFound from "./pages/NotFound";
 import TestDiskussion from "./pages/TestDiskussion";
-import TT from "./pages/TT";
+import EineWocheEineFrage from "./pages/EineWocheEineFrage";
+import Landing from "./pages/Landing";
+import Confirm from "./pages/Confirm";
 
 const queryClient = new QueryClient();
 
@@ -37,10 +40,13 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/" element={<TT />} />
-      <Route path="/topic/:topicId" element={<Index />} />
-      <Route path="/auth" element={<Navigate to="/" replace />} />
+      <Route path="/" element={<Landing />} />
+      <Route path="/eine-woche-eine-frage" element={<EineWocheEineFrage />} />
+      <Route path="/confirm" element={<Confirm />} />
+      <Route path="/admin2" element={<Admin2 />} />
       <Route path="/admin" element={<Admin />} />
+      <Route path="/topic/:topicId" element={<Index />} />
+      <Route path="/auth" element={<Navigate to="/eine-woche-eine-frage" replace />} />
       <Route path="/legal" element={<Legal />} />
       <Route path="/t/:slug" element={<TopicJoin />} />
       <Route path="/test-diskussion" element={<TestDiskussion />} />
@@ -55,7 +61,7 @@ function RootTopicRoute() {
   const { topicId } = useParams<{ topicId: string }>();
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(topicId ?? '');
   const isShortCode = /^[a-z0-9]{4}$/i.test(topicId ?? '');
-  return isUuid || isShortCode ? <TT /> : <NotFound />;
+  return isUuid || isShortCode ? <EineWocheEineFrage /> : <NotFound />;
 }
 
 const App = () => (
