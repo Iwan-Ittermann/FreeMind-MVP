@@ -57,45 +57,36 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
 
     return (
       <>
-        {/* Left tab — opinions (slightly below center) */}
-        <button
-          onClick={() => setSide(side === 'left' ? null : 'left')}
-          data-tt-help="opinions-tab"
-          className="absolute left-0 top-[55%] -translate-y-1/2 z-30 h-28 w-7 rounded-r-xl bg-background/85 backdrop-blur-md border border-l-0 border-border/40 shadow-md flex items-center justify-center hover:bg-background/95 transition-colors"
-          aria-label={t('tt.opinions')}
-        >
-          <span
-            className="text-[10px] tracking-[0.2em] font-semibold text-foreground/80 uppercase"
-            style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+        {/* Bottom pill buttons — sit just above the footer */}
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 pointer-events-none">
+          <button
+            onClick={() => setSide(side === 'left' ? null : 'left')}
+            data-tt-help="opinions-tab"
+            className="pointer-events-auto h-9 px-4 rounded-full bg-background/85 backdrop-blur-md border border-border/40 shadow-md text-[11px] tracking-[0.18em] font-semibold text-foreground/80 uppercase hover:bg-background/95 transition-colors"
+            aria-label={t('tt.opinions')}
           >
             {t('tt.opinions')}
-          </span>
-        </button>
+          </button>
 
-        {/* Right tab — chats (slightly above center) */}
-        <button
-          onClick={() => {
-            if (!hasOwnOpinion) return;
-            setSide(side === 'right' ? null : 'right');
-          }}
-          disabled={!hasOwnOpinion}
-          data-tt-help="chats-tab"
-          className="absolute right-0 top-[45%] -translate-y-1/2 z-30 h-28 w-7 rounded-l-xl bg-background/85 backdrop-blur-md border border-r-0 border-border/40 shadow-md flex items-center justify-center hover:bg-background/95 transition-colors disabled:cursor-not-allowed disabled:opacity-45"
-          aria-label={t('tt.chats')}
-          title={!hasOwnOpinion ? t('chat.submitOpinionRequired') : t('tt.chats')}
-        >
-          <span
-            className="text-[10px] tracking-[0.2em] font-semibold text-foreground/80 uppercase"
-            style={{ writingMode: 'vertical-rl' }}
+          <button
+            onClick={() => {
+              if (!hasOwnOpinion) return;
+              setSide(side === 'right' ? null : 'right');
+            }}
+            disabled={!hasOwnOpinion}
+            data-tt-help="chats-tab"
+            className="pointer-events-auto relative h-9 px-4 rounded-full bg-background/85 backdrop-blur-md border border-border/40 shadow-md text-[11px] tracking-[0.18em] font-semibold text-foreground/80 uppercase hover:bg-background/95 transition-colors disabled:cursor-not-allowed disabled:opacity-45"
+            aria-label={t('tt.chats')}
+            title={!hasOwnOpinion ? t('chat.submitOpinionRequired') : t('tt.chats')}
           >
             {t('tt.chats')}
-          </span>
-          {unreadCount > 0 && (
-            <span className="absolute -top-1 -left-1 min-w-[16px] h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center px-1">
-              {unreadCount}
-            </span>
-          )}
-        </button>
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[16px] h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center px-1">
+                {unreadCount}
+              </span>
+            )}
+          </button>
+        </div>
 
         {/* Backdrop + animated panels */}
         <AnimatePresence>
