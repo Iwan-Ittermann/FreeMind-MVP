@@ -287,6 +287,7 @@ export function useChatMessages(
 
   const sendVoiceMessage = async (audioBlob: Blob) => {
     if (!chatId || !user?.id) throw new Error('Cannot send voice message');
+    if (!(await requireVerified())) throw new Error('verification_required');
 
     const fileName = `${user.id}/${chatId}/${crypto.randomUUID()}.webm`;
 
