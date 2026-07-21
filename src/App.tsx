@@ -34,6 +34,7 @@ function AppContent() {
       <BrowserRouter>
         <AppRoutes />
       </BrowserRouter>
+      <VerificationDialog />
     </>
   );
 }
