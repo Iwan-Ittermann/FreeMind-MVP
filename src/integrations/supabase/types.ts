@@ -235,24 +235,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "chat_requests_requester_opinion_id_fkey"
-            columns: ["requester_opinion_id"]
-            isOneToOne: false
-            referencedRelation: "opinions_public"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "chat_requests_target_opinion_id_fkey"
             columns: ["target_opinion_id"]
             isOneToOne: false
             referencedRelation: "opinions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "chat_requests_target_opinion_id_fkey"
-            columns: ["target_opinion_id"]
-            isOneToOne: false
-            referencedRelation: "opinions_public"
             referencedColumns: ["id"]
           },
           {
@@ -295,24 +281,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "chats_opinion_a_id_fkey"
-            columns: ["opinion_a_id"]
-            isOneToOne: false
-            referencedRelation: "opinions_public"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "chats_opinion_b_id_fkey"
             columns: ["opinion_b_id"]
             isOneToOne: false
             referencedRelation: "opinions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "chats_opinion_b_id_fkey"
-            columns: ["opinion_b_id"]
-            isOneToOne: false
-            referencedRelation: "opinions_public"
             referencedColumns: ["id"]
           },
           {
@@ -530,6 +502,32 @@ export type Database = {
         }
         Relationships: []
       }
+      opinion_ips: {
+        Row: {
+          created_at: string
+          ip_address: string | null
+          opinion_id: string
+        }
+        Insert: {
+          created_at?: string
+          ip_address?: string | null
+          opinion_id: string
+        }
+        Update: {
+          created_at?: string
+          ip_address?: string | null
+          opinion_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "opinion_ips_opinion_id_fkey"
+            columns: ["opinion_id"]
+            isOneToOne: true
+            referencedRelation: "opinions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       opinion_ratings: {
         Row: {
           created_at: string | null
@@ -567,24 +565,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "opinion_ratings_rater_opinion_id_fkey"
-            columns: ["rater_opinion_id"]
-            isOneToOne: false
-            referencedRelation: "opinions_public"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "opinion_ratings_target_opinion_id_fkey"
             columns: ["target_opinion_id"]
             isOneToOne: false
             referencedRelation: "opinions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "opinion_ratings_target_opinion_id_fkey"
-            columns: ["target_opinion_id"]
-            isOneToOne: false
-            referencedRelation: "opinions_public"
             referencedColumns: ["id"]
           },
           {
@@ -600,7 +584,6 @@ export type Database = {
         Row: {
           created_at: string
           id: string
-          ip_address: string | null
           notice_text: string | null
           status: string | null
           text: string
@@ -611,7 +594,6 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
-          ip_address?: string | null
           notice_text?: string | null
           status?: string | null
           text: string
@@ -622,7 +604,6 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
-          ip_address?: string | null
           notice_text?: string | null
           status?: string | null
           text?: string
@@ -950,47 +931,6 @@ export type Database = {
           visible: boolean | null
         }
         Relationships: []
-      }
-      opinions_public: {
-        Row: {
-          created_at: string | null
-          id: string | null
-          notice_text: string | null
-          status: string | null
-          text: string | null
-          topic_id: string | null
-          user_id: string | null
-          visible: boolean | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string | null
-          notice_text?: string | null
-          status?: string | null
-          text?: string | null
-          topic_id?: string | null
-          user_id?: string | null
-          visible?: boolean | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: string | null
-          notice_text?: string | null
-          status?: string | null
-          text?: string | null
-          topic_id?: string | null
-          user_id?: string | null
-          visible?: boolean | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "opinions_topic_id_fkey"
-            columns: ["topic_id"]
-            isOneToOne: false
-            referencedRelation: "topics"
-            referencedColumns: ["id"]
-          },
-        ]
       }
     }
     Functions: {
