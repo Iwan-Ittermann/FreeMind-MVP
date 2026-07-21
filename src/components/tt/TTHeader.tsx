@@ -174,18 +174,18 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
 
   return (
     <>
-      <div aria-hidden className="absolute top-0 inset-x-0 z-20 h-16 pointer-events-none bg-gradient-to-b from-background/70 via-background/30 to-transparent" />
-      <header className="absolute top-0 inset-x-0 z-30 px-4 pt-3 pointer-events-none">
-        <div className="flex items-center justify-between pointer-events-auto pb-2 border-b border-border/30">
-          <span className="text-foreground/90 font-medium tracking-tight lowercase text-base">
+      <div aria-hidden className="absolute top-0 inset-x-0 z-20 h-12 pointer-events-none bg-gradient-to-b from-background/70 via-background/30 to-transparent" />
+      <header className="absolute top-0 inset-x-0 z-30 px-3 pointer-events-none">
+        <div className="flex items-center justify-between pointer-events-auto py-1 border-b border-border/30">
+          <span className="text-foreground/90 font-medium tracking-tight lowercase text-[13px] leading-none">
             freemind
           </span>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-0.5">
             {onOpenHelp && (
               <button
                 onClick={onOpenHelp}
                 data-tt-help="help-button"
-                className="h-8 w-8 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground transition-colors"
+                className="h-7 w-7 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground transition-colors"
                 aria-label={t('tt.help.open', 'Help')}
               >
                 <HelpCircle className="w-4 h-4" />
@@ -201,10 +201,10 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                     setFiltersOpen(false);
                     setShowLogin(false);
                   }}
-                  className="h-8 w-8 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground transition-colors"
+                  className="h-7 w-7 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground transition-colors"
                   aria-label={t('common.language')}
                 >
-                  <span className="text-base leading-none" aria-hidden>{currentLanguage.flag}</span>
+                  <span className="text-sm leading-none" aria-hidden>{currentLanguage.flag}</span>
                 </button>
               </div>
             )}
@@ -218,12 +218,12 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                   setFiltersOpen(false);
                   if (!wasOpen && onMarkAllRead) onMarkAllRead();
                 }}
-                className="relative h-8 w-8 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground transition-colors"
+                className="relative h-7 w-7 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground transition-colors"
                 aria-label={t('tt.notifications')}
               >
                 <Bell className="w-4 h-4" />
                 {hasUnread && (
-                  <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-destructive" />
+                  <span className="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full bg-destructive" />
                 )}
               </button>
             </div>
@@ -236,7 +236,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                   setShowLogin(false);
                 }}
                 data-tt-help="settings"
-                className="h-8 w-8 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground transition-colors"
+                className="h-7 w-7 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground transition-colors"
                 aria-label={t('tt.settingsAndGuide', 'Settings & guide')}
               >
                 {accountOpen ? <X className="w-4 h-4" /> : <Settings className="w-4 h-4" />}
@@ -246,12 +246,10 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
         </div>
       </header>
 
-      {/* Topic question — fills the space between the header line and the graph's upper edge.
-          Graph is min(85%, 480px) wide inside a max-480 phone viewport, so half its height
-          equals min(42.5vw, 204px). Reserve an 8px gap so title never touches the graph. */}
+      {/* Topic question — centered between the slim header line and the graph's upper edge. */}
       <div
         className="absolute left-0 right-0 z-30 flex items-center justify-center px-6 text-center pointer-events-auto"
-        style={{ top: 52, bottom: 'calc(50% + min(42.5vw, 204px) + 8px)' }}
+        style={{ top: 36, bottom: 'calc(50% + min(42.5vw, 204px) + 8px)' }}
       >
         <h1
           className="font-serif italic leading-tight text-foreground"
@@ -260,6 +258,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
           <TopicTitleWithLinks title={topicTitle} />
         </h1>
       </div>
+
 
       {/* Language dropdown */}
       <AnimatePresence>

@@ -283,8 +283,32 @@ export const SignalNode = memo(function SignalNode({
           style={{ transformOrigin: 'center' }}
         />
       )}
+
+      {/* Total-points count — tiny label to the lower-right of each real node.
+          Hidden for bot and for starter nodes at 0 points. */}
+      {ttMode && !token.isBot && !(token.bridgingScore === 0) && (
+        <g transform={`translate(${scaledHalf + 2}, ${scaledHalf - 2})`} style={{ pointerEvents: 'none' }}>
+          <text
+            x={0}
+            y={0}
+            textAnchor="start"
+            dominantBaseline="middle"
+            fontSize={9}
+            fontFamily="ui-sans-serif, system-ui, sans-serif"
+            fontWeight={600}
+            stroke="rgba(15,23,42,0.55)"
+            strokeWidth={2}
+            paintOrder="stroke"
+            fill="#E0FFFF"
+          >
+            {Math.round(token.bridgingScore).toLocaleString()}
+          </text>
+        </g>
+      )}
     </>
   );
+
+
 
   if (animateFromCenter) {
     if (!consumedRef.current) {

@@ -322,13 +322,16 @@ export default function TT() {
           }}
         />
 
-        {/* Impressum footer */}
-        <a
-          href="/legal"
-          className="absolute bottom-1 left-1/2 -translate-x-1/2 z-40 text-[10px] text-muted-foreground/70 hover:text-foreground transition-colors pointer-events-auto"
-        >
-          Impressum
-        </a>
+        {/* Impressum footer — matches the header's slim size */}
+        <div className="absolute bottom-0 inset-x-0 z-40 h-7 px-3 flex items-center justify-center border-t border-border/30 bg-background/40 backdrop-blur-sm pointer-events-auto">
+          <a
+            href="/legal"
+            className="text-[11px] text-muted-foreground/80 hover:text-foreground transition-colors leading-none"
+          >
+            Impressum
+          </a>
+        </div>
+
 
       </div>
     </div>
