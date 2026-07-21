@@ -58,6 +58,7 @@ export default function TT() {
 
   const initialTopicId = routeTopic.id;
   const [activeTopicId, setActiveTopicId] = useState(initialTopicId);
+  const [helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
     if (routeTopic.id !== activeTopicId) {
