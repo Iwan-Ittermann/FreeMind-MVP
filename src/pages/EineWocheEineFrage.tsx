@@ -267,10 +267,6 @@ export default function TT() {
           onMarkAllRead={markAllRead}
           activeTopicId={activeTopicId}
           onOpenHelp={SINGLE_TOPIC_MODE ? () => setHelpOpen(true) : undefined}
-          onRestartTour={() => {
-            setTourStep(0);
-            setTourOpen(true);
-          }}
         />
         <TTSideTabs
           ref={sideTabsRef}
@@ -300,38 +296,23 @@ export default function TT() {
           <TTCenterCTA
             topicId={activeTopicId}
             topicTitle={activeTopicTitle}
-            highlight={tourOpen && tourStep === TT_ONBOARDING_ADD_OPINION_STEP}
+            highlight={false}
             onOpinionCommitted={() => {
               queryClient.invalidateQueries({ queryKey: ['tt-own-opinion', activeTopicId, user?.id] });
               queryClient.invalidateQueries({ queryKey: ['topic', activeTopicId] });
             }}
           />
         )}
-        {showTourSpotlightOverlay && (
-          <div className="pointer-events-none absolute inset-0 z-50 bg-tt-spotlight-overlay/70" />
-        )}
-        <TTOnboardingTour
-          open={tourOpen}
-          step={tourStep}
-          onNext={() => {
-            if (tourStep >= TT_ONBOARDING_RATING_STEP) {
-              completeTour();
-              return;
-            }
-            setTourStep((step) => Math.min(TT_ONBOARDING_RATING_STEP, step + 1));
-          }}
-          onDone={completeTour}
-        />
         <TTBottomPanel
           topicId={activeTopicId}
           hasOwnOpinion={hasOwnOpinion}
           ownOpinionKnown={ownOpinionKnown}
           ownOpinionId={ownOpinionId}
-          highlightAddOpinionForm={tourOpen && tourStep === TT_ONBOARDING_ADD_OPINION_STEP}
-          highlightLetsChatButton={tourOpen && tourStep === TT_ONBOARDING_CHAT_STEP}
-          highlightDisagreementScale={tourOpen && tourStep === TT_ONBOARDING_RATING_STEP && hasOwnOpinion}
-          forceShowAddOpinionForm={tourOpen && tourStep === TT_ONBOARDING_ADD_OPINION_STEP}
-          suppressHintPanel={tourOpen}
+          highlightAddOpinionForm={false}
+          highlightLetsChatButton={false}
+          highlightDisagreementScale={false}
+          forceShowAddOpinionForm={false}
+          suppressHintPanel={false}
           selected={
             selectedNode
               ? { id: selectedNode.id, text: selectedNode.opinion?.text ?? '' }
@@ -350,22 +331,18 @@ export default function TT() {
             queryClient.invalidateQueries({ queryKey: ['topic', activeTopicId] });
           }}
           onCloseSelection={() => {
-            if (positioningTour.active) positioningTour.stop();
             setSelectedNode(null);
           }}
         />
 
-        <PositioningTourCongrats
-          open={positioningTour.congratsOpen}
-          onStart={positioningTour.start}
-        />
-        {positioningTour.active && selectedNode && (
-          <PositioningTourControls
-            onNext={positioningTour.next}
-            onStop={positioningTour.stop}
-            canContinue={positioningTour.canContinue}
-          />
-        )}
+        {/* Impressum footer */}
+        <a
+          href="/legal"
+          className="absolute bottom-1 left-1/2 -translate-x-1/2 z-40 text-[10px] text-muted-foreground/70 hover:text-foreground transition-colors pointer-events-auto"
+        >
+          Impressum
+        </a>
+
       </div>
     </div>
   );
