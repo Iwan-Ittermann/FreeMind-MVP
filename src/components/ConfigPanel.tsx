@@ -102,18 +102,6 @@ export function ConfigPanel({ open, onOpenChange }: ConfigPanelProps) {
 
           <div className="border-t border-border" />
 
-          <div className="space-y-3">
-            <button
-              onClick={handleRestartTutorial}
-              className="flex items-center gap-2 w-full p-2 rounded-lg hover:bg-muted transition-colors text-left"
-            >
-              <GraduationCap className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm">{t('tutorial.startTutorial', 'Start Tutorial')}</span>
-            </button>
-          </div>
-
-          <div className="border-t border-border" />
-
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <label className="text-sm font-medium text-foreground">{t('config.hidePendingEdges')}</label>
