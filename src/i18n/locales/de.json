@@ -616,6 +616,8 @@
     "respectful": "respektvoll",
     "moderate": "moderat",
     "extreme": "extrem",
+    "emptyBridgingTitle": "Noch keine Brückenpunkte",
+    "emptyBridgingBody": "Punkte entstehen erst, wenn Teilnehmende miteinander chatten und sich gegenseitig bewerten. Sobald das passiert, rückt die stärkste Brücke ins Zentrum.",
     "opinions": "MEINUNGEN",
     "chats": "CHATS",
     "notifications": "Benachrichtigungen",

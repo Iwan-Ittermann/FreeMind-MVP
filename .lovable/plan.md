@@ -1,59 +1,52 @@
-## Goals
+## Root cause (verified)
 
-1. **Header + footer same slim size** — header only takes space needed by its 8×8 icon row; footer matches that height. Topic stays exactly in the middle between upper frontier of graph and lower frontier of header. 
-2. **New radial layout: proximity = total points** — the total (sum, not average) of chat bridging scores decides how close a node sits to the center. The top-scoring node anchors the exact center; every other positive-score node is placed proportionally between the center and the outer positive band. Angles are unchanged and the whole layout stays deterministic.
-3. **Show each node's point total** — a tiny count label sits just next to every node.
+For topic `7mm9`:
+- 4 opinions, **0 chats**, **0 chat_ratings**.
+- Only 2 standalone `opinion_ratings` rows exist (AfD→three=100, AfD→one=0).
+- In `useTopicData.ts`, ratings without a matching chat are stored as **synthetic** (`empathy = 0`, `isSynthetic: true`).
+- `computeTotalPoints` in `tt-layout.ts` skips synthetic ratings → every node's `totalPoints = 0`.
+- With all totals at 0, every node hits the "no-activity" branch and is placed at `blueR − tinyPad` (outer ring). Nothing lands at the center. This is the exact behavior observed.
 
----
+The formula (`empathy × disagreement`) is correct. It just has no empathy data yet, because empathy is only recorded inside chats via `useChatSession.saveRating`. The list-view rating (`TTEmojiRating`) records disagreement only.
 
-## 1. Header + footer sizing (`src/components/tt/TTHeader.tsx`, `src/pages/EineWocheEineFrage.tsx`)
+Decision: keep the formula. Add a subtle on-graph hint so the empty state doesn't look like a bug.
 
-- Header: change `pt-3` + `pb-2` wrapper to a tight `py-1.5` row. Icon buttons shrink from `h-8 w-8` to `h-7 w-7`. Remove the extra bottom padding; keep the thin `border-b border-border/30`. Effective header height ≈ 32–34 px.
-- Footer (Impressum link in `EineWocheEineFrage.tsx`): match the header — `h-7` flex row, thin top border `border-t border-border/30`, `text-[11px]` link, no extra margin. Both header and footer are now the same visual weight and height.
-- Topic-question container: replace the hardcoded `top: 52` with `top: 36` (new header bottom) and keep the `bottom: calc(50% + min(42.5vw, 204px) + 8px)` guard so it never overlaps the graph.
+## Change
 
-## 2. Layout: total points → radius (`src/lib/tt-layout.ts` only — TT / event build)
+Add an "empty state" overlay inside the graph, shown only when **every** real (non-bot) node has `totalPoints === 0` and the graph therefore has no gravitational anchor. Once the first empathy rating (from a real chat) arrives, the hint disappears automatically.
 
-TT is the layout the user sees at `/7mm9`. The generic `freemind-layout.ts` is left alone.
+Copy (DE, event build):
+> **Noch keine Brückenpunkte**
+> Punkte entstehen erst, wenn Teilnehmende miteinander chatten und sich gegenseitig bewerten. Sobald das passiert, rückt die stärkste Brücke ins Zentrum.
 
-Radial rules (positive scores):
+EN fallback:
+> **No bridging points yet**
+> Points are earned when participants chat and rate each other. As soon as they do, the strongest bridge moves to the center.
 
-```
-totalPoints(node)  = Σ (empathy × disagreement) over that node's non-synthetic chat ratings
-maxTotal           = max(totalPoints across all opinions, 1)   // 1 guards div-by-zero
-r(node)            = blueR × (1 − totalPoints / maxTotal)      // top scorer → 0, score 0 → blueR
-```
+## Where
 
-- Top-scoring node sits exactly at center (r=0). Multi-tie at top uses the existing tiny-inner-orbit fallback (`level10Radius`) so ties don't overlap.
-- Nodes with `hasChats === false` (starter, no ratings yet) keep the existing starter placement near the blue ring edge (`blueR − tinyPad`) — behavior identical to today.
-- Nodes with negative totals keep today's extreme-band behavior (`whiteR + step`, `whiteR + step + EXTREME_STEP`, `+ 2×EXTREME_STEP`) — nothing about the extreme zone changes.
-- Bot node pinning at 6 o'clock and the collision-resolver pass are unchanged.
+- `src/components/tt/TTScreen.tsx` (or the graph host — locate the actual mount point during build; likely wraps `OpinionGraph`). Render a small, non-blocking pill just below the topic title, centered horizontally, `pointer-events: none`, muted foreground, no background blur. Fade in after ~400ms so it doesn't flash during loading.
+- Detection: derived from the existing `topicData.ratings` — treat the graph as empty-of-bridging-points when there is not a single non-synthetic rating with `empathy > 0` involving a non-bot opinion. Keep this a pure derived boolean; no extra query.
+- i18n: two new keys under `tt.emptyBridging.title` / `tt.emptyBridging.body` in `src/i18n/locales/de.json` and `en.json`.
 
-Determinism preserved:
+## Not changing
 
-- Angles come from the untouched `calculateDeterministicAngles` (same anchor pair by sorted disagreement, same id-sorted tiebreakers).
-- `maxTotal` is computed from a deterministic sum; ties for "who is the top scorer" are broken by lowest `opinion.id` so the center anchor is stable.
-- Collision resolver already sorts by id and pushes only angularly.
-
-The old level-based radii (`ttLevelToRadius` levels 1–10, `ttScoreToLevel`) become obsolete for positive scores; they stay in the file only as a fallback for negative levels and for `getTTLevelRadii` guide rings (which no other renderer actually reads for TT — verified in a follow-up grep during build).
-
-Data plumbed through `GraphNode`:
-
-- Extend the node with `totalPoints: number` (and keep `distanceToCenter` for existing readers).
-- Tokenizer already carries `bridgingScore` on `SemanticNodeToken` — reuse that field to pass `totalPoints` through to the renderer (rename intent in a code comment, no type change needed).
-
-## 3. Point count label on each node (`src/themes/signal/SignalNode.tsx`)
-
-- Add a tiny SVG `<text>` next to the node, offset to the lower-right of the shape (e.g. `x = scaledHalf + 3`, `y = scaledHalf − 1`), `fontSize={9}`, muted foreground fill, subtle stroke for legibility over the background.
-- Rounded display: `Math.round(totalPoints)`. Nodes with `totalPoints === 0` and no chats show nothing (keeps starter nodes clean). Negative totals are shown with the sign so users understand why a node is in the extreme band.
-- Bot node: no count.
+- `tt-layout.ts` — formula, rank logic, and starter-ring fallback stay as-is.
+- `SignalNode.tsx` — point label stays.
+- Rating UIs, DB schema, RPCs — all untouched.
 
 ## Technical details
 
-- Files touched: `src/lib/tt-layout.ts`, `src/types/graph.ts` (add optional `totalPoints`), `src/themes/tokenizer.ts` (populate `bridgingScore` from `totalPoints`), `src/themes/signal/SignalNode.tsx`, `src/components/tt/TTHeader.tsx`, `src/pages/EineWocheEineFrage.tsx`.
-- No DB or edge-function changes. No RLS impact.
-- Determinism check I will re-run mentally after coding: for the same `(opinions, ratings)` input, `totalPoints` map is pure; `maxTotal` is a `Math.max` over a sorted-by-id iteration; radii are pure functions of the map; angles use existing deterministic path; collision resolver already deterministic. ✅
+- File touches: `src/components/tt/TTScreen.tsx`, `src/i18n/locales/de.json`, `src/i18n/locales/en.json`.
+- Empty-state predicate:
+  ```ts
+  const hasAnyBridging = ratings.some(r => !r.isSynthetic && r.empathy > 0);
+  ```
+- Only render the hint when `!hasAnyBridging` and `opinions.length >= 2`.
+- The hint is a `<div>` overlayed on the graph container with `absolute inset-x-0 top-[…] mx-auto max-w-[80%] text-center text-xs text-muted-foreground pointer-events-none`. No shadcn dialog, no toast.
 
-## Open question (small)
+## Verification
 
-The user said "highest in center, others in relation to it". The plan reads that as **linear proportional** (top → r=0, score 0 → r=blueR). If they meant a different curve (e.g. sqrt to spread mid-range nodes out more), that's a one-line tweak later.
+- Load `/7mm9` (current state, no chats): hint appears; nodes remain on outer ring; no console errors.
+- Once a real chat with a rating (`empathy > 0`) exists for that topic: hint disappears on next refetch (4s poll already in place), and the layout starts pulling that node inward as designed.
+- Type-check passes.
