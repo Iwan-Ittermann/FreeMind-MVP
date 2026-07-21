@@ -244,15 +244,22 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
             </div>
           </div>
         </div>
-
-        {/* Topic question — flush under the header line */}
-        <div className="pt-2 text-center pointer-events-auto">
-          <h1 className="text-xl font-serif italic leading-tight text-foreground px-6">
-            <TopicTitleWithLinks title={topicTitle} />
-
-          </h1>
-        </div>
       </header>
+
+      {/* Topic question — fills the space between the header line and the graph's upper edge.
+          Graph is min(85%, 480px) wide inside a max-480 phone viewport, so half its height
+          equals min(42.5vw, 204px). Reserve an 8px gap so title never touches the graph. */}
+      <div
+        className="absolute left-0 right-0 z-30 flex items-center justify-center px-6 text-center pointer-events-auto"
+        style={{ top: 52, bottom: 'calc(50% + min(42.5vw, 204px) + 8px)' }}
+      >
+        <h1
+          className="font-serif italic leading-tight text-foreground"
+          style={{ fontSize: 'clamp(0.95rem, 4.2vw, 1.35rem)' }}
+        >
+          <TopicTitleWithLinks title={topicTitle} />
+        </h1>
+      </div>
 
       {/* Language dropdown */}
       <AnimatePresence>
