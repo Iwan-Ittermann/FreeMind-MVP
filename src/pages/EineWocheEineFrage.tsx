@@ -71,9 +71,6 @@ export default function TT() {
   const containerRef = useRef<HTMLDivElement>(null);
   const ignoreObserverRef = useRef(false);
   const sideTabsRef = useRef<TTSideTabsHandle>(null);
-  // Onboarding tour disabled — kept as static no-op so downstream props stay unchanged.
-  const tourOpen = false;
-  const tourStep = -1;
 
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [chatNodeId, setChatNodeId] = useState<string | null>(null);
