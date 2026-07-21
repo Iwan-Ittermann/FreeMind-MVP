@@ -7,9 +7,6 @@ import { TTSideTabs, TTSideTabsHandle } from '@/components/tt/TTSideTabs';
 import { TTBottomPanel } from '@/components/tt/TTBottomPanel';
 import { TTNotificationsBell } from '@/components/tt/TTNotificationsBell';
 import { TTCenterCTA } from '@/components/tt/TTCenterCTA';
-import { TTOnboardingTour } from '@/components/tt/TTOnboardingTour';
-import { PositioningTourCongrats } from '@/components/PositioningTourCongrats';
-import { PositioningTourControls } from '@/components/PositioningTourControls';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTTTopics, useTTSwipeWindow } from '@/hooks/useTTTopics';
 import { useTopicData } from '@/hooks/useTopicData';
@@ -17,7 +14,6 @@ import { useTTChats } from '@/hooks/useTTChats';
 import { useAuth } from '@/hooks/useAuth';
 import { useTTNotifications } from '@/hooks/useTTNotifications';
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
-import { useTTPositioningTour } from '@/hooks/useTTPositioningTour';
 import { getPrefs, setPrefs } from '@/lib/tt-notification-prefs';
 import { GraphEdge, GraphNode } from '@/types/graph';
 import { supabase } from '@/integrations/supabase/client';
@@ -28,12 +24,6 @@ import { TTHelpOverlay } from '@/components/tt/TTHelpOverlay';
 
 const PRIMARY_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const TT_ONBOARDING_DONE_KEY = 'tt:onboarding:first-step-done';
-const TT_ONBOARDING_AUTO_OPEN_DELAY_MS = 3000;
-const TT_ONBOARDING_OPINIONS_STEP = 1;
-const TT_ONBOARDING_ADD_OPINION_STEP = 2;
-const TT_ONBOARDING_CHAT_STEP = 3;
-const TT_ONBOARDING_RATING_STEP = 4;
 
 /**
  * TikTok-style mobile UI.
