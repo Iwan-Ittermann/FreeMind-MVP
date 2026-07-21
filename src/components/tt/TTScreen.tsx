@@ -178,6 +178,25 @@ function TTScreenInnerImpl({
           )}
         </div>
       </div>
+
+      {/* Empty-state hint: shown while no chat has produced an empathy rating yet.
+          Non-blocking, subtle, disappears automatically once the first bridging
+          rating arrives (via the 4s refetch in useTopicData). */}
+      {showEmptyBridgingHint && (
+        <div
+          className="absolute inset-x-0 z-20 mx-auto px-6 text-center pointer-events-none animate-fade-in"
+          style={{ top: phoneViewportW ? `calc(50% - ${phoneViewportW * 0.05}px)` : '48%' }}
+        >
+          <div className="mx-auto max-w-[80%]">
+            <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/70">
+              {t('tt.emptyBridgingTitle')}
+            </div>
+            <div className="mt-1 text-[11px] leading-snug text-foreground/55">
+              {t('tt.emptyBridgingBody')}
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
