@@ -15,6 +15,7 @@ import {
   getSubscribedTopicIds,
 } from '@/lib/tt-notification-prefs';
 import { useTTTopics } from '@/hooks/useTTTopics';
+import { SINGLE_TOPIC_MODE } from '@/lib/single-topic';
 
 export interface TTNotification {
   id: string;
@@ -157,21 +158,23 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
             freemind
           </span>
           <div className="flex items-center gap-1">
-            <div ref={languageRef}>
-              <button
-                onClick={() => {
-                  setLanguageOpen((o) => !o);
-                  setBellOpen(false);
-                  setAccountOpen(false);
-                  setFiltersOpen(false);
-                  setShowLogin(false);
-                }}
-                className="h-8 w-8 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground transition-colors"
-                aria-label={t('common.language')}
-              >
-                <span className="text-base leading-none" aria-hidden>{currentLanguage.flag}</span>
-              </button>
-            </div>
+            {!SINGLE_TOPIC_MODE && (
+              <div ref={languageRef}>
+                <button
+                  onClick={() => {
+                    setLanguageOpen((o) => !o);
+                    setBellOpen(false);
+                    setAccountOpen(false);
+                    setFiltersOpen(false);
+                    setShowLogin(false);
+                  }}
+                  className="h-8 w-8 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground transition-colors"
+                  aria-label={t('common.language')}
+                >
+                  <span className="text-base leading-none" aria-hidden>{currentLanguage.flag}</span>
+                </button>
+              </div>
+            )}
             <div ref={bellRef}>
               <button
                 onClick={() => {
@@ -331,33 +334,35 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
               )}
             </AnimatePresence>
 
-            {/* Subscribed topics */}
-            <div className="border-b border-border/30">
-              <div className="px-4 pt-2.5 pb-1 text-[10px] uppercase tracking-wider text-muted-foreground/80 font-semibold bg-muted/30">
-                {t('tt.subscribedTopics')}
-              </div>
-              {subscribedTopics.length === 0 ? (
-                <p className="px-4 py-2 text-xs text-muted-foreground">
-                  {t('tt.noSubscribedTopics')}
-                </p>
-              ) : (
-                <div className="px-3 py-2 flex flex-wrap gap-1.5">
-                  {subscribedTopics.map((tp) => (
-                    <button
-                      key={tp.id}
-                      onClick={() => {
-                        navigate(`/${tp.code}`);
-                        setBellOpen(false);
-                      }}
-                      className="text-[11px] rounded-full px-2.5 py-1 bg-primary/10 hover:bg-primary/20 text-foreground/85 max-w-[14rem] truncate transition-colors"
-                      title={tp.title}
-                    >
-                      {tp.title}
-                    </button>
-                  ))}
+            {/* Subscribed topics — hidden in single-topic mode */}
+            {!SINGLE_TOPIC_MODE && (
+              <div className="border-b border-border/30">
+                <div className="px-4 pt-2.5 pb-1 text-[10px] uppercase tracking-wider text-muted-foreground/80 font-semibold bg-muted/30">
+                  {t('tt.subscribedTopics')}
                 </div>
-              )}
-            </div>
+                {subscribedTopics.length === 0 ? (
+                  <p className="px-4 py-2 text-xs text-muted-foreground">
+                    {t('tt.noSubscribedTopics')}
+                  </p>
+                ) : (
+                  <div className="px-3 py-2 flex flex-wrap gap-1.5">
+                    {subscribedTopics.map((tp) => (
+                      <button
+                        key={tp.id}
+                        onClick={() => {
+                          navigate(`/${tp.code}`);
+                          setBellOpen(false);
+                        }}
+                        className="text-[11px] rounded-full px-2.5 py-1 bg-primary/10 hover:bg-primary/20 text-foreground/85 max-w-[14rem] truncate transition-colors"
+                        title={tp.title}
+                      >
+                        {tp.title}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className="max-h-72 overflow-auto">
               {notifications.length === 0 ? (

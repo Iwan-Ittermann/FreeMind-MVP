@@ -10,7 +10,6 @@ import { TTCenterCTA } from '@/components/tt/TTCenterCTA';
 import { TTOnboardingTour } from '@/components/tt/TTOnboardingTour';
 import { PositioningTourCongrats } from '@/components/PositioningTourCongrats';
 import { PositioningTourControls } from '@/components/PositioningTourControls';
-import { ChevronDown, ChevronUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTTTopics, useTTSwipeWindow } from '@/hooks/useTTTopics';
 import { useTopicData } from '@/hooks/useTopicData';
@@ -78,8 +77,6 @@ export default function TT() {
   const renderedTopicKeys = useMemo(() => renderedTopics.map((topic) => topic.key).join('|'), [renderedTopics]);
   const containerRef = useRef<HTMLDivElement>(null);
   const ignoreObserverRef = useRef(false);
-  const [scrollHintCount, setScrollHintCount] = useState(() => Number(localStorage.getItem('tt:topic-scroll-count') || '0'));
-  const showScrollHint = topics.length > 1 && scrollHintCount < 2;
   const sideTabsRef = useRef<TTSideTabsHandle>(null);
   const [tourOpen, setTourOpen] = useState(false);
   const [tourStep, setTourStep] = useState(0);
@@ -260,11 +257,6 @@ export default function TT() {
             window.dispatchEvent(new CustomEvent('tt:close-all-chats'));
             setActiveTopicId(id);
             setSelectedNode(null);
-            setScrollHintCount((count) => {
-              const next = Math.min(2, count + 1);
-              localStorage.setItem('tt:topic-scroll-count', String(next));
-              return next;
-            });
             const code = topicList.find((topic) => topic.id === id)?.short_code ?? id;
             navigate(`/${code}`, { replace: true });
           }
@@ -335,23 +327,6 @@ export default function TT() {
           }}
         />
 
-        <AnimatePresence>
-          {showScrollHint && (
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 8 }}
-              className="pointer-events-none absolute bottom-[calc(env(safe-area-inset-bottom)+104px)] left-1/2 z-30 -translate-x-1/2 rounded-full border border-border/40 bg-background/80 px-2.5 py-2 shadow-md backdrop-blur-md"
-            >
-              <div className="flex items-center justify-center text-foreground/75">
-                <motion.div animate={{ y: [-2, 2, -2] }} transition={{ repeat: Infinity, duration: 1.2 }}>
-                  <ChevronUp className="h-5 w-5" />
-                  <ChevronDown className="-mt-1.5 h-5 w-5" />
-                </motion.div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
         <TTNotificationsBell topicId={activeTopicId} />
         {ownOpinionKnown && !hasOwnOpinion && !selectedNode && (
           <TTCenterCTA

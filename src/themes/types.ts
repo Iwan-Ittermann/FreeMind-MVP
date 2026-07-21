@@ -95,4 +95,4 @@ export interface ThemeRenderer {
 }
 
 // --- Theme Name ---
-export type ThemeName = 'classic' | 'city' | 'arcane' | 'signal';
+export type ThemeName = 'classic' | 'city' | 'arcane' | 'signal' | 'nebula';
