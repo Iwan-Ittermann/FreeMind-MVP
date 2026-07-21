@@ -220,6 +220,8 @@ export function useChatMessages(
   const sendMutation = useMutation({
     mutationFn: async ({ content, replyToId }: { content: string; replyToId?: string | null }) => {
       if (!chatId || !user?.id) throw new Error('Cannot send message');
+      if (!(await requireVerified())) throw new Error('verification_required');
+      
       
       const insertData: ChatMessageInsertRow = {
         chat_id: chatId,
