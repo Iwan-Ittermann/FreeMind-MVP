@@ -1,52 +1,44 @@
-## Root cause (verified)
+## Problem found
 
-For topic `7mm9`:
-- 4 opinions, **0 chats**, **0 chat_ratings**.
-- Only 2 standalone `opinion_ratings` rows exist (AfD→three=100, AfD→one=0).
-- In `useTopicData.ts`, ratings without a matching chat are stored as **synthetic** (`empathy = 0`, `isSynthetic: true`).
-- `computeTotalPoints` in `tt-layout.ts` skips synthetic ratings → every node's `totalPoints = 0`.
-- With all totals at 0, every node hits the "no-activity" branch and is placed at `blueR − tinyPad` (outer ring). Nothing lands at the center. This is the exact behavior observed.
+The root cause is backend query logic, not the point formula.
 
-The formula (`empathy × disagreement`) is correct. It just has no empathy data yet, because empathy is only recorded inside chats via `useChatSession.saveRating`. The list-view rating (`TTEmojiRating`) records disagreement only.
+For topic `7mm9`, the database has:
+- 2 visible opinions: “Natürlich die AfD” and “Natürlich die Grünen”
+- 1 actual chat between them
+- 4 chat messages
+- 2 chat respect ratings: empathy `17` and `38`
+- 1 disagreement rating: `100`
+- 0 `chat_requests` rows
 
-Decision: keep the formula. Add a subtle on-graph hint so the empty state doesn't look like a bug.
+Both affected backend functions currently require an accepted `chat_requests` row:
+- `get_graph_pairs(...)` returns `[]`, so the graph receives no real chat rating edge and shows `0` points.
+- `get_readonly_chat_messages(...)` also returns `[]`, so clicking the graph edge opens an empty read-only chat.
 
-## Change
+The chats sidebar works because it reads from the actual `chats` and `chat_messages` tables directly, so it sees the messages correctly.
 
-Add an "empty state" overlay inside the graph, shown only when **every** real (non-bot) node has `totalPoints === 0` and the graph therefore has no gravitational anchor. Once the first empathy rating (from a real chat) arrives, the hint disappears automatically.
+## Fix plan
 
-Copy (DE, event build):
-> **Noch keine Brückenpunkte**
-> Punkte entstehen erst, wenn Teilnehmende miteinander chatten und sich gegenseitig bewerten. Sobald das passiert, rückt die stärkste Brücke ins Zentrum.
+1. Create a database migration that updates `get_graph_pairs(topic_uuid)` to use real `chats` rows as the source of accepted graph edges.
+   - Keep visible-opinion checks.
+   - Keep disagreement from `opinion_ratings` as the source of truth.
+   - Keep respect/empathy from `chat_ratings`.
+   - No dependency on `chat_requests` for chats that already exist.
 
-EN fallback:
-> **No bridging points yet**
-> Points are earned when participants chat and rate each other. As soon as they do, the strongest bridge moves to the center.
+2. Update `get_readonly_chat_messages(_source_opinion_id, _target_opinion_id)` to read the existing chat directly from `chats`.
+   - Return visible messages for the existing pair in either order.
+   - Keep visible-opinion checks.
+   - No dependency on `chat_requests`.
 
-## Where
+3. Preserve security posture.
+   - Both functions stay read-only and still only expose visible opinions/messages.
+   - No direct table exposure changes.
+   - No IP-related changes.
 
-- `src/components/tt/TTScreen.tsx` (or the graph host — locate the actual mount point during build; likely wraps `OpinionGraph`). Render a small, non-blocking pill just below the topic title, centered horizontally, `pointer-events: none`, muted foreground, no background blur. Fade in after ~400ms so it doesn't flash during loading.
-- Detection: derived from the existing `topicData.ratings` — treat the graph as empty-of-bridging-points when there is not a single non-synthetic rating with `empathy > 0` involving a non-bot opinion. Keep this a pure derived boolean; no extra query.
-- i18n: two new keys under `tt.emptyBridging.title` / `tt.emptyBridging.body` in `src/i18n/locales/de.json` and `en.json`.
+4. Verify after migration.
+   - `get_graph_pairs(7mm9 topic id)` should return one row for Grünen/AfD with non-zero `avg_empathy`.
+   - `get_readonly_chat_messages(Grünen, AfD)` should return the 4 chat messages.
+   - The graph should stop showing the empty-state hint and show non-zero points after the next refetch.
 
-## Not changing
+## Note
 
-- `tt-layout.ts` — formula, rank logic, and starter-ring fallback stay as-is.
-- `SignalNode.tsx` — point label stays.
-- Rating UIs, DB schema, RPCs — all untouched.
-
-## Technical details
-
-- File touches: `src/components/tt/TTScreen.tsx`, `src/i18n/locales/de.json`, `src/i18n/locales/en.json`.
-- Empty-state predicate:
-  ```ts
-  const hasAnyBridging = ratings.some(r => !r.isSynthetic && r.empathy > 0);
-  ```
-- Only render the hint when `!hasAnyBridging` and `opinions.length >= 2`.
-- The hint is a `<div>` overlayed on the graph container with `absolute inset-x-0 top-[…] mx-auto max-w-[80%] text-center text-xs text-muted-foreground pointer-events-none`. No shadcn dialog, no toast.
-
-## Verification
-
-- Load `/7mm9` (current state, no chats): hint appears; nodes remain on outer ring; no console errors.
-- Once a real chat with a rating (`empathy > 0`) exists for that topic: hint disappears on next refetch (4s poll already in place), and the layout starts pulling that node inward as designed.
-- Type-check passes.
+With the current scoring model, this one chat edge gives points to both connected nodes. Since there is only one connected pair, they may tie unless the scoring model is later changed to assign points per individual rater/receiver instead of per pair.
