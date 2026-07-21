@@ -10,6 +10,7 @@ import { getClientIP } from '@/hooks/useClientIP';
 import { toast } from 'sonner';
 import { ensureSilentAuth } from '@/lib/silent-auth';
 import { enableTopicNotifications, requestBrowserNotificationPermission } from '@/lib/tt-browser-notifications';
+import { requireVerified } from '@/lib/verification';
 
 type CTAState = 'collapsed' | 'half' | 'full';
 
@@ -65,6 +66,10 @@ export function TTCenterCTA({
   const handleSubmit = async () => {
     if (text.trim().length < 10) {
       toast.error(t('tt.opinionTooShort'));
+      return;
+    }
+    if (!(await requireVerified())) {
+      setState('collapsed');
       return;
     }
     setSubmitting(true);

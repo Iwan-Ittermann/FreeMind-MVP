@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { BOT_USER_ID } from '@/lib/constants';
 import { getAnimationChannel } from '@/lib/animation-channel';
+import { requireVerified } from '@/lib/verification';
 
 export interface ChatMessage {
   id: string;
@@ -219,6 +220,8 @@ export function useChatMessages(
   const sendMutation = useMutation({
     mutationFn: async ({ content, replyToId }: { content: string; replyToId?: string | null }) => {
       if (!chatId || !user?.id) throw new Error('Cannot send message');
+      if (!(await requireVerified())) throw new Error('verification_required');
+      
       
       const insertData: ChatMessageInsertRow = {
         chat_id: chatId,
@@ -284,6 +287,7 @@ export function useChatMessages(
 
   const sendVoiceMessage = async (audioBlob: Blob) => {
     if (!chatId || !user?.id) throw new Error('Cannot send voice message');
+    if (!(await requireVerified())) throw new Error('verification_required');
 
     const fileName = `${user.id}/${chatId}/${crypto.randomUUID()}.webm`;
 

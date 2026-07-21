@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
+import { requireVerified } from '@/lib/verification';
 
 export interface ChatRequest {
   id: string;
@@ -59,6 +60,7 @@ export function useChatRequests(topicId: string) {
   // Send a chat request
   const sendRequestMutation = useMutation({
     mutationFn: async ({ requesterOpinionId, targetOpinionId }: { requesterOpinionId: string; targetOpinionId: string }) => {
+      if (!(await requireVerified())) throw new Error('verification_required');
       const { error } = await supabase
         .from('chat_requests')
         .insert({
