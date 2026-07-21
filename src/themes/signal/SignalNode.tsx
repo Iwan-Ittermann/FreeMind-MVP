@@ -284,22 +284,22 @@ export const SignalNode = memo(function SignalNode({
         />
       )}
 
-      {/* Total-points count — tiny label to the lower-right of each real node.
-          Hidden for bot and for starter nodes at 0 points. */}
-      {ttMode && !token.isBot && !(token.bridgingScore === 0) && (
-        <g transform={`translate(${scaledHalf + 2}, ${scaledHalf - 2})`} style={{ pointerEvents: 'none' }}>
+      {/* Total-points count — tiny label to the lower-right of each real node. */}
+      {ttMode && !token.isBot && (
+        <g transform={`translate(${scaledHalf + 3}, ${scaledHalf + 1})`} style={{ pointerEvents: 'none' }}>
           <text
             x={0}
             y={0}
             textAnchor="start"
-            dominantBaseline="middle"
-            fontSize={9}
+            dominantBaseline="hanging"
+            fontSize={11}
             fontFamily="ui-sans-serif, system-ui, sans-serif"
-            fontWeight={600}
-            stroke="rgba(15,23,42,0.55)"
-            strokeWidth={2}
+            fontWeight={700}
+            stroke="rgba(10,10,20,0.85)"
+            strokeWidth={3}
+            strokeLinejoin="round"
             paintOrder="stroke"
-            fill="#E0FFFF"
+            fill="#FFFFFF"
           >
             {Math.round(token.bridgingScore).toLocaleString()}
           </text>
