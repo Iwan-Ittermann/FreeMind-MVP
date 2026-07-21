@@ -60,6 +60,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
         {/* Left tab — opinions (slightly below center) */}
         <button
           onClick={() => setSide(side === 'left' ? null : 'left')}
+          data-tt-help="opinions-tab"
           className="absolute left-0 top-[55%] -translate-y-1/2 z-30 h-28 w-7 rounded-r-xl bg-background/85 backdrop-blur-md border border-l-0 border-border/40 shadow-md flex items-center justify-center hover:bg-background/95 transition-colors"
           aria-label={t('tt.opinions')}
         >
