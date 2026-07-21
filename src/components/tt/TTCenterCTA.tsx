@@ -138,7 +138,7 @@ export function TTCenterCTA({
   return (
     <div
       ref={wrapperRef}
-      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none"
+      className="absolute left-1/2 bottom-[140px] -translate-x-1/2 z-30 pointer-events-none"
     >
       <AnimatePresence mode="wait" initial={false}>
         {state === 'collapsed' && (

@@ -58,7 +58,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
     return (
       <>
         {/* Bottom pill buttons — sit just above the footer */}
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 pointer-events-none">
+        <div className="absolute bottom-9 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 pointer-events-none">
           <button
             onClick={() => setSide(side === 'left' ? null : 'left')}
             data-tt-help="opinions-tab"
@@ -110,7 +110,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                   exit={{ opacity: 0, scale: 0.6, y: 20 }}
                   transition={SPRING}
                   style={{ transformOrigin: '50% 100%', height: '60vh', maxHeight: 520 }}
-                  className="absolute bottom-14 left-1/2 -translate-x-1/2 z-30 w-[86vw] max-w-[360px] rounded-2xl bg-background/85 backdrop-blur-xl border border-border/40 shadow-2xl overflow-hidden flex flex-col"
+                  className="absolute bottom-[84px] left-1/2 -translate-x-1/2 z-30 w-[86vw] max-w-[360px] rounded-2xl bg-background/85 backdrop-blur-xl border border-border/40 shadow-2xl overflow-hidden flex flex-col"
                 >
                   <div className="flex items-center justify-between px-4 py-3 border-b border-border/30">
                     <h2 className="text-sm font-semibold tracking-wide uppercase text-foreground/80">
@@ -155,7 +155,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                   exit={{ opacity: 0, scale: 0.6, y: 20 }}
                   transition={SPRING}
                   style={{ transformOrigin: '50% 100%', height: '60vh', maxHeight: 520 }}
-                  className="absolute bottom-14 left-1/2 -translate-x-1/2 z-30 w-[86vw] max-w-[360px] rounded-2xl bg-background/85 backdrop-blur-xl border border-border/40 shadow-2xl overflow-hidden flex flex-col"
+                  className="absolute bottom-[84px] left-1/2 -translate-x-1/2 z-30 w-[86vw] max-w-[360px] rounded-2xl bg-background/85 backdrop-blur-xl border border-border/40 shadow-2xl overflow-hidden flex flex-col"
                 >
                   {/* Header */}
                   <div className="flex items-center justify-between px-4 py-3 border-b border-border/30">
