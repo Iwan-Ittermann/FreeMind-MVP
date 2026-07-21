@@ -10,7 +10,6 @@ import { TTCenterCTA } from '@/components/tt/TTCenterCTA';
 import { TTOnboardingTour } from '@/components/tt/TTOnboardingTour';
 import { PositioningTourCongrats } from '@/components/PositioningTourCongrats';
 import { PositioningTourControls } from '@/components/PositioningTourControls';
-import { ChevronDown, ChevronUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTTTopics, useTTSwipeWindow } from '@/hooks/useTTTopics';
 import { useTopicData } from '@/hooks/useTopicData';
@@ -78,8 +77,6 @@ export default function TT() {
   const renderedTopicKeys = useMemo(() => renderedTopics.map((topic) => topic.key).join('|'), [renderedTopics]);
   const containerRef = useRef<HTMLDivElement>(null);
   const ignoreObserverRef = useRef(false);
-  const [scrollHintCount, setScrollHintCount] = useState(() => Number(localStorage.getItem('tt:topic-scroll-count') || '0'));
-  const showScrollHint = topics.length > 1 && scrollHintCount < 2;
   const sideTabsRef = useRef<TTSideTabsHandle>(null);
   const [tourOpen, setTourOpen] = useState(false);
   const [tourStep, setTourStep] = useState(0);

@@ -8,6 +8,7 @@ import { ChatTutorialProvider } from "@/contexts/ChatTutorialContext";
 import { useDynamicSiteTitle } from "@/hooks/useDynamicSiteTitle";
 import { useGlobalPresence } from "@/hooks/useGlobalPresence";
 import { FreeMindThemeProvider } from "@/themes/ThemeContext";
+import { SINGLE_TOPIC_MODE, SINGLE_TOPIC_SHORT_CODE } from "@/lib/single-topic";
 import Index from "./pages/Index";
 import Admin from "./pages/Admin";
 import Admin2 from "./pages/Admin2";
@@ -39,6 +40,22 @@ function AppContent() {
 function AppRoutes() {
   useGlobalPresence();
 
+  if (SINGLE_TOPIC_MODE) {
+    return (
+      <Routes>
+        <Route path="/" element={<EineWocheEineFrage />} />
+        <Route path="/confirm" element={<Confirm />} />
+        <Route path="/unsubscribe" element={<Unsubscribe />} />
+        <Route path="/legal" element={<Legal />} />
+        <Route path="/admin2" element={<Admin2 />} />
+        <Route path="/admin" element={<Admin />} />
+        <Route path="/auth" element={<Navigate to="/" replace />} />
+        <Route path="/:topicId" element={<LockedTopicRoute />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    );
+  }
+
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
@@ -64,6 +81,15 @@ function RootTopicRoute() {
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(topicId ?? '');
   const isShortCode = /^[a-z0-9]{4}$/i.test(topicId ?? '');
   return isUuid || isShortCode ? <EineWocheEineFrage /> : <NotFound />;
+}
+
+/** Single-topic mode: only the configured short_code renders; everything else → `/`. */
+function LockedTopicRoute() {
+  const { topicId } = useParams<{ topicId: string }>();
+  if (SINGLE_TOPIC_SHORT_CODE && topicId?.toLowerCase() === SINGLE_TOPIC_SHORT_CODE) {
+    return <EineWocheEineFrage />;
+  }
+  return <Navigate to="/" replace />;
 }
 
 const App = () => (
