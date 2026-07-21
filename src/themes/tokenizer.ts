@@ -65,9 +65,14 @@ export function tokenizeNode(
   zoneOverride?: SemanticZone,
 ): SemanticNodeToken {
   const zone = zoneOverride ?? resolveZone(node, config);
-  const bridgingScore = node.distanceToCenter != null
-    ? ((1 - node.distanceToCenter / config.outerRadius) * 10000) - 5000
-    : 0;
+  // For TT the layout now sets `totalPoints`. Pipe it through `bridgingScore`
+  // so the renderer can show the count next to the node. Fall back to the
+  // legacy distance-derived score for other layouts.
+  const bridgingScore = node.totalPoints != null
+    ? node.totalPoints
+    : node.distanceToCenter != null
+      ? ((1 - node.distanceToCenter / config.outerRadius) * 10000) - 5000
+      : 0;
 
   return Object.freeze({
     id: node.id,
@@ -91,6 +96,7 @@ export function tokenizeNode(
     isBot: node.opinion.authorId === BOT_USER_ID,
   });
 }
+
 
 /**
  * Tokenize all nodes.
