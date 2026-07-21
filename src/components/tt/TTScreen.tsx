@@ -108,31 +108,29 @@ function TTScreenInnerImpl({
           Lives outside the graph wrapper so it isn't clipped. */}
       <TTBackground hue={hue} viewportWidth={phoneViewportW} />
 
-      {/* Zone labels — subtle, positioned at the *boundaries* of each ring
-          to reinforce the circular zone metaphor. */}
-      <div className="absolute inset-0 pointer-events-none">
-        {/* Extrem — just outside the white ring */}
-        <span
-          className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-[9px] tracking-[0.25em] uppercase text-foreground/40 font-normal"
-          style={{ top: phoneViewportW ? `calc(50% - ${phoneViewportW * 0.62}px)` : '15%' }}
-        >
-          {t('tt.extreme')}
-        </span>
-        {/* Moderat — between white and blue ring */}
-        <span
-          className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-[9px] tracking-[0.25em] uppercase text-foreground/40 font-normal"
-          style={{ top: phoneViewportW ? `calc(50% - ${phoneViewportW * 0.42}px)` : '30%' }}
-        >
-          {t('tt.moderate')}
-        </span>
-        {/* Respektvoll — at the inner edge of the blue ring (just above core) */}
-        <span
-          className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-[9px] tracking-[0.25em] uppercase text-foreground/40 font-normal"
-          style={{ top: phoneViewportW ? `calc(50% - ${phoneViewportW * 0.235}px)` : '42%' }}
-        >
-          {t('tt.respectful')}
-        </span>
-      </div>
+      {/* Zone labels — hidden in single-topic event mode (introduced via help overlay). */}
+      {!SINGLE_TOPIC_MODE && (
+        <div className="absolute inset-0 pointer-events-none">
+          <span
+            className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-[9px] tracking-[0.25em] uppercase text-foreground/40 font-normal"
+            style={{ top: phoneViewportW ? `calc(50% - ${phoneViewportW * 0.62}px)` : '15%' }}
+          >
+            {t('tt.extreme')}
+          </span>
+          <span
+            className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-[9px] tracking-[0.25em] uppercase text-foreground/40 font-normal"
+            style={{ top: phoneViewportW ? `calc(50% - ${phoneViewportW * 0.42}px)` : '30%' }}
+          >
+            {t('tt.moderate')}
+          </span>
+          <span
+            className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-[9px] tracking-[0.25em] uppercase text-foreground/40 font-normal"
+            style={{ top: phoneViewportW ? `calc(50% - ${phoneViewportW * 0.235}px)` : '42%' }}
+          >
+            {t('tt.respectful')}
+          </span>
+        </div>
+      )}
 
       {/* Graph stays centered in its own square wrapper. Both the background's
           dark core and this wrapper are centered on the section, so they align. */}
