@@ -244,7 +244,7 @@ export default function TT() {
               hue={(i * 47) % 360}
               isLoopClone={topic.clone}
               selectedNodeId={topic.id === activeTopicId && !topic.clone ? (selectedNode?.id ?? chatNodeId) : null}
-              highlightAllNodes={topic.id === activeTopicId && !topic.clone && tourOpen && tourStep === TT_ONBOARDING_OPINIONS_STEP}
+              highlightAllNodes={false}
               onNodeSelect={(n) => {
                 if (!topic.clone) setSelectedNode(n);
               }}
