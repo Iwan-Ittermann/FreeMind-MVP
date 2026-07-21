@@ -174,13 +174,23 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
 
   return (
     <>
-      <div aria-hidden className="absolute top-0 inset-x-0 z-20 h-24 pointer-events-none bg-gradient-to-b from-background/70 via-background/30 to-transparent" />
-      <header className="absolute top-0 inset-x-0 z-30 px-4 pt-4 pointer-events-none">
-        <div className="flex items-start justify-between pointer-events-auto">
+      <div aria-hidden className="absolute top-0 inset-x-0 z-20 h-16 pointer-events-none bg-gradient-to-b from-background/70 via-background/30 to-transparent" />
+      <header className="absolute top-0 inset-x-0 z-30 px-4 pt-3 pointer-events-none">
+        <div className="flex items-center justify-between pointer-events-auto pb-2 border-b border-border/30">
           <span className="text-foreground/90 font-medium tracking-tight lowercase text-base">
             freemind
           </span>
           <div className="flex items-center gap-1">
+            {onOpenHelp && (
+              <button
+                onClick={onOpenHelp}
+                data-tt-help="help-button"
+                className="h-8 w-8 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground transition-colors"
+                aria-label={t('tt.help.open', 'Help')}
+              >
+                <HelpCircle className="w-4 h-4" />
+              </button>
+            )}
             {!SINGLE_TOPIC_MODE && (
               <div ref={languageRef}>
                 <button
@@ -225,19 +235,21 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                   setLanguageOpen(false);
                   setShowLogin(false);
                 }}
+                data-tt-help="settings"
                 className="h-8 w-8 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground transition-colors"
-                aria-label={t('tt.menu')}
+                aria-label={t('tt.settingsAndGuide', 'Settings & guide')}
               >
-                {accountOpen ? <X className="w-4 h-4" /> : <DoorOpen className="w-4 h-4" />}
+                {accountOpen ? <X className="w-4 h-4" /> : <Settings className="w-4 h-4" />}
               </button>
             </div>
           </div>
         </div>
 
-        {/* Topic question */}
-        <div className="mt-3 text-center pointer-events-auto">
+        {/* Topic question — flush under the header line */}
+        <div className="pt-2 text-center pointer-events-auto">
           <h1 className="text-xl font-serif italic leading-tight text-foreground px-6">
             <TopicTitleWithLinks title={topicTitle} />
+
           </h1>
         </div>
       </header>
