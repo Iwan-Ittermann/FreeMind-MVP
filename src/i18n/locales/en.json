@@ -616,6 +616,8 @@
     "respectful": "respectful",
     "moderate": "moderate",
     "extreme": "extreme",
+    "emptyBridgingTitle": "No bridging points yet",
+    "emptyBridgingBody": "Points are earned when participants chat and rate each other. As soon as they do, the strongest bridge moves to the center.",
     "opinions": "OPINIONS",
     "chats": "CHATS",
     "notifications": "Notifications",
