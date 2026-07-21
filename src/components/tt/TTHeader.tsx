@@ -307,13 +307,25 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
           >
             <div className="px-4 py-3 border-b border-border/30 flex items-center justify-between">
               <h3 className="text-sm font-semibold">{t('tt.notifications')}</h3>
-              <button
-                onClick={() => setFiltersOpen((o) => !o)}
-                className={`p-1 rounded-md transition-colors ${filtersOpen ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground'}`}
-                aria-label={t('tt.notifFilterTitle')}
-              >
-                <SlidersHorizontal className="w-3.5 h-3.5" />
-              </button>
+              <div className="flex items-center gap-1">
+                {activeTopicId && (
+                  <button
+                    onClick={toggleSubscribeHere}
+                    className={`p-1 rounded-md transition-colors ${subscribedHere ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                    aria-label={subscribedHere ? t('tt.notifySubscribeOff', 'Turn off') : t('tt.notifySubscribeOn', 'Turn on')}
+                    title={subscribedHere ? t('tt.subscribed') : t('tt.notSubscribed')}
+                  >
+                    {subscribedHere ? <Bell className="w-3.5 h-3.5" /> : <BellOff className="w-3.5 h-3.5" />}
+                  </button>
+                )}
+                <button
+                  onClick={() => setFiltersOpen((o) => !o)}
+                  className={`p-1 rounded-md transition-colors ${filtersOpen ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                  aria-label={t('tt.notifFilterTitle')}
+                >
+                  <SlidersHorizontal className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
 
             {/* Inline filter panel */}
