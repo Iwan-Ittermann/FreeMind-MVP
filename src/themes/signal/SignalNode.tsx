@@ -181,6 +181,7 @@ export const SignalNode = memo(function SignalNode({
     style: { cursor: 'pointer' as const, opacity },
     'data-user-node': token.isCurrentUser ? 'true' : undefined,
     'data-node-clickable': true,
+    'data-tt-node-id': token.id,
     onClick,
     onPointerDown,
     onMouseEnter,

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, DoorOpen, Copy, Download, Eye, EyeOff, X, SlidersHorizontal, MessageSquare, MessageCircle, Globe, Sparkles, CircleHelp, Flag } from 'lucide-react';
+import { Bell, BellOff, Settings, Copy, Download, Eye, EyeOff, X, SlidersHorizontal, MessageSquare, MessageCircle, Globe, Sparkles, CircleHelp, Flag, HelpCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { emailToPassphrase } from '@/lib/passphrase';
@@ -13,6 +13,8 @@ import {
   getGlobalFilters,
   setGlobalFilters,
   getSubscribedTopicIds,
+  getPrefs,
+  setPrefs,
 } from '@/lib/tt-notification-prefs';
 import { useTTTopics } from '@/hooks/useTTTopics';
 import { SINGLE_TOPIC_MODE } from '@/lib/single-topic';
@@ -31,6 +33,8 @@ interface TTHeaderProps {
   notifications?: TTNotification[];
   onMarkAllRead?: () => void;
   onRestartTour?: () => void;
+  onOpenHelp?: () => void;
+  activeTopicId?: string;
 }
 
 const FILTER_ITEMS: {
@@ -51,7 +55,7 @@ const LANGUAGES = [
   { code: 'en', flag: '🇬🇧', labelKey: 'common.english' },
 ];
 
-export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRestartTour }: TTHeaderProps) {
+export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRestartTour, onOpenHelp, activeTopicId }: TTHeaderProps) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -62,6 +66,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
   const [showPhrase, setShowPhrase] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [filters, setFilters] = useState<NotificationFilters>(getGlobalFilters);
+  const [subscribedHere, setSubscribedHere] = useState(false);
   const accountRef = useRef<HTMLDivElement>(null);
   const bellRef = useRef<HTMLDivElement>(null);
   const languageRef = useRef<HTMLDivElement>(null);
@@ -72,6 +77,24 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
   const phrase = user?.email ? emailToPassphrase(user.email) ?? '' : '';
   const hasUnread = notifications.some((n) => n.unread);
   const currentLanguage = LANGUAGES.find((lang) => i18n.language.startsWith(lang.code)) ?? LANGUAGES[0];
+
+  useEffect(() => {
+    if (!activeTopicId) return;
+    const sync = () => setSubscribedHere(!!getPrefs(activeTopicId)?.enabled);
+    sync();
+    window.addEventListener('tt:subscription-changed', sync);
+    return () => window.removeEventListener('tt:subscription-changed', sync);
+  }, [activeTopicId]);
+
+  const toggleSubscribeHere = () => {
+    if (!activeTopicId) return;
+    const next = !subscribedHere;
+    setPrefs(activeTopicId, { enabled: next });
+    setSubscribedHere(next);
+    window.dispatchEvent(
+      new CustomEvent('tt:subscription-changed', { detail: { topicId: activeTopicId, enabled: next } }),
+    );
+  };
 
   const { data: topicList = [] } = useTTTopics();
   const topicTitleMap = new Map(topicList.map((tp) => [tp.id, tp.title]));
@@ -151,13 +174,23 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
 
   return (
     <>
-      <div aria-hidden className="absolute top-0 inset-x-0 z-20 h-24 pointer-events-none bg-gradient-to-b from-background/70 via-background/30 to-transparent" />
-      <header className="absolute top-0 inset-x-0 z-30 px-4 pt-4 pointer-events-none">
-        <div className="flex items-start justify-between pointer-events-auto">
+      <div aria-hidden className="absolute top-0 inset-x-0 z-20 h-16 pointer-events-none bg-gradient-to-b from-background/70 via-background/30 to-transparent" />
+      <header className="absolute top-0 inset-x-0 z-30 px-4 pt-3 pointer-events-none">
+        <div className="flex items-center justify-between pointer-events-auto pb-2 border-b border-border/30">
           <span className="text-foreground/90 font-medium tracking-tight lowercase text-base">
             freemind
           </span>
           <div className="flex items-center gap-1">
+            {onOpenHelp && (
+              <button
+                onClick={onOpenHelp}
+                data-tt-help="help-button"
+                className="h-8 w-8 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground transition-colors"
+                aria-label={t('tt.help.open', 'Help')}
+              >
+                <HelpCircle className="w-4 h-4" />
+              </button>
+            )}
             {!SINGLE_TOPIC_MODE && (
               <div ref={languageRef}>
                 <button
@@ -202,19 +235,21 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                   setLanguageOpen(false);
                   setShowLogin(false);
                 }}
+                data-tt-help="settings"
                 className="h-8 w-8 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground transition-colors"
-                aria-label={t('tt.menu')}
+                aria-label={t('tt.settingsAndGuide', 'Settings & guide')}
               >
-                {accountOpen ? <X className="w-4 h-4" /> : <DoorOpen className="w-4 h-4" />}
+                {accountOpen ? <X className="w-4 h-4" /> : <Settings className="w-4 h-4" />}
               </button>
             </div>
           </div>
         </div>
 
-        {/* Topic question */}
-        <div className="mt-3 text-center pointer-events-auto">
+        {/* Topic question — flush under the header line */}
+        <div className="pt-2 text-center pointer-events-auto">
           <h1 className="text-xl font-serif italic leading-tight text-foreground px-6">
             <TopicTitleWithLinks title={topicTitle} />
+
           </h1>
         </div>
       </header>
@@ -272,13 +307,25 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
           >
             <div className="px-4 py-3 border-b border-border/30 flex items-center justify-between">
               <h3 className="text-sm font-semibold">{t('tt.notifications')}</h3>
-              <button
-                onClick={() => setFiltersOpen((o) => !o)}
-                className={`p-1 rounded-md transition-colors ${filtersOpen ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground'}`}
-                aria-label={t('tt.notifFilterTitle')}
-              >
-                <SlidersHorizontal className="w-3.5 h-3.5" />
-              </button>
+              <div className="flex items-center gap-1">
+                {activeTopicId && (
+                  <button
+                    onClick={toggleSubscribeHere}
+                    className={`p-1 rounded-md transition-colors ${subscribedHere ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                    aria-label={subscribedHere ? t('tt.notifySubscribeOff', 'Turn off') : t('tt.notifySubscribeOn', 'Turn on')}
+                    title={subscribedHere ? t('tt.subscribed') : t('tt.notSubscribed')}
+                  >
+                    {subscribedHere ? <Bell className="w-3.5 h-3.5" /> : <BellOff className="w-3.5 h-3.5" />}
+                  </button>
+                )}
+                <button
+                  onClick={() => setFiltersOpen((o) => !o)}
+                  className={`p-1 rounded-md transition-colors ${filtersOpen ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                  aria-label={t('tt.notifFilterTitle')}
+                >
+                  <SlidersHorizontal className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
 
             {/* Inline filter panel */}
