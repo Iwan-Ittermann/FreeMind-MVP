@@ -10,6 +10,7 @@ import { getClientIP } from '@/hooks/useClientIP';
 import { toast } from 'sonner';
 import { ensureSilentAuth } from '@/lib/silent-auth';
 import { enableTopicNotifications, requestBrowserNotificationPermission } from '@/lib/tt-browser-notifications';
+import { requireVerified } from '@/lib/verification';
 
 type CTAState = 'collapsed' | 'half' | 'full';
 
