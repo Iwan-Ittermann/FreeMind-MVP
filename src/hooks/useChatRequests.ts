@@ -60,6 +60,7 @@ export function useChatRequests(topicId: string) {
   // Send a chat request
   const sendRequestMutation = useMutation({
     mutationFn: async ({ requesterOpinionId, targetOpinionId }: { requesterOpinionId: string; targetOpinionId: string }) => {
+      if (!(await requireVerified())) throw new Error('verification_required');
       const { error } = await supabase
         .from('chat_requests')
         .insert({
