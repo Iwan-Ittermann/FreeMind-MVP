@@ -308,6 +308,8 @@ export default function TT() {
           topicTitle={activeTopicTitle}
           notifications={ttNotifications}
           onMarkAllRead={markAllRead}
+          activeTopicId={activeTopicId}
+          onOpenHelp={SINGLE_TOPIC_MODE ? () => setHelpOpen(true) : undefined}
           onRestartTour={() => {
             setTourStep(0);
             setTourOpen(true);
@@ -329,7 +331,14 @@ export default function TT() {
           }}
         />
 
-        <TTNotificationsBell topicId={activeTopicId} />
+        {!SINGLE_TOPIC_MODE && <TTNotificationsBell topicId={activeTopicId} />}
+        {SINGLE_TOPIC_MODE && helpOpen && (
+          <TTHelpOverlay
+            onClose={() => setHelpOpen(false)}
+            opinions={activeData?.opinions ?? []}
+            ownOpinionId={ownOpinionId}
+          />
+        )}
         {ownOpinionKnown && !hasOwnOpinion && !selectedNode && (
           <TTCenterCTA
             topicId={activeTopicId}
