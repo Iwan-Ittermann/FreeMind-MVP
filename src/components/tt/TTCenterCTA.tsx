@@ -68,6 +68,10 @@ export function TTCenterCTA({
       toast.error(t('tt.opinionTooShort'));
       return;
     }
+    if (!(await requireVerified())) {
+      setState('collapsed');
+      return;
+    }
     setSubmitting(true);
     try {
       if (!user) await ensureSilentAuth();
