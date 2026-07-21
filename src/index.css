@@ -218,3 +218,60 @@
   --accent-warm: 38 82% 72%;
 }
 
+/* Nebula (deep-space) theme — applied via body class `.theme-nebula`.
+   Palette: violet-black bg, nebula core, magenta star, starlight, cyan accent. */
+.theme-nebula {
+  --background: 258 65% 8%;         /* #0a0524 deep violet-black */
+  --foreground: 290 100% 96%;       /* starlight */
+  --card: 262 60% 12%;
+  --card-foreground: 290 100% 96%;
+  --popover: 262 60% 12%;
+  --popover-foreground: 290 100% 96%;
+  --primary: 296 51% 54%;            /* #c44ec9 magenta star */
+  --primary-foreground: 290 100% 96%;
+  --secondary: 191 66% 59%;          /* cyan */
+  --secondary-foreground: 258 65% 8%;
+  --muted: 262 40% 18%;
+  --muted-foreground: 290 30% 75%;
+  --accent: 296 90% 88%;             /* #f5c4ff highlight */
+  --accent-foreground: 258 65% 8%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 290 100% 96%;
+  --border: 262 45% 25%;
+  --input: 262 45% 25%;
+  --ring: 296 51% 54%;
+  --tt-spotlight-overlay: 258 65% 8%;
+}
+
+.theme-nebula body,
+body.theme-nebula {
+  background:
+    radial-gradient(1200px 800px at 30% 20%, hsl(296 60% 32% / 0.45), transparent 60%),
+    radial-gradient(900px 600px at 75% 75%, hsl(191 70% 30% / 0.35), transparent 65%),
+    radial-gradient(1400px 1000px at 50% 50%, hsl(262 60% 12%), hsl(258 65% 5%) 90%);
+  background-attachment: fixed;
+}
+
+/* Starfield behind the graph. Deterministic dots via layered radial-gradients. */
+.nebula-stage { isolation: isolate; }
+.nebula-starfield {
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, hsl(0 0% 100% / 0.9), transparent 60%),
+    radial-gradient(1px 1px at 27% 62%, hsl(0 0% 100% / 0.7), transparent 60%),
+    radial-gradient(1.5px 1.5px at 44% 34%, hsl(296 100% 92% / 0.85), transparent 60%),
+    radial-gradient(1px 1px at 68% 71%, hsl(0 0% 100% / 0.6), transparent 60%),
+    radial-gradient(1px 1px at 82% 22%, hsl(0 0% 100% / 0.8), transparent 60%),
+    radial-gradient(1.5px 1.5px at 91% 55%, hsl(191 100% 90% / 0.8), transparent 60%),
+    radial-gradient(1px 1px at 8% 84%, hsl(0 0% 100% / 0.6), transparent 60%),
+    radial-gradient(1px 1px at 55% 12%, hsl(0 0% 100% / 0.7), transparent 60%),
+    radial-gradient(1px 1px at 36% 88%, hsl(0 0% 100% / 0.55), transparent 60%),
+    radial-gradient(1px 1px at 74% 44%, hsl(296 100% 92% / 0.7), transparent 60%);
+  animation: nebula-twinkle 4.5s ease-in-out infinite;
+}
+
+@keyframes nebula-twinkle {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 0.55; }
+}
+
+

@@ -16,6 +16,7 @@ const THEMES = [
   { value: 'city', label: '🏙️ City' },
   { value: 'arcane', label: '🏰 Arcane' },
   { value: 'signal', label: '📡 Signal & Noise' },
+  { value: 'nebula', label: '🌌 Nebula (Deep Space)' },
 ] as const;
 
 export function ThemePanel() {
