@@ -23,6 +23,8 @@ import { GraphEdge, GraphNode } from '@/types/graph';
 import { supabase } from '@/integrations/supabase/client';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { FloatingChatManager, FloatingChatManagerHandle } from '@/components/chat/FloatingChatManager';
+import { SINGLE_TOPIC_MODE } from '@/lib/single-topic';
+import { TTHelpOverlay } from '@/components/tt/TTHelpOverlay';
 
 const PRIMARY_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
