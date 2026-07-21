@@ -58,7 +58,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
     return (
       <>
         {/* Bottom pill buttons — sit just above the footer */}
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 pointer-events-none">
+        <div className="absolute bottom-9 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 pointer-events-none">
           <button
             onClick={() => setSide(side === 'left' ? null : 'left')}
             data-tt-help="opinions-tab"
