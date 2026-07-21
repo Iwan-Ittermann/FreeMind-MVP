@@ -723,28 +723,40 @@ export type Database = {
       }
       signups: {
         Row: {
+          auth_user_id: string | null
           confirm_token: string | null
           confirm_token_expires_at: string | null
           confirmed_at: string | null
           created_at: string
           email: string
           id: string
+          last_passphrase_sent_at: string | null
+          passphrase: string | null
+          passphrase_issued_at: string | null
         }
         Insert: {
+          auth_user_id?: string | null
           confirm_token?: string | null
           confirm_token_expires_at?: string | null
           confirmed_at?: string | null
           created_at?: string
           email: string
           id?: string
+          last_passphrase_sent_at?: string | null
+          passphrase?: string | null
+          passphrase_issued_at?: string | null
         }
         Update: {
+          auth_user_id?: string | null
           confirm_token?: string | null
           confirm_token_expires_at?: string | null
           confirmed_at?: string | null
           created_at?: string
           email?: string
           id?: string
+          last_passphrase_sent_at?: string | null
+          passphrase?: string | null
+          passphrase_issued_at?: string | null
         }
         Relationships: []
       }
@@ -965,6 +977,32 @@ export type Database = {
           },
         ]
       }
+      verified_participants: {
+        Row: {
+          signup_id: string
+          user_id: string
+          verified_at: string
+        }
+        Insert: {
+          signup_id: string
+          user_id: string
+          verified_at?: string
+        }
+        Update: {
+          signup_id?: string
+          user_id?: string
+          verified_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verified_participants_signup_id_fkey"
+            columns: ["signup_id"]
+            isOneToOne: true
+            referencedRelation: "signups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       contents: {
@@ -1144,6 +1182,7 @@ export type Database = {
         Args: { chat_id: string; checking_user_id: string }
         Returns: boolean
       }
+      is_verified_participant: { Args: { _user_id: string }; Returns: boolean }
       join_topic: {
         Args: { _ip_address?: string; _topic_slug: string }
         Returns: string
