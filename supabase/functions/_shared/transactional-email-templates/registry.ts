@@ -2,6 +2,7 @@
 import type { ComponentType } from 'npm:react@18.3.1'
 import { template as signupConfirm } from './signup-confirm.tsx'
 import { template as signupAdminNotify } from './signup-admin-notify.tsx'
+import { template as signupPassphrase } from './signup-passphrase.tsx'
 
 export interface TemplateEntry {
   // deno-lint-ignore no-explicit-any
