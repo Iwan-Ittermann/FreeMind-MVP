@@ -57,45 +57,36 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
 
     return (
       <>
-        {/* Left tab — opinions (slightly below center) */}
-        <button
-          onClick={() => setSide(side === 'left' ? null : 'left')}
-          data-tt-help="opinions-tab"
-          className="absolute left-0 top-[55%] -translate-y-1/2 z-30 h-28 w-7 rounded-r-xl bg-background/85 backdrop-blur-md border border-l-0 border-border/40 shadow-md flex items-center justify-center hover:bg-background/95 transition-colors"
-          aria-label={t('tt.opinions')}
-        >
-          <span
-            className="text-[10px] tracking-[0.2em] font-semibold text-foreground/80 uppercase"
-            style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+        {/* Bottom pill buttons — sit just above the footer */}
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 pointer-events-none">
+          <button
+            onClick={() => setSide(side === 'left' ? null : 'left')}
+            data-tt-help="opinions-tab"
+            className="pointer-events-auto h-9 px-4 rounded-full bg-background/85 backdrop-blur-md border border-border/40 shadow-md text-[11px] tracking-[0.18em] font-semibold text-foreground/80 uppercase hover:bg-background/95 transition-colors"
+            aria-label={t('tt.opinions')}
           >
             {t('tt.opinions')}
-          </span>
-        </button>
+          </button>
 
-        {/* Right tab — chats (slightly above center) */}
-        <button
-          onClick={() => {
-            if (!hasOwnOpinion) return;
-            setSide(side === 'right' ? null : 'right');
-          }}
-          disabled={!hasOwnOpinion}
-          data-tt-help="chats-tab"
-          className="absolute right-0 top-[45%] -translate-y-1/2 z-30 h-28 w-7 rounded-l-xl bg-background/85 backdrop-blur-md border border-r-0 border-border/40 shadow-md flex items-center justify-center hover:bg-background/95 transition-colors disabled:cursor-not-allowed disabled:opacity-45"
-          aria-label={t('tt.chats')}
-          title={!hasOwnOpinion ? t('chat.submitOpinionRequired') : t('tt.chats')}
-        >
-          <span
-            className="text-[10px] tracking-[0.2em] font-semibold text-foreground/80 uppercase"
-            style={{ writingMode: 'vertical-rl' }}
+          <button
+            onClick={() => {
+              if (!hasOwnOpinion) return;
+              setSide(side === 'right' ? null : 'right');
+            }}
+            disabled={!hasOwnOpinion}
+            data-tt-help="chats-tab"
+            className="pointer-events-auto relative h-9 px-4 rounded-full bg-background/85 backdrop-blur-md border border-border/40 shadow-md text-[11px] tracking-[0.18em] font-semibold text-foreground/80 uppercase hover:bg-background/95 transition-colors disabled:cursor-not-allowed disabled:opacity-45"
+            aria-label={t('tt.chats')}
+            title={!hasOwnOpinion ? t('chat.submitOpinionRequired') : t('tt.chats')}
           >
             {t('tt.chats')}
-          </span>
-          {unreadCount > 0 && (
-            <span className="absolute -top-1 -left-1 min-w-[16px] h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center px-1">
-              {unreadCount}
-            </span>
-          )}
-        </button>
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[16px] h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center px-1">
+                {unreadCount}
+              </span>
+            )}
+          </button>
+        </div>
 
         {/* Backdrop + animated panels */}
         <AnimatePresence>
@@ -114,12 +105,12 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
               {side === 'left' && (
                 <motion.div
                   key="panel-left"
-                  initial={{ opacity: 0, scaleX: 0.05, scaleY: 0.4 }}
-                  animate={{ opacity: 1, scaleX: 1, scaleY: 1 }}
-                  exit={{ opacity: 0, scaleX: 0.05, scaleY: 0.4 }}
+                  initial={{ opacity: 0, scale: 0.6, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.6, y: 20 }}
                   transition={SPRING}
-                  style={{ transformOrigin: '0% 50%', top: 'calc(55% - min(30vh, 260px))', height: '60vh', maxHeight: 520 }}
-                  className="absolute left-7 z-30 w-[78vw] max-w-[360px] rounded-2xl bg-background/85 backdrop-blur-xl border border-border/40 shadow-2xl overflow-hidden flex flex-col"
+                  style={{ transformOrigin: '50% 100%', height: '60vh', maxHeight: 520 }}
+                  className="absolute bottom-14 left-1/2 -translate-x-1/2 z-30 w-[86vw] max-w-[360px] rounded-2xl bg-background/85 backdrop-blur-xl border border-border/40 shadow-2xl overflow-hidden flex flex-col"
                 >
                   <div className="flex items-center justify-between px-4 py-3 border-b border-border/30">
                     <h2 className="text-sm font-semibold tracking-wide uppercase text-foreground/80">
@@ -159,12 +150,12 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
               {side === 'right' && (
                 <motion.div
                   key="panel-right"
-                  initial={{ opacity: 0, scaleX: 0.05, scaleY: 0.4 }}
-                  animate={{ opacity: 1, scaleX: 1, scaleY: 1 }}
-                  exit={{ opacity: 0, scaleX: 0.05, scaleY: 0.4 }}
+                  initial={{ opacity: 0, scale: 0.6, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.6, y: 20 }}
                   transition={SPRING}
-                  style={{ transformOrigin: '100% 50%', top: 'calc(45% - min(30vh, 260px))', height: '60vh', maxHeight: 520 }}
-                  className="absolute right-7 z-30 w-[78vw] max-w-[360px] rounded-2xl bg-background/85 backdrop-blur-xl border border-border/40 shadow-2xl overflow-hidden flex flex-col"
+                  style={{ transformOrigin: '50% 100%', height: '60vh', maxHeight: 520 }}
+                  className="absolute bottom-14 left-1/2 -translate-x-1/2 z-30 w-[86vw] max-w-[360px] rounded-2xl bg-background/85 backdrop-blur-xl border border-border/40 shadow-2xl overflow-hidden flex flex-col"
                 >
                   {/* Header */}
                   <div className="flex items-center justify-between px-4 py-3 border-b border-border/30">
