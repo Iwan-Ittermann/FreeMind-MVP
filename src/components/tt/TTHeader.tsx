@@ -55,7 +55,7 @@ const LANGUAGES = [
   { code: 'en', flag: '🇬🇧', labelKey: 'common.english' },
 ];
 
-export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRestartTour }: TTHeaderProps) {
+export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRestartTour, onOpenHelp, activeTopicId }: TTHeaderProps) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -66,6 +66,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
   const [showPhrase, setShowPhrase] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [filters, setFilters] = useState<NotificationFilters>(getGlobalFilters);
+  const [subscribedHere, setSubscribedHere] = useState(false);
   const accountRef = useRef<HTMLDivElement>(null);
   const bellRef = useRef<HTMLDivElement>(null);
   const languageRef = useRef<HTMLDivElement>(null);
@@ -76,6 +77,24 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
   const phrase = user?.email ? emailToPassphrase(user.email) ?? '' : '';
   const hasUnread = notifications.some((n) => n.unread);
   const currentLanguage = LANGUAGES.find((lang) => i18n.language.startsWith(lang.code)) ?? LANGUAGES[0];
+
+  useEffect(() => {
+    if (!activeTopicId) return;
+    const sync = () => setSubscribedHere(!!getPrefs(activeTopicId)?.enabled);
+    sync();
+    window.addEventListener('tt:subscription-changed', sync);
+    return () => window.removeEventListener('tt:subscription-changed', sync);
+  }, [activeTopicId]);
+
+  const toggleSubscribeHere = () => {
+    if (!activeTopicId) return;
+    const next = !subscribedHere;
+    setPrefs(activeTopicId, { enabled: next });
+    setSubscribedHere(next);
+    window.dispatchEvent(
+      new CustomEvent('tt:subscription-changed', { detail: { topicId: activeTopicId, enabled: next } }),
+    );
+  };
 
   const { data: topicList = [] } = useTTTopics();
   const topicTitleMap = new Map(topicList.map((tp) => [tp.id, tp.title]));
