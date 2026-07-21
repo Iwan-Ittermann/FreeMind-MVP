@@ -33,6 +33,8 @@ interface TTHeaderProps {
   notifications?: TTNotification[];
   onMarkAllRead?: () => void;
   onRestartTour?: () => void;
+  onOpenHelp?: () => void;
+  activeTopicId?: string;
 }
 
 const FILTER_ITEMS: {
