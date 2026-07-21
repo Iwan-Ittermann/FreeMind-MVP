@@ -88,7 +88,6 @@ export default function TT() {
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [chatNodeId, setChatNodeId] = useState<string | null>(null);
   useEffect(() => {
-    tourDemoSelectionRef.current = null;
     setSelectedNode(null);
     setChatNodeId(null);
   }, [activeTopicId]);
@@ -119,24 +118,6 @@ export default function TT() {
   const ownOpinionId = visibleOwnOpinionId ?? directOwnOpinionId;
   const hasOwnOpinion = !!ownOpinionId;
   const ownOpinionKnown = !authLoading && !activeDataLoading && (!user || !directOwnOpinionLoading);
-  useEffect(() => {
-    const shouldOpenOpinionPanel = tourStep === TT_ONBOARDING_CHAT_STEP || (tourStep === TT_ONBOARDING_RATING_STEP && hasOwnOpinion);
-    if (!tourOpen || !shouldOpenOpinionPanel || !activeData?.opinions.length) {
-      if (!shouldOpenOpinionPanel) tourDemoSelectionRef.current = null;
-      return;
-    }
-    const candidates = activeData.opinions.filter((opinion) => opinion.id !== ownOpinionId);
-    const pool = candidates.length > 0 ? candidates : activeData.opinions;
-    const existingPick = tourDemoSelectionRef.current;
-    const reusableOpinion = existingPick?.topicId === activeTopicId && existingPick.step === tourStep
-      ? pool.find((opinion) => opinion.id === existingPick.opinionId)
-      : null;
-    const randomOpinion = reusableOpinion ?? pool[Math.floor(Math.random() * pool.length)];
-    if (!randomOpinion) return;
-    tourDemoSelectionRef.current = { topicId: activeTopicId, step: tourStep, opinionId: randomOpinion.id };
-    if (selectedNode?.id === randomOpinion.id) return;
-    setSelectedNode({ id: randomOpinion.id, x: 0, y: 0, opinion: randomOpinion } as GraphNode);
-  }, [tourOpen, tourStep, activeTopicId, activeData?.opinions, ownOpinionId, selectedNode?.id, hasOwnOpinion]);
   const { notifications: ttNotifications, markAllRead } = useTTNotifications(activeTopicId);
   const { data: unreadMap } = useUnreadMessages(activeTopicId, ownOpinionId);
   const handleEdgeClick = useCallback((edge: GraphEdge) => {
@@ -150,7 +131,7 @@ export default function TT() {
     return sum;
   }, [unreadMap]);
 
-  // Auto-subscribe bell + trigger positioning tour on first opinion
+  // Auto-subscribe bell on first opinion
   const prevHasOwnRef = useRef<boolean | null>(null);
   useEffect(() => {
     if (!ownOpinionKnown) return;
@@ -164,18 +145,6 @@ export default function TT() {
     }
   }, [hasOwnOpinion, ownOpinionKnown, activeTopicId]);
 
-  const positioningTour = useTTPositioningTour({
-    topicId: activeTopicId,
-    opinions: activeData?.opinions ?? [],
-    ownOpinionId,
-    hasOwnOpinion,
-    ownOpinionKnown,
-    onSelectNode: setSelectedNode,
-  });
-  const showTourSpotlightOverlay = tourOpen && (
-    tourStep === TT_ONBOARDING_ADD_OPINION_STEP
-    || tourStep === TT_ONBOARDING_RATING_STEP
-  );
   // Lock viewport for this route only
   useEffect(() => {
     const meta = document.querySelector('meta[name="viewport"]');
