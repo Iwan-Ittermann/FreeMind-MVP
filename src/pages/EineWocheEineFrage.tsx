@@ -7,17 +7,13 @@ import { TTSideTabs, TTSideTabsHandle } from '@/components/tt/TTSideTabs';
 import { TTBottomPanel } from '@/components/tt/TTBottomPanel';
 import { TTNotificationsBell } from '@/components/tt/TTNotificationsBell';
 import { TTCenterCTA } from '@/components/tt/TTCenterCTA';
-import { TTOnboardingTour } from '@/components/tt/TTOnboardingTour';
-import { PositioningTourCongrats } from '@/components/PositioningTourCongrats';
-import { PositioningTourControls } from '@/components/PositioningTourControls';
-import { motion, AnimatePresence } from 'framer-motion';
+
 import { useTTTopics, useTTSwipeWindow } from '@/hooks/useTTTopics';
 import { useTopicData } from '@/hooks/useTopicData';
 import { useTTChats } from '@/hooks/useTTChats';
 import { useAuth } from '@/hooks/useAuth';
 import { useTTNotifications } from '@/hooks/useTTNotifications';
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
-import { useTTPositioningTour } from '@/hooks/useTTPositioningTour';
 import { getPrefs, setPrefs } from '@/lib/tt-notification-prefs';
 import { GraphEdge, GraphNode } from '@/types/graph';
 import { supabase } from '@/integrations/supabase/client';
@@ -28,12 +24,6 @@ import { TTHelpOverlay } from '@/components/tt/TTHelpOverlay';
 
 const PRIMARY_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const TT_ONBOARDING_DONE_KEY = 'tt:onboarding:first-step-done';
-const TT_ONBOARDING_AUTO_OPEN_DELAY_MS = 3000;
-const TT_ONBOARDING_OPINIONS_STEP = 1;
-const TT_ONBOARDING_ADD_OPINION_STEP = 2;
-const TT_ONBOARDING_CHAT_STEP = 3;
-const TT_ONBOARDING_RATING_STEP = 4;
 
 /**
  * TikTok-style mobile UI.
@@ -81,27 +71,10 @@ export default function TT() {
   const containerRef = useRef<HTMLDivElement>(null);
   const ignoreObserverRef = useRef(false);
   const sideTabsRef = useRef<TTSideTabsHandle>(null);
-  const [tourOpen, setTourOpen] = useState(false);
-  const [tourStep, setTourStep] = useState(0);
-  const tourDemoSelectionRef = useRef<{ topicId: string; step: number; opinionId: string } | null>(null);
-
-  useEffect(() => {
-    if (localStorage.getItem(TT_ONBOARDING_DONE_KEY) === 'true') return;
-    const timer = window.setTimeout(() => {
-      if (localStorage.getItem(TT_ONBOARDING_DONE_KEY) !== 'true') setTourOpen(true);
-    }, TT_ONBOARDING_AUTO_OPEN_DELAY_MS);
-    return () => window.clearTimeout(timer);
-  }, []);
-
-  const completeTour = useCallback(() => {
-    localStorage.setItem(TT_ONBOARDING_DONE_KEY, 'true');
-    setTourOpen(false);
-  }, []);
 
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [chatNodeId, setChatNodeId] = useState<string | null>(null);
   useEffect(() => {
-    tourDemoSelectionRef.current = null;
     setSelectedNode(null);
     setChatNodeId(null);
   }, [activeTopicId]);
@@ -132,24 +105,6 @@ export default function TT() {
   const ownOpinionId = visibleOwnOpinionId ?? directOwnOpinionId;
   const hasOwnOpinion = !!ownOpinionId;
   const ownOpinionKnown = !authLoading && !activeDataLoading && (!user || !directOwnOpinionLoading);
-  useEffect(() => {
-    const shouldOpenOpinionPanel = tourStep === TT_ONBOARDING_CHAT_STEP || (tourStep === TT_ONBOARDING_RATING_STEP && hasOwnOpinion);
-    if (!tourOpen || !shouldOpenOpinionPanel || !activeData?.opinions.length) {
-      if (!shouldOpenOpinionPanel) tourDemoSelectionRef.current = null;
-      return;
-    }
-    const candidates = activeData.opinions.filter((opinion) => opinion.id !== ownOpinionId);
-    const pool = candidates.length > 0 ? candidates : activeData.opinions;
-    const existingPick = tourDemoSelectionRef.current;
-    const reusableOpinion = existingPick?.topicId === activeTopicId && existingPick.step === tourStep
-      ? pool.find((opinion) => opinion.id === existingPick.opinionId)
-      : null;
-    const randomOpinion = reusableOpinion ?? pool[Math.floor(Math.random() * pool.length)];
-    if (!randomOpinion) return;
-    tourDemoSelectionRef.current = { topicId: activeTopicId, step: tourStep, opinionId: randomOpinion.id };
-    if (selectedNode?.id === randomOpinion.id) return;
-    setSelectedNode({ id: randomOpinion.id, x: 0, y: 0, opinion: randomOpinion } as GraphNode);
-  }, [tourOpen, tourStep, activeTopicId, activeData?.opinions, ownOpinionId, selectedNode?.id, hasOwnOpinion]);
   const { notifications: ttNotifications, markAllRead } = useTTNotifications(activeTopicId);
   const { data: unreadMap } = useUnreadMessages(activeTopicId, ownOpinionId);
   const handleEdgeClick = useCallback((edge: GraphEdge) => {
@@ -163,7 +118,7 @@ export default function TT() {
     return sum;
   }, [unreadMap]);
 
-  // Auto-subscribe bell + trigger positioning tour on first opinion
+  // Auto-subscribe bell on first opinion
   const prevHasOwnRef = useRef<boolean | null>(null);
   useEffect(() => {
     if (!ownOpinionKnown) return;
@@ -177,18 +132,6 @@ export default function TT() {
     }
   }, [hasOwnOpinion, ownOpinionKnown, activeTopicId]);
 
-  const positioningTour = useTTPositioningTour({
-    topicId: activeTopicId,
-    opinions: activeData?.opinions ?? [],
-    ownOpinionId,
-    hasOwnOpinion,
-    ownOpinionKnown,
-    onSelectNode: setSelectedNode,
-  });
-  const showTourSpotlightOverlay = tourOpen && (
-    tourStep === TT_ONBOARDING_ADD_OPINION_STEP
-    || tourStep === TT_ONBOARDING_RATING_STEP
-  );
   // Lock viewport for this route only
   useEffect(() => {
     const meta = document.querySelector('meta[name="viewport"]');
@@ -288,7 +231,7 @@ export default function TT() {
               hue={(i * 47) % 360}
               isLoopClone={topic.clone}
               selectedNodeId={topic.id === activeTopicId && !topic.clone ? (selectedNode?.id ?? chatNodeId) : null}
-              highlightAllNodes={topic.id === activeTopicId && !topic.clone && tourOpen && tourStep === TT_ONBOARDING_OPINIONS_STEP}
+              highlightAllNodes={false}
               onNodeSelect={(n) => {
                 if (!topic.clone) setSelectedNode(n);
               }}
@@ -311,10 +254,6 @@ export default function TT() {
           onMarkAllRead={markAllRead}
           activeTopicId={activeTopicId}
           onOpenHelp={SINGLE_TOPIC_MODE ? () => setHelpOpen(true) : undefined}
-          onRestartTour={() => {
-            setTourStep(0);
-            setTourOpen(true);
-          }}
         />
         <TTSideTabs
           ref={sideTabsRef}
@@ -344,38 +283,23 @@ export default function TT() {
           <TTCenterCTA
             topicId={activeTopicId}
             topicTitle={activeTopicTitle}
-            highlight={tourOpen && tourStep === TT_ONBOARDING_ADD_OPINION_STEP}
+            highlight={false}
             onOpinionCommitted={() => {
               queryClient.invalidateQueries({ queryKey: ['tt-own-opinion', activeTopicId, user?.id] });
               queryClient.invalidateQueries({ queryKey: ['topic', activeTopicId] });
             }}
           />
         )}
-        {showTourSpotlightOverlay && (
-          <div className="pointer-events-none absolute inset-0 z-50 bg-tt-spotlight-overlay/70" />
-        )}
-        <TTOnboardingTour
-          open={tourOpen}
-          step={tourStep}
-          onNext={() => {
-            if (tourStep >= TT_ONBOARDING_RATING_STEP) {
-              completeTour();
-              return;
-            }
-            setTourStep((step) => Math.min(TT_ONBOARDING_RATING_STEP, step + 1));
-          }}
-          onDone={completeTour}
-        />
         <TTBottomPanel
           topicId={activeTopicId}
           hasOwnOpinion={hasOwnOpinion}
           ownOpinionKnown={ownOpinionKnown}
           ownOpinionId={ownOpinionId}
-          highlightAddOpinionForm={tourOpen && tourStep === TT_ONBOARDING_ADD_OPINION_STEP}
-          highlightLetsChatButton={tourOpen && tourStep === TT_ONBOARDING_CHAT_STEP}
-          highlightDisagreementScale={tourOpen && tourStep === TT_ONBOARDING_RATING_STEP && hasOwnOpinion}
-          forceShowAddOpinionForm={tourOpen && tourStep === TT_ONBOARDING_ADD_OPINION_STEP}
-          suppressHintPanel={tourOpen}
+          highlightAddOpinionForm={false}
+          highlightLetsChatButton={false}
+          highlightDisagreementScale={false}
+          forceShowAddOpinionForm={false}
+          suppressHintPanel={false}
           selected={
             selectedNode
               ? { id: selectedNode.id, text: selectedNode.opinion?.text ?? '' }
@@ -394,22 +318,18 @@ export default function TT() {
             queryClient.invalidateQueries({ queryKey: ['topic', activeTopicId] });
           }}
           onCloseSelection={() => {
-            if (positioningTour.active) positioningTour.stop();
             setSelectedNode(null);
           }}
         />
 
-        <PositioningTourCongrats
-          open={positioningTour.congratsOpen}
-          onStart={positioningTour.start}
-        />
-        {positioningTour.active && selectedNode && (
-          <PositioningTourControls
-            onNext={positioningTour.next}
-            onStop={positioningTour.stop}
-            canContinue={positioningTour.canContinue}
-          />
-        )}
+        {/* Impressum footer */}
+        <a
+          href="/legal"
+          className="absolute bottom-1 left-1/2 -translate-x-1/2 z-40 text-[10px] text-muted-foreground/70 hover:text-foreground transition-colors pointer-events-auto"
+        >
+          Impressum
+        </a>
+
       </div>
     </div>
   );
