@@ -305,6 +305,9 @@ export const SignalNode = memo(function SignalNode({
           </text>
         </g>
       )}
+    </>
+  );
+
 
 
   if (animateFromCenter) {
