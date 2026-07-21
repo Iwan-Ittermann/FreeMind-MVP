@@ -81,22 +81,9 @@ export default function TT() {
   const containerRef = useRef<HTMLDivElement>(null);
   const ignoreObserverRef = useRef(false);
   const sideTabsRef = useRef<TTSideTabsHandle>(null);
-  const [tourOpen, setTourOpen] = useState(false);
-  const [tourStep, setTourStep] = useState(0);
-  const tourDemoSelectionRef = useRef<{ topicId: string; step: number; opinionId: string } | null>(null);
-
-  useEffect(() => {
-    if (localStorage.getItem(TT_ONBOARDING_DONE_KEY) === 'true') return;
-    const timer = window.setTimeout(() => {
-      if (localStorage.getItem(TT_ONBOARDING_DONE_KEY) !== 'true') setTourOpen(true);
-    }, TT_ONBOARDING_AUTO_OPEN_DELAY_MS);
-    return () => window.clearTimeout(timer);
-  }, []);
-
-  const completeTour = useCallback(() => {
-    localStorage.setItem(TT_ONBOARDING_DONE_KEY, 'true');
-    setTourOpen(false);
-  }, []);
+  // Onboarding tour disabled — kept as static no-op so downstream props stay unchanged.
+  const tourOpen = false;
+  const tourStep = -1;
 
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [chatNodeId, setChatNodeId] = useState<string | null>(null);
