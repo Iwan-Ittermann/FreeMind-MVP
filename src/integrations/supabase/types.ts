@@ -530,6 +530,39 @@ export type Database = {
         }
         Relationships: []
       }
+      opinion_ips: {
+        Row: {
+          created_at: string
+          ip_address: string | null
+          opinion_id: string
+        }
+        Insert: {
+          created_at?: string
+          ip_address?: string | null
+          opinion_id: string
+        }
+        Update: {
+          created_at?: string
+          ip_address?: string | null
+          opinion_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "opinion_ips_opinion_id_fkey"
+            columns: ["opinion_id"]
+            isOneToOne: true
+            referencedRelation: "opinions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "opinion_ips_opinion_id_fkey"
+            columns: ["opinion_id"]
+            isOneToOne: true
+            referencedRelation: "opinions_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       opinion_ratings: {
         Row: {
           created_at: string | null
@@ -600,7 +633,6 @@ export type Database = {
         Row: {
           created_at: string
           id: string
-          ip_address: string | null
           notice_text: string | null
           status: string | null
           text: string
@@ -611,7 +643,6 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
-          ip_address?: string | null
           notice_text?: string | null
           status?: string | null
           text: string
@@ -622,7 +653,6 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
-          ip_address?: string | null
           notice_text?: string | null
           status?: string | null
           text?: string
