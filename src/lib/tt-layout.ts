@@ -381,6 +381,27 @@ export function calculateTTLayout(
 
   const angleMap = calculateDeterministicAngles(opinions, ratings);
 
+  // Rank-based radial positioning for nodes with positive totals.
+  //  - Sort by (total desc, id asc) — deterministic.
+  //  - Rank 0 (highest) sits at center; last positive rank sits near blueR.
+  //  - This naturally dampens low-score nodes: a node with 10% of the top
+  //    score is not automatically pushed to 90% of the way out — it's placed
+  //    by its ordinal position among the positive-score cohort.
+  const positives = idSorted
+    .filter(op => {
+      const t = totals.get(op.id)!;
+      return t.hasChats && t.total > 0 && op.authorId !== BOT_USER_ID;
+    })
+    .sort((a, b) => {
+      const ta = totals.get(a.id)!.total;
+      const tb = totals.get(b.id)!.total;
+      if (tb !== ta) return tb - ta;
+      return a.id.localeCompare(b.id);
+    });
+  const positiveCount = positives.length;
+  const rankOf = new Map<string, number>();
+  positives.forEach((op, i) => rankOf.set(op.id, i));
+
   let allNodes: GraphNode[] = opinions.map(op => {
     const { total, hasChats } = totals.get(op.id)!;
 
@@ -388,8 +409,8 @@ export function calculateTTLayout(
     let level: number;
     let zone: 'respectful' | 'moderate' | 'extreme';
 
-    if (!hasChats) {
-      // Starter placement — unchanged from legacy.
+    if (!hasChats || (total === 0 && op.authorId !== BOT_USER_ID)) {
+      // Starter / no-activity placement — sits just inside the blue ring.
       r = blueR - tinyPad;
       level = 3;
       zone = 'moderate';
@@ -400,13 +421,16 @@ export function calculateTTLayout(
       else { r = whiteR + 4; level = -1; }
       zone = 'extreme';
     } else {
-      // Positive band — linearly proportional to the top scorer.
-      if (topIds.length > 1 && total === maxTotal) {
-        r = topOrbitRadius;
+      // Positive band — rank-based proximity.
+      const rank = rankOf.get(op.id) ?? 0;
+      if (positiveCount <= 1) {
+        r = 0; // sole top scorer → dead center
       } else {
-        r = blueR * (1 - total / safeMax);
+        // Rank 0 → 0, last rank → blueR − tinyPad.
+        const frac = rank / (positiveCount - 1);
+        r = frac * (blueR - tinyPad);
       }
-      level = total >= safeMax * 0.5 ? 7 : total > 0 ? 4 : 3;
+      level = rank === 0 ? 10 : rank < positiveCount / 2 ? 7 : 4;
       zone = r <= landmarks.coreR ? 'respectful' : 'moderate';
     }
 
