@@ -320,6 +320,23 @@ function resolveCollisions(nodes: GraphNode[], config: LayoutConfig, pinnedIds: 
   });
 }
 
+/**
+ * Compute the total bridging points for a node.
+ * totalPoints = Σ (empathy × disagreement) over non-synthetic ratings involving this node.
+ * Ordering is deterministic (ratings iterated as passed; sum is commutative).
+ */
+function computeTotalPoints(nodeId: string, ratings: ChatRating[]): { total: number; hasChats: boolean } {
+  let total = 0;
+  let hasChats = false;
+  for (const r of ratings) {
+    if (r.isSynthetic) continue;
+    if (r.opinionA !== nodeId && r.opinionB !== nodeId) continue;
+    total += r.empathy * r.disagreement;
+    hasChats = true;
+  }
+  return { total, hasChats };
+}
+
 export function calculateTTLayout(
   opinions: Opinion[],
   ratings: ChatRating[],
@@ -328,12 +345,30 @@ export function calculateTTLayout(
 ): GraphData {
   const respectfulZoneSlots: RespectfulZoneSlot[] = [];
 
-  const nodeScores = new Map<string, { freeMindScore: number; hasChats: boolean; level: number }>();
-  opinions.forEach(op => {
-    const s = calculateFreeMindScore(op.id, ratings);
-    const level = ttScoreToLevel(s.freeMindScore, s.hasChats);
-    nodeScores.set(op.id, { freeMindScore: s.freeMindScore, hasChats: s.hasChats, level });
-  });
+  // Total-points-based radial positioning.
+  //  - Top scorer (max positive total) sits at the center.
+  //  - Others are linearly proportional between center and blueR (score 0 → blueR).
+  //  - hasChats === false → starter position at blueR − tinyPad (unchanged).
+  //  - Negative totals → extreme band (whiteR + step*n), matching legacy tiers.
+  const totals = new Map<string, { total: number; hasChats: boolean }>();
+  opinions.forEach(op => totals.set(op.id, computeTotalPoints(op.id, ratings)));
+
+  // Deterministic maxTotal: id-sorted iteration; ties for the top go to the lowest id.
+  const idSorted = [...opinions].sort((a, b) => a.id.localeCompare(b.id));
+  let maxTotal = 0;
+  for (const op of idSorted) {
+    const t = totals.get(op.id)!.total;
+    if (t > maxTotal) maxTotal = t;
+  }
+  const safeMax = Math.max(maxTotal, 1);
+
+  const tinyPad = 4;
+  const blueR = landmarks.blueR;
+  const whiteR = landmarks.whiteR;
+
+  // Ids that share the top score — used to give ties a tiny inner orbit so they don't stack.
+  const topIds = idSorted.filter(op => totals.get(op.id)!.total === maxTotal && maxTotal > 0).map(op => op.id);
+  const topOrbitRadius = topIds.length > 1 ? Math.min(landmarks.coreR * 0.18, 18) : 0;
 
   const edges: GraphEdge[] = ratings.map(r => ({
     source: r.opinionA,
@@ -346,32 +381,51 @@ export function calculateTTLayout(
 
   const angleMap = calculateDeterministicAngles(opinions, ratings);
 
-  // Distribute multiple level-10 nodes around a tiny inner orbit so they don't all stack at R=0.
-  const level10Ids = opinions
-    .filter(op => nodeScores.get(op.id)!.level === 10)
-    .map(op => op.id)
-    .sort();
-  const level10Radius = level10Ids.length > 1 ? Math.min(landmarks.coreR * 0.18, 18) : 0;
-
   let allNodes: GraphNode[] = opinions.map(op => {
-    const s = nodeScores.get(op.id)!;
-    let r = ttLevelToRadius(s.level, landmarks);
-    if (s.level === 10 && level10Ids.length > 1) r = level10Radius;
+    const { total, hasChats } = totals.get(op.id)!;
+
+    let r: number;
+    let level: number;
+    let zone: 'respectful' | 'moderate' | 'extreme';
+
+    if (!hasChats) {
+      // Starter placement — unchanged from legacy.
+      r = blueR - tinyPad;
+      level = 3;
+      zone = 'moderate';
+    } else if (total < 0) {
+      // Extreme band — three tiers as before.
+      if (total < -2500) { r = whiteR + 4 + 2 * EXTREME_STEP; level = -3; }
+      else if (total < -1000) { r = whiteR + 4 + EXTREME_STEP; level = -2; }
+      else { r = whiteR + 4; level = -1; }
+      zone = 'extreme';
+    } else {
+      // Positive band — linearly proportional to the top scorer.
+      if (topIds.length > 1 && total === maxTotal) {
+        r = topOrbitRadius;
+      } else {
+        r = blueR * (1 - total / safeMax);
+      }
+      level = total >= safeMax * 0.5 ? 7 : total > 0 ? 4 : 3;
+      zone = r <= landmarks.coreR ? 'respectful' : 'moderate';
+    }
+
     const angle = angleMap.get(op.id) || 0;
     return {
       id: op.id,
       x: config.centerX + Math.cos(angle) * r,
       y: config.centerY + Math.sin(angle) * r,
       opinion: op,
-      isBridge: s.freeMindScore > 2500,
+      isBridge: total > 2500,
       distanceToCenter: r,
-      hasChats: s.hasChats,
-      level: s.level,
-      zone: levelToZone(s.level),
+      hasChats,
+      level,
+      zone,
+      totalPoints: total,
     };
   });
 
-  // Pin the bot to 6 o'clock at the starter ring
+  // Pin the bot to 6 o'clock at the legacy starter ring
   allNodes = allNodes.map(node => {
     if (node.opinion.authorId === BOT_USER_ID) {
       const r = ttLevelToRadius(3, landmarks);
@@ -394,3 +448,4 @@ export function calculateTTLayout(
 
   return { nodes: allNodes, edges, respectfulZoneSlots };
 }
+
