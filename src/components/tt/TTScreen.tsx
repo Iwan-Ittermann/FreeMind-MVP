@@ -6,6 +6,7 @@ import { OpinionGraph } from '@/components/graph/OpinionGraph';
 import { TTBackground } from './TTBackground';
 import { useTranslation } from 'react-i18next';
 import { GraphEdge, GraphNode } from '@/types/graph';
+import { SINGLE_TOPIC_MODE } from '@/lib/single-topic';
 
 interface TTScreenInnerProps {
   topicId: string;
