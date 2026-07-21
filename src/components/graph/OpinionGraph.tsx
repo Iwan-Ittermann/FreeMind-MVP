@@ -152,10 +152,15 @@ export function OpinionGraph({
 
   const theme = useFreeMindTheme();
 
-  if (theme === 'city' || theme === 'arcane' || theme === 'signal') {
-    const Renderer = theme === 'signal' ? SignalRenderer : theme === 'arcane' ? ArcaneRenderer : CityRenderer;
+  if (theme === 'city' || theme === 'arcane' || theme === 'signal' || theme === 'nebula') {
+    // Nebula reuses the Signal renderer; palette overrides come from body class `.theme-nebula`.
+    const useSignalLike = theme === 'signal' || theme === 'nebula';
+    const Renderer = useSignalLike ? SignalRenderer : theme === 'arcane' ? ArcaneRenderer : CityRenderer;
     return (
-      <div className="relative">
+      <div className={`relative ${theme === 'nebula' ? 'nebula-stage' : ''}`}>
+        {theme === 'nebula' && (
+          <div className="nebula-starfield pointer-events-none absolute inset-0 -z-10" aria-hidden />
+        )}
         <Renderer
           nodes={graphData.nodes}
           edges={graphData.edges}
@@ -170,7 +175,7 @@ export function OpinionGraph({
           onNodeClick={handleNodeClick}
           onNodeHover={handleNodeHover}
           onEdgeClick={onEdgeClick}
-          {...(theme === 'signal' ? { showLabels, highlightAllNodes, showZones: chrome !== 'naked', ttMode, ttLandmarks } : {})}
+          {...(useSignalLike ? { showLabels, highlightAllNodes, showZones: chrome !== 'naked', ttMode, ttLandmarks } : {})}
         />
       </div>
     );
