@@ -95,19 +95,19 @@ export function TTHelpOverlay({ onClose, opinions, ownOpinionId }: TTHelpOverlay
         raw.push({ rect, label, preferredSide: side, isCircle });
       };
 
-      push('[data-tt-help="opinions-tab"]', t('tt.help.opinionsList', 'Liste aller Meinungen'), 'right');
-      push('[data-tt-help="chats-tab"]', t('tt.help.chatsList', 'Liste deiner Chats'), 'left');
-      push('[data-tt-help="settings"]', t('tt.help.settings', 'Einstellungen & Anleitung'), 'bottom');
+      push('[data-tt-help="opinions-tab"]', t('tt.help.opinionsList', 'Liste aller Meinungen'), 'top');
+      push('[data-tt-help="chats-tab"]', t('tt.help.chatsList', 'Liste deiner Chats'), 'top');
+      push('[data-tt-help="settings"]', t('tt.help.settings', 'Einstellungen & Anleitung'), 'top');
 
-      randomOpinionIds.forEach((id, idx) => {
+      randomOpinionIds.forEach((id) => {
         const el = document.querySelector(`[data-tt-node-id="${id}"]`) as SVGElement | null;
         if (!el) return;
         const rect = el.getBoundingClientRect();
         if (rect.width === 0) return;
         raw.push({
           rect,
-          label: idx === 0 ? t('tt.help.otherOpinions', 'Meinungen der anderen') : '',
-          preferredSide: 'right',
+          label: t('tt.help.otherOpinions', 'Meinungen der anderen'),
+          preferredSide: 'top',
           isCircle: true,
         });
       });
@@ -117,28 +117,10 @@ export function TTHelpOverlay({ onClose, opinions, ownOpinionId }: TTHelpOverlay
         if (el) {
           const rect = el.getBoundingClientRect();
           if (rect.width > 0) {
-            raw.push({ rect, label: t('tt.help.yourOpinion', 'Deine Meinung'), preferredSide: 'right', isCircle: true });
+            raw.push({ rect, label: t('tt.help.yourOpinion', 'Deine Meinung'), preferredSide: 'top', isCircle: true });
           }
         }
       }
-
-      const frame = getFrameRect();
-      const cx = frame.left + frame.width / 2;
-      const cy = frame.top + frame.height / 2;
-      const respR = frame.width * 0.20;
-      raw.push({
-        rect: new DOMRect(cx - respR, cy - respR, respR * 2, respR * 2),
-        label: t('tt.help.highScore', 'Hohe Punktzahl'),
-        preferredSide: 'right',
-        isCircle: true,
-      });
-      const extR = frame.width * 0.48;
-      raw.push({
-        rect: new DOMRect(cx - 30, cy + extR - 30, 60, 60),
-        label: t('tt.help.negativeScore', 'Negative Punktzahl'),
-        preferredSide: 'top',
-        isCircle: true,
-      });
 
       // Now compute ring + label boxes with collision handling.
       const pad = 8;
