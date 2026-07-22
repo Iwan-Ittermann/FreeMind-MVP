@@ -71,10 +71,10 @@ function rectsOverlap(
 export function TTHelpOverlay({ onClose, opinions, ownOpinionId }: TTHelpOverlayProps) {
   const { t } = useTranslation();
 
-  // Pick random opinion ids once for the lifetime of this overlay instance.
+  // Pick a single random opinion id once for the lifetime of this overlay instance.
   const [randomOpinionIds] = useState<string[]>(() => {
     const others = opinions.filter((o) => o.id !== ownOpinionId);
-    return pickRandom(others, 3).map((o) => o.id);
+    return pickRandom(others, 1).map((o) => o.id);
   });
 
   const [positioned, setPositioned] = useState<PositionedCallout[]>([]);
