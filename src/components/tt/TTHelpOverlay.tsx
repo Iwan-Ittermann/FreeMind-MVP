@@ -71,10 +71,10 @@ function rectsOverlap(
 export function TTHelpOverlay({ onClose, opinions, ownOpinionId }: TTHelpOverlayProps) {
   const { t } = useTranslation();
 
-  // Pick random opinion ids once for the lifetime of this overlay instance.
+  // Pick a single random opinion id once for the lifetime of this overlay instance.
   const [randomOpinionIds] = useState<string[]>(() => {
     const others = opinions.filter((o) => o.id !== ownOpinionId);
-    return pickRandom(others, 3).map((o) => o.id);
+    return pickRandom(others, 1).map((o) => o.id);
   });
 
   const [positioned, setPositioned] = useState<PositionedCallout[]>([]);
@@ -95,19 +95,19 @@ export function TTHelpOverlay({ onClose, opinions, ownOpinionId }: TTHelpOverlay
         raw.push({ rect, label, preferredSide: side, isCircle });
       };
 
-      push('[data-tt-help="opinions-tab"]', t('tt.help.opinionsList', 'Liste aller Meinungen'), 'right');
-      push('[data-tt-help="chats-tab"]', t('tt.help.chatsList', 'Liste deiner Chats'), 'left');
-      push('[data-tt-help="settings"]', t('tt.help.settings', 'Einstellungen & Anleitung'), 'bottom');
+      push('[data-tt-help="opinions-tab"]', t('tt.help.opinionsList', 'Liste aller Meinungen'), 'top');
+      push('[data-tt-help="chats-tab"]', t('tt.help.chatsList', 'Liste deiner Chats'), 'top');
+      push('[data-tt-help="settings"]', t('tt.help.settings', 'Einstellungen & Anleitung'), 'top');
 
-      randomOpinionIds.forEach((id, idx) => {
+      randomOpinionIds.forEach((id) => {
         const el = document.querySelector(`[data-tt-node-id="${id}"]`) as SVGElement | null;
         if (!el) return;
         const rect = el.getBoundingClientRect();
         if (rect.width === 0) return;
         raw.push({
           rect,
-          label: idx === 0 ? t('tt.help.otherOpinions', 'Meinungen der anderen') : '',
-          preferredSide: 'right',
+          label: t('tt.help.otherOpinions', 'Meinungen der anderen'),
+          preferredSide: 'top',
           isCircle: true,
         });
       });
@@ -117,28 +117,10 @@ export function TTHelpOverlay({ onClose, opinions, ownOpinionId }: TTHelpOverlay
         if (el) {
           const rect = el.getBoundingClientRect();
           if (rect.width > 0) {
-            raw.push({ rect, label: t('tt.help.yourOpinion', 'Deine Meinung'), preferredSide: 'right', isCircle: true });
+            raw.push({ rect, label: t('tt.help.yourOpinion', 'Deine Meinung'), preferredSide: 'top', isCircle: true });
           }
         }
       }
-
-      const frame = getFrameRect();
-      const cx = frame.left + frame.width / 2;
-      const cy = frame.top + frame.height / 2;
-      const respR = frame.width * 0.20;
-      raw.push({
-        rect: new DOMRect(cx - respR, cy - respR, respR * 2, respR * 2),
-        label: t('tt.help.highScore', 'Hohe Punktzahl'),
-        preferredSide: 'right',
-        isCircle: true,
-      });
-      const extR = frame.width * 0.48;
-      raw.push({
-        rect: new DOMRect(cx - 30, cy + extR - 30, 60, 60),
-        label: t('tt.help.negativeScore', 'Negative Punktzahl'),
-        preferredSide: 'top',
-        isCircle: true,
-      });
 
       // Now compute ring + label boxes with collision handling.
       const pad = 8;
@@ -161,70 +143,12 @@ export function TTHelpOverlay({ onClose, opinions, ownOpinionId }: TTHelpOverlay
 
         if (c.label) {
           const size = estimateLabel(c.label);
-          const candidates: Array<{ side: CalloutSide; x: number; y: number }> = [
-            { side: c.preferredSide, x: 0, y: 0 },
-            { side: 'right', x: 0, y: 0 },
-            { side: 'left', x: 0, y: 0 },
-            { side: 'bottom', x: 0, y: 0 },
-            { side: 'top', x: 0, y: 0 },
-          ];
-          // dedupe by side
-          const seen = new Set<string>();
-          const uniq = candidates.filter((cd) => {
-            if (seen.has(cd.side)) return false;
-            seen.add(cd.side);
-            return true;
-          });
-
-          const computePos = (side: CalloutSide) => {
-            if (side === 'right') return { x: ring.x + ring.w + gap, y: ring.y + ring.h / 2 - size.h / 2 };
-            if (side === 'left') return { x: ring.x - gap - size.w, y: ring.y + ring.h / 2 - size.h / 2 };
-            if (side === 'bottom') return { x: ring.x + ring.w / 2 - size.w / 2, y: ring.y + ring.h + gap };
-            return { x: ring.x + ring.w / 2 - size.w / 2, y: ring.y - gap - size.h };
-          };
-
-          let chosen: { x: number; y: number; w: number; h: number } | null = null;
-          for (const cd of uniq) {
-            let p = computePos(cd.side);
-            // clamp to viewport
-            p.x = Math.max(margin, Math.min(vw - size.w - margin, p.x));
-            p.y = Math.max(margin, Math.min(vh - size.h - margin, p.y));
-            const box = { x: p.x, y: p.y, w: size.w, h: size.h };
-            const collides = placed.some(
-              (o) =>
-                rectsOverlap(box, o.ring, 2) ||
-                (o.labelBox && rectsOverlap(box, o.labelBox, 2)),
-            ) || rectsOverlap(box, ring, 2);
-            if (!collides) {
-              chosen = box;
-              break;
-            }
-            if (!chosen) chosen = box; // fallback keep first
-          }
-
-          // Nudge downward if still overlapping something
-          if (chosen) {
-            let attempts = 0;
-            while (
-              attempts < 20 &&
-              placed.some(
-                (o) =>
-                  rectsOverlap(chosen!, o.ring, 2) ||
-                  (o.labelBox && rectsOverlap(chosen!, o.labelBox, 2)),
-              )
-            ) {
-              chosen.y += size.h + 6;
-              if (chosen.y + size.h > vh - margin) {
-                chosen.y = margin;
-                chosen.x += 20;
-              }
-              chosen.x = Math.max(margin, Math.min(vw - size.w - margin, chosen.x));
-              chosen.y = Math.max(margin, Math.min(vh - size.h - margin, chosen.y));
-              attempts++;
-            }
-          }
-
-          labelBox = chosen;
+          // Standardised placement: always above the highlighted element.
+          let x = ring.x + ring.w / 2 - size.w / 2;
+          let y = ring.y - gap - size.h;
+          x = Math.max(margin, Math.min(vw - size.w - margin, x));
+          y = Math.max(margin, Math.min(vh - size.h - margin, y));
+          labelBox = { x, y, w: size.w, h: size.h };
         }
 
         placed.push({ ...c, ring, labelBox });
