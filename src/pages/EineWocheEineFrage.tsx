@@ -279,7 +279,7 @@ export default function TT() {
             ownOpinionId={ownOpinionId}
           />
         )}
-        {ownOpinionKnown && !hasOwnOpinion && !selectedNode && (
+        {ownOpinionKnown && !hasOwnOpinion && (
           <TTCenterCTA
             topicId={activeTopicId}
             topicTitle={activeTopicTitle}
