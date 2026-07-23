@@ -161,6 +161,7 @@ export const SignalNode = memo(function SignalNode({
   // from the graph center to its target position once, then clear the flag.
   const animateFromCenter = useMemo(() => {
     if (!ttMode || !token.isCurrentUser || !token.id || !graphSize) return false;
+    if (!Number.isFinite(token.x) || !Number.isFinite(token.y) || !Number.isFinite(graphSize)) return false;
     try {
       const raw = sessionStorage.getItem('tt:fresh-opinion');
       if (!raw) return false;
@@ -172,7 +173,7 @@ export const SignalNode = memo(function SignalNode({
       }
       return true;
     } catch { return false; }
-  }, [ttMode, token.isCurrentUser, token.id, graphSize]);
+  }, [ttMode, token.isCurrentUser, token.id, graphSize, token.x, token.y]);
 
   const consumedRef = useRef(false);
   const center = graphSize ? graphSize / 2 : 0;

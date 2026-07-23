@@ -65,13 +65,21 @@ export function TTCenterCTA({
     }
   }, [state]);
 
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
   const handleSubmit = async () => {
     if (text.trim().length < 10) {
       toast.error(t('tt.opinionTooShort'));
       return;
     }
     if (!(await requireVerified())) {
-      setState('collapsed');
+      if (mountedRef.current) setState('collapsed');
       return;
     }
     setSubmitting(true);
@@ -93,38 +101,47 @@ export function TTCenterCTA({
         }
       } catch { /* ignore */ }
 
-      const prevCount = parseInt(localStorage.getItem('tt:opinion-submit-count') || '0', 10) || 0;
-      const newCount = prevCount + 1;
-      localStorage.setItem('tt:opinion-submit-count', String(newCount));
-      const shouldPrompt =
-        (newCount === 1 || newCount === 4 || newCount === 10) &&
-        typeof window !== 'undefined' &&
-        'Notification' in window &&
-        Notification.permission === 'default';
-      if (shouldPrompt) {
-        const permission = await requestBrowserNotificationPermission();
-        if (permission === 'granted') {
+      // Notification opt-in is best-effort — a failure here (blocked SW,
+      // missing permission API, cross-origin iframe) must NEVER take down
+      // the successful submit.
+      try {
+        const prevCount = parseInt(localStorage.getItem('tt:opinion-submit-count') || '0', 10) || 0;
+        const newCount = prevCount + 1;
+        localStorage.setItem('tt:opinion-submit-count', String(newCount));
+        const shouldPrompt =
+          (newCount === 1 || newCount === 4 || newCount === 10) &&
+          typeof window !== 'undefined' &&
+          'Notification' in window &&
+          Notification.permission === 'default';
+        if (shouldPrompt) {
+          const permission = await requestBrowserNotificationPermission();
+          if (permission === 'granted') {
+            enableTopicNotifications(topicId);
+          } else if (permission === 'denied') {
+            toast.error(t('tt.notifSetup.denied'));
+          }
+        } else if (
+          typeof window !== 'undefined' &&
+          'Notification' in window &&
+          Notification.permission === 'granted'
+        ) {
           enableTopicNotifications(topicId);
-        } else if (permission === 'denied') {
-          toast.error(t('tt.notifSetup.denied'));
         }
-      } else if (
-        typeof window !== 'undefined' &&
-        'Notification' in window &&
-        Notification.permission === 'granted'
-      ) {
-        enableTopicNotifications(topicId);
+      } catch (notifErr) {
+        console.warn('[TTCenterCTA] notification setup failed (non-fatal):', notifErr);
       }
 
-      setText('');
-      setState('collapsed');
+      if (mountedRef.current) {
+        setText('');
+        setState('collapsed');
+      }
       toast.success(t('tt.opinionPosted'));
       onOpinionCommitted?.();
       onOpinionSubmitted?.();
     } catch (e: any) {
-      toast.error(e.message ?? t('tt.opinionFailed'));
+      toast.error(e?.message ?? t('tt.opinionFailed'));
     } finally {
-      setSubmitting(false);
+      if (mountedRef.current) setSubmitting(false);
     }
   };
 
