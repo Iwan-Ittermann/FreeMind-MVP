@@ -21,6 +21,7 @@ import Landing from "./pages/Landing";
 import Confirm from "./pages/Confirm";
 import Unsubscribe from "./pages/Unsubscribe";
 import { VerificationDialog } from "@/components/VerificationDialog";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const queryClient = new QueryClient();
 
