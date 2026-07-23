@@ -1,44 +1,49 @@
-## Problem found
+## Problem
 
-The root cause is backend query logic, not the point formula.
+Users can't reliably submit an opinion because the center CTA seems to vanish on its own:
 
-For topic `7mm9`, the database has:
-- 2 visible opinions: “Natürlich die AfD” and “Natürlich die Grünen”
-- 1 actual chat between them
-- 4 chat messages
-- 2 chat respect ratings: empathy `17` and `38`
-- 1 disagreement rating: `100`
-- 0 `chat_requests` rows
+1. `EineWocheEineFrage.tsx` renders `<TTCenterCTA />` only when `!selectedNode`. Tapping any graph node — the first thing a new visitor does — unmounts the CTA. Tapping empty space brings it back. This is the "appears and disappears" the user is reporting.
+2. `TTCenterCTA`'s outside-click handler collapses the pill from its default `half` state (labeled "Deine Meinung teilen…") down to a bare `+` icon on any mousedown outside the pill (graph nodes, zone labels, sidebar buttons, backdrop). Users then don't recognize it as the opinion CTA and need two more taps to reopen the composer.
 
-Both affected backend functions currently require an accepted `chat_requests` row:
-- `get_graph_pairs(...)` returns `[]`, so the graph receives no real chat rating edge and shows `0` points.
-- `get_readonly_chat_messages(...)` also returns `[]`, so clicking the graph edge opens an empty read-only chat.
+## Fix (presentation only)
 
-The chats sidebar works because it reads from the actual `chats` and `chat_messages` tables directly, so it sees the messages correctly.
+### 1. Keep the CTA mounted while the user still has no opinion
+File: `src/pages/EineWocheEineFrage.tsx`
 
-## Fix plan
+- Change the render gate from
+  `{ownOpinionKnown && !hasOwnOpinion && !selectedNode && <TTCenterCTA … />}`
+  to
+  `{ownOpinionKnown && !hasOwnOpinion && <TTCenterCTA … />}`.
+- The opinion panel (`TTBottomPanel`) already coexists with the CTA visually — no z-index or layout changes required.
 
-1. Create a database migration that updates `get_graph_pairs(topic_uuid)` to use real `chats` rows as the source of accepted graph edges.
-   - Keep visible-opinion checks.
-   - Keep disagreement from `opinion_ratings` as the source of truth.
-   - Keep respect/empathy from `chat_ratings`.
-   - No dependency on `chat_requests` for chats that already exist.
+### 2. Make `half` the resting state; don't collapse to `+`
+File: `src/components/tt/TTCenterCTA.tsx`
 
-2. Update `get_readonly_chat_messages(_source_opinion_id, _target_opinion_id)` to read the existing chat directly from `chats`.
-   - Return visible messages for the existing pair in either order.
-   - Keep visible-opinion checks.
-   - No dependency on `chat_requests`.
+- Outside-click behaviour:
+  - If `state === 'full'` and the click is outside the wrapper → set state to `half` (not `collapsed`).
+  - If `state === 'half'` → do nothing. The labeled pill stays visible and always tappable.
+- Remove the `collapsed` branch from the outside-click handler entirely (the `Minus` button inside `full` remains the explicit "minimize" path, and we can drop the `collapsed` visual state or keep it only as a manual minimize target — for this fix, simplest is to keep `collapsed` reachable only via the `Minus` button, and default to `half` on mount).
+- Keep `handleClick`: `collapsed → half`, `half → full`. First tap on the labeled pill still opens the composer immediately.
+- Continue ignoring events whose target sits inside `[role="dialog"]` (Radix portals for the verification dialog / toasts).
 
-3. Preserve security posture.
-   - Both functions stay read-only and still only expose visible opinions/messages.
-   - No direct table exposure changes.
-   - No IP-related changes.
+### 3. Small robustness tweaks in the same handler
+File: `src/components/tt/TTCenterCTA.tsx`
 
-4. Verify after migration.
-   - `get_graph_pairs(7mm9 topic id)` should return one row for Grünen/AfD with non-zero `avg_empathy`.
-   - `get_readonly_chat_messages(Grünen, AfD)` should return the 4 chat messages.
-   - The graph should stop showing the empty-state hint and show non-zero points after the next refetch.
+- Switch the listener from `mousedown` to `pointerdown` so touch and mouse behave identically.
+- Early-return when `wrapperRef.current` is `null` (StrictMode double-mount safety).
 
-## Note
+## Out of scope
 
-With the current scoring model, this one chat edge gives points to both connected nodes. Since there is only one connected pair, they may tie unless the scoring model is later changed to assign points per individual rater/receiver instead of per pair.
+- No RPC, i18n, routing, or auth changes.
+- No layout move — the CTA keeps its current position under the graph.
+- Positioning tour, help overlay, and side tabs are untouched.
+
+## Verification
+
+- On `/` (single-topic build) as a signed-in user without an opinion:
+  - Load page → labeled pill visible.
+  - Tap a graph node → opinion panel opens AND the labeled pill remains visible.
+  - Tap outside the pill (backdrop, node, zone label) → pill stays in `half` state (no shrink to `+`).
+  - Tap the pill → composer expands to `full`.
+  - Tap outside while `full` → collapses back to `half`, not to `+`.
+  - Submit an opinion → CTA disappears (unchanged behaviour, gated by `hasOwnOpinion`).
