@@ -33,7 +33,9 @@ function AppContent() {
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <AppRoutes />
+        <ErrorBoundary>
+          <AppRoutes />
+        </ErrorBoundary>
       </BrowserRouter>
       <VerificationDialog />
     </>
