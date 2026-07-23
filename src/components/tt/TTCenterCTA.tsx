@@ -43,16 +43,18 @@ export function TTCenterCTA({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const taRef = useRef<HTMLTextAreaElement>(null);
 
-  // Click outside collapses (or returns to half if user typed nothing in full)
+  // Outside click: only collapse when the composer is fully open.
+  // The labeled `half` pill stays visible so users always see the CTA.
   useEffect(() => {
-    const onDown = (e: MouseEvent) => {
-      if (wrapperRef.current?.contains(e.target as Node)) return;
+    const onDown = (e: PointerEvent) => {
+      if (!wrapperRef.current) return;
+      if (wrapperRef.current.contains(e.target as Node)) return;
       // Don't collapse on portals (dialogs, toasts)
       if ((e.target as HTMLElement)?.closest?.('[role="dialog"]')) return;
-      if (state !== 'collapsed') setState('collapsed');
+      if (state === 'full') setState('half');
     };
-    document.addEventListener('mousedown', onDown);
-    return () => document.removeEventListener('mousedown', onDown);
+    document.addEventListener('pointerdown', onDown);
+    return () => document.removeEventListener('pointerdown', onDown);
   }, [state]);
 
   // Auto-focus when entering full state
