@@ -2,7 +2,6 @@
 import * as React from 'npm:react@18.3.1'
 import {
   Body,
-  Button,
   Container,
   Head,
   Heading,
@@ -11,44 +10,49 @@ import {
   Text,
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
+import { renderBlocks } from '../../_shared/render-email-body.ts'
 
 interface Props {
+  subject?: string
+  heading?: string
+  body?: string
+  // Legacy fallback if caller doesn't interpolate ahead of time.
   confirmUrl?: string
 }
 
-const Email = ({ confirmUrl = 'https://freemind.chat' }: Props) => (
-  <Html lang="de" dir="ltr">
-    <Head />
-    <Preview>Bestätige deine Anmeldung bei freemind</Preview>
-    <Body style={main}>
-      <Container style={container}>
-        <Text style={eyebrow}>Produktive ideologische Reibung</Text>
-        <Heading style={h1}>Bestätige deine Anmeldung</Heading>
-        <Text style={text}>
-          Klick auf den Button, um deine Anmeldung bei freemind abzuschließen.
-          Erst danach bist du wirklich dabei.
-        </Text>
-        <Button href={confirmUrl} style={button}>
-          Anmeldung bestätigen
-        </Button>
-        <Text style={muted}>
-          Falls der Button nicht funktioniert, kopiere diesen Link in deinen Browser:
-          <br />
-          <span style={{ wordBreak: 'break-all' }}>{confirmUrl}</span>
-        </Text>
-        <Text style={muted}>
-          Der Link ist 48 Stunden gültig. Falls du dich nicht angemeldet hast, ignoriere diese E-Mail einfach.
-        </Text>
-      </Container>
-    </Body>
-  </Html>
-)
+const Email = ({
+  subject = 'Bestätige deine Anmeldung bei freemind',
+  heading = 'Bestätige deine Anmeldung',
+  body = '',
+  confirmUrl,
+}: Props) => {
+  const resolvedBody = body ||
+    `Klick auf den Button, um deine Anmeldung bei freemind abzuschließen.\n\n[Anmeldung bestätigen](${confirmUrl ?? 'https://freemind.chat'})`
+  return (
+    <Html lang="de" dir="ltr">
+      <Head />
+      <Preview>{subject}</Preview>
+      <Body style={main}>
+        <Container style={container}>
+          <Text style={eyebrow}>Produktive ideologische Reibung</Text>
+          <Heading style={h1}>{heading}</Heading>
+          {renderBlocks(resolvedBody)}
+        </Container>
+      </Body>
+    </Html>
+  )
+}
 
 export const template = {
   component: Email,
-  subject: 'Bestätige deine Anmeldung bei freemind',
+  subject: (d: Record<string, unknown>) =>
+    String(d.subject ?? 'Bestätige deine Anmeldung bei freemind'),
   displayName: 'Signup confirmation',
-  previewData: { confirmUrl: 'https://freemind.chat/confirm?token=preview' },
+  previewData: {
+    subject: 'Bestätige deine Anmeldung bei freemind',
+    heading: 'Bestätige deine Anmeldung',
+    body: 'Klick auf den Button, um deine Anmeldung abzuschließen.\n\n[Anmeldung bestätigen](https://freemind.chat/confirm?token=preview)',
+  },
 } satisfies TemplateEntry
 
 const main = {
@@ -74,17 +78,3 @@ const h1 = {
   margin: '0 0 24px',
   color: '#0a0a0a',
 }
-const text = { fontSize: '16px', lineHeight: 1.5, margin: '0 0 16px' }
-const button = {
-  backgroundColor: '#0a0a0a',
-  color: '#ffffff',
-  padding: '14px 28px',
-  fontSize: '13px',
-  fontWeight: 700,
-  letterSpacing: '0.05em',
-  textTransform: 'uppercase' as const,
-  textDecoration: 'none',
-  display: 'inline-block',
-  margin: '32px 0',
-}
-const muted = { fontSize: '13px', lineHeight: 1.5, color: '#525252', margin: '16px 0 0' }
