@@ -58,9 +58,26 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+    const { data: signup, error: sErr } = await admin
+      .from('signups')
+      .insert({
+        email,
+        passphrase: phrase,
+        passphrase_issued_at: new Date().toISOString(),
+        confirmed_at: new Date().toISOString(),
+        auth_user_id: data.user.id,
+      })
+      .select('id')
+      .single();
+    if (sErr || !signup) {
+      return new Response(JSON.stringify({ error: sErr?.message ?? 'signup insert failed', created }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
     const { error: vpErr } = await admin
       .from('verified_participants')
-      .insert({ user_id: data.user.id });
+      .insert({ user_id: data.user.id, signup_id: signup.id });
     if (vpErr) {
       return new Response(JSON.stringify({ error: vpErr.message, created }), {
         status: 500,
