@@ -628,6 +628,8 @@
     "regenerateHint": "New passphrase copied: {{phrase}}",
     "signOut": "Sign out",
     "opinionPlaceholder": "What is your opinion on this topic?",
+    "registerToParticipate": "Register at",
+    "registerToParticipateSuffix": "to participate",
     "post": "Post",
     "letsChat": "Let's chat",
     "report": "Report",
