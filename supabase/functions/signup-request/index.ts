@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { loadTemplate } from "../_shared/email-template-store.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -24,6 +25,13 @@ function isValidEmail(e: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e) && e.length <= 255;
 }
 
+function getClientIp(req: Request): string | null {
+  const h = req.headers;
+  const xff = h.get("x-forwarded-for");
+  if (xff) return xff.split(",")[0].trim();
+  return h.get("cf-connecting-ip") ?? h.get("x-real-ip") ?? null;
+}
+
 async function getCutoff(): Promise<Date | null> {
   const { data } = await supabase
     .from("app_settings").select("value").eq("key", "registration_cutoff_at").maybeSingle();
@@ -33,6 +41,11 @@ async function getCutoff(): Promise<Date | null> {
 }
 
 async function sendConfirmEmail(to: string, confirmUrl: string, token: string) {
+  const tpl = await loadTemplate(supabase, "signup-confirm", { confirmUrl }, {
+    subject: "Bestätige deine Anmeldung bei freemind",
+    heading: "Bestätige deine Anmeldung",
+    body: `Klick auf den Button, um deine Anmeldung bei freemind abzuschließen.\n\n[Anmeldung bestätigen](${confirmUrl})`,
+  });
   const res = await fetch(`${SUPABASE_URL}/functions/v1/send-transactional-email`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_ROLE}` },
@@ -40,13 +53,18 @@ async function sendConfirmEmail(to: string, confirmUrl: string, token: string) {
       templateName: "signup-confirm",
       recipientEmail: to,
       idempotencyKey: `signup-confirm-${token}`,
-      templateData: { confirmUrl },
+      templateData: { ...tpl, confirmUrl },
     }),
   });
   if (!res.ok) console.error("send-transactional-email failed:", res.status, await res.text());
 }
 
 async function sendPassphraseEmail(to: string, passphrase: string, issuedAt: string) {
+  const tpl = await loadTemplate(supabase, "signup-passphrase", { passphrase, appUrl: SITE_URL }, {
+    subject: "Deine Passphrase für freemind",
+    heading: "Deine Passphrase",
+    body: `Willkommen bei freemind!\n\n\`${passphrase}\`\n\n[${SITE_URL}](${SITE_URL})`,
+  });
   const res = await fetch(`${SUPABASE_URL}/functions/v1/send-transactional-email`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_ROLE}` },
@@ -54,7 +72,7 @@ async function sendPassphraseEmail(to: string, passphrase: string, issuedAt: str
       templateName: "signup-passphrase",
       recipientEmail: to,
       idempotencyKey: `signup-passphrase-${to}-${issuedAt}-${Math.floor(Date.now() / RESEND_MIN_INTERVAL_MS)}`,
-      templateData: { passphrase, appUrl: SITE_URL },
+      templateData: { ...tpl, passphrase, appUrl: SITE_URL },
     }),
   });
   if (!res.ok) console.error("send-transactional-email(passphrase) failed:", res.status, await res.text());
@@ -73,6 +91,14 @@ Deno.serve(async (req) => {
       return Response.json({ status: "error", reason: "invalid_email" }, { status: 400, headers: corsHeaders });
     }
 
+    // Ban check
+    const { data: banned } = await supabase
+      .from("banned_emails").select("email").eq("email", cleaned).maybeSingle();
+    if (banned) {
+      return Response.json({ status: "banned" }, { status: 403, headers: corsHeaders });
+    }
+
+    const clientIp = getClientIp(req);
     const cutoff = await getCutoff();
     const cutoffPassed = cutoff !== null && cutoff.getTime() <= Date.now();
 
@@ -82,6 +108,7 @@ Deno.serve(async (req) => {
       const storedEmail = `${cleaned}#test-${token.slice(0, 12)}`;
       const { error } = await supabase.from("signups").insert({
         email: storedEmail, confirm_token: token, confirm_token_expires_at: expires,
+        signup_ip: clientIp,
       });
       if (error) throw error;
       await sendConfirmEmail(cleaned, `${SITE_URL}/confirm?token=${token}`, token);
@@ -130,12 +157,12 @@ Deno.serve(async (req) => {
 
     if (existing) {
       const { error } = await supabase.from("signups")
-        .update({ confirm_token: token, confirm_token_expires_at: expires })
+        .update({ confirm_token: token, confirm_token_expires_at: expires, signup_ip: clientIp })
         .eq("id", existing.id);
       if (error) throw error;
     } else {
       const { error } = await supabase.from("signups")
-        .insert({ email: cleaned, confirm_token: token, confirm_token_expires_at: expires });
+        .insert({ email: cleaned, confirm_token: token, confirm_token_expires_at: expires, signup_ip: clientIp });
       if (error) throw error;
     }
 

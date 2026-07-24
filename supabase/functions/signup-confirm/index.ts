@@ -4,6 +4,7 @@ import {
   passphraseToEmail,
   passphraseToPassword,
 } from "../_shared/passphrase.ts";
+import { loadTemplate } from "../_shared/email-template-store.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -33,6 +34,11 @@ async function notifyAdmin(signupEmail: string, confirmedAt: string) {
 }
 
 async function sendPassphraseEmail(to: string, passphrase: string, issuedAt: string) {
+  const tpl = await loadTemplate(supabase, "signup-passphrase", { passphrase, appUrl: SITE_URL }, {
+    subject: "Deine Passphrase für freemind",
+    heading: "Deine Passphrase",
+    body: `Willkommen bei freemind!\n\n\`${passphrase}\`\n\n[${SITE_URL}](${SITE_URL})`,
+  });
   const res = await fetch(`${SUPABASE_URL}/functions/v1/send-transactional-email`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_ROLE}` },
@@ -40,7 +46,7 @@ async function sendPassphraseEmail(to: string, passphrase: string, issuedAt: str
       templateName: "signup-passphrase",
       recipientEmail: to,
       idempotencyKey: `signup-passphrase-${to}-${issuedAt}`,
-      templateData: { passphrase, appUrl: SITE_URL },
+      templateData: { ...tpl, passphrase, appUrl: SITE_URL },
     }),
   });
   if (!res.ok) console.error("passphrase email failed:", res.status, await res.text());

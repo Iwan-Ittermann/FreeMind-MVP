@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { loadTemplate } from "../_shared/email-template-store.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -7,11 +8,12 @@ const corsHeaders = {
 };
 
 const ADMIN_PASSWORD = Deno.env.get("ADMIN_PASSWORD") ?? "";
+const ADMIN_IP_PASSWORD = Deno.env.get("ADMIN_IP_PASSWORD") ?? "";
+const SITE_URL = Deno.env.get("SITE_URL") ?? "https://freemind.chat";
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-const supabase = createClient(
-  Deno.env.get("SUPABASE_URL")!,
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-);
+const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
 
 function ctEq(a: string, b: string): boolean {
   if (a.length !== b.length) return false;
@@ -20,15 +22,14 @@ function ctEq(a: string, b: string): boolean {
   return out === 0;
 }
 
-const SITE_URL = Deno.env.get("SITE_URL") ?? "https://freemind.chat";
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-
 function generateToken(): string {
   const bytes = new Uint8Array(32);
   crypto.getRandomValues(bytes);
   return Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
+
+const TEMPLATE_KEYS = ["signup-confirm", "signup-passphrase"] as const;
+type TemplateKey = typeof TEMPLATE_KEYS[number];
 
 async function resendSignupConfirm(signupId: string) {
   const { data: row, error } = await supabase
@@ -48,6 +49,12 @@ async function resendSignupConfirm(signupId: string) {
   if (updErr) throw updErr;
 
   const cleanEmail = String(row.email).split("#")[0];
+  const confirmUrl = `${SITE_URL}/confirm?token=${token}`;
+  const tpl = await loadTemplate(supabase, "signup-confirm", { confirmUrl }, {
+    subject: "Bestätige deine Anmeldung bei freemind",
+    heading: "Bestätige deine Anmeldung",
+    body: `[Anmeldung bestätigen](${confirmUrl})`,
+  });
   const res = await fetch(`${SUPABASE_URL}/functions/v1/send-transactional-email`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_ROLE}` },
@@ -55,7 +62,7 @@ async function resendSignupConfirm(signupId: string) {
       templateName: "signup-confirm",
       recipientEmail: cleanEmail,
       idempotencyKey: `signup-confirm-resend-${token}`,
-      templateData: { confirmUrl: `${SITE_URL}/confirm?token=${token}` },
+      templateData: { ...tpl, confirmUrl },
     }),
   });
   if (!res.ok) {
@@ -66,25 +73,153 @@ async function resendSignupConfirm(signupId: string) {
   return { sent: true };
 }
 
+async function resendPassphrase(signupId: string) {
+  const { data: row, error } = await supabase
+    .from("signups")
+    .select("id, email, confirmed_at, passphrase, passphrase_issued_at")
+    .eq("id", signupId)
+    .maybeSingle();
+  if (error || !row) throw new Error("signup_not_found");
+  if (!row.confirmed_at || !row.passphrase) return { skipped: "no_passphrase" };
+
+  const cleanEmail = String(row.email).split("#")[0];
+  const issuedAt = row.passphrase_issued_at ?? new Date().toISOString();
+  const tpl = await loadTemplate(supabase, "signup-passphrase", {
+    passphrase: row.passphrase,
+    appUrl: SITE_URL,
+  }, {
+    subject: "Deine Passphrase für freemind",
+    heading: "Deine Passphrase",
+    body: `\`${row.passphrase}\`\n\n[${SITE_URL}](${SITE_URL})`,
+  });
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/send-transactional-email`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_ROLE}` },
+    body: JSON.stringify({
+      templateName: "signup-passphrase",
+      recipientEmail: cleanEmail,
+      idempotencyKey: `signup-passphrase-admin-${row.id}-${Date.now()}`,
+      templateData: { ...tpl, passphrase: row.passphrase, appUrl: SITE_URL },
+    }),
+  });
+  if (!res.ok) throw new Error("send_failed");
+  await supabase.from("signups")
+    .update({ last_passphrase_sent_at: new Date().toISOString() })
+    .eq("id", row.id);
+  return { sent: true };
+}
+
+async function deleteSignup(signupId: string) {
+  const { data: row } = await supabase
+    .from("signups")
+    .select("id, email, auth_user_id")
+    .eq("id", signupId)
+    .maybeSingle();
+  if (!row) throw new Error("signup_not_found");
+  // verified_participants cascades on signup delete. Delete auth user first.
+  if (row.auth_user_id) {
+    const { error: authErr } = await supabase.auth.admin.deleteUser(row.auth_user_id);
+    if (authErr) console.error("auth deleteUser failed:", authErr.message);
+  }
+  const { error } = await supabase.from("signups").delete().eq("id", row.id);
+  if (error) throw error;
+  return { deleted: true };
+}
+
+async function banEmail(signupId: string, reason?: string) {
+  const { data: row } = await supabase
+    .from("signups")
+    .select("id, email, auth_user_id")
+    .eq("id", signupId)
+    .maybeSingle();
+  if (!row) throw new Error("signup_not_found");
+  const cleanEmail = String(row.email).split("#")[0].toLowerCase();
+  const { error: banErr } = await supabase
+    .from("banned_emails")
+    .upsert({ email: cleanEmail, reason: reason ?? null }, { onConflict: "email" });
+  if (banErr) throw banErr;
+  if (row.auth_user_id) {
+    const { error: authErr } = await supabase.auth.admin.deleteUser(row.auth_user_id);
+    if (authErr) console.error("auth deleteUser failed:", authErr.message);
+  }
+  await supabase.from("signups").delete().eq("id", row.id);
+  return { banned: cleanEmail };
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") return new Response("Method not allowed", { status: 405, headers: corsHeaders });
 
   try {
     const body = await req.json();
-    const { password, action, signupId } = body ?? {};
+    const { password, action, signupId, ipPassword, key, subject, heading, body_md, reason } = body ?? {};
     if (typeof password !== "string" || !ADMIN_PASSWORD || !ctEq(password, ADMIN_PASSWORD)) {
       return Response.json({ ok: false, error: "invalid_password" }, { status: 401, headers: corsHeaders });
     }
 
     if (action === "resend_signup") {
-      if (typeof signupId !== "string") {
-        return Response.json({ ok: false, error: "invalid_signup_id" }, { status: 400, headers: corsHeaders });
+      if (typeof signupId !== "string") return Response.json({ ok: false, error: "invalid_signup_id" }, { status: 400, headers: corsHeaders });
+      return Response.json({ ok: true, ...(await resendSignupConfirm(signupId)) }, { headers: corsHeaders });
+    }
+    if (action === "resend_passphrase") {
+      if (typeof signupId !== "string") return Response.json({ ok: false, error: "invalid_signup_id" }, { status: 400, headers: corsHeaders });
+      return Response.json({ ok: true, ...(await resendPassphrase(signupId)) }, { headers: corsHeaders });
+    }
+    if (action === "delete_signup") {
+      if (typeof signupId !== "string") return Response.json({ ok: false, error: "invalid_signup_id" }, { status: 400, headers: corsHeaders });
+      return Response.json({ ok: true, ...(await deleteSignup(signupId)) }, { headers: corsHeaders });
+    }
+    if (action === "ban_email") {
+      if (typeof signupId !== "string") return Response.json({ ok: false, error: "invalid_signup_id" }, { status: 400, headers: corsHeaders });
+      return Response.json({ ok: true, ...(await banEmail(signupId, typeof reason === "string" ? reason : undefined)) }, { headers: corsHeaders });
+    }
+    if (action === "get_templates") {
+      const { data } = await supabase
+        .from("email_templates")
+        .select("key, subject, heading, body_md, updated_at")
+        .in("key", TEMPLATE_KEYS as unknown as string[])
+        .order("key");
+      return Response.json({ ok: true, templates: data ?? [] }, { headers: corsHeaders });
+    }
+    if (action === "save_template") {
+      if (!TEMPLATE_KEYS.includes(key as TemplateKey)) {
+        return Response.json({ ok: false, error: "invalid_key" }, { status: 400, headers: corsHeaders });
       }
-      const result = await resendSignupConfirm(signupId);
-      return Response.json({ ok: true, ...result }, { headers: corsHeaders });
+      if (typeof subject !== "string" || typeof heading !== "string" || typeof body_md !== "string") {
+        return Response.json({ ok: false, error: "invalid_payload" }, { status: 400, headers: corsHeaders });
+      }
+      const { error } = await supabase.from("email_templates").upsert({
+        key, subject, heading, body_md,
+      }, { onConflict: "key" });
+      if (error) throw error;
+      return Response.json({ ok: true }, { headers: corsHeaders });
+    }
+    if (action === "reveal_ips") {
+      if (typeof ipPassword !== "string" || !ADMIN_IP_PASSWORD || !ctEq(ipPassword, ADMIN_IP_PASSWORD)) {
+        return Response.json({ ok: false, error: "invalid_ip_password" }, { status: 401, headers: corsHeaders });
+      }
+      const { data } = await supabase
+        .from("signups")
+        .select("id, signup_ip");
+      const map: Record<string, string | null> = {};
+      for (const r of (data ?? [])) map[r.id] = r.signup_ip ? String(r.signup_ip) : null;
+      return Response.json({ ok: true, ips: map }, { headers: corsHeaders });
+    }
+    if (action === "list_bans") {
+      const { data } = await supabase
+        .from("banned_emails")
+        .select("email, banned_at, reason")
+        .order("banned_at", { ascending: false });
+      return Response.json({ ok: true, bans: data ?? [] }, { headers: corsHeaders });
+    }
+    if (action === "unban_email") {
+      if (typeof body?.email !== "string") return Response.json({ ok: false, error: "invalid_email" }, { status: 400, headers: corsHeaders });
+      const { error } = await supabase.from("banned_emails").delete().eq("email", body.email.toLowerCase());
+      if (error) throw error;
+      return Response.json({ ok: true }, { headers: corsHeaders });
     }
 
+    // Default: overview
     const { data: signups, error } = await supabase
       .from("signups")
       .select("id, email, created_at, confirmed_at")
@@ -97,4 +232,3 @@ Deno.serve(async (req) => {
     return Response.json({ ok: false, error: "server_error" }, { status: 500, headers: corsHeaders });
   }
 });
-
