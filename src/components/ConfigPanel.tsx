@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import { Settings, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -26,7 +25,6 @@ interface ConfigPanelProps {
 
 export function ConfigPanel({ open, onOpenChange }: ConfigPanelProps) {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { startTutorial, resetTutorialStatus } = useTutorialContext();
   const [hidePendingEdges, setHidePendingEdges] = useHidePendingEdges();
