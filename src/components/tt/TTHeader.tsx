@@ -102,7 +102,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
   })();
 
   useEffect(() => {
-    if (!accountOpen && !bellOpen && !languageOpen) return;
+    if (!accountOpen && !bellOpen) return;
     const onDown = (e: MouseEvent) => {
       const target = e.target as Node;
       if (accountOpen && accountRef.current && !accountRef.current.contains(target) && (!accountDropdownRef.current || !accountDropdownRef.current.contains(target))) {
@@ -113,13 +113,10 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
         setBellOpen(false);
         setFiltersOpen(false);
       }
-      if (languageOpen && languageRef.current && !languageRef.current.contains(target) && (!languageDropdownRef.current || !languageDropdownRef.current.contains(target))) {
-        setLanguageOpen(false);
-      }
     };
     document.addEventListener('mousedown', onDown);
     return () => document.removeEventListener('mousedown', onDown);
-  }, [accountOpen, bellOpen, languageOpen]);
+  }, [accountOpen, bellOpen]);
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
