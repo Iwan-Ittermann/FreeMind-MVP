@@ -12,6 +12,7 @@ import Admin from "./pages/Admin";
 import Admin2 from "./pages/Admin2";
 import Legal from "./pages/Legal";
 import EineWocheEineFrage from "./pages/EineWocheEineFrage";
+import Landing from "./pages/Landing";
 import Confirm from "./pages/Confirm";
 import Unsubscribe from "./pages/Unsubscribe";
 import { VerificationDialog } from "@/components/VerificationDialog";
@@ -41,14 +42,15 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/" element={<EineWocheEineFrage />} />
+      <Route path="/" element={<Landing />} />
+      <Route path="/7mm9" element={<EineWocheEineFrage />} />
       <Route path="/confirm" element={<Confirm />} />
       <Route path="/unsubscribe" element={<Unsubscribe />} />
       <Route path="/legal" element={<Legal />} />
       <Route path="/admin2" element={<Admin2 />} />
       <Route path="/admin" element={<Admin />} />
       <Route path="/auth" element={<Navigate to="/" replace />} />
-      <Route path="/:topicId" element={<Navigate to="/" replace />} />
+      <Route path="/:topicId" element={<Navigate to="/7mm9" replace />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
