@@ -1,69 +1,80 @@
 
-## Symptom
+## Goal
 
-Users on `/7mm9` submit an opinion → the entire screen turns fully black. No verification dialog, no success/error toast, no "Post" spinner clearing. Confirmed via the user: page goes fully black.
+Cut Helsinki MVP loose from the shared backend (`jmkbkwhiucnksdygbomc`), point it at a fresh empty Lovable Cloud backend, re-apply the full schema, and remove the `VITE_SINGLE_TOPIC_MODE` / `VITE_SINGLE_TOPIC_SHORT_CODE` env-flag concept so the app is simply a one-topic app.
 
-## Diagnosis (high-confidence, still to be verified)
+## Sequencing
 
-The `/7mm9` route (`EineWocheEineFrage.tsx`) renders inside:
+This is a two-phase change. The first phase requires **you** to attach a fresh Cloud backend to this project from the Lovable UI (Connectors → Lovable Cloud → new instance). I'll wait for that and then continue with everything else in one pass.
 
-```
-<div className="fixed inset-0 bg-black flex items-center justify-center">
-  <div data-tt-phone-viewport className="... bg-background ...">
-    ...app UI...
-  </div>
-</div>
-```
+## Phase 1 — You attach a new backend
 
-There is no `ErrorBoundary` anywhere in the project (`rg` confirms zero matches for `ErrorBoundary` / `getDerivedStateFromError`). In React 18, an unhandled render error unmounts the entire root — leaving only the black outer container visible. That precisely matches "fully black, no dialog, no toast" (the toast/dialog portals also unmount with the root).
+You do this from the UI. When it's done, `.env` (`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SUPABASE_PROJECT_ID`) auto-updates to the new empty instance. Nothing else is populated yet — no tables, no functions, no storage, no secrets.
 
-So the immediate visual bug is: **any render error after submit → whole app disappears → user sees black**. Whatever the underlying error is, this needs a boundary so the app survives and we see the real error.
+Confirm to me it's attached, then I run Phase 2.
 
-The submit path (`TTCenterCTA.handleSubmit`) does several things after a successful `submit_opinion` RPC that are plausible triggers for a post-submit re-render crash:
+## Phase 2 — Re-apply everything to the new backend
 
-1. Writes `tt:fresh-opinion` to `sessionStorage`; `SignalNode` reads it and switches to a `motion.g` with `initial={{ x: center, y: center }}` — if `graphSize` transitions or `token.x/y` are momentarily NaN during the refetch, framer-motion can throw.
-2. `onOpinionCommitted` invalidates `['tt-own-opinion', …]` and `['topic', …]`. On the next refetch, `hasOwnOpinion` flips true, `TTCenterCTA` unmounts mid-async (its `setSubmitting(false)` may fire on an unmounted component, but that alone doesn't crash React 18). More importantly, `useTopicData` re-runs the layout with a brand-new opinion that has no ratings — need to confirm the layout returns valid numbers for the freshly-inserted row.
-3. `enableTopicNotifications(topicId)` runs unconditionally when `Notification.permission === 'granted'` — if this throws synchronously in some browsers/PWAs it would bubble out of the awaited `handleSubmit` and land in the `catch` (toast.error). That produces a toast, not a black screen, so it is unlikely to be the trigger, but worth guarding.
+### 2a. Schema migration (single consolidated migration)
 
-Without a boundary the real stack trace is invisible to us and to the user. Step 1 of the fix installs a boundary so we can actually see the error; step 2 hardens the two most likely triggers.
+Reproduce the current DB in one migration:
 
-## Plan
+- Enums: `app_role`
+- Tables (with GRANTs + RLS + policies): `topics`, `user_roles`, `verified_participants`, `signups`, `opinions`, `opinion_ips`, `chats`, `chat_messages`, `chat_message_reactions`, `chat_ratings`, `chat_requests`, `opinion_ratings`, `user_blocks`, `user_topics`, `fake_nodes`, `reports`, `court_cases`, `audit_logs`, `laws`, `app_settings`, `tutorial_settings`, `email_send_log`, `email_send_state`, `email_unsubscribe_tokens`, `suppressed_emails`, `test_diskussion_replies`
+- All SECURITY DEFINER functions listed in project context (`has_role`, `is_verified_participant`, `submit_opinion`, `create_topic`, `get_graph_pairs`, `get_readonly_chat_messages`, `join_topic`, `report_content`, `review_report`, `toggle_soft_delete`, `log_audit`, `generate_topic_short_code`, email queue helpers, etc.)
+- Triggers: `auto_accept_bot_requests`, `sync_fake_node_opinion`, `update_updated_at_column` on relevant tables
+- Storage buckets: `tutorials` (public), `voice-messages` (private) with their policies
 
-### 1. Add a route-level `ErrorBoundary` (unblocks diagnosis, fixes the "black screen" symptom)
+### 2b. Seed the single event topic
 
-- New file `src/components/ErrorBoundary.tsx`: minimal class component with `getDerivedStateFromError` + `componentDidCatch` that logs `error` and `errorInfo` to `console.error` (visible in the Lovable console log stream we can read next turn) and renders a small centered fallback with a "Reload" button styled to match the TT theme, so users at least see something and can recover.
-- Wrap the `/7mm9` route (and any other single-topic-mode entry) with the boundary in `App.tsx`, or wrap the outer `<div>` inside `EineWocheEineFrage.tsx` — whichever is less invasive. Preference: wrap in `App.tsx` around every route so the whole app survives future crashes too.
+Insert one row into `topics` with `short_code = '7mm9'`, status `Active`, the German title/description currently used on the event build.
 
-### 2. Harden the post-submit path in `TTCenterCTA.handleSubmit`
+### 2c. Re-mint 6 verified test passphrases
 
-- Guard `sessionStorage.setItem` (already `try/catch` — OK).
-- Guard `enableTopicNotifications(topicId)` and `requestBrowserNotificationPermission()` in `try/catch` so a service-worker / notification API failure can't reject the whole submit flow.
-- Track `mountedRef` and skip `setSubmitting(false)` / `setState` after unmount (defensive; not the root cause but removes noisy warnings).
-- Do **not** change the RPC call or the callbacks — those are working correctly per the two other components that call `submit_opinion` the same way.
+Run a one-off admin-only edge function (same shape as before) that inserts 6 rows into `signups` + `verified_participants` and returns the plaintext passphrases once. Function is deleted immediately after.
 
-### 3. Harden `SignalNode` fresh-opinion animation
+### 2d. Secrets to re-add
 
-- Skip the `animateFromCenter` branch when `token.x`, `token.y`, or `graphSize` are not finite numbers.
-- Wrap the `sessionStorage` read in the existing `try/catch` (already there).
+I'll ask you to re-add these on the new backend via `add_secret`:
+- `ADMIN_PASSWORD`
+- `ADMIN_NOTIFY_EMAIL`
+- `LOVABLE_API_KEY` (rotated)
+- `SITE_URL`
 
-### 4. Verify
+The `SUPABASE_*` secrets are auto-provisioned. `email_queue_service_role_key` (vault) is only needed if you re-enable the email queue on the new instance — deferred unless you ask.
 
-- After deploying the boundary + hardening, reproduce the submit with a test passphrase via a Playwright script (`bright-peace-think-18` is one of the six minted). Post a short opinion, capture:
-  - Any console error the boundary now surfaces.
-  - A screenshot immediately after clicking "Post".
-- If the boundary catches a specific error, fix that root cause in a follow-up (likely a NaN in the layout or a framer-motion animate target). If no error is caught and submission now succeeds cleanly, the hardening in step 2 was sufficient.
+### 2e. Edge functions
 
-### Files touched
+All existing functions under `supabase/functions/*` redeploy automatically against the new project ref. I'll verify each still compiles; nothing app-level should need to change.
 
-- **New**: `src/components/ErrorBoundary.tsx`
-- **Edit**: `src/App.tsx` (wrap routes)
-- **Edit**: `src/components/tt/TTCenterCTA.tsx` (harden submit path)
-- **Edit**: `src/themes/signal/SignalNode.tsx` (guard fresh-opinion branch)
+## Phase 3 — Drop the single-topic env-flag concept
 
-No DB, RPC, or migration changes — the `submit_opinion` RPC itself is unchanged and confirmed working from the other submit sites.
+Since this project is now permanently a one-topic app, remove the branching:
 
-### Out of scope
+- `src/lib/single-topic.ts` — delete
+- `.env` / `.env.example` — remove `VITE_SINGLE_TOPIC_MODE` and `VITE_SINGLE_TOPIC_SHORT_CODE`
+- `src/App.tsx` — collapse `SINGLE_TOPIC_MODE` branch into the sole route table; remove `Landing`, `TopicJoin`, `TestDiskussion`, `Index`, `NotFound` (or keep `NotFound` for `*`). `/` → `EineWocheEineFrage`; `/legal`, `/confirm`, `/unsubscribe`, `/admin`, `/admin2` stay; drop the `/:topicId` short-code routes entirely.
+- `src/i18n/config.ts` — always lock to `de` (or keep detector — decide with you; default: lock to `de` to match current event behavior)
+- `src/hooks/useTTTopics.ts` — always filter to the single topic (query by `short_code = '7mm9'` via a constant, or by the singleton topic id fetched at boot)
+- `src/pages/EineWocheEineFrage.tsx`, `src/components/tt/TTScreen.tsx`, `src/components/tt/TTHeader.tsx`, `src/themes/ThemeContext.tsx` — remove `SINGLE_TOPIC_MODE` guards; keep the behavior they gated (hidden zone labels, Nebula default, help overlay, etc.) as the only behavior.
 
-- Redesigning the submit UI or verification flow.
-- Changing the layout formula.
-- Adding a global boundary for `/` (Landing) — can be done in the same App.tsx wrap for free, but I'll only note it, not restructure Landing.
+Introduce one small constant `HELSINKI_TOPIC_SHORT_CODE = '7mm9'` in `src/lib/constants.ts` for the seed lookup, so the codebase still has a single source of truth without an env flag.
+
+## Phase 4 — Verify
+
+- Build passes (`tsgo`).
+- Playwright smoke: open `/`, verify the topic loads, sign in with one minted passphrase, submit an opinion, confirm graph renders.
+- `supabase--linter` clean on the new backend.
+
+## What I need from you before Phase 2
+
+1. Attach the new Lovable Cloud backend to this project.
+2. Reply "attached" so I can start the migration.
+3. Have the 4 secrets above ready to paste when I prompt.
+
+## Technical details
+
+- The current shared backend is left untouched — FreeMind MVP copy keeps it.
+- No data is copied over. `7mm9`'s current opinions, chats, ratings, signups, and verified participants stay on the old backend and do NOT move.
+- `supabase/config.toml`'s `project_id` is auto-managed by Lovable when the backend is swapped; I won't hand-edit it.
+- The route `/:topicId` (short-code) goes away — since there's only one topic, it lives at `/`. Any inbound links using `/7mm9` will 404 unless we add a redirect; I'll add a small redirect from `/7mm9` and `/:topicId` → `/` to be safe.
