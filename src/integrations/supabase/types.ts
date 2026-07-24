@@ -990,38 +990,6 @@ export type Database = {
         }
         Relationships: []
       }
-      user_topics: {
-        Row: {
-          id: string
-          ip_address: string | null
-          joined_at: string | null
-          topic_id: string
-          user_id: string
-        }
-        Insert: {
-          id?: string
-          ip_address?: string | null
-          joined_at?: string | null
-          topic_id: string
-          user_id: string
-        }
-        Update: {
-          id?: string
-          ip_address?: string | null
-          joined_at?: string | null
-          topic_id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_topics_topic_id_fkey"
-            columns: ["topic_id"]
-            isOneToOne: false
-            referencedRelation: "topics"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       verified_participants: {
         Row: {
           signup_id: string
@@ -1120,10 +1088,6 @@ export type Database = {
         }
         Returns: string
       }
-      create_topic: {
-        Args: { _description?: string; _title: string }
-        Returns: string
-      }
       delete_bot_opinion: { Args: { _topic_id: string }; Returns: undefined }
       delete_email: {
         Args: { message_id: number; queue_name: string }
@@ -1200,18 +1164,6 @@ export type Database = {
           target_opinion_id: string
         }[]
       }
-      get_user_topics: {
-        Args: never
-        Returns: {
-          description: string
-          joined_at: string
-          status: string
-          title: string
-          topic_id: string
-          url_slug: string
-        }[]
-      }
-      has_joined_topic: { Args: { _topic_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1228,10 +1180,6 @@ export type Database = {
         Returns: boolean
       }
       is_verified_participant: { Args: { _user_id: string }; Returns: boolean }
-      join_topic: {
-        Args: { _ip_address?: string; _topic_slug: string }
-        Returns: string
-      }
       log_audit: {
         Args: {
           _action: string
