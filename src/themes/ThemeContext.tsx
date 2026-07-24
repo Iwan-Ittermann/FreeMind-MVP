@@ -2,7 +2,6 @@ import { createContext, useContext, useMemo, useEffect, useState, useCallback, t
 import { useAppSetting } from '@/hooks/useAppSettings';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-import { SINGLE_TOPIC_MODE } from '@/lib/single-topic';
 import type { ThemeName } from './types';
 
 interface ThemeContextValue {
@@ -46,8 +45,8 @@ export function FreeMindThemeProvider({ children }: { children: ReactNode }) {
     : setting.value === 'nebula' ? 'nebula'
     : 'classic';
 
-  // Event build defaults to nebula unless admin explicitly picked something else.
-  const theme: ThemeName = SINGLE_TOPIC_MODE && !setting ? 'nebula' : resolvedFromSetting;
+  // Helsinki event build defaults to nebula unless admin explicitly picked something else.
+  const theme: ThemeName = !setting ? 'nebula' : resolvedFromSetting;
 
   // Apply theme class to <body> so CSS variable overrides (e.g. .theme-nebula) cascade.
   useEffect(() => {
