@@ -168,16 +168,31 @@ export default function TT() {
             ownOpinionId={ownOpinionId}
           />
         )}
-        {ownOpinionKnown && !hasOwnOpinion && activeTopicId && (
-          <TTCenterCTA
-            topicId={activeTopicId}
-            topicTitle={activeTopicTitle}
-            highlight={false}
-            onOpinionCommitted={() => {
-              queryClient.invalidateQueries({ queryKey: ['tt-own-opinion', activeTopicId, user?.id] });
-              queryClient.invalidateQueries({ queryKey: ['topic', activeTopicId] });
-            }}
-          />
+        {ownOpinionKnown && !hasOwnOpinion && activeTopicId && !verifiedLoading && (
+          isVerified ? (
+            <TTCenterCTA
+              topicId={activeTopicId}
+              topicTitle={activeTopicTitle}
+              highlight={false}
+              onOpinionCommitted={() => {
+                queryClient.invalidateQueries({ queryKey: ['tt-own-opinion', activeTopicId, user?.id] });
+                queryClient.invalidateQueries({ queryKey: ['topic', activeTopicId] });
+              }}
+            />
+          ) : (
+            <div className="absolute left-1/2 bottom-[140px] -translate-x-1/2 z-30 max-w-[80vw]">
+              <div className="pointer-events-auto flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-background/95 backdrop-blur-md border border-border/40 shadow-lg text-sm text-foreground whitespace-nowrap">
+                <span>{t('tt.registerToParticipate')}</span>
+                <a
+                  href="https://freemind.chat"
+                  className="text-primary hover:underline font-medium"
+                >
+                  freemind.chat
+                </a>
+                <span>{t('tt.registerToParticipateSuffix')}</span>
+              </div>
+            </div>
+          )
         )}
         <TTBottomPanel
           topicId={activeTopicId}
