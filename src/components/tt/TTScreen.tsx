@@ -18,18 +18,12 @@ interface TTScreenInnerProps {
   onNodeSelect: (node: GraphNode | null) => void;
   onEdgeClick?: (edge: GraphEdge) => void;
   highlightAllNodes?: boolean;
-  isLoopClone?: boolean;
   /** Called from parent so it can read opinions for the side panel. */
   onDataReady?: (data: ReturnType<typeof useTopicData>['data']) => void;
 }
 
 /**
  * Inner TT section: background + graph only. No chrome (header/tabs/panel).
- * Chrome lives in the parent (`TT.tsx`) so it never unmounts on swipe.
- *
- * Parallax: the graph layer translates at ~0.7x of the section's scroll
- * progress, while the background stays stationary. Result: subtle depth
- * without the GUI shaking.
  */
 function TTScreenInnerImpl({
   topicId,
@@ -38,7 +32,6 @@ function TTScreenInnerImpl({
   onNodeSelect,
   onEdgeClick,
   highlightAllNodes = false,
-  isLoopClone = false,
 }: TTScreenInnerProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -106,8 +99,7 @@ function TTScreenInnerImpl({
   return (
     <section
       data-tt-topic={topicId}
-      data-tt-real-topic={isLoopClone ? undefined : topicId}
-      data-tt-clone={isLoopClone ? 'true' : undefined}
+      data-tt-real-topic={topicId}
       className="relative w-full h-[100dvh] snap-start snap-always overflow-hidden"
       style={{ contain: 'layout size', backgroundColor: '#eef2f4', transform: 'translateZ(0)', scrollSnapStop: 'always' }}
     >

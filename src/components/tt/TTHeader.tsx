@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Bell, BellOff, Settings, Copy, Download, Eye, EyeOff, X, SlidersHorizontal, MessageSquare, MessageCircle, Globe, Sparkles, CircleHelp, HelpCircle } from 'lucide-react';
+import { Bell, BellOff, Settings, Copy, Download, Eye, EyeOff, X, SlidersHorizontal, MessageSquare, MessageCircle, Sparkles, CircleHelp, HelpCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { emailToPassphrase } from '@/lib/passphrase';
@@ -14,7 +14,6 @@ import {
   getPrefs,
   setPrefs,
 } from '@/lib/tt-notification-prefs';
-import { useTTTopics } from '@/hooks/useTTTopics';
 
 export interface TTNotification {
   id: string;
@@ -43,7 +42,6 @@ const FILTER_ITEMS: {
   { key: 'newOpinion', iconEl: <Bell className="w-3.5 h-3.5" />, labelKey: 'tt.notifFilter.newOpinion' },
   { key: 'newMessage', iconEl: <MessageSquare className="w-3.5 h-3.5" />, labelKey: 'tt.notifFilter.newMessage' },
   { key: 'newChat', iconEl: <MessageCircle className="w-3.5 h-3.5" />, labelKey: 'tt.notifFilter.newChat' },
-  { key: 'newTopic', iconEl: <Globe className="w-3.5 h-3.5" />, labelKey: 'tt.notifFilter.newTopic' },
   { key: 'newHighlight', iconEl: <Sparkles className="w-3.5 h-3.5" />, labelKey: 'tt.notifFilter.newHighlight', disabled: true },
 ];
 
@@ -88,19 +86,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
     );
   };
 
-  const { data: topicList = [] } = useTTTopics();
-  const topicTitleMap = new Map(topicList.map((tp) => [tp.id, tp.title]));
-
-  const groupedNotifications = (() => {
-    const groups = new Map<string, { title: string; items: typeof notifications }>();
-    for (const n of notifications) {
-      const key = n.topicId ?? '__other__';
-      const title = n.topicId ? (topicTitleMap.get(n.topicId) ?? t('tt.otherTopic', 'Other')) : t('tt.otherTopic', 'Other');
-      if (!groups.has(key)) groups.set(key, { title, items: [] });
-      groups.get(key)!.items.push(n);
-    }
-    return Array.from(groups.values());
-  })();
+  // Single-topic build: flat notification list (no per-topic grouping).
 
   useEffect(() => {
     if (!accountOpen && !bellOpen) return;
@@ -310,30 +296,21 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                   {t('tt.noNotifications')}
                 </p>
               ) : (
-                <div>
-                  {groupedNotifications.map((group) => (
-                    <div key={group.title} className="border-b border-border/30 last:border-b-0">
-                      <div className="px-4 pt-2.5 pb-1 text-[10px] uppercase tracking-wider text-muted-foreground/80 font-semibold bg-muted/30">
-                        {group.title}
-                      </div>
-                      <ul className="divide-y divide-border/20">
-                        {group.items.map((n) => (
-                          <li
-                            key={n.id}
-                            className="px-4 py-2.5 hover:bg-muted/40 cursor-pointer"
-                          >
-                            <p className={`text-sm ${n.unread ? 'font-semibold' : 'text-foreground/80'}`}>
-                              {n.title}
-                            </p>
-                            {n.body && (
-                              <p className="text-xs text-muted-foreground mt-0.5">{n.body}</p>
-                            )}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                <ul className="divide-y divide-border/20">
+                  {notifications.map((n) => (
+                    <li
+                      key={n.id}
+                      className="px-4 py-2.5 hover:bg-muted/40 cursor-pointer"
+                    >
+                      <p className={`text-sm ${n.unread ? 'font-semibold' : 'text-foreground/80'}`}>
+                        {n.title}
+                      </p>
+                      {n.body && (
+                        <p className="text-xs text-muted-foreground mt-0.5">{n.body}</p>
+                      )}
+                    </li>
                   ))}
-                </div>
+                </ul>
               )}
             </div>
           </motion.div>

@@ -50,7 +50,6 @@ function AppRoutes() {
       <Route path="/admin2" element={<Admin2 />} />
       <Route path="/admin" element={<Admin />} />
       <Route path="/auth" element={<Navigate to="/" replace />} />
-      <Route path="/:topicId" element={<Navigate to="/7mm9" replace />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

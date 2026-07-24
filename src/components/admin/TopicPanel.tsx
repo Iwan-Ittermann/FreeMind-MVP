@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Users, Archive, Trash2, Link2, Copy, Loader2, ExternalLink, Pencil, Globe } from 'lucide-react';
+import { Users, Archive, Trash2, Link2, Copy, Loader2, ExternalLink, Pencil, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAllTopics, useUpdateTopicStatus, Topic } from '@/hooks/useTopics';
-import { CreateTopicDialog } from './CreateTopicDialog';
 import { EditTopicTitleDialog } from './EditTopicTitleDialog';
 import { EditSiteTitleDialog } from './EditSiteTitleDialog';
 import { toast } from 'sonner';
@@ -131,7 +130,6 @@ function TopicCard({ topic, onArchive, onDelete, onRestore, onEdit, isUpdating }
 
 export function TopicPanel() {
   const { t } = useTranslation();
-  const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editSiteTitleDialogOpen, setEditSiteTitleDialogOpen] = useState(false);
   const [editingTopic, setEditingTopic] = useState<Topic | null>(null);
   const { data: topics = [], isLoading } = useAllTopics(true);
@@ -194,10 +192,6 @@ export function TopicPanel() {
             <Globe className="w-4 h-4 mr-2" />
             Edit Site Title
           </Button>
-          <Button onClick={() => setCreateDialogOpen(true)}>
-            <Plus className="w-4 h-4 mr-2" />
-            Create Topic
-          </Button>
         </div>
       </div>
 
@@ -234,13 +228,6 @@ export function TopicPanel() {
             <div className="text-center py-12 text-muted-foreground">
               <Users className="w-12 h-12 mx-auto mb-4 opacity-20" />
               <p>No active topics</p>
-              <Button 
-                variant="link" 
-                onClick={() => setCreateDialogOpen(true)}
-                className="mt-2"
-              >
-                Create your first topic
-              </Button>
             </div>
           ) : (
             <div className="grid gap-4 max-w-2xl">
@@ -306,11 +293,6 @@ export function TopicPanel() {
         </TabsContent>
       </Tabs>
 
-      <CreateTopicDialog 
-        open={createDialogOpen} 
-        onOpenChange={setCreateDialogOpen} 
-      />
-      
       <EditTopicTitleDialog
         open={!!editingTopic}
         onOpenChange={(open) => { if (!open) setEditingTopic(null); }}

@@ -9,7 +9,8 @@ export interface TTTopicLite {
 }
 
 /**
- * Fetch the single Helsinki event topic for the TT feed.
+ * Fetch the single Helsinki event topic. This build is locked to one topic;
+ * the array shape is preserved only because a few call sites still iterate.
  */
 export function useTTTopics() {
   return useQuery({
@@ -18,21 +19,11 @@ export function useTTTopics() {
       const { data, error } = await supabase
         .from('topics')
         .select('id, title, short_code')
-        .eq('status', 'Active')
         .eq('short_code', HELSINKI_TOPIC_SHORT_CODE)
-        .order('created_at', { ascending: false });
+        .maybeSingle();
       if (error) throw error;
-      return (data ?? []) as TTTopicLite[];
+      return data ? [data as TTTopicLite] : [];
     },
     staleTime: 5 * 60 * 1000,
   });
-}
-
-/**
- * Returns all topic ids for the TT feed. The page adds loop clones around them.
- */
-export function useTTSwipeWindow(currentTopicId: string) {
-  const { data: topics = [], isLoading } = useTTTopics();
-  const ids = topics.map((t) => t.id);
-  return { topics: ids.length ? ids : [currentTopicId], current: currentTopicId, isLoading };
 }
