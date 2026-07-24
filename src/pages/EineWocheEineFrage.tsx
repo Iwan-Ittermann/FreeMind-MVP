@@ -28,8 +28,10 @@ import { useTranslation } from 'react-i18next';
  */
 export default function TT() {
   useParams<{ topicId?: string }>(); // route is /7mm9; params ignored
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user, loading: authLoading } = useAuth();
+  const { isVerified, isLoading: verifiedLoading } = useIsVerified();
   const isMobile = useIsMobile();
   const chatManagerRef = useRef<FloatingChatManagerHandle>(null);
   const { data: topicList = [], isLoading: topicLoading } = useTTTopics();
