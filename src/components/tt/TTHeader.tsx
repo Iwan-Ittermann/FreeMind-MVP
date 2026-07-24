@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Bell, BellOff, Settings, Copy, Download, Eye, EyeOff, X, SlidersHorizontal, MessageSquare, MessageCircle, Globe, Sparkles, CircleHelp, Flag, HelpCircle } from 'lucide-react';
+import { Bell, BellOff, Settings, Copy, Download, Eye, EyeOff, X, SlidersHorizontal, MessageSquare, MessageCircle, Globe, Sparkles, CircleHelp, HelpCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { emailToPassphrase } from '@/lib/passphrase';
@@ -12,12 +11,10 @@ import {
   NotificationFilters,
   getGlobalFilters,
   setGlobalFilters,
-  getSubscribedTopicIds,
   getPrefs,
   setPrefs,
 } from '@/lib/tt-notification-prefs';
 import { useTTTopics } from '@/hooks/useTTTopics';
-import { SINGLE_TOPIC_MODE } from '@/lib/single-topic';
 
 export interface TTNotification {
   id: string;
