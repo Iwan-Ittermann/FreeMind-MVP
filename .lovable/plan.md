@@ -1,80 +1,71 @@
-
 ## Goal
 
-Cut Helsinki MVP loose from the shared backend (`jmkbkwhiucnksdygbomc`), point it at a fresh empty Lovable Cloud backend, re-apply the full schema, and remove the `VITE_SINGLE_TOPIC_MODE` / `VITE_SINGLE_TOPIC_SHORT_CODE` env-flag concept so the app is simply a one-topic app.
+Copy the full database contents of Helsinki MVP (`jmkbkwhi…`) into FreeMind MVP copy (`fednauja…`), then continue with the previously-planned **Phase 3 — drop the single-topic env-flag concept** in this Helsinki project.
 
-## Sequencing
+## Confirmed
 
-This is a two-phase change. The first phase requires **you** to attach a fresh Cloud backend to this project from the Lovable UI (Connectors → Lovable Cloud → new instance). I'll wait for that and then continue with everything else in one pass.
+The two projects use different Supabase instances (`jmkbkwhiucnksdygbomc` vs `fednaujatikmzpgunhuq`) → fully isolated data. Nothing is shared today.
 
-## Phase 1 — You attach a new backend
+## Constraint you should know about
 
-You do this from the UI. When it's done, `.env` (`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SUPABASE_PROJECT_ID`) auto-updates to the new empty instance. Nothing else is populated yet — no tables, no functions, no storage, no secrets.
+From this project's agent session, cross-project tools are **read-only**. I can query Helsinki's DB and read FreeMind MVP copy's files, but I cannot run migrations, inserts, or deploys against FreeMind MVP copy. So the port is two-sided:
 
-Confirm to me it's attached, then I run Phase 2.
+1. I produce a complete export here.
+2. You paste it into the FreeMind MVP copy chat and the agent there applies it.
 
-## Phase 2 — Re-apply everything to the new backend
+## Approach
 
-### 2a. Schema migration (single consolidated migration)
+### Step A — Prepare the export (in this Helsinki project)
 
-Reproduce the current DB in one migration:
+I'll produce two artifacts under `/mnt/documents/helsinki-export/`:
 
-- Enums: `app_role`
-- Tables (with GRANTs + RLS + policies): `topics`, `user_roles`, `verified_participants`, `signups`, `opinions`, `opinion_ips`, `chats`, `chat_messages`, `chat_message_reactions`, `chat_ratings`, `chat_requests`, `opinion_ratings`, `user_blocks`, `user_topics`, `fake_nodes`, `reports`, `court_cases`, `audit_logs`, `laws`, `app_settings`, `tutorial_settings`, `email_send_log`, `email_send_state`, `email_unsubscribe_tokens`, `suppressed_emails`, `test_diskussion_replies`
-- All SECURITY DEFINER functions listed in project context (`has_role`, `is_verified_participant`, `submit_opinion`, `create_topic`, `get_graph_pairs`, `get_readonly_chat_messages`, `join_topic`, `report_content`, `review_report`, `toggle_soft_delete`, `log_audit`, `generate_topic_short_code`, email queue helpers, etc.)
-- Triggers: `auto_accept_bot_requests`, `sync_fake_node_opinion`, `update_updated_at_column` on relevant tables
-- Storage buckets: `tutorials` (public), `voice-messages` (private) with their policies
+1. `**schema.sql**` — one consolidated migration reproducing the current Helsinki DB:
+  - Enum `app_role`
+  - Tables (each with GRANTs + RLS + policies): `topics`, `user_roles`, `verified_participants`, `signups`, `opinions`, `opinion_ips`, `chats`, `chat_messages`, `chat_message_reactions`, `chat_ratings`, `chat_requests`, `opinion_ratings`, `user_blocks`, `user_topics`, `fake_nodes`, `reports`, `court_cases`, `audit_logs`, `laws`, `app_settings`, `tutorial_settings`, `email_send_log`, `email_send_state`, `email_unsubscribe_tokens`, `suppressed_emails`, `test_diskussion_replies`
+  - All SECURITY DEFINER functions listed in project context
+  - Triggers (`auto_accept_bot_requests`, `sync_fake_node_opinion`, `update_updated_at_column`)
+  - Storage buckets `tutorials` (public), `voice-messages` (private) with their policies
+  - Email infra (pgmq queues + wake trigger + dispatch cron) — optional; skipped unless you want emails on FreeMind MVP copy too
+2. `**data.sql**` — plain `INSERT`s produced by querying every table in Helsinki with `supabase--read_query` and formatting the rows into inserts. Rows are ordered by FK dependency so they apply cleanly (topics → opinions → chats → chat_messages → …). Uses `ON CONFLICT (id) DO NOTHING` for safety.
 
-### 2b. Seed the single event topic
+Note on `auth.users`: I cannot recreate authenticated users on the other project — auth rows and their passwords/passkeys don't come along. Practically that means:
 
-Insert one row into `topics` with `short_code = '7mm9'`, status `Active`, the German title/description currently used on the event build.
+- `verified_participants` rows (passphrase hashes) copy fine.
+- `signups` rows copy fine.
+- `opinions.user_id`, `chat_messages.sender_id`, etc. remain as-is; the underlying `auth.users` rows don't exist on the target, so those users can't sign back in on FreeMind MVP copy — but the data still reads/renders because RLS lookups pass through `has_role` / `is_verified_participant` on the ID, not on `auth.users` FK integrity. The bot user id (`…0000a1`) is a synthetic UUID and needs no auth row.
 
-### 2c. Re-mint 6 verified test passphrases
+I'll flag any FK to `auth.users` that would need `ON DELETE`/relaxation before this can apply on the target.
 
-Run a one-off admin-only edge function (same shape as before) that inserts 6 rows into `signups` + `verified_participants` and returns the plaintext passphrases once. Function is deleted immediately after.
+3. **Storage objects** — I'll list what's in the `tutorials` and `voice-messages` buckets. If there's content, I'll write a short manual step: download the objects from Helsinki's storage UI and re-upload to the FreeMind MVP copy buckets after the schema migration creates them. (No cross-project storage copy tool exists.)
 
-### 2d. Secrets to re-add
+### Step B — Apply on FreeMind MVP copy (you drive)
 
-I'll ask you to re-add these on the new backend via `add_secret`:
-- `ADMIN_PASSWORD`
-- `ADMIN_NOTIFY_EMAIL`
-- `LOVABLE_API_KEY` (rotated)
-- `SITE_URL`
+In FreeMind MVP copy's Lovable chat, paste both files with instructions to:
 
-The `SUPABASE_*` secrets are auto-provisioned. `email_queue_service_role_key` (vault) is only needed if you re-enable the email queue on the new instance — deferred unless you ask.
+1. Run `schema.sql` as a single migration.
+2. Run `data.sql` via the insert tool.
+3. Confirm row counts match a small checklist I'll include (e.g. "topics: 1, opinions: N, chat_messages: M …").
+4. Re-add the runtime secrets that Helsinki uses and FreeMind MVP copy will need (`ADMIN_PASSWORD`, `ADMIN_NOTIFY_EMAIL`, `SITE_URL`; `LOVABLE_API_KEY` is auto-provisioned).
+5. Redeploy any edge functions that read those secrets.
 
-### 2e. Edge functions
+I'll write the paste-ready instructions into `/mnt/documents/helsinki-export/README.md`.
 
-All existing functions under `supabase/functions/*` redeploy automatically against the new project ref. I'll verify each still compiles; nothing app-level should need to change.
+### Step C — Phase 3 in this project (Helsinki): drop the single-topic env-flag
 
-## Phase 3 — Drop the single-topic env-flag concept
+Unchanged from the earlier plan. After the export files exist:
 
-Since this project is now permanently a one-topic app, remove the branching:
+- Delete `src/lib/single-topic.ts`.
+- Remove `VITE_SINGLE_TOPIC_MODE` / `VITE_SINGLE_TOPIC_SHORT_CODE` from `.env` and `.env.example`.
+- Collapse the two-branch `AppRoutes` in `src/App.tsx` into one route table where `/` renders `EineWocheEineFrage` directly. Drop `Landing`, `TopicJoin`, `TestDiskussion`, `Index`, `RootTopicRoute`, `LockedTopicRoute`.
+- Add `HELSINKI_TOPIC_SHORT_CODE = '7mm9'` to `src/lib/constants.ts` as the single source of truth.
+- Remove `SINGLE_TOPIC_MODE` guards in `EineWocheEineFrage.tsx`, `TTScreen.tsx`, `TTHeader.tsx`, `ThemeContext.tsx`, `useTTTopics.ts` — keep the gated behavior (hidden zone labels, Nebula default, help overlay, lock to topic 7mm9) as the only behavior.
+- Add a small redirect: `/7mm9` and `/:topicId` → `/`.
+- Lock i18n to `de` (matches current event behavior).
+- Verify: build passes (`tsgo`) and `supabase--linter` clean.
 
-- `src/lib/single-topic.ts` — delete
-- `.env` / `.env.example` — remove `VITE_SINGLE_TOPIC_MODE` and `VITE_SINGLE_TOPIC_SHORT_CODE`
-- `src/App.tsx` — collapse `SINGLE_TOPIC_MODE` branch into the sole route table; remove `Landing`, `TopicJoin`, `TestDiskussion`, `Index`, `NotFound` (or keep `NotFound` for `*`). `/` → `EineWocheEineFrage`; `/legal`, `/confirm`, `/unsubscribe`, `/admin`, `/admin2` stay; drop the `/:topicId` short-code routes entirely.
-- `src/i18n/config.ts` — always lock to `de` (or keep detector — decide with you; default: lock to `de` to match current event behavior)
-- `src/hooks/useTTTopics.ts` — always filter to the single topic (query by `short_code = '7mm9'` via a constant, or by the singleton topic id fetched at boot)
-- `src/pages/EineWocheEineFrage.tsx`, `src/components/tt/TTScreen.tsx`, `src/components/tt/TTHeader.tsx`, `src/themes/ThemeContext.tsx` — remove `SINGLE_TOPIC_MODE` guards; keep the behavior they gated (hidden zone labels, Nebula default, help overlay, etc.) as the only behavior.
+## Open questions
 
-Introduce one small constant `HELSINKI_TOPIC_SHORT_CODE = '7mm9'` in `src/lib/constants.ts` for the seed lookup, so the codebase still has a single source of truth without an env flag.
-
-## Phase 4 — Verify
-
-- Build passes (`tsgo`).
-- Playwright smoke: open `/`, verify the topic loads, sign in with one minted passphrase, submit an opinion, confirm graph renders.
-- `supabase--linter` clean on the new backend.
-
-## What I need from you before Phase 2
-
-1. Attach the new Lovable Cloud backend to this project.
-2. Reply "attached" so I can start the migration.
-3. Have the 4 secrets above ready to paste when I prompt.
-
-## Technical details
-
-- The current shared backend is left untouched — FreeMind MVP copy keeps it.
-- No data is copied over. `7mm9`'s current opinions, chats, ratings, signups, and verified participants stay on the old backend and do NOT move.
-- `supabase/config.toml`'s `project_id` is auto-managed by Lovable when the backend is swapped; I won't hand-edit it.
-- The route `/:topicId` (short-code) goes away — since there's only one topic, it lives at `/`. Any inbound links using `/7mm9` will 404 unless we add a redirect; I'll add a small redirect from `/7mm9` and `/:topicId` → `/` to be safe.
+1. **Direction check** — confirm: Helsinki → FreeMind MVP copy (so the event data ends up on FreeMind MVP copy). Correct? YES, CORRECT
+2. **Auth users**: do you want me to attempt to seed `auth.users` shells for the passphrase holders on the target (via a helper edge function on FreeMind MVP copy side), or accept that copied opinion/chat rows will be "orphaned from auth" and only the passphrase holders you re-mint there can log back in? ACCEPT THAT THEY WILL BE ORPHANED
+3. **Email infra**: include the pgmq/cron/email-templates infra in `schema.sql`, or leave FreeMind MVP copy without email sending until it configures its own domain? DONT INCLUDE anything from the DOI Email verification flow in the Export
+4. **Storage contents**: are there tutorial videos or voice messages in Helsinki's buckets you need moved, or can we skip that step? SKIP THIS STEP
