@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from './LanguageSwitcher';
-import { useTutorialContext } from '@/contexts/TutorialContext';
+
 import { useHidePendingEdges } from '@/themes/ThemeContext';
 import { AuthForm } from './AuthForm';
 import {
@@ -26,7 +26,6 @@ interface ConfigPanelProps {
 export function ConfigPanel({ open, onOpenChange }: ConfigPanelProps) {
   const { t } = useTranslation();
   const { user, signOut } = useAuth();
-  const { startTutorial, resetTutorialStatus } = useTutorialContext();
   const [hidePendingEdges, setHidePendingEdges] = useHidePendingEdges();
 
   const handleSignOut = async () => {
