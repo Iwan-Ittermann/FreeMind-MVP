@@ -19,7 +19,6 @@ import { GraphEdge, GraphNode } from '@/types/graph';
 import { supabase } from '@/integrations/supabase/client';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { FloatingChatManager, FloatingChatManagerHandle } from '@/components/chat/FloatingChatManager';
-import { SINGLE_TOPIC_MODE } from '@/lib/single-topic';
 import { TTHelpOverlay } from '@/components/tt/TTHelpOverlay';
 
 const PRIMARY_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
@@ -253,7 +252,7 @@ export default function TT() {
           notifications={ttNotifications}
           onMarkAllRead={markAllRead}
           activeTopicId={activeTopicId}
-          onOpenHelp={SINGLE_TOPIC_MODE ? () => setHelpOpen(true) : undefined}
+          onOpenHelp={() => setHelpOpen(true)}
         />
         <TTSideTabs
           ref={sideTabsRef}
@@ -271,8 +270,7 @@ export default function TT() {
           }}
         />
 
-        {!SINGLE_TOPIC_MODE && <TTNotificationsBell topicId={activeTopicId} />}
-        {SINGLE_TOPIC_MODE && helpOpen && (
+        {helpOpen && (
           <TTHelpOverlay
             onClose={() => setHelpOpen(false)}
             opinions={activeData?.opinions ?? []}

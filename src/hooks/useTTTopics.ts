@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { SINGLE_TOPIC_MODE, SINGLE_TOPIC_SHORT_CODE } from '@/lib/single-topic';
+import { HELSINKI_TOPIC_SHORT_CODE } from '@/lib/constants';
 
 export interface TTTopicLite {
   id: string;
@@ -9,23 +9,18 @@ export interface TTTopicLite {
 }
 
 /**
- * Fetch all public topics for the TT swipe feed.
- * In SINGLE_TOPIC_MODE the list is filtered to the configured short_code only.
+ * Fetch the single Helsinki event topic for the TT feed.
  */
 export function useTTTopics() {
   return useQuery({
-    queryKey: ['tt-topics', SINGLE_TOPIC_MODE ? SINGLE_TOPIC_SHORT_CODE : 'all'],
+    queryKey: ['tt-topics', HELSINKI_TOPIC_SHORT_CODE],
     queryFn: async (): Promise<TTTopicLite[]> => {
-      let query = supabase
+      const { data, error } = await supabase
         .from('topics')
         .select('id, title, short_code')
-        .eq('status', 'Active');
-
-      if (SINGLE_TOPIC_MODE && SINGLE_TOPIC_SHORT_CODE) {
-        query = query.eq('short_code', SINGLE_TOPIC_SHORT_CODE);
-      }
-
-      const { data, error } = await query.order('created_at', { ascending: false });
+        .eq('status', 'Active')
+        .eq('short_code', HELSINKI_TOPIC_SHORT_CODE)
+        .order('created_at', { ascending: false });
       if (error) throw error;
       return (data ?? []) as TTTopicLite[];
     },

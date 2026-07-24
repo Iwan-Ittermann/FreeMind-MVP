@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Bell, BellOff, Settings, Copy, Download, Eye, EyeOff, X, SlidersHorizontal, MessageSquare, MessageCircle, Globe, Sparkles, CircleHelp, Flag, HelpCircle } from 'lucide-react';
+import { Bell, BellOff, Settings, Copy, Download, Eye, EyeOff, X, SlidersHorizontal, MessageSquare, MessageCircle, Globe, Sparkles, CircleHelp, HelpCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { emailToPassphrase } from '@/lib/passphrase';
@@ -12,12 +11,10 @@ import {
   NotificationFilters,
   getGlobalFilters,
   setGlobalFilters,
-  getSubscribedTopicIds,
   getPrefs,
   setPrefs,
 } from '@/lib/tt-notification-prefs';
 import { useTTTopics } from '@/hooks/useTTTopics';
-import { SINGLE_TOPIC_MODE } from '@/lib/single-topic';
 
 export interface TTNotification {
   id: string;
@@ -56,12 +53,10 @@ const LANGUAGES = [
 ];
 
 export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRestartTour, onOpenHelp, activeTopicId }: TTHeaderProps) {
-  const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [accountOpen, setAccountOpen] = useState(false);
   const [bellOpen, setBellOpen] = useState(false);
-  const [languageOpen, setLanguageOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [showPhrase, setShowPhrase] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
@@ -69,14 +64,11 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
   const [subscribedHere, setSubscribedHere] = useState(false);
   const accountRef = useRef<HTMLDivElement>(null);
   const bellRef = useRef<HTMLDivElement>(null);
-  const languageRef = useRef<HTMLDivElement>(null);
   const bellDropdownRef = useRef<HTMLDivElement>(null);
   const accountDropdownRef = useRef<HTMLDivElement>(null);
-  const languageDropdownRef = useRef<HTMLDivElement>(null);
 
   const phrase = user?.email ? emailToPassphrase(user.email) ?? '' : '';
   const hasUnread = notifications.some((n) => n.unread);
-  const currentLanguage = LANGUAGES.find((lang) => i18n.language.startsWith(lang.code)) ?? LANGUAGES[0];
 
   useEffect(() => {
     if (!activeTopicId) return;
@@ -98,19 +90,6 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
 
   const { data: topicList = [] } = useTTTopics();
   const topicTitleMap = new Map(topicList.map((tp) => [tp.id, tp.title]));
-  const topicCodeMap = new Map(topicList.map((tp) => [tp.id, tp.short_code ?? tp.id]));
-
-  // Subscribed topics — refresh on subscription change events
-  const [subscribedIds, setSubscribedIds] = useState<string[]>(() => getSubscribedTopicIds());
-  useEffect(() => {
-    const sync = () => setSubscribedIds(getSubscribedTopicIds());
-    sync();
-    window.addEventListener('tt:subscription-changed', sync);
-    return () => window.removeEventListener('tt:subscription-changed', sync);
-  }, []);
-  const subscribedTopics = subscribedIds
-    .map((id) => ({ id, title: topicTitleMap.get(id) ?? id, code: topicCodeMap.get(id) ?? id }))
-    .filter((tp) => tp.title);
 
   const groupedNotifications = (() => {
     const groups = new Map<string, { title: string; items: typeof notifications }>();
@@ -124,7 +103,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
   })();
 
   useEffect(() => {
-    if (!accountOpen && !bellOpen && !languageOpen) return;
+    if (!accountOpen && !bellOpen) return;
     const onDown = (e: MouseEvent) => {
       const target = e.target as Node;
       if (accountOpen && accountRef.current && !accountRef.current.contains(target) && (!accountDropdownRef.current || !accountDropdownRef.current.contains(target))) {
@@ -135,13 +114,10 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
         setBellOpen(false);
         setFiltersOpen(false);
       }
-      if (languageOpen && languageRef.current && !languageRef.current.contains(target) && (!languageDropdownRef.current || !languageDropdownRef.current.contains(target))) {
-        setLanguageOpen(false);
-      }
     };
     document.addEventListener('mousedown', onDown);
     return () => document.removeEventListener('mousedown', onDown);
-  }, [accountOpen, bellOpen, languageOpen]);
+  }, [accountOpen, bellOpen]);
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -191,30 +167,12 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                 <HelpCircle className="w-4 h-4" />
               </button>
             )}
-            {!SINGLE_TOPIC_MODE && (
-              <div ref={languageRef}>
-                <button
-                  onClick={() => {
-                    setLanguageOpen((o) => !o);
-                    setBellOpen(false);
-                    setAccountOpen(false);
-                    setFiltersOpen(false);
-                    setShowLogin(false);
-                  }}
-                  className="h-7 w-7 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground transition-colors"
-                  aria-label={t('common.language')}
-                >
-                  <span className="text-sm leading-none" aria-hidden>{currentLanguage.flag}</span>
-                </button>
-              </div>
-            )}
             <div ref={bellRef}>
               <button
                 onClick={() => {
                   const wasOpen = bellOpen;
                   setBellOpen((o) => !o);
                   setAccountOpen(false);
-                  setLanguageOpen(false);
                   setFiltersOpen(false);
                   if (!wasOpen && onMarkAllRead) onMarkAllRead();
                 }}
@@ -232,7 +190,6 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                 onClick={() => {
                   setAccountOpen((o) => !o);
                   setBellOpen(false);
-                  setLanguageOpen(false);
                   setShowLogin(false);
                 }}
                 data-tt-help="settings"
@@ -258,46 +215,6 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
           <TopicTitleWithLinks title={topicTitle} />
         </h1>
       </div>
-
-
-      {/* Language dropdown */}
-      <AnimatePresence>
-        {languageOpen && (
-          <motion.div
-            ref={languageDropdownRef}
-            initial={{ opacity: 0, y: -8, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.96 }}
-            transition={{ type: 'spring', stiffness: 360, damping: 28 }}
-            style={{ transformOrigin: '90% 0%' }}
-            className="absolute top-12 right-[5.75rem] z-40 w-44 rounded-2xl bg-background/95 backdrop-blur-xl border border-border/40 shadow-2xl overflow-hidden pointer-events-auto"
-          >
-            <div className="px-3 py-2 border-b border-border/30 flex items-center gap-2">
-              <Flag className="w-3.5 h-3.5 text-muted-foreground" />
-              <h3 className="text-xs font-semibold">{t('common.language')}</h3>
-            </div>
-            <div className="p-1.5">
-              {LANGUAGES.map((lang) => (
-                <button
-                  key={lang.code}
-                  onClick={() => {
-                    i18n.changeLanguage(lang.code);
-                    setLanguageOpen(false);
-                  }}
-                  className={`w-full flex items-center gap-2 rounded-xl px-2.5 py-2 text-left text-sm transition-colors ${
-                    currentLanguage.code === lang.code
-                      ? 'bg-primary/10 text-foreground'
-                      : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
-                  }`}
-                >
-                  <span className="text-base leading-none" aria-hidden>{lang.flag}</span>
-                  <span>{t(lang.labelKey)}</span>
-                </button>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Notifications dropdown (header bell) — rendered outside header but checked via bellRef */}
       <AnimatePresence>
@@ -386,36 +303,6 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                 </motion.div>
               )}
             </AnimatePresence>
-
-            {/* Subscribed topics — hidden in single-topic mode */}
-            {!SINGLE_TOPIC_MODE && (
-              <div className="border-b border-border/30">
-                <div className="px-4 pt-2.5 pb-1 text-[10px] uppercase tracking-wider text-muted-foreground/80 font-semibold bg-muted/30">
-                  {t('tt.subscribedTopics')}
-                </div>
-                {subscribedTopics.length === 0 ? (
-                  <p className="px-4 py-2 text-xs text-muted-foreground">
-                    {t('tt.noSubscribedTopics')}
-                  </p>
-                ) : (
-                  <div className="px-3 py-2 flex flex-wrap gap-1.5">
-                    {subscribedTopics.map((tp) => (
-                      <button
-                        key={tp.id}
-                        onClick={() => {
-                          navigate(`/${tp.code}`);
-                          setBellOpen(false);
-                        }}
-                        className="text-[11px] rounded-full px-2.5 py-1 bg-primary/10 hover:bg-primary/20 text-foreground/85 max-w-[14rem] truncate transition-colors"
-                        title={tp.title}
-                      >
-                        {tp.title}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
 
             <div className="max-h-72 overflow-auto">
               {notifications.length === 0 ? (
