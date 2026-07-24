@@ -167,30 +167,12 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                 <HelpCircle className="w-4 h-4" />
               </button>
             )}
-            {!SINGLE_TOPIC_MODE && (
-              <div ref={languageRef}>
-                <button
-                  onClick={() => {
-                    setLanguageOpen((o) => !o);
-                    setBellOpen(false);
-                    setAccountOpen(false);
-                    setFiltersOpen(false);
-                    setShowLogin(false);
-                  }}
-                  className="h-7 w-7 rounded-full flex items-center justify-center text-foreground/80 hover:text-foreground transition-colors"
-                  aria-label={t('common.language')}
-                >
-                  <span className="text-sm leading-none" aria-hidden>{currentLanguage.flag}</span>
-                </button>
-              </div>
-            )}
             <div ref={bellRef}>
               <button
                 onClick={() => {
                   const wasOpen = bellOpen;
                   setBellOpen((o) => !o);
                   setAccountOpen(false);
-                  setLanguageOpen(false);
                   setFiltersOpen(false);
                   if (!wasOpen && onMarkAllRead) onMarkAllRead();
                 }}
@@ -208,7 +190,6 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                 onClick={() => {
                   setAccountOpen((o) => !o);
                   setBellOpen(false);
-                  setLanguageOpen(false);
                   setShowLogin(false);
                 }}
                 data-tt-help="settings"
