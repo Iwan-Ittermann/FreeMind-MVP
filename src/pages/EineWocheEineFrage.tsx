@@ -13,12 +13,14 @@ import { useTTChats } from '@/hooks/useTTChats';
 import { useAuth } from '@/hooks/useAuth';
 import { useTTNotifications } from '@/hooks/useTTNotifications';
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
+import { useIsVerified } from '@/hooks/useIsVerified';
 import { getPrefs, setPrefs } from '@/lib/tt-notification-prefs';
 import { GraphEdge, GraphNode } from '@/types/graph';
 import { supabase } from '@/integrations/supabase/client';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { FloatingChatManager, FloatingChatManagerHandle } from '@/components/chat/FloatingChatManager';
 import { TTHelpOverlay } from '@/components/tt/TTHelpOverlay';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Single-topic mobile UI. This build is locked to the Helsinki event topic (7mm9);
