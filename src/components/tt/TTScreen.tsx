@@ -4,6 +4,7 @@ import { useTopicData } from '@/hooks/useTopicData';
 import { useAuth } from '@/hooks/useAuth';
 import { OpinionGraph } from '@/components/graph/OpinionGraph';
 import { TTBackground } from './TTBackground';
+import { useTranslation } from 'react-i18next';
 import { GraphEdge, GraphNode } from '@/types/graph';
 
 interface TTScreenInnerProps {
