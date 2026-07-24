@@ -68,6 +68,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
   const accountDropdownRef = useRef<HTMLDivElement>(null);
 
   const phrase = user?.email ? emailToPassphrase(user.email) ?? '' : '';
+  const hasUnread = notifications.some((n) => n.unread);
 
   useEffect(() => {
     if (!activeTopicId) return;
