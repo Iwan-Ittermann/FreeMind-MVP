@@ -216,46 +216,6 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
         </h1>
       </div>
 
-
-      {/* Language dropdown */}
-      <AnimatePresence>
-        {languageOpen && (
-          <motion.div
-            ref={languageDropdownRef}
-            initial={{ opacity: 0, y: -8, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.96 }}
-            transition={{ type: 'spring', stiffness: 360, damping: 28 }}
-            style={{ transformOrigin: '90% 0%' }}
-            className="absolute top-12 right-[5.75rem] z-40 w-44 rounded-2xl bg-background/95 backdrop-blur-xl border border-border/40 shadow-2xl overflow-hidden pointer-events-auto"
-          >
-            <div className="px-3 py-2 border-b border-border/30 flex items-center gap-2">
-              <Flag className="w-3.5 h-3.5 text-muted-foreground" />
-              <h3 className="text-xs font-semibold">{t('common.language')}</h3>
-            </div>
-            <div className="p-1.5">
-              {LANGUAGES.map((lang) => (
-                <button
-                  key={lang.code}
-                  onClick={() => {
-                    i18n.changeLanguage(lang.code);
-                    setLanguageOpen(false);
-                  }}
-                  className={`w-full flex items-center gap-2 rounded-xl px-2.5 py-2 text-left text-sm transition-colors ${
-                    currentLanguage.code === lang.code
-                      ? 'bg-primary/10 text-foreground'
-                      : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
-                  }`}
-                >
-                  <span className="text-base leading-none" aria-hidden>{lang.flag}</span>
-                  <span>{t(lang.labelKey)}</span>
-                </button>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Notifications dropdown (header bell) — rendered outside header but checked via bellRef */}
       <AnimatePresence>
         {bellOpen && (
