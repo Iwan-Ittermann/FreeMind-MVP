@@ -89,19 +89,6 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
 
   const { data: topicList = [] } = useTTTopics();
   const topicTitleMap = new Map(topicList.map((tp) => [tp.id, tp.title]));
-  const topicCodeMap = new Map(topicList.map((tp) => [tp.id, tp.short_code ?? tp.id]));
-
-  // Subscribed topics — refresh on subscription change events
-  const [subscribedIds, setSubscribedIds] = useState<string[]>(() => getSubscribedTopicIds());
-  useEffect(() => {
-    const sync = () => setSubscribedIds(getSubscribedTopicIds());
-    sync();
-    window.addEventListener('tt:subscription-changed', sync);
-    return () => window.removeEventListener('tt:subscription-changed', sync);
-  }, []);
-  const subscribedTopics = subscribedIds
-    .map((id) => ({ id, title: topicTitleMap.get(id) ?? id, code: topicCodeMap.get(id) ?? id }))
-    .filter((tp) => tp.title);
 
   const groupedNotifications = (() => {
     const groups = new Map<string, { title: string; items: typeof notifications }>();
