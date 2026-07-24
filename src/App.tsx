@@ -12,6 +12,7 @@ import Admin from "./pages/Admin";
 import Admin2 from "./pages/Admin2";
 import Legal from "./pages/Legal";
 import EineWocheEineFrage from "./pages/EineWocheEineFrage";
+import Landing from "./pages/Landing";
 import Confirm from "./pages/Confirm";
 import Unsubscribe from "./pages/Unsubscribe";
 import { VerificationDialog } from "@/components/VerificationDialog";
