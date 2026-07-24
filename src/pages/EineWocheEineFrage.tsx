@@ -13,12 +13,14 @@ import { useTTChats } from '@/hooks/useTTChats';
 import { useAuth } from '@/hooks/useAuth';
 import { useTTNotifications } from '@/hooks/useTTNotifications';
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
+import { useIsVerified } from '@/hooks/useIsVerified';
 import { getPrefs, setPrefs } from '@/lib/tt-notification-prefs';
 import { GraphEdge, GraphNode } from '@/types/graph';
 import { supabase } from '@/integrations/supabase/client';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { FloatingChatManager, FloatingChatManagerHandle } from '@/components/chat/FloatingChatManager';
 import { TTHelpOverlay } from '@/components/tt/TTHelpOverlay';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Single-topic mobile UI. This build is locked to the Helsinki event topic (7mm9);
@@ -26,8 +28,10 @@ import { TTHelpOverlay } from '@/components/tt/TTHelpOverlay';
  */
 export default function TT() {
   useParams<{ topicId?: string }>(); // route is /7mm9; params ignored
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user, loading: authLoading } = useAuth();
+  const { isVerified, isLoading: verifiedLoading } = useIsVerified();
   const isMobile = useIsMobile();
   const chatManagerRef = useRef<FloatingChatManagerHandle>(null);
   const { data: topicList = [], isLoading: topicLoading } = useTTTopics();
@@ -164,16 +168,31 @@ export default function TT() {
             ownOpinionId={ownOpinionId}
           />
         )}
-        {ownOpinionKnown && !hasOwnOpinion && activeTopicId && (
-          <TTCenterCTA
-            topicId={activeTopicId}
-            topicTitle={activeTopicTitle}
-            highlight={false}
-            onOpinionCommitted={() => {
-              queryClient.invalidateQueries({ queryKey: ['tt-own-opinion', activeTopicId, user?.id] });
-              queryClient.invalidateQueries({ queryKey: ['topic', activeTopicId] });
-            }}
-          />
+        {ownOpinionKnown && !hasOwnOpinion && activeTopicId && !verifiedLoading && (
+          isVerified ? (
+            <TTCenterCTA
+              topicId={activeTopicId}
+              topicTitle={activeTopicTitle}
+              highlight={false}
+              onOpinionCommitted={() => {
+                queryClient.invalidateQueries({ queryKey: ['tt-own-opinion', activeTopicId, user?.id] });
+                queryClient.invalidateQueries({ queryKey: ['topic', activeTopicId] });
+              }}
+            />
+          ) : (
+            <div className="absolute left-1/2 bottom-[140px] -translate-x-1/2 z-30 max-w-[80vw]">
+              <div className="pointer-events-auto flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-background/95 backdrop-blur-md border border-border/40 shadow-lg text-sm text-foreground whitespace-nowrap">
+                <span>{t('tt.registerToParticipate')}</span>
+                <a
+                  href="https://freemind.chat"
+                  className="text-primary hover:underline font-medium"
+                >
+                  freemind.chat
+                </a>
+                <span>{t('tt.registerToParticipateSuffix')}</span>
+              </div>
+            </div>
+          )
         )}
         <TTBottomPanel
           topicId={activeTopicId}
