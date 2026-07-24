@@ -68,6 +68,24 @@ export type Database = {
         }
         Relationships: []
       }
+      banned_emails: {
+        Row: {
+          banned_at: string
+          email: string
+          reason: string | null
+        }
+        Insert: {
+          banned_at?: string
+          email: string
+          reason?: string | null
+        }
+        Update: {
+          banned_at?: string
+          email?: string
+          reason?: string | null
+        }
+        Relationships: []
+      }
       chat_message_reactions: {
         Row: {
           created_at: string
@@ -444,6 +462,30 @@ export type Database = {
         }
         Relationships: []
       }
+      email_templates: {
+        Row: {
+          body_md: string
+          heading: string
+          key: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          body_md: string
+          heading: string
+          key: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          body_md?: string
+          heading?: string
+          key?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       email_unsubscribe_tokens: {
         Row: {
           created_at: string
@@ -733,6 +775,7 @@ export type Database = {
           last_passphrase_sent_at: string | null
           passphrase: string | null
           passphrase_issued_at: string | null
+          signup_ip: unknown
         }
         Insert: {
           auth_user_id?: string | null
@@ -745,6 +788,7 @@ export type Database = {
           last_passphrase_sent_at?: string | null
           passphrase?: string | null
           passphrase_issued_at?: string | null
+          signup_ip?: unknown
         }
         Update: {
           auth_user_id?: string | null
@@ -757,6 +801,7 @@ export type Database = {
           last_passphrase_sent_at?: string | null
           passphrase?: string | null
           passphrase_issued_at?: string | null
+          signup_ip?: unknown
         }
         Relationships: []
       }
