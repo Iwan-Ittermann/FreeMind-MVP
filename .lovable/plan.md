@@ -1,111 +1,57 @@
-## Goal
+# Single-Topic Cleanup Plan
 
-Two transactional emails, all text editable from `/admin2`, plus expanded per-row actions (resend each mail, delete user, ban email) and IP logging gated behind a second admin password.
+Now that data has been migrated to the other project, we lock this project to one topic (`7mm9`) and delete everything that only existed to support multiple topics. Then we wipe data.
 
-## 1. The two emails
+## Phase 1 — Routing & topic resolution
 
+- `src/App.tsx`: drop the `/:topicId` redirect route; keep only `/`, `/7mm9`, `/confirm`, `/unsubscribe`, `/legal`, `/admin`, `/admin2`, and `*` → `/7mm9` (or `/`).
+- `src/hooks/useTTTopics.ts`: delete `useTTSwipeWindow` entirely; keep a minimal `useTTTopic()` that returns the single `7mm9` topic (or replace with a direct query in the one place that still needs the topic id).
+- `src/pages/EineWocheEineFrage.tsx`: remove the swipe-window / loop-clone system — no `renderedTopics`, no `clone-start-*` / `clone-end-*`, no `IntersectionObserver` topic-switch detection, no `navigate('/${code}')` on scroll, no `activeTopicId` state. Render exactly one `TTScreenInner` for the single topic. Drop `isLoopClone` prop from `TTScreen.tsx` and all its usages.
 
-| Key                 | Trigger                                     | Purpose                                                |
-| ------------------- | ------------------------------------------- | ------------------------------------------------------ |
-| `signup-confirm`    | `signup-request` submits an email           | Verify the email address (click confirm link) — exists |
-| `signup-passphrase` | `signup-confirm` completes, or admin resend | Deliver passphrase + how to use it — exists            |
-| &nbsp;              | &nbsp;                                      | &nbsp;                                                 |
+## Phase 2 — Notifications & subscription prefs
 
+- `src/lib/tt-notification-prefs.ts`: collapse the `Record<topicId, prefs>` into a single flat prefs object; remove `getSubscribedTopicIds()` and the `newTopic` filter (a new topic can never appear).
+- `src/hooks/useTTNotifications.ts`: remove the realtime listener on `topics` INSERT and all "new topic available" notification code paths.
+- `src/components/tt/TTHeader.tsx`: remove `useTTTopics` import, `topicTitleMap`, and per-topic grouping in `groupedNotifications` — render a flat list. Update any UI that surfaces the `newTopic` filter toggle.
 
-`signup-admin-notify` (internal admin ping) stays as-is and is not exposed as editable.
+## Phase 3 — Delete dead multi-topic hooks & admin "create topic"
 
-## 2. Editable templates in /admin2
+Delete from `src/hooks/useTopics.ts` (all confirmed unused):
 
-New table `email_templates`:
+- `useUserTopics`, `useHasJoinedTopic`, `useJoinTopic`, `useTopicBySlug`, `useTopicMemberCount`, `useCreateTopic`.
 
-- `key` (pk, one of the three above)
-- `subject` (text)
-- `body_md` (text, plain text / light markdown)
-- `updated_at`
-- Seeded on migration with current German copy from the existing `.tsx` templates.
+Keep: `useAllTopics` (admin list, will show 1 row), `useUpdateTopicStatus`, `useUpdateTopicTitle`, `useUpdateTopicDescription`.
 
-Rendering strategy: the two `.tsx` template files become thin wrappers that receive `{ subject, body }` from the send-side. `send-transactional-email` stays unchanged; instead, `signup-request` and`signup-confirm` fetch the row from `email_templates`, interpolate `{{confirmUrl}}` / `{{passphrase}}` / `{{appUrl}}` / `{{email}}` placeholders, and pass the final `subject` + `bodyHtml` (from markdown-to-HTML with a tiny converter — paragraphs, links, `**bold**`) into a single generic `custom-text` React Email template. Brand chrome (eyebrow, heading font, container) stays in the wrapper; only the body prose is user-editable.
+Delete `src/components/admin/CreateTopicDialog.tsx` and remove its "New topic" button/trigger from `src/components/admin/TopicPanel.tsx` (verify TopicPanel body first and drop only that trigger — keep the topic list + edit/status controls).
 
-Admin UI additions in `Admin2.tsx`:
+## Phase 4 — Database cleanup (single migration)
 
-- New "Emails" section above the signups table.
-- Three cards (one per key) with `Subject` input and `Body` textarea, "Placeholders available: …" hint, `Save` button.
-- Reads/writes via `admin2-overview` with new actions `get_templates` and `save_template`.
+Drop now-unused RPCs and tables (verify no edge function references before dropping):
 
-## 3. Signups table — new actions
+- Drop functions: `join_topic`, `has_joined_topic`, `get_user_topics`, `create_topic`.
+- Drop table `user_topics` (backed only the removed RPCs).
+- Keep `update_topic_status` — admin still uses it.
+- Keep the `short_code` column but no longer treat it as a lookup key in app code.
 
-Extend `admin2-overview` with actions:
+Grep `supabase/functions/**` for any references to the dropped RPCs before running the migration; if any exist, adjust or preserve.
 
-- `resend_signup` (exists) — resends confirm email.
-- `resend_passphrase` — resends passphrase (only if confirmed & passphrase exists).
-- `delete_signup` — deletes signup + linked `verified_participants` + `auth.users` row (cascade via service role).
-- `ban_email` — inserts into new `banned_emails` table and deletes the signup.
-- `reveal_ips` — accepts the IP password (see §5) and returns `{ id → ip_address }` map.
+## Phase 5 — Data wipe
 
-New columns in the signups table UI (in this order): Email · Angemeldet · Bestätigt · IP (hidden) · Resend confirm · Resend passphrase · Delete · Ban.
+Run a single migration that:
 
-## 4. Ban list
+- Deletes all rows from: `chat_messages`, `chat_message_reactions`, `chat_ratings`, `chat_requests`, `chats`, `opinion_ratings`, `opinion_ips`, `opinions`, `fake_nodes`, `audit_logs`, `reports`, `court_cases`, `chat_ratings`, `user_blocks`, `signups` (except the 6 verified test entries), `email_send_log`, `email_send_state`, `email_unsubscribe_tokens`, `banned_emails` (optional).
+- Preserves in `verified_participants`: the 6 test passphrases you want to keep — I will list them for confirmation before running.
+- Preserves in `topics`: only the `7mm9` row's `title` and its identity; clears `description` only if you say so.
+- Leaves `email_templates`, `app_settings`, `tutorial_settings`, `laws`, `user_roles` untouched.
 
-New table `banned_emails (email text pk, banned_at timestamptz default now(), reason text)`.
-`signup-request` rejects with `status: "banned"` when `lower(email)` is present.
-Managed only via admin (no public policies).
+## Technical notes
 
-## 5. IP logging behind a second password
+- I'll verify `src/components/admin/TopicPanel.tsx` content in Phase 3 before deleting `CreateTopicDialog` to make sure nothing else wires into it.
+- `useTopicMemberCount` and `user_topics`: grep confirmed zero call sites in `src/`; migration will fail cleanly if any DB dependency remains, at which point we adjust.
+- All deletions are additive-safe (no runtime code path currently depends on them).
 
-- Add `signup_ip inet` column to `signups`.
-- `signup-request` reads client IP from `x-forwarded-for` / `cf-connecting-ip` and stores it on insert (and on token reissue).
-- New secret `ADMIN_IP_PASSWORD` (added via `secrets--add_secret`, user enters value in secure form).
-- IP column in `/admin2` shows `••••` by default with a small "Reveal" button; clicking opens an inline password prompt. The admin function only returns IPs when that password matches (constant-time compare, separate from `ADMIN_PASSWORD`). No IPs are ever returned in the default overview payload.
+## Open questions before I execute
 
-
-
-## Technical section
-
-### Migration
-
-```sql
-CREATE TABLE public.email_templates (
-  key text PRIMARY KEY,
-  subject text NOT NULL,
-  body_md text NOT NULL,
-  updated_at timestamptz NOT NULL DEFAULT now()
-);
-GRANT ALL ON public.email_templates TO service_role;
-ALTER TABLE public.email_templates ENABLE ROW LEVEL SECURITY;
--- no public policies: admin-only via service role
-
-CREATE TABLE public.banned_emails (
-  email text PRIMARY KEY,
-  banned_at timestamptz NOT NULL DEFAULT now(),
-  reason text
-);
-GRANT ALL ON public.banned_emails TO service_role;
-ALTER TABLE public.banned_emails ENABLE ROW LEVEL SECURITY;
-
-ALTER TABLE public.signups ADD COLUMN signup_ip inet;
--- seed email_templates with current copy (3 rows)
-```
-
-### Files touched
-
-- Migration (above).
-- `secrets--add_secret` for `ADMIN_IP_PASSWORD`.
-- `supabase/functions/_shared/transactional-email-templates/`:
-  - new `custom-text.tsx` (generic wrapper, takes `{ subject, bodyHtml, ctaUrl?, ctaLabel? }`).
-  - &nbsp;
-  - update `registry.ts`.
-- `supabase/functions/_shared/render-email-body.ts` — tiny md→HTML + placeholder interpolation helper.
-- `supabase/functions/signup-request/index.ts` — read template, ban check, capture IP.
-- `supabase/functions/signup-confirm/index.ts` — read passphrase template.
-- &nbsp;
-- `supabase/functions/admin2-overview/index.ts` — new actions: `get_templates`, `save_template`, `resend_passphrase`, `delete_signup`, `ban_email`, `reveal_ips` (guarded by `ADMIN_IP_PASSWORD`).
-- `src/pages/Admin2.tsx` — Emails editor section; new action buttons; hidden IP column with reveal flow.
-
-### Placeholders per template
-
-- `signup-confirm`: `{{confirmUrl}}`
-- `signup-passphrase`: `{{passphrase}}`, `{{appUrl}}`
-- &nbsp;
-
-Unknown placeholders render literally so admins get instant feedback if they mistype.  
---> unsubscribe confirmation email was droped and scrubbed from the plan. <--
+1. In Phase 5, do you want the two submitted opinions gone (as stated) but also want the topic's `title`/`description`/`short_code` preserved exactly as-is? Confirm "keep 7mm9 metadata, drop opinions + everything downstream". YES
+2. Should I also keep or wipe the `banned_emails` list? KEEP
+3. Any signups outside the 6 test passphrases you want preserved (e.g. your own admin email)? NO

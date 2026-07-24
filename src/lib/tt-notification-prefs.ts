@@ -1,15 +1,14 @@
 /**
  * Notification preferences.
  *
- * - Per-topic: only an enabled boolean (left bell toggles subscription).
- * - Global: filter toggles (which kinds of notifications to receive).
+ * Single-topic build: prefs are stored as a flat object (no per-topic map).
+ * The topicId argument on the getter/setter is kept for API compatibility.
  */
 
 export interface NotificationFilters {
   newOpinion: boolean;
   newMessage: boolean;
   newChat: boolean;
-  newTopic: boolean;
   newHighlight: boolean;
 }
 
@@ -17,57 +16,42 @@ export interface TopicNotificationPrefs {
   enabled: boolean;
 }
 
-const TOPIC_STORAGE_KEY = 'tt:notification-prefs';
+const TOPIC_STORAGE_KEY = 'tt:notification-prefs-flat';
 const GLOBAL_FILTER_KEY = 'tt:notification-filters';
 
 const DEFAULT_FILTERS: NotificationFilters = {
   newOpinion: true,
   newMessage: true,
   newChat: true,
-  newTopic: true,
   newHighlight: true,
 };
 
-// ── Per-topic helpers (enabled/disabled) ──
-
-function readAllTopics(): Record<string, TopicNotificationPrefs> {
+function readFlat(): TopicNotificationPrefs {
   try {
-    return JSON.parse(localStorage.getItem(TOPIC_STORAGE_KEY) || '{}');
+    return JSON.parse(localStorage.getItem(TOPIC_STORAGE_KEY) || '{"enabled":false}');
   } catch {
-    return {};
+    return { enabled: false };
   }
 }
 
-function writeAllTopics(data: Record<string, TopicNotificationPrefs>) {
+function writeFlat(data: TopicNotificationPrefs) {
   localStorage.setItem(TOPIC_STORAGE_KEY, JSON.stringify(data));
 }
 
-export function getPrefs(topicId: string): TopicNotificationPrefs | null {
-  return readAllTopics()[topicId] ?? null;
+export function getPrefs(_topicId?: string): TopicNotificationPrefs | null {
+  return readFlat();
 }
 
-export function setPrefs(topicId: string, prefs: TopicNotificationPrefs) {
-  const all = readAllTopics();
-  all[topicId] = prefs;
-  writeAllTopics(all);
+export function setPrefs(_topicId: string | undefined, prefs: TopicNotificationPrefs) {
+  writeFlat(prefs);
 }
 
-export function removePrefs(topicId: string) {
-  const all = readAllTopics();
-  delete all[topicId];
-  writeAllTopics(all);
+export function removePrefs(_topicId?: string) {
+  writeFlat({ enabled: false });
 }
 
-export function isEnabled(topicId: string): boolean {
-  return readAllTopics()[topicId]?.enabled ?? false;
-}
-
-/** Get all topic IDs that have notifications enabled. */
-export function getSubscribedTopicIds(): string[] {
-  const all = readAllTopics();
-  return Object.entries(all)
-    .filter(([, p]) => p.enabled)
-    .map(([id]) => id);
+export function isEnabled(_topicId?: string): boolean {
+  return readFlat().enabled;
 }
 
 // ── Global filter helpers ──
@@ -91,8 +75,8 @@ export function getDefaultFilters(): NotificationFilters {
 }
 
 /**
- * Check if a specific filter is enabled, considering both
- * per-topic subscription AND global filter.
+ * Check if a filter is enabled, considering the subscription toggle
+ * AND the global filter.
  */
 export function isFilterEnabled(topicId: string, filterKey: keyof NotificationFilters): boolean {
   if (!isEnabled(topicId)) return false;

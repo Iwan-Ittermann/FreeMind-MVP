@@ -1,14 +1,13 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { TTScreenInner } from '@/components/tt/TTScreen';
 import { TTHeader } from '@/components/tt/TTHeader';
 import { TTSideTabs, TTSideTabsHandle } from '@/components/tt/TTSideTabs';
 import { TTBottomPanel } from '@/components/tt/TTBottomPanel';
-import { TTNotificationsBell } from '@/components/tt/TTNotificationsBell';
 import { TTCenterCTA } from '@/components/tt/TTCenterCTA';
 
-import { useTTTopics, useTTSwipeWindow } from '@/hooks/useTTTopics';
+import { useTTTopics } from '@/hooks/useTTTopics';
 import { useTopicData } from '@/hooks/useTopicData';
 import { useTTChats } from '@/hooks/useTTChats';
 import { useAuth } from '@/hooks/useAuth';
@@ -21,66 +20,30 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { FloatingChatManager, FloatingChatManagerHandle } from '@/components/chat/FloatingChatManager';
 import { TTHelpOverlay } from '@/components/tt/TTHelpOverlay';
 
-const PRIMARY_TOPIC_ID = '00000000-0000-0000-0000-000000000001';
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
 /**
- * TikTok-style mobile UI.
+ * Single-topic mobile UI. This build is locked to the Helsinki event topic (7mm9);
+ * multi-topic swipe/loop logic has been removed.
  */
 export default function TT() {
-  const { topicId: routeId } = useParams<{ topicId?: string }>();
-  const navigate = useNavigate();
+  useParams<{ topicId?: string }>(); // route is /7mm9; params ignored
   const queryClient = useQueryClient();
   const { user, loading: authLoading } = useAuth();
   const isMobile = useIsMobile();
   const chatManagerRef = useRef<FloatingChatManagerHandle>(null);
-  const { data: topicList = [] } = useTTTopics();
-  const routeTopic = useMemo(() => {
-    if (!routeId) return { id: PRIMARY_TOPIC_ID, code: null as string | null };
-    if (UUID_RE.test(routeId)) {
-      const topic = topicList.find((item) => item.id === routeId);
-      return { id: routeId, code: topic?.short_code ?? null };
-    }
-    const topic = topicList.find((item) => item.short_code === routeId.toLowerCase());
-    return { id: topic?.id ?? PRIMARY_TOPIC_ID, code: routeId.toLowerCase() };
-  }, [routeId, topicList]);
+  const { data: topicList = [], isLoading: topicLoading } = useTTTopics();
+  const topic = topicList[0] ?? null;
+  const activeTopicId = topic?.id ?? '';
+  const activeTopicTitle = topic?.title ?? '...';
 
-  const initialTopicId = routeTopic.id;
-  const [activeTopicId, setActiveTopicId] = useState(initialTopicId);
   const [helpOpen, setHelpOpen] = useState(false);
-
-  useEffect(() => {
-    if (routeTopic.id !== activeTopicId) {
-      setActiveTopicId(routeTopic.id);
-    }
-  }, [routeTopic.id, activeTopicId]);
-
-  const { topics } = useTTSwipeWindow(activeTopicId);
-  const renderedTopics = useMemo(() => {
-    if (topics.length <= 1) return topics.map((id) => ({ id, key: id, clone: false }));
-    const first = topics[0];
-    const last = topics[topics.length - 1];
-    return [
-      { id: last, key: `clone-start-${last}`, clone: true },
-      ...topics.map((id) => ({ id, key: id, clone: false })),
-      { id: first, key: `clone-end-${first}`, clone: true },
-    ];
-  }, [topics]);
-  const renderedTopicKeys = useMemo(() => renderedTopics.map((topic) => topic.key).join('|'), [renderedTopics]);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const ignoreObserverRef = useRef(false);
   const sideTabsRef = useRef<TTSideTabsHandle>(null);
 
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [chatNodeId, setChatNodeId] = useState<string | null>(null);
-  useEffect(() => {
-    setSelectedNode(null);
-    setChatNodeId(null);
-  }, [activeTopicId]);
 
   const { data: activeData, isLoading: activeDataLoading } = useTopicData(activeTopicId);
-  const activeTopicTitle = topicList.find((topic) => topic.id === activeTopicId)?.title ?? activeData?.title ?? '...';
   const { chats: ttChats } = useTTChats(activeTopicId);
+
   const visibleOwnOpinionId = useMemo(() => {
     if (!user || !activeData) return null;
     return activeData.opinions.find((o) => o.authorId === user.id)?.id ?? null;
@@ -103,7 +66,8 @@ export default function TT() {
   });
   const ownOpinionId = visibleOwnOpinionId ?? directOwnOpinionId;
   const hasOwnOpinion = !!ownOpinionId;
-  const ownOpinionKnown = !authLoading && !activeDataLoading && (!user || !directOwnOpinionLoading);
+  const ownOpinionKnown =
+    !authLoading && !topicLoading && !activeDataLoading && (!user || !directOwnOpinionLoading);
   const { notifications: ttNotifications, markAllRead } = useTTNotifications(activeTopicId);
   const { data: unreadMap } = useUnreadMessages(activeTopicId, ownOpinionId);
   const handleEdgeClick = useCallback((edge: GraphEdge) => {
@@ -120,7 +84,7 @@ export default function TT() {
   // Auto-subscribe bell on first opinion
   const prevHasOwnRef = useRef<boolean | null>(null);
   useEffect(() => {
-    if (!ownOpinionKnown) return;
+    if (!ownOpinionKnown || !activeTopicId) return;
     const prev = prevHasOwnRef.current;
     prevHasOwnRef.current = hasOwnOpinion;
     if (prev === false && hasOwnOpinion) {
@@ -146,97 +110,20 @@ export default function TT() {
     };
   }, []);
 
-  const jumpToRealTopic = useCallback((id: string) => {
-    const root = containerRef.current;
-    if (!root) return;
-    const target = root.querySelector<HTMLElement>(`[data-tt-real-topic="${id}"]`);
-    if (!target) return;
-    ignoreObserverRef.current = true;
-    target.scrollIntoView({ behavior: 'auto', block: 'start' });
-    requestAnimationFrame(() => {
-      ignoreObserverRef.current = false;
-    });
-  }, []);
-
-  useEffect(() => {
-    requestAnimationFrame(() => jumpToRealTopic(activeTopicId));
-  }, [activeTopicId, renderedTopics.length, jumpToRealTopic]);
-
-  // Re-snap on resize / visibility changes so the viewport never lands between two topics
-  useEffect(() => {
-    let timer: number | undefined;
-    const reSnap = () => {
-      if (timer) window.clearTimeout(timer);
-      timer = window.setTimeout(() => jumpToRealTopic(activeTopicId), 120);
-    };
-    window.addEventListener('resize', reSnap);
-    document.addEventListener('visibilitychange', reSnap);
-    return () => {
-      window.removeEventListener('resize', reSnap);
-      document.removeEventListener('visibilitychange', reSnap);
-      if (timer) window.clearTimeout(timer);
-    };
-  }, [activeTopicId, jumpToRealTopic]);
-
-  useEffect(() => {
-    const root = containerRef.current;
-    if (!root) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        let best: IntersectionObserverEntry | null = null;
-        for (const e of entries) {
-          if (!e.isIntersecting) continue;
-          if (!best || e.intersectionRatio > best.intersectionRatio) best = e;
-        }
-        if (ignoreObserverRef.current) return;
-        if (best && best.intersectionRatio > 0.6) {
-          const el = best.target as HTMLElement;
-          const id = el.dataset.ttTopic;
-          if (!id) return;
-          if (el.dataset.ttClone === 'true') {
-            jumpToRealTopic(id);
-            return;
-          }
-          if (id !== activeTopicId) {
-            window.dispatchEvent(new CustomEvent('tt:close-all-chats'));
-            setActiveTopicId(id);
-            setSelectedNode(null);
-            const code = topicList.find((topic) => topic.id === id)?.short_code ?? id;
-            navigate(`/${code}`, { replace: true });
-          }
-        }
-      },
-      { root, threshold: [0.6, 0.9] },
-    );
-
-    const sections = root.querySelectorAll('[data-tt-topic]');
-    sections.forEach((s) => observer.observe(s));
-    return () => observer.disconnect();
-  }, [activeTopicId, navigate, renderedTopicKeys, jumpToRealTopic, topicList]);
-
   return (
     <div className="fixed inset-0 bg-black flex items-center justify-center">
       <div data-tt-phone-viewport className="relative h-[100dvh] w-full max-w-[480px] shrink-0 bg-background overflow-hidden">
-        <div
-          ref={containerRef}
-          className="absolute inset-0 overflow-y-scroll snap-y snap-mandatory"
-          style={{ scrollSnapType: 'y mandatory', scrollSnapStop: 'always', scrollbarWidth: 'none', overscrollBehaviorY: 'contain', willChange: 'scroll-position' }}
-        >
-          {renderedTopics.map((topic, i) => (
+        <div className="absolute inset-0 overflow-hidden">
+          {activeTopicId && (
             <TTScreenInner
-              key={topic.key}
-              topicId={topic.id}
-              hue={(i * 47) % 360}
-              isLoopClone={topic.clone}
-              selectedNodeId={topic.id === activeTopicId && !topic.clone ? (selectedNode?.id ?? chatNodeId) : null}
+              topicId={activeTopicId}
+              hue={0}
+              selectedNodeId={selectedNode?.id ?? chatNodeId}
               highlightAllNodes={false}
-              onNodeSelect={(n) => {
-                if (!topic.clone) setSelectedNode(n);
-              }}
-              onEdgeClick={topic.id === activeTopicId && !topic.clone ? handleEdgeClick : undefined}
+              onNodeSelect={setSelectedNode}
+              onEdgeClick={handleEdgeClick}
             />
-          ))}
+          )}
         </div>
 
         <FloatingChatManager
@@ -277,7 +164,7 @@ export default function TT() {
             ownOpinionId={ownOpinionId}
           />
         )}
-        {ownOpinionKnown && !hasOwnOpinion && (
+        {ownOpinionKnown && !hasOwnOpinion && activeTopicId && (
           <TTCenterCTA
             topicId={activeTopicId}
             topicTitle={activeTopicTitle}
@@ -305,9 +192,7 @@ export default function TT() {
           }
           onLetsChat={(targetOpinionId) => {
             if (!hasOwnOpinion) return;
-            // Directly open the chat in the side panel
             sideTabsRef.current?.openChat(targetOpinionId);
-            // Close the opinion panel so it doesn't overlap the chat panel.
             setSelectedNode(null);
           }}
           onOpinionSubmitted={() => setSelectedNode(null)}
@@ -329,8 +214,6 @@ export default function TT() {
             Impressum
           </a>
         </div>
-
-
       </div>
     </div>
   );

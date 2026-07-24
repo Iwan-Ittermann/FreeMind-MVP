@@ -5,7 +5,6 @@ import { TTNotification } from '@/components/tt/TTHeader';
 import {
   isEnabled,
   isFilterEnabled,
-  getSubscribedTopicIds,
 } from '@/lib/tt-notification-prefs';
 
 /**
@@ -138,29 +137,8 @@ export function useTTNotifications(activeTopicId: string) {
           }
         },
       )
-      // New topics
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'topics' },
-        (payload) => {
-          const row = payload.new as { id: string; title: string };
-          // Check if any subscribed topic has newTopic enabled
-          const anyEnabled = getSubscribedTopicIds().some((tid) =>
-            isFilterEnabled(tid, 'newTopic'),
-          );
-          if (!anyEnabled) return;
-          addNotification(
-            {
-              id: `topic-${row.id}`,
-              type: 'opinion',
-              title: 'New topic available',
-              body: row.title,
-              unread: true,
-            },
-            activeTopicId,
-          );
-        },
-      )
+      // (single-topic build: no "new topic available" notifications)
+
       .subscribe();
 
     // Seed known chat IDs so we can distinguish new chats
