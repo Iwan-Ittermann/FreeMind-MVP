@@ -53,12 +53,10 @@ const LANGUAGES = [
 ];
 
 export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRestartTour, onOpenHelp, activeTopicId }: TTHeaderProps) {
-  const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [accountOpen, setAccountOpen] = useState(false);
   const [bellOpen, setBellOpen] = useState(false);
-  const [languageOpen, setLanguageOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [showPhrase, setShowPhrase] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
@@ -66,14 +64,10 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
   const [subscribedHere, setSubscribedHere] = useState(false);
   const accountRef = useRef<HTMLDivElement>(null);
   const bellRef = useRef<HTMLDivElement>(null);
-  const languageRef = useRef<HTMLDivElement>(null);
   const bellDropdownRef = useRef<HTMLDivElement>(null);
   const accountDropdownRef = useRef<HTMLDivElement>(null);
-  const languageDropdownRef = useRef<HTMLDivElement>(null);
 
   const phrase = user?.email ? emailToPassphrase(user.email) ?? '' : '';
-  const hasUnread = notifications.some((n) => n.unread);
-  const currentLanguage = LANGUAGES.find((lang) => i18n.language.startsWith(lang.code)) ?? LANGUAGES[0];
 
   useEffect(() => {
     if (!activeTopicId) return;
