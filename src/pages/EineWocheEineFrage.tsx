@@ -31,7 +31,7 @@ export default function TT() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user, loading: authLoading } = useAuth();
-  const { isVerified, isLoading: verifiedLoading } = useIsVerified();
+  const { isVerified } = useIsVerified();
   const isMobile = useIsMobile();
   const chatManagerRef = useRef<FloatingChatManagerHandle>(null);
   const { data: topicList = [], isLoading: topicLoading } = useTTTopics();
