@@ -183,7 +183,7 @@ export default function TT() {
               }}
             />
           ) : (
-            <div className="absolute left-1/2 bottom-[140px] -translate-x-1/2 z-30 w-[calc(100%-2rem)] max-w-[360px] flex justify-center">
+            <div className="absolute left-1/2 bottom-[125px] -translate-x-1/2 z-30 w-[calc(100%-2rem)] max-w-[360px] flex justify-center">
               <div className="pointer-events-auto inline-flex flex-wrap justify-center items-center gap-x-1.5 px-4 py-2.5 rounded-2xl bg-background/95 backdrop-blur-md border border-border/40 shadow-lg text-sm text-foreground text-center">
                 <span>{t('tt.registerToParticipate')}</span>
                 <a
