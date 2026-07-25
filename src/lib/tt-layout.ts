@@ -442,12 +442,11 @@ export function calculateTTLayout(
       level = 3;
       zone = 'moderate';
     } else if (total < 0) {
-      // Extreme band — clamped to be visible inside the phone frame.
-      let tier: -1 | -2 | -3;
-      if (total < -2500) { tier = -3; level = -3; }
-      else if (total < -1000) { tier = -2; level = -2; }
-      else { tier = -1; level = -1; }
-      r = extremeRadius(op.id, tier);
+      // All negative-score nodes line up on the outer visible ring.
+      if (total < -2500) level = -3;
+      else if (total < -1000) level = -2;
+      else level = -1;
+      r = maxVisibleR;
       zone = 'extreme';
     } else {
       // Positive band — tie-aware group-based proximity.
