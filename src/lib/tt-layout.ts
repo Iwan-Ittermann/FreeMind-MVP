@@ -398,9 +398,23 @@ export function calculateTTLayout(
       if (tb !== ta) return tb - ta;
       return a.id.localeCompare(b.id);
     });
-  const positiveCount = positives.length;
-  const rankOf = new Map<string, number>();
-  positives.forEach((op, i) => rankOf.set(op.id, i));
+  // (positives.length retained implicitly via groupCount below)
+  // Tie-aware radial rank: nodes sharing the same total sit at the same radius,
+  // then get spread angularly by resolveCollisions instead of being stretched
+  // across the whole graph.
+  const distinctTotals: number[] = [];
+  positives.forEach((op) => {
+    const t = totals.get(op.id)!.total;
+    if (distinctTotals.length === 0 || distinctTotals[distinctTotals.length - 1] !== t) {
+      distinctTotals.push(t);
+    }
+  });
+  const groupIndexOf = new Map<string, number>();
+  positives.forEach((op) => {
+    const t = totals.get(op.id)!.total;
+    groupIndexOf.set(op.id, distinctTotals.indexOf(t));
+  });
+  const groupCount = distinctTotals.length;
 
   // Extreme-zone rendering clamp.
   //
@@ -451,16 +465,18 @@ export function calculateTTLayout(
       r = extremeRadius(op.id, tier);
       zone = 'extreme';
     } else {
-      // Positive band — rank-based proximity.
-      const rank = rankOf.get(op.id) ?? 0;
-      if (positiveCount <= 1) {
-        r = 0; // sole top scorer → dead center
+      // Positive band — tie-aware group-based proximity.
+      // All nodes sharing the same total sit at the same radius; the collision
+      // resolver then spreads them angularly. This avoids the previous
+      // behaviour where tied nodes were split between center and fringe.
+      const gi = groupIndexOf.get(op.id) ?? 0;
+      if (groupCount <= 1) {
+        r = 0; // all positives tied → dead center; collisions fan them out
       } else {
-        // Rank 0 → 0, last rank → blueR − tinyPad.
-        const frac = rank / (positiveCount - 1);
+        const frac = gi / (groupCount - 1);
         r = frac * (blueR - tinyPad);
       }
-      level = rank === 0 ? 10 : rank < positiveCount / 2 ? 7 : 4;
+      level = gi === 0 ? 10 : gi < groupCount / 2 ? 7 : 4;
       zone = r <= landmarks.coreR ? 'respectful' : 'moderate';
     }
 

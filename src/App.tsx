@@ -11,7 +11,7 @@ import { FreeMindThemeProvider } from "@/themes/ThemeContext";
 import Admin from "./pages/Admin";
 import Admin2 from "./pages/Admin2";
 import Legal from "./pages/Legal";
-import EineWocheEineFrage from "./pages/EineWocheEineFrage";
+import Discussion from "./pages/Discussion";
 import Landing from "./pages/Landing";
 import Confirm from "./pages/Confirm";
 import Unsubscribe from "./pages/Unsubscribe";
@@ -43,7 +43,7 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
-      <Route path="/7mm9" element={<EineWocheEineFrage />} />
+      <Route path="/7mm9" element={<Discussion />} />
       <Route path="/confirm" element={<Confirm />} />
       <Route path="/unsubscribe" element={<Unsubscribe />} />
       <Route path="/legal" element={<Legal />} />

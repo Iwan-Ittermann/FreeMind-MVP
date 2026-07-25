@@ -20,6 +20,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { FloatingChatManager, FloatingChatManagerHandle } from '@/components/chat/FloatingChatManager';
 import { TTHelpOverlay } from '@/components/tt/TTHelpOverlay';
+import { TTOnboardingTour } from '@/components/tt/TTOnboardingTour';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -40,6 +41,7 @@ export default function TT() {
   const activeTopicTitle = topic?.title ?? '...';
 
   const [helpOpen, setHelpOpen] = useState(false);
+  const [tourStep, setTourStep] = useState(0);
   const sideTabsRef = useRef<TTSideTabsHandle>(null);
 
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
@@ -144,6 +146,7 @@ export default function TT() {
           onMarkAllRead={markAllRead}
           activeTopicId={activeTopicId}
           onOpenHelp={() => setHelpOpen(true)}
+          onRestartTour={() => setTourStep(1)}
         />
         <TTSideTabs
           ref={sideTabsRef}
@@ -180,7 +183,7 @@ export default function TT() {
               }}
             />
           ) : (
-            <div className="absolute left-1/2 bottom-[140px] -translate-x-1/2 z-30 w-[calc(100%-2rem)] max-w-[360px] flex justify-center">
+            <div className="absolute left-1/2 bottom-[125px] -translate-x-1/2 z-30 w-[calc(100%-2rem)] max-w-[360px] flex justify-center">
               <div className="pointer-events-auto inline-flex flex-wrap justify-center items-center gap-x-1.5 px-4 py-2.5 rounded-2xl bg-background/95 backdrop-blur-md border border-border/40 shadow-lg text-sm text-foreground text-center">
                 <span>{t('tt.registerToParticipate')}</span>
                 <a
@@ -223,6 +226,14 @@ export default function TT() {
             setSelectedNode(null);
           }}
         />
+
+        <TTOnboardingTour
+          open={tourStep > 0}
+          step={tourStep}
+          onNext={() => setTourStep((s) => (s >= 4 ? 0 : s + 1))}
+          onDone={() => setTourStep(0)}
+        />
+
 
         {/* Impressum footer — matches the header's slim size */}
         <div className="absolute bottom-0 inset-x-0 z-40 h-7 px-3 flex items-center justify-center border-t border-border/30 bg-background/40 backdrop-blur-sm pointer-events-auto">

@@ -191,8 +191,8 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
 
       {/* Topic question — centered between the slim header line and the graph's upper edge. */}
       <div
-        className="absolute left-0 right-0 z-30 flex items-center justify-center px-6 text-center pointer-events-auto"
-        style={{ top: 36, bottom: 'calc(50% + min(42.5vw, 204px) + 8px)' }}
+        className="absolute left-0 right-0 z-30 flex items-center justify-center px-6 py-3 text-center pointer-events-auto"
+        style={{ top: 32, bottom: 'calc(50% + min(42.5vw, 204px) + 14px)' }}
       >
         <h1
           className="font-serif italic leading-tight text-foreground"
