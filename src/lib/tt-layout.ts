@@ -363,8 +363,12 @@ export function calculateTTLayout(
   const safeMax = Math.max(maxTotal, 1);
 
   const tinyPad = 4;
+  // Node radius (~13px) + a couple px breathing room. Every positive-tier and
+  // extreme radius is capped so the visual node stays fully inside the phone frame.
+  const nodeSafePad = 16;
   const blueR = landmarks.blueR;
   const whiteR = landmarks.whiteR;
+  const maxVisibleR = blueR - nodeSafePad;
 
   // Ids that share the top score — used to give ties a tiny inner orbit so they don't stack.
   const topIds = idSorted.filter(op => totals.get(op.id)!.total === maxTotal && maxTotal > 0).map(op => op.id);
