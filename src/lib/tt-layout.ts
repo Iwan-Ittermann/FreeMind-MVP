@@ -476,7 +476,7 @@ export function calculateTTLayout(
       // behaviour where tied nodes were split between center and fringe.
       const gi = groupIndexOf.get(op.id) ?? 0;
       const frac = groupCount <= 1 ? 0 : gi / (groupCount - 1);
-      const baseR = frac * (blueR - tinyPad);
+      const baseR = frac * maxVisibleR;
       // Top-tied cohort needs a small orbit — angular collision push at r=0
       // moves nodes by ~0, so ties would stack on the exact center.
       const isTopGroup = gi === 0;
