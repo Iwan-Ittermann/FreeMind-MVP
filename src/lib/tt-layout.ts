@@ -402,6 +402,34 @@ export function calculateTTLayout(
   const rankOf = new Map<string, number>();
   positives.forEach((op, i) => rankOf.set(op.id, i));
 
+  // Extreme-zone rendering clamp.
+  //
+  // The phone frame is only viewportW wide, whereas whiteR = 0.6·viewportW —
+  // so ANY node at r ≥ blueR (= viewportW/2) is horizontally off-screen. The
+  // legacy `whiteR + step·k` extreme radii were therefore always clipped.
+  //
+  // We clamp all extreme-zone nodes into a thin visible band JUST INSIDE the
+  // phone-frame edge, and use a deterministic hash on the node id to give
+  // ties different sub-radii so multiple extreme nodes don't stack.
+  const nodeMargin = 18;
+  const extremeOuter = blueR - nodeMargin;               // hard visible edge
+  const extremeInner = Math.max(blueR - (nodeMargin + 22), landmarks.coreR + 4);
+  const bandSteps = 4;
+  const hashId = (id: string): number => {
+    let h = 0;
+    for (let i = 0; i < id.length; i++) h = ((h << 5) - h + id.charCodeAt(i)) | 0;
+    return Math.abs(h);
+  };
+  const extremeRadius = (id: string, tier: -1 | -2 | -3): number => {
+    // Tier picks a coarse offset (−1 outermost, −3 innermost) so extremer
+    // opinions still trend slightly inward, and hash spreads ties across the band.
+    const bandWidth = extremeOuter - extremeInner;
+    const tierFrac = tier === -1 ? 0 : tier === -2 ? 0.4 : 0.8;
+    const base = extremeOuter - tierFrac * bandWidth;
+    const step = hashId(id) % bandSteps;
+    return base - step * 3;
+  };
+
   let allNodes: GraphNode[] = opinions.map(op => {
     const { total, hasChats } = totals.get(op.id)!;
 
@@ -415,10 +443,12 @@ export function calculateTTLayout(
       level = 3;
       zone = 'moderate';
     } else if (total < 0) {
-      // Extreme band — three tiers as before.
-      if (total < -2500) { r = whiteR + 4 + 2 * EXTREME_STEP; level = -3; }
-      else if (total < -1000) { r = whiteR + 4 + EXTREME_STEP; level = -2; }
-      else { r = whiteR + 4; level = -1; }
+      // Extreme band — clamped to be visible inside the phone frame.
+      let tier: -1 | -2 | -3;
+      if (total < -2500) { tier = -3; level = -3; }
+      else if (total < -1000) { tier = -2; level = -2; }
+      else { tier = -1; level = -1; }
+      r = extremeRadius(op.id, tier);
       zone = 'extreme';
     } else {
       // Positive band — rank-based proximity.
