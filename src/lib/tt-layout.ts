@@ -398,7 +398,7 @@ export function calculateTTLayout(
       if (tb !== ta) return tb - ta;
       return a.id.localeCompare(b.id);
     });
-  const positiveCount = positives.length;
+  // (positives.length retained implicitly via groupCount below)
   // Tie-aware radial rank: nodes sharing the same total sit at the same radius,
   // then get spread angularly by resolveCollisions instead of being stretched
   // across the whole graph.
