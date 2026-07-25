@@ -330,6 +330,52 @@ export default function Admin2() {
           </table>
         </div>
 
+        {/* FAQ */}
+        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", margin: "24px 0 8px" }}>
+          <h2 style={{ ...sectionTitle, margin: 0 }}>FAQ</h2>
+          <button onClick={addFaqRow} style={ghostBtn}>+ Frage hinzufügen</button>
+        </div>
+        <div style={{ display: "grid", gap: 12, marginBottom: 32 }}>
+          {faq.map((row, idx) => (
+            <div key={row.id ?? `new-${idx}`} style={{ background: "#fff", border: "1px solid #0f1b3d", padding: 16 }}>
+              <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                <div style={{ flex: 1 }}>
+                  <label style={label}>Frage</label>
+                  <input
+                    value={row.question}
+                    onChange={(e) => setFaq((prev) => prev.map((x, i) => i === idx ? { ...x, question: e.target.value } : x))}
+                    style={input}
+                  />
+                </div>
+                <div style={{ width: 100 }}>
+                  <label style={label}>Reihenfolge</label>
+                  <input
+                    type="number"
+                    value={row.sort_order}
+                    onChange={(e) => setFaq((prev) => prev.map((x, i) => i === idx ? { ...x, sort_order: Number(e.target.value) || 0 } : x))}
+                    style={input}
+                  />
+                </div>
+              </div>
+              <label style={label}>Antwort</label>
+              <textarea
+                rows={5}
+                value={row.answer}
+                onChange={(e) => setFaq((prev) => prev.map((x, i) => i === idx ? { ...x, answer: e.target.value } : x))}
+                style={{ ...input, resize: "vertical" }}
+              />
+              <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                <button onClick={() => saveFaqRow(idx)}
+                  style={{ padding: "8px 14px", background: "#0f1b3d", color: "#fff", border: 0, fontSize: 12, cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  Speichern
+                </button>
+                <button onClick={() => deleteFaqRow(idx)} style={actionBtn(false, "#8a1a1a")}>Löschen</button>
+              </div>
+            </div>
+          ))}
+          {faq.length === 0 && <div style={{ fontSize: 13, opacity: 0.7 }}>Noch keine Fragen.</div>}
+        </div>
+
         {/* Bans */}
         <h2 style={sectionTitle}>Gesperrte E-Mails</h2>
         <div style={{ background: "#fff", border: "1px solid #0f1b3d", overflow: "auto" }}>
