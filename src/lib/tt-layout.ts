@@ -456,8 +456,9 @@ export function calculateTTLayout(
     let zone: 'respectful' | 'moderate' | 'extreme';
 
     if (!hasChats || (total === 0 && op.authorId !== BOT_USER_ID)) {
-      // Starter / no-activity placement — sits just inside the blue ring.
-      r = blueR - tinyPad;
+      // Starter / no-activity placement — sits just inside the blue ring,
+      // padded inward by the node radius so it stays fully visible.
+      r = maxVisibleR;
       level = 3;
       zone = 'moderate';
     } else if (total < 0) {
