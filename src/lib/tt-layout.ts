@@ -470,12 +470,12 @@ export function calculateTTLayout(
       // resolver then spreads them angularly. This avoids the previous
       // behaviour where tied nodes were split between center and fringe.
       const gi = groupIndexOf.get(op.id) ?? 0;
-      if (groupCount <= 1) {
-        r = 0; // all positives tied → dead center; collisions fan them out
-      } else {
-        const frac = gi / (groupCount - 1);
-        r = frac * (blueR - tinyPad);
-      }
+      const frac = groupCount <= 1 ? 0 : gi / (groupCount - 1);
+      const baseR = frac * (blueR - tinyPad);
+      // Top-tied cohort needs a small orbit — angular collision push at r=0
+      // moves nodes by ~0, so ties would stack on the exact center.
+      const isTopGroup = gi === 0;
+      r = isTopGroup && topIds.length > 1 ? Math.max(baseR, topOrbitRadius) : baseR;
       level = gi === 0 ? 10 : gi < groupCount / 2 ? 7 : 4;
       zone = r <= landmarks.coreR ? 'respectful' : 'moderate';
     }
