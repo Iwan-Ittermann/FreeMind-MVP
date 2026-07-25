@@ -20,6 +20,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { FloatingChatManager, FloatingChatManagerHandle } from '@/components/chat/FloatingChatManager';
 import { TTHelpOverlay } from '@/components/tt/TTHelpOverlay';
+import { TTOnboardingTour } from '@/components/tt/TTOnboardingTour';
 import { useTranslation } from 'react-i18next';
 
 /**
