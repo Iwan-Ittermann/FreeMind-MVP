@@ -1,37 +1,29 @@
-## What's wrong
+## Problem
 
-**1. Chat/opinion sidebar still overflows the phone frame**
-
-`TTSideTabs` sits inside the phone-viewport (max 480px wide), but the panels are absolute-positioned with `left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[360px]`. On the current 393 px mobile viewport that math is fine on paper (panel = 360, side gutter ≈ 16 px each), yet the user still sees it clipped. The most likely cause is that `TTSideTabs` is rendered as a React fragment (buttons + AnimatePresence). Because it isn't wrapped in a positioned container that fills the phone-viewport, the two rendered panels resolve their `left-1/2` against whichever positioned ancestor `AnimatePresence` ends up under — in this layout that's still the phone-viewport, but the panel's own width via `w-[calc(100%-2rem)]` uses the phone-viewport's full width, which on some devices (safe-area insets, notch, iOS 100dvh differences) resolves wider than the visible frame.
-
-Fix: wrap the AnimatePresence children in a single `absolute inset-0 pointer-events-none` container that is the panel's offset parent, and switch the panels from `left-1/2 / -translate-x-1/2 / w-[calc(100%-2rem)]` to `left-4 right-4 mx-auto max-w-[360px]`. That guarantees the panel is bounded by the frame's left/right edges regardless of translate rounding or safe-area math. Same treatment for the backdrop.
-
-**2. Outer-ring nodes are half-clipped**
-
-Graph SVG wrapper is `min(85%, 480px)` of the phone-viewport, but `ttLandmarks` uses the phone-viewport width directly:
+In `src/lib/tt-layout.ts` the extreme band is tiered:
 
 ```text
-blueR = (300/600) × phoneViewportW = phoneViewportW / 2
+tier -1 (0..-1000)      → extremeOuter
+tier -2 (-1001..-2500)  → extremeOuter - 0.4 * band
+tier -3 (< -2500)       → extremeOuter - 0.8 * band
 ```
 
-A node placed at `r = blueR − 4` sits at ~viewportW/2 from the graph center, which is the phone-frame's edge. With the node's visual radius (~13 px) the node extends past the frame → half visible.
+So a node at −1250 (tier −2) sits noticeably closer to center than a node at −300 (tier −1). That inverts what the user wants and is what they observed.
 
-Fix: reserve a fixed node margin inside the visible ring.
-- Define `nodeSafePad = 16` (roughly node radius + a couple px).
-- Cap every positive-tier radius by `blueR − nodeSafePad` instead of `blueR − 4`, both for level 1 (starter) and for the top of the moderate band.
-- Also cap the existing extreme-band `extremeOuter` at `blueR − nodeSafePad` (currently `blueR − 18`, keep the tighter of the two).
+Positive ranking already correctly excludes negatives (`filter(t.total > 0)` in `positives`), so no change is needed there.
 
-The background rings stay put — only the maximum radius that nodes are allowed to occupy shrinks. Layout stays deterministic (pure function of totals + id).
+## Fix
 
-## Files to change
+Collapse the extreme band to a single radius equal to `maxVisibleR` — the same "outer thin line" that starter nodes sit on. All negative-point nodes line up on that ring; the collision resolver + deterministic angles keep them from stacking.
 
-- `src/components/tt/TTSideTabs.tsx` — wrap panels in a bounded offset parent; switch panels to `left-4 right-4 mx-auto max-w-[360px]`; do the same for the backdrop so its click target matches.
-- `src/lib/tt-layout.ts` — introduce `nodeSafePad` and clamp level 1 (starter/`blueR - tinyPad`) and the outer moderate radii to `blueR − nodeSafePad`. Update `extremeOuter` to `Math.min(blueR - 18, blueR - nodeSafePad)`.
+- Delete the tier math (`extremeOuter`, `extremeInner`, `bandSteps`, `tierFrac`, `hashId`, `extremeRadius`).
+- In the per-node mapping, when `total < 0`, set `r = maxVisibleR` and keep `level = -1 | -2 | -3` (still useful for styling/labels), `zone = 'extreme'`.
+- Positive-band and starter placement stay unchanged.
 
-## Verification (in build mode)
+## File
 
-Drive Playwright at `http://localhost:8080/7mm9` at 393 × 852, screenshot:
-1. Idle graph — confirm the outermost node's right edge is inside the phone-frame with visible padding.
-2. Tap the "Chats" pill, screenshot — confirm the panel's left/right edges sit inside the frame with a visible gutter.
+- `src/lib/tt-layout.ts` — simplify the extreme branch as above.
 
-No changes to routing, data, chat logic, or theme.
+## Verification
+
+Playwright at 393×852 on `/7mm9`: screenshot idle graph and confirm the three synthetic negative-score nodes (currently −300, −1250, and any other) all sit on the outer visible ring, not staggered inward.
