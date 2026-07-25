@@ -210,19 +210,18 @@ export function TTBottomPanel({
             {/* Opinion difference meter */}
             <div className="mt-3">
               <div className={`min-w-0 flex flex-col gap-1 rounded-xl transition-all duration-300 ${highlightDisagreementScale ? 'relative z-[60] bg-background border border-primary px-2 py-1.5 ring-4 ring-primary/60 shadow-[0_0_30px_hsl(var(--primary)/0.65)] scale-[1.02]' : ''}`}>
-                {canRate ? (
-                  <>
-                    <TTEmojiRating value={disagreement} onChange={setDisagreement} />
-                    <div className="text-center text-[10px] text-muted-foreground tracking-wide mt-0.5">
-                      {t('tt.opinionDifferenceLabel')}
-                    </div>
-                  </>
-                ) : !hasOwnOpinion ? (
-                  <p className="text-[10px] text-muted-foreground text-center">
+                <TTEmojiRating
+                  value={disagreement}
+                  onChange={setDisagreement}
+                  disabled={!canRate}
+                />
+                <div className="text-center text-[10px] text-muted-foreground tracking-wide mt-0.5">
+                  {t('tt.opinionDifferenceLabel')}
+                </div>
+                {!canRate && !hasOwnOpinion && (
+                  <p className="text-[10px] text-muted-foreground text-center mt-1">
                     {t('tt.postFirstToRate')}
                   </p>
-                ) : (
-                  <span />
                 )}
               </div>
             </div>
