@@ -43,7 +43,8 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
-      <Route path="/7mm9" element={<Discussion />} />
+      <Route path="/go" element={<Discussion />} />
+      <Route path="/7mm9" element={<Navigate to="/go" replace />} />
       <Route path="/confirm" element={<Confirm />} />
       <Route path="/unsubscribe" element={<Unsubscribe />} />
       <Route path="/legal" element={<Legal />} />
