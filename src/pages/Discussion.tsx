@@ -146,6 +146,7 @@ export default function TT() {
           onMarkAllRead={markAllRead}
           activeTopicId={activeTopicId}
           onOpenHelp={() => setHelpOpen(true)}
+          onRestartTour={() => setTourStep(1)}
         />
         <TTSideTabs
           ref={sideTabsRef}
