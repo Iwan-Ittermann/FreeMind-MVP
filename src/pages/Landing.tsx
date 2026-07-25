@@ -109,7 +109,7 @@ export default function Landing() {
             </p>
           </div>
           <p className="text-base sm:text-lg text-muted-foreground max-w-2xl leading-snug">
-            Die Frage: <span className="text-foreground font-bold">Welche Partei willst du für den Bundestag wählen und warum?</span>
+            {"\n"}
           </p>
           <a
             href="#cta"
