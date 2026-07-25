@@ -363,8 +363,12 @@ export function calculateTTLayout(
   const safeMax = Math.max(maxTotal, 1);
 
   const tinyPad = 4;
+  // Node radius (~13px) + a couple px breathing room. Every positive-tier and
+  // extreme radius is capped so the visual node stays fully inside the phone frame.
+  const nodeSafePad = 16;
   const blueR = landmarks.blueR;
   const whiteR = landmarks.whiteR;
+  const maxVisibleR = blueR - nodeSafePad;
 
   // Ids that share the top score — used to give ties a tiny inner orbit so they don't stack.
   const topIds = idSorted.filter(op => totals.get(op.id)!.total === maxTotal && maxTotal > 0).map(op => op.id);
@@ -426,7 +430,7 @@ export function calculateTTLayout(
   // phone-frame edge, and use a deterministic hash on the node id to give
   // ties different sub-radii so multiple extreme nodes don't stack.
   const nodeMargin = 18;
-  const extremeOuter = blueR - nodeMargin;               // hard visible edge
+  const extremeOuter = Math.min(blueR - nodeMargin, maxVisibleR); // hard visible edge
   const extremeInner = Math.max(blueR - (nodeMargin + 22), landmarks.coreR + 4);
   const bandSteps = 4;
   const hashId = (id: string): number => {
@@ -452,8 +456,9 @@ export function calculateTTLayout(
     let zone: 'respectful' | 'moderate' | 'extreme';
 
     if (!hasChats || (total === 0 && op.authorId !== BOT_USER_ID)) {
-      // Starter / no-activity placement — sits just inside the blue ring.
-      r = blueR - tinyPad;
+      // Starter / no-activity placement — sits just inside the blue ring,
+      // padded inward by the node radius so it stays fully visible.
+      r = maxVisibleR;
       level = 3;
       zone = 'moderate';
     } else if (total < 0) {
@@ -471,7 +476,7 @@ export function calculateTTLayout(
       // behaviour where tied nodes were split between center and fringe.
       const gi = groupIndexOf.get(op.id) ?? 0;
       const frac = groupCount <= 1 ? 0 : gi / (groupCount - 1);
-      const baseR = frac * (blueR - tinyPad);
+      const baseR = frac * maxVisibleR;
       // Top-tied cohort needs a small orbit — angular collision push at r=0
       // moves nodes by ~0, so ties would stack on the exact center.
       const isTopGroup = gi === 0;
