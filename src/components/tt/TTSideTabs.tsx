@@ -156,7 +156,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                   exit={{ opacity: 0, scale: 0.6, y: 20 }}
                   transition={SPRING}
                   style={{ transformOrigin: '50% 100%', height: 'min(60vh, 520px)' }}
-                  className="absolute bottom-[84px] left-1/2 -translate-x-1/2 z-30 w-[calc(100%-2rem)] max-w-[360px] rounded-2xl bg-background/85 backdrop-blur-xl border border-border/40 shadow-2xl overflow-hidden flex flex-col"
+                  className="absolute bottom-[84px] left-4 right-4 mx-auto z-30 max-w-[360px] rounded-2xl bg-background/85 backdrop-blur-xl border border-border/40 shadow-2xl overflow-hidden flex flex-col pointer-events-auto"
                 >
                   {/* Header */}
                   <div className="flex items-center justify-between px-4 py-3 border-b border-border/30">
