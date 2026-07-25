@@ -189,8 +189,13 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
       </header>
 
       {/* Topic question — fixed-height band directly under the slim header row.
-          Height is stable regardless of viewport size or title line wrap so the
-          "header area" never grows or shrinks unpredictably. */}
+          Uses a top-anchored gradient so it stays legible whether the nebula
+          background reaches this area (short viewports) or not (tall viewports). */}
+      <div
+        aria-hidden
+        className="absolute left-0 right-0 z-20 pointer-events-none bg-gradient-to-b from-background/85 via-background/60 to-transparent"
+        style={{ top: 28, height: 88 }}
+      />
       <div
         className="absolute left-0 right-0 z-30 flex items-center justify-center px-6 text-center pointer-events-auto"
         style={{ top: 32, height: 64 }}
@@ -202,6 +207,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
           <TopicTitleWithLinks title={topicTitle} />
         </h1>
       </div>
+
 
 
       {/* Notifications dropdown (header bell) — rendered outside header but checked via bellRef */}
