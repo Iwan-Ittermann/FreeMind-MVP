@@ -187,30 +187,12 @@ export function TTBottomPanel({
               </p>
             </div>
 
-            {/* Emoji rating + Let's chat (inline row) */}
-            <div className="mt-3 flex items-center justify-between gap-2">
-              <div className={`min-w-0 flex-1 flex flex-col gap-0.5 rounded-xl transition-all duration-300 ${highlightDisagreementScale ? 'relative z-[60] bg-background border border-primary px-2 py-1.5 ring-4 ring-primary/60 shadow-[0_0_30px_hsl(var(--primary)/0.65)] scale-[1.02]' : ''}`}>
-                {canRate ? (
-                  <>
-                    <TTEmojiRating value={disagreement} onChange={setDisagreement} />
-                    <div className="flex items-center justify-between text-[9px] text-muted-foreground tracking-wide px-0.5">
-                      <span>{t('tt.fullyAgree')}</span>
-                      <span>{t('tt.fullyDisagree')}</span>
-                    </div>
-                  </>
-                ) : !hasOwnOpinion ? (
-                  <p className="text-[10px] text-muted-foreground">
-                    {t('tt.postFirstToRate')}
-                  </p>
-                ) : (
-                  <span />
-                )}
-              </div>
-
+            {/* Diskutieren button - centered between opinion and meter */}
+            <div className="mt-3 flex justify-center">
               <Button
                 variant="outline"
                 size="sm"
-                className={`rounded-full shrink-0 h-8 text-xs transition-all duration-300 ${highlightLetsChatButton ? 'relative z-[60] border-primary ring-4 ring-primary/60 shadow-[0_0_30px_hsl(var(--primary)/0.65)] animate-pulse' : ''}`}
+                className={`rounded-full h-8 text-xs px-4 transition-all duration-300 ${highlightLetsChatButton ? 'relative z-[60] border-primary ring-4 ring-primary/60 shadow-[0_0_30px_hsl(var(--primary)/0.65)] animate-pulse' : ''}`}
                 onClick={() => {
                   if (chatDisabled) return;
                   if (!user) {
@@ -223,6 +205,26 @@ export function TTBottomPanel({
               >
                 {t('tt.letsChat')}
               </Button>
+            </div>
+
+            {/* Opinion difference meter */}
+            <div className="mt-3">
+              <div className={`min-w-0 flex flex-col gap-1 rounded-xl transition-all duration-300 ${highlightDisagreementScale ? 'relative z-[60] bg-background border border-primary px-2 py-1.5 ring-4 ring-primary/60 shadow-[0_0_30px_hsl(var(--primary)/0.65)] scale-[1.02]' : ''}`}>
+                {canRate ? (
+                  <>
+                    <TTEmojiRating value={disagreement} onChange={setDisagreement} />
+                    <div className="text-center text-[10px] text-muted-foreground tracking-wide mt-0.5">
+                      {t('tt.opinionDifferenceLabel')}
+                    </div>
+                  </>
+                ) : !hasOwnOpinion ? (
+                  <p className="text-[10px] text-muted-foreground text-center">
+                    {t('tt.postFirstToRate')}
+                  </p>
+                ) : (
+                  <span />
+                )}
+              </div>
             </div>
           </div>
       </div>

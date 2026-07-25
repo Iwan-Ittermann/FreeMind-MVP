@@ -1,44 +1,61 @@
-## Goal
+## Change disagreement rating to "Meinungsunterschied" 10-point meter + relabel chat button + layout tweak
 
-Make the top chrome (thin header bar + topic-title area) render at a **stable, predictable height** so it no longer grows or shrinks with viewport height, DPR quirks, or title line-wrap count.
+Scope: three related UI changes in the selected-opinion panel (`TTBottomPanel.tsx`) and its rating widget (`TTEmojiRating.tsx`), plus i18n keys.
 
-## Root cause
+### 1. Rating widget → 10-step "opinion difference meter"
 
-In `src/components/tt/TTHeader.tsx`:
+Rework `src/components/tt/TTEmojiRating.tsx`:
 
-1. The topic-title container uses viewport-relative anchoring:
-   ```
-   top: 32
-   bottom: calc(50% + min(42.5vw, 204px) + 14px)
-   ```
-   Its height = `viewportHeight/2 − graphRadius − 46`. On tall frames this becomes huge; on short frames it collapses. That is the "sometimes thin, sometimes wide" band.
-2. A separate `h-12` gradient overlay adds a translucent whitish band on top of whatever the title block is doing, amplifying the effect.
-3. The title `h1` uses `clamp()` font-size + free wrapping, so 1-line vs 2-line titles further vary the visible height.
+- Replace the 5 named options with **10 buttons** representing 10%, 20%, … 100% (values 10, 20, … 100). (Question below on whether to keep 0% as an 11th step.)
+- Render as a compact horizontal row of small pill buttons showing the percentage (e.g. "10%"). Active step highlighted using the same accent styling pattern already used (`ring-2 ring-foreground/20`, `scale-105`).
+- Keep API compatible: `value: number`, `onChange(value)`. `nearestIndex` maps stored value (0–100) to the closest step.
+- Persisted value remains 0–100 on `opinion_ratings.disagreement`, so no DB / hook changes.
 
-## Fix
+### 2. Label under meter → "Meinungsunterschied"
 
-Change the top chrome to a **fixed-height stack** and let the graph sit below it deterministically.
+In `TTBottomPanel.tsx`, replace the two-line `tt.fullyAgree` / `tt.fullyDisagree` end-labels with a single centered caption "Meinungsunterschied" (i18n key `tt.opinionDifferenceLabel`).
 
-### 1. Fixed header stack in `TTHeader.tsx`
-- Replace the absolute-anchored title container with a fixed-height block placed directly under the slim header row:
-  - Slim bar: keep ~28px, unchanged.
-  - Title block: fixed height (e.g. `h-16` = 64px) with `flex items-center justify-center` and `line-clamp-2` on the `h1` so wrapping never exceeds 2 lines.
-- Total top chrome: **~92px**, exposed as a CSS custom property `--tt-top-chrome: 92px` on the phone-frame root.
-- Remove the `h-12` gradient overlay (or shrink it to sit *inside* the title block, not over the graph).
+### 3. i18n
 
-### 2. Anchor graph off the fixed chrome
-- In `TTScreen.tsx` / `TTBackground.tsx`, position the graph relative to `--tt-top-chrome` instead of `50%` of the frame. Simplest: wrap the graph area in a container with `top: var(--tt-top-chrome); bottom: var(--tt-bottom-chrome)` and center the SVG within it. Keeps the graph deterministic and stops the title band from "stealing" space.
+`src/i18n/locales/de.json` and `en.json` in the `tt` block:
 
-### 3. Keep title readable
-- `line-clamp-2` + `text-ellipsis` on the h1. Font-size clamp stays but with a tighter range (e.g. `clamp(0.95rem, 3.6vw, 1.2rem)`) so the two-line box is guaranteed to fit within 64px.
+- `letsChat`: DE `"Diskutieren"` (currently `"Let's chat"`), EN keep `"Let's chat"`.
+- Add `opinionDifferenceLabel`: DE `"Meinungsunterschied"`, EN `"Opinion difference"`.
+- Leave `fullyAgree` / `fullyDisagree` in place (still used elsewhere — quick check will confirm).
 
-## Files touched
+### 4. Layout: chat button vertically centered between opinion text and meter
 
-- `src/components/tt/TTHeader.tsx` — replace anchored title with fixed-height block; drop the gradient overlay.
-- `src/components/tt/TTScreen.tsx` — expose `--tt-top-chrome`; position graph container below it.
-- `src/components/tt/TTBackground.tsx` — if it currently uses `50%` centering, switch to centering within the graph container (no functional change to visuals).
-- Verify: `TTCenterCTA`, `TTSideTabs`, `TTHelpOverlay` still align (they anchor to `bottom`, so unaffected).
+Restructure the selected-opinion card body in `TTBottomPanel.tsx` from the current single row (`[meter] [Diskutieren]`) into a vertical stack:
 
-## Verification
+```text
+┌──────────────────────────────┐
+│      opinion text            │
+│                              │
+│      [ Diskutieren ]         │  ← centered
+│                              │
+│  [10%][20%]…[100%]  meter    │
+│      Meinungsunterschied     │
+└──────────────────────────────┘
+```
 
-- Playwright screenshots at 393×640, 393×852, 393×932 and 480×900: top chrome height must be identical (~92px) across all three; graph fully visible; title never overflows or overlaps the graph ring.
+- Opinion text block stays as-is.
+- New centered "Diskutieren" button row (`flex justify-center my-2`). Keep existing highlight/disabled/onClick logic.
+- Below it: meter + caption. Keep the `highlightDisagreementScale` ring wrapper around this block.
+
+### Files touched
+
+- `src/components/tt/TTEmojiRating.tsx` — rewrite as 10-step meter.
+- `src/components/tt/TTBottomPanel.tsx` — restructure layout, swap caption, keep behavior.
+- `src/i18n/locales/de.json` — update `tt.letsChat`, add `tt.opinionDifferenceLabel`.
+- `src/i18n/locales/en.json` — add `tt.opinionDifferenceLabel`.
+
+No DB, no RLS, no hook changes. Data on-disk stays 0–100.
+
+### One clarifying question
+
+The current scale includes a true "0" (full agreement). Do you want the new 10-point scale to be:
+
+- **A. 10%, 20% … 100%** (10 steps, no zero) — matches "10 point scale" literally, but users can never say "identical".
+- **B. 0%, 10%, 20% … 100%** (11 steps) — keeps a "no difference" option. B PLEASE, 11 STEPS
+
+I'll default to **A** unless you say otherwise.
