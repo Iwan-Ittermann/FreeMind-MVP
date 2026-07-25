@@ -136,8 +136,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
 
   return (
     <>
-      <div aria-hidden className="absolute top-0 inset-x-0 z-20 h-12 pointer-events-none bg-gradient-to-b from-background/70 via-background/30 to-transparent" />
-      <header className="absolute top-0 inset-x-0 z-30 px-3 pointer-events-none">
+      <header className="absolute top-0 inset-x-0 z-30 px-3 pointer-events-none bg-background/60 backdrop-blur-sm">
         <div className="flex items-center justify-between pointer-events-auto py-1 border-b border-border/30">
           <span className="text-foreground/90 font-medium tracking-tight lowercase text-[13px] leading-none">
             freemind
@@ -189,18 +188,21 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
         </div>
       </header>
 
-      {/* Topic question — centered between the slim header line and the graph's upper edge. */}
+      {/* Topic question — fixed-height band directly under the slim header row.
+          Height is stable regardless of viewport size or title line wrap so the
+          "header area" never grows or shrinks unpredictably. */}
       <div
-        className="absolute left-0 right-0 z-30 flex items-center justify-center px-6 py-3 text-center pointer-events-auto"
-        style={{ top: 32, bottom: 'calc(50% + min(42.5vw, 204px) + 14px)' }}
+        className="absolute left-0 right-0 z-30 flex items-center justify-center px-6 text-center pointer-events-auto"
+        style={{ top: 32, height: 64 }}
       >
         <h1
-          className="font-serif italic leading-tight text-foreground"
-          style={{ fontSize: 'clamp(0.95rem, 4.2vw, 1.35rem)' }}
+          className="font-serif italic leading-tight text-foreground line-clamp-2"
+          style={{ fontSize: 'clamp(0.95rem, 3.6vw, 1.2rem)' }}
         >
           <TopicTitleWithLinks title={topicTitle} />
         </h1>
       </div>
+
 
       {/* Notifications dropdown (header bell) — rendered outside header but checked via bellRef */}
       <AnimatePresence>
