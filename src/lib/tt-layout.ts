@@ -430,7 +430,7 @@ export function calculateTTLayout(
   // phone-frame edge, and use a deterministic hash on the node id to give
   // ties different sub-radii so multiple extreme nodes don't stack.
   const nodeMargin = 18;
-  const extremeOuter = blueR - nodeMargin;               // hard visible edge
+  const extremeOuter = Math.min(blueR - nodeMargin, maxVisibleR); // hard visible edge
   const extremeInner = Math.max(blueR - (nodeMargin + 22), landmarks.coreR + 4);
   const bandSteps = 4;
   const hashId = (id: string): number => {
