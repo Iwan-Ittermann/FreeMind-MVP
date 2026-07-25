@@ -42,6 +42,7 @@ export default function Admin2() {
   const [signups, setSignups] = useState<Signup[]>([]);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [bans, setBans] = useState<Ban[]>([]);
+  const [faq, setFaq] = useState<Array<{ id?: string; question: string; answer: string; sort_order: number; _new?: boolean }>>([]);
   const [msg, setMsg] = useState<string | null>(null);
   const [busyRowId, setBusyRowId] = useState<string | null>(null);
   const [ipMap, setIpMap] = useState<Record<string, string | null> | null>(null);
@@ -63,15 +64,17 @@ export default function Admin2() {
   }
 
   async function loadAll(pw: string) {
-    const [ov, tpl, bn] = await Promise.all([
+    const [ov, tpl, bn, fq] = await Promise.all([
       supabase.functions.invoke("admin2-overview", { body: { password: pw } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "get_templates" } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "list_bans" } }),
+      supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "list_faq" } }),
     ]);
     if (ov.error || !ov.data?.ok) return false;
     setSignups(ov.data.signups ?? []);
     setTemplates(tpl.data?.templates ?? []);
     setBans(bn.data?.bans ?? []);
+    setFaq(fq.data?.faq ?? []);
     return true;
   }
 
