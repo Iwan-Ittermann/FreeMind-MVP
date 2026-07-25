@@ -49,6 +49,7 @@ function AppRoutes() {
       <Route path="/confirm" element={<Confirm />} />
       <Route path="/unsubscribe" element={<Unsubscribe />} />
       <Route path="/legal" element={<Legal />} />
+      <Route path="/faq" element={<Faq />} />
       <Route path="/admin2" element={<Admin2 />} />
       <Route path="/admin" element={<Admin />} />
       <Route path="/auth" element={<Navigate to="/" replace />} />

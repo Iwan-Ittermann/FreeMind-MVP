@@ -218,6 +218,37 @@ Deno.serve(async (req) => {
       if (error) throw error;
       return Response.json({ ok: true }, { headers: corsHeaders });
     }
+    if (action === "list_faq") {
+      const { data, error } = await supabase
+        .from("faq_items")
+        .select("id, question, answer, sort_order, updated_at")
+        .order("sort_order", { ascending: true })
+        .order("created_at", { ascending: true });
+      if (error) throw error;
+      return Response.json({ ok: true, faq: data ?? [] }, { headers: corsHeaders });
+    }
+    if (action === "save_faq") {
+      const { id, question, answer, sort_order } = body ?? {};
+      if (typeof question !== "string" || typeof answer !== "string") {
+        return Response.json({ ok: false, error: "invalid_payload" }, { status: 400, headers: corsHeaders });
+      }
+      const row: Record<string, unknown> = {
+        question,
+        answer,
+        sort_order: Number.isFinite(sort_order) ? Number(sort_order) : 0,
+      };
+      if (typeof id === "string" && id) row.id = id;
+      const { error } = await supabase.from("faq_items").upsert(row);
+      if (error) throw error;
+      return Response.json({ ok: true }, { headers: corsHeaders });
+    }
+    if (action === "delete_faq") {
+      if (typeof body?.id !== "string") return Response.json({ ok: false, error: "invalid_id" }, { status: 400, headers: corsHeaders });
+      const { error } = await supabase.from("faq_items").delete().eq("id", body.id);
+      if (error) throw error;
+      return Response.json({ ok: true }, { headers: corsHeaders });
+    }
+
 
     // Default: overview
     const { data: signups, error } = await supabase
