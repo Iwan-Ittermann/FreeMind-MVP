@@ -399,8 +399,22 @@ export function calculateTTLayout(
       return a.id.localeCompare(b.id);
     });
   const positiveCount = positives.length;
-  const rankOf = new Map<string, number>();
-  positives.forEach((op, i) => rankOf.set(op.id, i));
+  // Tie-aware radial rank: nodes sharing the same total sit at the same radius,
+  // then get spread angularly by resolveCollisions instead of being stretched
+  // across the whole graph.
+  const distinctTotals: number[] = [];
+  positives.forEach((op) => {
+    const t = totals.get(op.id)!.total;
+    if (distinctTotals.length === 0 || distinctTotals[distinctTotals.length - 1] !== t) {
+      distinctTotals.push(t);
+    }
+  });
+  const groupIndexOf = new Map<string, number>();
+  positives.forEach((op) => {
+    const t = totals.get(op.id)!.total;
+    groupIndexOf.set(op.id, distinctTotals.indexOf(t));
+  });
+  const groupCount = distinctTotals.length;
 
   // Extreme-zone rendering clamp.
   //
