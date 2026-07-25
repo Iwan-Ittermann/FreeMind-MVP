@@ -42,6 +42,7 @@ export default function Admin2() {
   const [signups, setSignups] = useState<Signup[]>([]);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [bans, setBans] = useState<Ban[]>([]);
+  const [faq, setFaq] = useState<Array<{ id?: string; question: string; answer: string; sort_order: number; _new?: boolean }>>([]);
   const [msg, setMsg] = useState<string | null>(null);
   const [busyRowId, setBusyRowId] = useState<string | null>(null);
   const [ipMap, setIpMap] = useState<Record<string, string | null> | null>(null);
@@ -63,15 +64,17 @@ export default function Admin2() {
   }
 
   async function loadAll(pw: string) {
-    const [ov, tpl, bn] = await Promise.all([
+    const [ov, tpl, bn, fq] = await Promise.all([
       supabase.functions.invoke("admin2-overview", { body: { password: pw } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "get_templates" } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "list_bans" } }),
+      supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "list_faq" } }),
     ]);
     if (ov.error || !ov.data?.ok) return false;
     setSignups(ov.data.signups ?? []);
     setTemplates(tpl.data?.templates ?? []);
     setBans(bn.data?.bans ?? []);
+    setFaq(fq.data?.faq ?? []);
     return true;
   }
 
@@ -136,6 +139,41 @@ export default function Admin2() {
     await refresh();
   }
 
+  async function saveFaqRow(idx: number) {
+    const row = faq[idx];
+    if (!row.question.trim()) { flash("Frage darf nicht leer sein."); return; }
+    const { data, error } = await invoke({
+      action: "save_faq",
+      id: row.id,
+      question: row.question,
+      answer: row.answer,
+      sort_order: row.sort_order,
+    });
+    if (error || !data?.ok) { flash("Fehler beim Speichern."); return; }
+    flash("FAQ gespeichert.");
+    await refresh();
+  }
+
+  async function deleteFaqRow(idx: number) {
+    const row = faq[idx];
+    if (!row.id) { setFaq((prev) => prev.filter((_, i) => i !== idx)); return; }
+    if (!confirm(`Frage "${row.question}" löschen?`)) return;
+    const { data, error } = await invoke({ action: "delete_faq", id: row.id });
+    if (error || !data?.ok) { flash("Fehler beim Löschen."); return; }
+    flash("Frage gelöscht.");
+    await refresh();
+  }
+
+  function addFaqRow() {
+    setFaq((prev) => [...prev, {
+      question: "",
+      answer: "",
+      sort_order: (prev[prev.length - 1]?.sort_order ?? 0) + 10,
+      _new: true,
+    }]);
+  }
+
+
   if (!unlocked) {
     return (
       <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", background: "#eaf2fb", fontFamily: "system-ui, sans-serif" }}>
@@ -166,7 +204,7 @@ export default function Admin2() {
         <header style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 24 }}>
           <h1 style={{ margin: 0, fontSize: 28, textTransform: "uppercase", letterSpacing: "0.02em" }}>freemind admin</h1>
           <button
-            onClick={() => { setUnlocked(false); setSignups([]); setTemplates([]); setBans([]); setIpMap(null); setSavedPassword(""); }}
+            onClick={() => { setUnlocked(false); setSignups([]); setTemplates([]); setBans([]); setFaq([]); setIpMap(null); setSavedPassword(""); }}
             style={{ padding: "10px 14px", background: "transparent", color: "#0f1b3d", border: "1px solid #0f1b3d", fontSize: 13, cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.05em" }}>
             Sign out
           </button>
@@ -290,6 +328,52 @@ export default function Admin2() {
               })}
             </tbody>
           </table>
+        </div>
+
+        {/* FAQ */}
+        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", margin: "24px 0 8px" }}>
+          <h2 style={{ ...sectionTitle, margin: 0 }}>FAQ</h2>
+          <button onClick={addFaqRow} style={ghostBtn}>+ Frage hinzufügen</button>
+        </div>
+        <div style={{ display: "grid", gap: 12, marginBottom: 32 }}>
+          {faq.map((row, idx) => (
+            <div key={row.id ?? `new-${idx}`} style={{ background: "#fff", border: "1px solid #0f1b3d", padding: 16 }}>
+              <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                <div style={{ flex: 1 }}>
+                  <label style={label}>Frage</label>
+                  <input
+                    value={row.question}
+                    onChange={(e) => setFaq((prev) => prev.map((x, i) => i === idx ? { ...x, question: e.target.value } : x))}
+                    style={input}
+                  />
+                </div>
+                <div style={{ width: 100 }}>
+                  <label style={label}>Reihenfolge</label>
+                  <input
+                    type="number"
+                    value={row.sort_order}
+                    onChange={(e) => setFaq((prev) => prev.map((x, i) => i === idx ? { ...x, sort_order: Number(e.target.value) || 0 } : x))}
+                    style={input}
+                  />
+                </div>
+              </div>
+              <label style={label}>Antwort</label>
+              <textarea
+                rows={5}
+                value={row.answer}
+                onChange={(e) => setFaq((prev) => prev.map((x, i) => i === idx ? { ...x, answer: e.target.value } : x))}
+                style={{ ...input, resize: "vertical" }}
+              />
+              <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                <button onClick={() => saveFaqRow(idx)}
+                  style={{ padding: "8px 14px", background: "#0f1b3d", color: "#fff", border: 0, fontSize: 12, cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  Speichern
+                </button>
+                <button onClick={() => deleteFaqRow(idx)} style={actionBtn(false, "#8a1a1a")}>Löschen</button>
+              </div>
+            </div>
+          ))}
+          {faq.length === 0 && <div style={{ fontSize: 13, opacity: 0.7 }}>Noch keine Fragen.</div>}
         </div>
 
         {/* Bans */}
