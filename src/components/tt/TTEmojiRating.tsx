@@ -1,16 +1,10 @@
 import { cn } from '@/lib/utils';
 
 /**
- * Responsive 5-step disagreement picker.
- * Maps to 0–100 (0 = full agreement, 100 = full disagreement).
+ * 11-step opinion-difference meter (0%, 10%, ..., 100%).
+ * Maps to 0–100 (0 = no difference, 100 = full difference).
  */
-const OPTIONS = [
-  { label: 'Yes!', value: 0, className: 'tt-disagree-yes-strong' },
-  { label: 'Yes', value: 25, className: 'tt-disagree-yes' },
-  { label: 'Neutral', value: 50, className: 'tt-disagree-neutral' },
-  { label: 'No', value: 75, className: 'tt-disagree-no' },
-  { label: 'No!', value: 100, className: 'tt-disagree-no-strong' },
-] as const;
+const STEPS = Array.from({ length: 11 }, (_, i) => i * 10);
 
 interface TTEmojiRatingProps {
   value: number;
@@ -21,8 +15,8 @@ interface TTEmojiRatingProps {
 function nearestIndex(value: number): number {
   let best = 0;
   let bestDist = Infinity;
-  OPTIONS.forEach((option, i) => {
-    const d = Math.abs(option.value - value);
+  STEPS.forEach((step, i) => {
+    const d = Math.abs(step - value);
     if (d < bestDist) {
       bestDist = d;
       best = i;
@@ -35,26 +29,35 @@ export function TTEmojiRating({ value, onChange, disabled }: TTEmojiRatingProps)
   const activeIdx = nearestIndex(value);
 
   return (
-    <div className="grid w-full grid-cols-5 gap-1" role="radiogroup" aria-label="Disagreement rating">
-      {OPTIONS.map((option, i) => {
+    <div className="grid w-full grid-cols-11 gap-0.5" role="radiogroup" aria-label="Opinion difference">
+      {STEPS.map((step, i) => {
         const isActive = i === activeIdx;
+        // Gradient from agreement (green-ish) to difference (rose-ish) using semantic tokens
+        const intensity = step / 100;
         return (
           <button
-            key={option.value}
+            key={step}
             type="button"
             disabled={disabled}
-            onClick={() => onChange(option.value)}
+            onClick={() => onChange(step)}
             className={cn(
-              'h-8 min-w-0 rounded-full border px-1 text-[10px] font-semibold transition-all',
-              option.className,
-              isActive ? 'scale-105 opacity-100 shadow-md ring-2 ring-foreground/20' : 'opacity-55 hover:opacity-90',
+              'h-7 min-w-0 rounded-full border px-0.5 text-[9px] font-semibold transition-all',
+              'border-border bg-muted text-foreground',
+              isActive
+                ? 'scale-110 opacity-100 shadow-md ring-2 ring-foreground/30 bg-primary text-primary-foreground border-primary'
+                : 'opacity-60 hover:opacity-90',
               disabled && 'cursor-not-allowed opacity-30',
             )}
-            aria-label={option.label}
+            style={
+              isActive
+                ? undefined
+                : { opacity: 0.4 + intensity * 0.4 }
+            }
+            aria-label={`${step}%`}
             aria-checked={isActive}
             role="radio"
           >
-            <span className="block truncate">{option.label}</span>
+            <span className="block truncate">{step}</span>
           </button>
         );
       })}
