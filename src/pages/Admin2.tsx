@@ -139,6 +139,41 @@ export default function Admin2() {
     await refresh();
   }
 
+  async function saveFaqRow(idx: number) {
+    const row = faq[idx];
+    if (!row.question.trim()) { flash("Frage darf nicht leer sein."); return; }
+    const { data, error } = await invoke({
+      action: "save_faq",
+      id: row.id,
+      question: row.question,
+      answer: row.answer,
+      sort_order: row.sort_order,
+    });
+    if (error || !data?.ok) { flash("Fehler beim Speichern."); return; }
+    flash("FAQ gespeichert.");
+    await refresh();
+  }
+
+  async function deleteFaqRow(idx: number) {
+    const row = faq[idx];
+    if (!row.id) { setFaq((prev) => prev.filter((_, i) => i !== idx)); return; }
+    if (!confirm(`Frage "${row.question}" löschen?`)) return;
+    const { data, error } = await invoke({ action: "delete_faq", id: row.id });
+    if (error || !data?.ok) { flash("Fehler beim Löschen."); return; }
+    flash("Frage gelöscht.");
+    await refresh();
+  }
+
+  function addFaqRow() {
+    setFaq((prev) => [...prev, {
+      question: "",
+      answer: "",
+      sort_order: (prev[prev.length - 1]?.sort_order ?? 0) + 10,
+      _new: true,
+    }]);
+  }
+
+
   if (!unlocked) {
     return (
       <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", background: "#eaf2fb", fontFamily: "system-ui, sans-serif" }}>
@@ -169,7 +204,7 @@ export default function Admin2() {
         <header style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 24 }}>
           <h1 style={{ margin: 0, fontSize: 28, textTransform: "uppercase", letterSpacing: "0.02em" }}>freemind admin</h1>
           <button
-            onClick={() => { setUnlocked(false); setSignups([]); setTemplates([]); setBans([]); setIpMap(null); setSavedPassword(""); }}
+            onClick={() => { setUnlocked(false); setSignups([]); setTemplates([]); setBans([]); setFaq([]); setIpMap(null); setSavedPassword(""); }}
             style={{ padding: "10px 14px", background: "transparent", color: "#0f1b3d", border: "1px solid #0f1b3d", fontSize: 13, cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.05em" }}>
             Sign out
           </button>
