@@ -221,7 +221,8 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                   )}
                 </motion.div>
               )}
-            </>
+            </div>
+
           )}
         </AnimatePresence>
       </>
