@@ -1,50 +1,41 @@
-## 1. Pill flicker (register CTA appears/disappears)
+# Plan: Layout polish + onboarding tour restore
 
-**Suspected cause.** The pill and the CTA share the same gating expression in `EineWocheEineFrage.tsx`:
+## 1. Rename `EineWocheEineFrage.tsx` → `Discussion.tsx`
+- `git mv src/pages/EineWocheEineFrage.tsx src/pages/Discussion.tsx`, rename the default export `TT` → `Discussion`.
+- Update the single import in `src/App.tsx` (`/7mm9` route).
 
-```
-ownOpinionKnown && !hasOwnOpinion && activeTopicId && !verifiedLoading
-```
+## 2. Center topic title vertically between header and graph
+- The title is rendered by `TTHeader.tsx` (or the topic-title block just below it — will confirm on first read in build mode). Add responsive vertical padding so it sits neatly centered in the whitespace between the slim header bar and the outer white ring of the graph.
+- Concretely: wrap the `TopicTitleWithLinks` block in a flex container with `py-*` / `my-auto` so it's vertically centered in the gap.
 
-`verifiedLoading` comes from `useIsVerified`, which mounts its **own** `useAuth` instance. `useAuth` re-initializes `loading: true` on every mount, and its state is not shared. Anytime a parent re-render causes `useIsVerified` to briefly unmount/remount (e.g. via memo boundary changes) or its internal `useQuery` refetches on focus/reconnect while `authLoading` momentarily flips, `verifiedLoading` toggles `true → false`, unmounting the pill. The old CTA had the same symptom for the same class of reason.
+## 3. Tie-aware radial positioning (`src/lib/tt-layout.ts`)
+Currently `positives` is sorted by `(total desc, id asc)` and rank determines radius — so two nodes tied at 1450 land at rank 0 (r=0, center) and rank 1 (r=blueR−tinyPad, fringe).
 
-**Fix.**
-- In `useIsVerified.ts`, gate `isLoading` so it doesn't depend on transient auth re-mounts: once we know the user is unauthenticated, return `isLoading: false` immediately. Also set `placeholderData: (prev) => prev` and `refetchOnWindowFocus: false` so the query never re-enters a loading state.
-- In `EineWocheEineFrage.tsx`, drop `!verifiedLoading` from the gate and instead always render **something** in that slot: verified users get `TTCenterCTA`; everyone else (including "still resolving") gets the register pill. That way the slot never blinks empty during transitions.
-- Wrap the pill/CTA slot in a stable positioned container so mount/unmount of the inner variant doesn't shift layout.
+Fix: assign radius per **distinct total**, not per ordinal rank.
+- Group positives by `total`. Sort distinct totals descending → `groupIndex` 0..G-1.
+- Radius = `(groupIndex / max(G-1, 1)) * (blueR - tinyPad)`.
+- Result: all ties share the same radius; collision resolution (`resolveCollisions`) then places them angularly next to each other. When G=1 (all tied), everyone sits at center and gets fanned out by the existing collision loop.
+- Deterministic: groups sorted by total; within a group id-sorted order feeds `resolveCollisions`.
 
-## 2. Sidebars overflow the phone frame on wide screens
+## 4. CTA padding above footer
+- `TTCenterCTA.tsx` currently anchors to `bottom-[…]`. Increase bottom offset so the pill sits a few px inside the outer white ring and never overlaps the two sidebar pill buttons (`TTSideTabs`).
+- Verify against both states (verified users' CTA and the unverified "Registriere dich" pill in `Discussion.tsx`). Both use the same absolute bottom band — bump both.
 
-`TTSideTabs.tsx` panels use `w-[86vw] max-w-[360px]` — `vw` is the **browser** viewport, not the 480 px phone frame, so on desktop the panel is 86% of the window and spills out the sides of the phone.
+## 5. Restore onboarding tour (manual only, launched from settings)
+- The component `src/components/tt/TTOnboardingTour.tsx` still exists (4 steps, i18n keys `tt.onboarding.firstStep`/`opinionsStep`/`addOpinionStep`/`chatStep`/`ratingStep`, `next`, `done`).
+- Wire it back into `Discussion.tsx`:
+  - Local state `tourStep` (0..4, 0 = closed).
+  - No auto-open. No localStorage gate.
+  - Render `<TTOnboardingTour open={tourStep>0} step={tourStep} onNext={…} onDone={()=>setTourStep(0)} />`.
+- Add a "Tour starten" button to `ConfigPanel.tsx` that closes the settings sheet and triggers the tour. Communication via a lightweight custom window event (`tt:start-onboarding`) or a prop threaded from `Discussion` → `TTHeader` → `ConfigPanel` — I'll use the event bus pattern already used elsewhere (`tt:subscription-changed`, `tt:close-all-chats`) for minimal wiring.
+- Add i18n key `tt.onboarding.startButton` in `en.json`/`de.json` ("Tour starten" / "Start tour").
+- Skip pulling from GitHub — component and translation keys are already in the repo.
 
-**Fix.** Make the panels sized against the phone frame:
-- Change panel width to `w-[calc(100%-2rem)] max-w-[360px]` (and same for the register pill's `max-w-[80vw]` → `max-w-[calc(100%-2rem)]`).
-- Same for the backdrop — it already uses `absolute inset-0`, so it's already scoped to the phone frame; verify no `fixed` positioning escapes.
-- Bottom offset stays `bottom-[84px]`; ensure `max-height` uses `min(60vh, 520px)` so tall desktop windows don't push it under the header.
+## Technical notes
+- File rename must be single `git mv` to preserve history; App.tsx import update in same step.
+- Layout change is purely inside `calculateTTLayout` — no API/prop surface changes.
+- Onboarding: uses existing `TTOnboardingTour` component unchanged; only wiring is added.
 
-## 3. Extreme-zone nodes render off-screen
-
-Extreme radii in `tt-layout.ts` are `whiteR + 4 + k·EXTREME_STEP`. The phone frame is `min(85%, 480px)` wide and `whiteR = 0.6 · viewportW`, so `whiteR` already sits at 60% of the frame; adding padding pushes level −2/−3 nodes past the visible square and past the phone-frame clip.
-
-**Fix — clamp with radial jitter, no clogging.**
-- Introduce a `maxRenderRadius` = `min(whiteR + 4 + 2·EXTREME_STEP, config.outerRadius − nodeMargin)` where `nodeMargin ≈ 22 px` accounts for the visual node size.
-- For any node whose computed extreme radius would exceed `maxRenderRadius`, place it on a thin **band** just inside `maxRenderRadius`:
-  - Band width ≈ 10–14 px; assign each clamped node a deterministic sub-radius within the band based on `hash(id) mod bandSteps` so multiple clamped nodes don't stack at the same radius.
-  - Keep the existing angle from `calculateDeterministicAngles` — angular collision resolution already runs afterwards in `resolveCollisions`, so angular spread handles clogging.
-- Bump `resolveCollisions` iterations from 20 to ~40 only when the extreme band is populated, so tightly packed extreme nodes still separate angularly.
-- Keep everything deterministic: sort by id before hashing; no randomness.
-
-The extreme zone visually stays "outer/dangerous", but it wraps as a ring inside the visible square rather than escaping it. Angular density does increase — with ~12 extreme nodes on a 360° ring at r≈`maxRenderRadius`, the arc between neighbours is still >30°, well above the collision minimum, so clogging is not expected.
-
-## Files to change (build phase)
-
-- `src/hooks/useIsVerified.ts` — stabilize loading + query options.
-- `src/pages/EineWocheEineFrage.tsx` — always-render slot; drop `!verifiedLoading` gate.
-- `src/components/tt/TTSideTabs.tsx` — panel widths use frame-relative units; same for the register pill container.
-- `src/lib/tt-layout.ts` — clamp extreme radii into a visible band with deterministic jitter; slightly more collision iterations when the band is used.
-
-## Technical details
-
-- `useIsVerified` change: `isLoading: !!uid && authLoading ? true : (!!uid && query.isPending)`. Plus `refetchOnWindowFocus: false`, `refetchOnReconnect: false`, `placeholderData: (p) => p ?? false`.
-- Deterministic sub-radius jitter: `const h = [...id].reduce((a,c)=>((a<<5)-a+c.charCodeAt(0))|0, 0); const step = Math.abs(h) % 4; r = maxRenderRadius - step * 3;` (4 sub-lanes, 3 px apart).
-- Sidebar width formula assumes the phone frame is the nearest positioned ancestor — it already is (`relative` container in `EineWocheEineFrage.tsx`).
+## Out of scope
+- No changes to the tour's content or highlight targeting (steps still non-interactive overlays as they are today).
+- No auto-trigger heuristics.
