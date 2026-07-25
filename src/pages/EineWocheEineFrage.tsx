@@ -31,7 +31,7 @@ export default function TT() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user, loading: authLoading } = useAuth();
-  const { isVerified, isLoading: verifiedLoading } = useIsVerified();
+  const { isVerified } = useIsVerified();
   const isMobile = useIsMobile();
   const chatManagerRef = useRef<FloatingChatManagerHandle>(null);
   const { data: topicList = [], isLoading: topicLoading } = useTTTopics();
@@ -168,7 +168,7 @@ export default function TT() {
             ownOpinionId={ownOpinionId}
           />
         )}
-        {ownOpinionKnown && !hasOwnOpinion && activeTopicId && !verifiedLoading && (
+        {ownOpinionKnown && !hasOwnOpinion && activeTopicId && (
           isVerified ? (
             <TTCenterCTA
               topicId={activeTopicId}
@@ -180,8 +180,8 @@ export default function TT() {
               }}
             />
           ) : (
-            <div className="absolute left-1/2 bottom-[140px] -translate-x-1/2 z-30 max-w-[80vw]">
-              <div className="pointer-events-auto flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-background/95 backdrop-blur-md border border-border/40 shadow-lg text-sm text-foreground whitespace-nowrap">
+            <div className="absolute left-1/2 bottom-[140px] -translate-x-1/2 z-30 w-[calc(100%-2rem)] max-w-[360px] flex justify-center">
+              <div className="pointer-events-auto inline-flex flex-wrap justify-center items-center gap-x-1.5 px-4 py-2.5 rounded-2xl bg-background/95 backdrop-blur-md border border-border/40 shadow-lg text-sm text-foreground text-center">
                 <span>{t('tt.registerToParticipate')}</span>
                 <a
                   href="https://freemind.chat"
