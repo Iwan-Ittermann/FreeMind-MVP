@@ -41,6 +41,7 @@ export default function TT() {
   const activeTopicTitle = topic?.title ?? '...';
 
   const [helpOpen, setHelpOpen] = useState(false);
+  const [tourStep, setTourStep] = useState(0);
   const sideTabsRef = useRef<TTSideTabsHandle>(null);
 
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
