@@ -14,6 +14,9 @@ export function useIsVerified() {
     queryKey: ['is-verified', uid],
     enabled: !!uid,
     staleTime: 60_000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    placeholderData: (prev) => prev,
     queryFn: async (): Promise<boolean> => {
       if (!uid) return false;
       const { data: vp } = await supabase
@@ -32,9 +35,15 @@ export function useIsVerified() {
     },
   });
 
+  // Once auth is resolved and user is unauthenticated, we're definitively not
+  // verified — never flip back into a loading state (prevents pill flicker).
+  const isLoading = authLoading
+    ? true
+    : !!uid && query.isPending && query.data === undefined;
+
   return {
     isVerified: !!query.data,
-    isLoading: authLoading || (!!uid && query.isLoading),
+    isLoading,
     isAuthenticated: !!uid,
   };
 }
