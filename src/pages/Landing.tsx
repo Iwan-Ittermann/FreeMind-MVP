@@ -95,7 +95,7 @@ export default function Landing() {
 
       <section className={panelClass}>
         <div className={`${panelInner} flex flex-col items-start gap-8`}>
-          <p className={eyebrowClass}>24. - 30. AUGUST · EINE FRAGE</p>
+          <p className={eyebrowClass}>23. - 29. AUGUST · EINE FRAGE</p>
           <h1
             className={`${displayClass} text-left`}
             style={{ fontSize: "clamp(2.25rem, 6.5vw, 5rem)" }}
