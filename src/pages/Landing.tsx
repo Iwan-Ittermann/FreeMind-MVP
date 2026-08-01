@@ -95,7 +95,7 @@ export default function Landing() {
 
       <section className={panelClass}>
         <div className={`${panelInner} flex flex-col items-start gap-8`}>
-          <p className={eyebrowClass}>23. - 30. AUGUST · EINE FRAGE</p>
+          <p className={eyebrowClass}>24. - 30. AUGUST · EINE FRAGE</p>
           <h1
             className={`${displayClass} text-left`}
             style={{ fontSize: "clamp(2.25rem, 6.5vw, 5rem)" }}
@@ -213,7 +213,7 @@ export default function Landing() {
             </button>
           </form>
           <p className="mt-6 text-xs text-muted-foreground whitespace-pre-line">
-            Es gibt 500 € zu gewinnen. Alle Infos per E-Mail.{"\u00a0"}{"\n"}
+            Die 5 besten Brückenbauer erhalten 50 € als Annerkennung. Alle Infos per E-Mail.{"\u00a0"}{"\n"}
             Auszahlung per Paypal oder Banküberweisung.{"\u00a0"}{"\n"}
             Der Rechtsweg ist ausgeschlossen.
           </p>
