@@ -52,6 +52,31 @@ async function sendPassphraseEmail(to: string, passphrase: string, issuedAt: str
   if (!res.ok) console.error("passphrase email failed:", res.status, await res.text());
 }
 
+async function sendWelcomeEmail(to: string, passphrase: string, confirmedAt: string) {
+  const data = {
+    passphrase,
+    appUrl: SITE_URL,
+    goUrl: `${SITE_URL}/go`,
+    faqUrl: `${SITE_URL}/faq`,
+  };
+  const tpl = await loadTemplate(supabase, "signup-welcome", data, {
+    subject: "Willkommen bei freemind!",
+    heading: "Willkommen!",
+    body: `Schön, dass du dabei bist!\n\n[${SITE_URL}/go](${SITE_URL}/go)`,
+  });
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/send-transactional-email`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_ROLE}` },
+    body: JSON.stringify({
+      templateName: "signup-welcome",
+      recipientEmail: to,
+      idempotencyKey: `signup-welcome-${to}-${confirmedAt}`,
+      templateData: { ...tpl, ...data },
+    }),
+  });
+  if (!res.ok) console.error("welcome email failed:", res.status, await res.text());
+}
+
 async function provisionAuthUser(): Promise<{ passphrase: string; userId: string } | null> {
   for (let attempt = 0; attempt < 3; attempt++) {
     const phrase = generatePassphrase();
