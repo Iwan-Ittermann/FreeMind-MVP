@@ -136,12 +136,13 @@ export default function Admin2() {
   }
 
   async function loadAll(pw: string) {
-    const [ov, tpl, bn, fq, cs] = await Promise.all([
+    const [ov, tpl, bn, fq, cs, mx] = await Promise.all([
       supabase.functions.invoke("admin2-overview", { body: { password: pw } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "get_templates" } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "list_bans" } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "list_faq" } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "campaign_stats" } }),
+      supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "email_matrix" } }),
     ]);
     if (ov.error || !ov.data?.ok) return false;
     setSignups(ov.data.signups ?? []);
@@ -149,6 +150,7 @@ export default function Admin2() {
     setBans(bn.data?.bans ?? []);
     setFaq(fq.data?.faq ?? []);
     setCampaignCounts(cs.data?.counts ?? {});
+    setMailMatrix(mx.data?.matrix ?? {});
     return true;
   }
 
