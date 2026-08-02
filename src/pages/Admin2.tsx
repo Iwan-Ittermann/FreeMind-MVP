@@ -474,8 +474,6 @@ export default function Admin2() {
                           </button>
                         </>
                       )}
-
-                      </button>
                     </td>
                   </tr>
                 );
