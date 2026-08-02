@@ -28,8 +28,68 @@ function generateToken(): string {
   return Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-const TEMPLATE_KEYS = ["signup-confirm", "signup-passphrase"] as const;
+const TEMPLATE_KEYS = [
+  "signup-confirm",
+  "signup-passphrase",
+  "signup-welcome",
+  "campaign-prepare",
+  "campaign-soft-launch",
+  "campaign-start",
+  "campaign-final-day",
+] as const;
 type TemplateKey = typeof TEMPLATE_KEYS[number];
+
+async function callCampaignSender(payload: Record<string, unknown>) {
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/send-campaign-emails`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_ROLE}` },
+    body: JSON.stringify(payload),
+  });
+  const text = await res.text();
+  if (!res.ok) {
+    console.error("send-campaign-emails failed:", res.status, text);
+    throw new Error("campaign_send_failed");
+  }
+  try {
+    return JSON.parse(text);
+  } catch {
+    return {};
+  }
+}
+
+async function sendWelcome(signupId: string) {
+  const { data: row } = await supabase
+    .from("signups")
+    .select("id, email, confirmed_at, passphrase")
+    .eq("id", signupId)
+    .maybeSingle();
+  if (!row) throw new Error("signup_not_found");
+  if (!row.confirmed_at) return { skipped: "not_confirmed" };
+  const cleanEmail = String(row.email).split("#")[0];
+  const data = {
+    passphrase: row.passphrase ?? "",
+    appUrl: SITE_URL,
+    goUrl: `${SITE_URL}/go`,
+    faqUrl: `${SITE_URL}/faq`,
+  };
+  const tpl = await loadTemplate(supabase, "signup-welcome", data, {
+    subject: "Willkommen bei freemind!",
+    heading: "Willkommen!",
+    body: `Schön, dass du dabei bist!\n\n[${SITE_URL}/go](${SITE_URL}/go)`,
+  });
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/send-transactional-email`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_ROLE}` },
+    body: JSON.stringify({
+      templateName: "signup-welcome",
+      recipientEmail: cleanEmail,
+      idempotencyKey: `signup-welcome-admin-${row.id}-${Date.now()}`,
+      templateData: { ...tpl, ...data },
+    }),
+  });
+  if (!res.ok) throw new Error("send_failed");
+  return { sent: true };
+}
 
 async function resendSignupConfirm(signupId: string) {
   const { data: row, error } = await supabase

@@ -160,6 +160,7 @@ Deno.serve(async (req) => {
     if (vpErr) console.error("verified_participants insert:", vpErr.message);
 
     await sendPassphraseEmail(cleanEmail, provisioned.passphrase, issuedAt);
+    await sendWelcomeEmail(cleanEmail, provisioned.passphrase, confirmedAt);
     await notifyAdmin(cleanEmail, confirmedAt);
 
     return Response.json({ status: "ok", email: cleanEmail }, { headers: corsHeaders });
