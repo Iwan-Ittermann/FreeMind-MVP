@@ -100,6 +100,13 @@ export default function Admin2() {
   const [ipPromptOpen, setIpPromptOpen] = useState(false);
   const [ipPassword, setIpPassword] = useState("");
   const [ipError, setIpError] = useState(false);
+  const [openTemplate, setOpenTemplate] = useState<string | null>(null);
+  const [campaignCounts, setCampaignCounts] = useState<Record<string, number>>({});
+  const [resendChoice, setResendChoice] = useState<Record<string, string>>({});
+
+  const sortedTemplates = [...templates].sort(
+    (a, b) => TEMPLATE_ORDER.indexOf(a.key) - TEMPLATE_ORDER.indexOf(b.key),
+  );
 
   useEffect(() => { document.title = "Admin — freemind"; }, []);
 
