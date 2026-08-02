@@ -23,15 +23,66 @@ function fmt(iso: string | null) {
   return new Date(iso).toLocaleString("de-DE", { dateStyle: "short", timeStyle: "short" });
 }
 
-const PLACEHOLDERS: Record<string, string> = {
-  "signup-confirm": "{{confirmUrl}}",
-  "signup-passphrase": "{{passphrase}}, {{appUrl}}",
+type TemplateMeta = {
+  label: string;
+  trigger: string;
+  placeholders: string;
+  campaign?: boolean;
 };
 
-const TEMPLATE_LABEL: Record<string, string> = {
-  "signup-confirm": "1. Verifizierung (Bestätigungslink)",
-  "signup-passphrase": "2. Passphrase (nach Bestätigung)",
+const TEMPLATE_META: Record<string, TemplateMeta> = {
+  "signup-confirm": {
+    label: "1. Verifizierung (Bestätigungslink)",
+    trigger: "Sofort nach Anmeldung",
+    placeholders: "{{confirmUrl}}",
+  },
+  "signup-passphrase": {
+    label: "2. Passphrase",
+    trigger: "Nach Bestätigung des Links",
+    placeholders: "{{passphrase}}, {{appUrl}}",
+  },
+  "signup-welcome": {
+    label: "3. Willkommen",
+    trigger: "Nach Bestätigung des Links",
+    placeholders: "{{passphrase}}, {{appUrl}}, {{goUrl}}, {{faqUrl}}",
+  },
+  "campaign-prepare": {
+    label: "4. Prepare",
+    trigger: "19.08.2026, 00:01",
+    placeholders: "{{passphrase}}, {{appUrl}}, {{goUrl}}, {{faqUrl}}",
+    campaign: true,
+  },
+  "campaign-soft-launch": {
+    label: "5. Soft launch today",
+    trigger: "20.08.2026, 00:01",
+    placeholders: "{{passphrase}}, {{appUrl}}, {{goUrl}}, {{faqUrl}}",
+    campaign: true,
+  },
+  "campaign-start": {
+    label: "6. Start today!",
+    trigger: "23.08.2026, 00:01",
+    placeholders: "{{passphrase}}, {{appUrl}}, {{goUrl}}, {{faqUrl}}",
+    campaign: true,
+  },
+  "campaign-final-day": {
+    label: "7. Final day",
+    trigger: "29.08.2026, 00:01",
+    placeholders: "{{passphrase}}, {{appUrl}}, {{goUrl}}, {{faqUrl}}",
+    campaign: true,
+  },
 };
+
+const TEMPLATE_ORDER = Object.keys(TEMPLATE_META);
+
+const RESENDABLE = [
+  { key: "resend_signup", label: "Bestätigung" },
+  { key: "resend_passphrase", label: "Passphrase" },
+  { key: "resend_welcome", label: "Willkommen" },
+  { key: "campaign-prepare", label: "Prepare" },
+  { key: "campaign-soft-launch", label: "Soft launch" },
+  { key: "campaign-start", label: "Start today" },
+  { key: "campaign-final-day", label: "Final day" },
+];
 
 export default function Admin2() {
   const [unlocked, setUnlocked] = useState(false);
