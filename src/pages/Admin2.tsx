@@ -36,36 +36,31 @@ const TEMPLATE_META: Record<string, TemplateMeta> = {
     trigger: "Sofort nach Anmeldung",
     placeholders: "{{confirmUrl}}",
   },
-  "signup-passphrase": {
-    label: "2. Passphrase",
-    trigger: "Nach Bestätigung des Links",
-    placeholders: "{{passphrase}}, {{appUrl}}",
-  },
   "signup-welcome": {
-    label: "3. Willkommen",
+    label: "2. Willkommen",
     trigger: "Nach Bestätigung des Links",
     placeholders: "{{passphrase}}, {{appUrl}}, {{goUrl}}, {{faqUrl}}",
   },
   "campaign-prepare": {
-    label: "4. Prepare",
+    label: "3. Prepare (mit Passphrase)",
     trigger: "19.08.2026, 00:01",
     placeholders: "{{passphrase}}, {{appUrl}}, {{goUrl}}, {{faqUrl}}",
     campaign: true,
   },
   "campaign-soft-launch": {
-    label: "5. Soft launch today",
+    label: "4. Soft launch today",
     trigger: "20.08.2026, 00:01",
     placeholders: "{{passphrase}}, {{appUrl}}, {{goUrl}}, {{faqUrl}}",
     campaign: true,
   },
   "campaign-start": {
-    label: "6. Start today!",
+    label: "5. Start today!",
     trigger: "23.08.2026, 00:01",
     placeholders: "{{passphrase}}, {{appUrl}}, {{goUrl}}, {{faqUrl}}",
     campaign: true,
   },
   "campaign-final-day": {
-    label: "7. Final day",
+    label: "6. Final day",
     trigger: "29.08.2026, 00:01",
     placeholders: "{{passphrase}}, {{appUrl}}, {{goUrl}}, {{faqUrl}}",
     campaign: true,
@@ -73,6 +68,17 @@ const TEMPLATE_META: Record<string, TemplateMeta> = {
 };
 
 const TEMPLATE_ORDER = Object.keys(TEMPLATE_META);
+
+// Columns of the per-user checkmark grid.
+const MAIL_COLUMNS: Array<{ key: string; short: string; title: string }> = [
+  { key: "signup-confirm", short: "Verif", title: "Verifizierung (Bestätigungslink)" },
+  { key: "signup-welcome", short: "Willk", title: "Willkommen" },
+  { key: "campaign-prepare", short: "Prep", title: "Prepare (mit Passphrase), 19.08." },
+  { key: "campaign-soft-launch", short: "Soft", title: "Soft launch today, 20.08." },
+  { key: "campaign-start", short: "Start", title: "Start today!, 23.08." },
+  { key: "campaign-final-day", short: "Final", title: "Final day, 29.08." },
+  { key: "signup-passphrase", short: "Pass*", title: "Passphrase (alte Einzel-Mail, nur manuell)" },
+];
 
 const RESENDABLE = [
   { key: "resend_signup", label: "Bestätigung" },
@@ -83,6 +89,14 @@ const RESENDABLE = [
   { key: "campaign-start", label: "Start today" },
   { key: "campaign-final-day", label: "Final day" },
 ];
+
+function MailMark({ status }: { status?: string }) {
+  if (!status) return <span style={{ color: "#9fb0cc" }}>–</span>;
+  if (status === "sent") return <span style={{ color: "#1c7c3a", fontWeight: 700 }}>✓</span>;
+  if (status === "pending") return <span style={{ color: "#b07a00", fontWeight: 700 }}>⋯</span>;
+  return <span style={{ color: "#b3261e", fontWeight: 700 }} title={status}>✕</span>;
+}
+
 
 export default function Admin2() {
   const [unlocked, setUnlocked] = useState(false);
