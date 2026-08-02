@@ -128,7 +128,6 @@ Deno.serve(async (req) => {
       passphrase: provisioned.passphrase,
       passphrase_issued_at: issuedAt,
       auth_user_id: provisioned.userId,
-      last_passphrase_sent_at: confirmedAt,
     }).eq("id", row.id);
     if (updateErr) throw updateErr;
 
