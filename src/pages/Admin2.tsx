@@ -410,12 +410,17 @@ export default function Admin2() {
                 <th style={th}>Angemeldet</th>
                 <th style={th}>Bestätigt</th>
                 <th style={th}>IP</th>
+                {MAIL_COLUMNS.map((c) => (
+                  <th key={c.key} style={{ ...th, textAlign: "center", padding: "8px 4px" }} title={c.title}>{c.short}</th>
+                ))}
                 <th style={th}>Aktionen</th>
               </tr>
             </thead>
             <tbody>
               {signups.map((s) => {
                 const busyRow = busyRowId === s.id;
+                const marks = mailMatrix[s.id] ?? {};
+                const moreOpen = openMoreRow === s.id;
                 return (
                   <tr key={s.id} style={{ borderBottom: "1px solid #dbe4f0" }}>
                     <td style={td}>{s.email}</td>
@@ -424,32 +429,12 @@ export default function Admin2() {
                     <td style={{ ...td, fontFamily: "ui-monospace, Menlo, monospace", fontSize: 12 }}>
                       {ipsRevealed ? (ipMap![s.id] ?? "—") : "••••"}
                     </td>
-                    <td style={{ ...td, display: "flex", gap: 4, flexWrap: "wrap" }}>
-                      <button disabled={busyRow || !!s.confirmed_at}
-                        onClick={() => rowAction(s, "resend_signup", `Bestätigungs-E-Mail erneut senden an ${s.email}?`)}
-                        title={s.confirmed_at ? "Bereits bestätigt" : "Bestätigung erneut senden"}
-                        style={actionBtn(!!s.confirmed_at)}>
-                        Bestätigung
-                      </button>
-                      <button disabled={busyRow || !s.confirmed_at}
-                        onClick={() => rowAction(s, "resend_passphrase", `Passphrase erneut senden an ${s.email}?`)}
-                        title={s.confirmed_at ? "Passphrase erneut senden" : "Noch nicht bestätigt"}
-                        style={actionBtn(!s.confirmed_at)}>
-                        Passphrase
-                      </button>
-                      <button disabled={busyRow}
-                        onClick={() => rowAction(s, "delete_signup", `${s.email} und Zugang endgültig löschen?`)}
-                        style={actionBtn(false, "#8a1a1a")}>
-                        Löschen
-                      </button>
-                      <button disabled={busyRow}
-                        onClick={() => {
-                          const reason = prompt(`Grund für Sperre von ${s.email}? (optional)`) ?? "";
-                          rowAction(s, "ban_email", `${s.email} sperren und Konto löschen?`, { reason });
-                        }}
-                        style={actionBtn(false, "#0f1b3d")}>
-                        Bannen
-                      </button>
+                    {MAIL_COLUMNS.map((c) => (
+                      <td key={c.key} style={{ ...td, textAlign: "center", padding: "8px 4px" }}>
+                        <MailMark status={marks[c.key]} />
+                      </td>
+                    ))}
+                    <td style={{ ...td, display: "flex", gap: 4, flexWrap: "wrap", alignItems: "center" }}>
                       <select
                         value={resendChoice[s.id] ?? ""}
                         onChange={(e) => setResendChoice((prev) => ({ ...prev, [s.id]: e.target.value }))}
@@ -463,6 +448,33 @@ export default function Admin2() {
                         onClick={() => resendForSignup(s)}
                         style={actionBtn(!resendChoice[s.id])}>
                         Senden
+                      </button>
+                      <button
+                        onClick={() => setOpenMoreRow(moreOpen ? null : s.id)}
+                        title="Mehr"
+                        style={{ ...actionBtn(false, "transparent"), color: "#0f1b3d", border: "1px solid #0f1b3d", padding: "3px 8px" }}>
+                        ⋯
+                      </button>
+                      {moreOpen && (
+                        <>
+                          <button disabled={busyRow}
+                            title="Nutzer löschen"
+                            onClick={() => rowAction(s, "delete_signup", `${s.email} und Zugang endgültig löschen?`)}
+                            style={actionBtn(false, "#8a1a1a")}>
+                            🗑
+                          </button>
+                          <button disabled={busyRow}
+                            title="E-Mail-Adresse sperren"
+                            onClick={() => {
+                              const reason = prompt(`Grund für Sperre von ${s.email}? (optional)`) ?? "";
+                              rowAction(s, "ban_email", `${s.email} sperren und Konto löschen?`, { reason });
+                            }}
+                            style={actionBtn(false, "#0f1b3d")}>
+                            ⛔
+                          </button>
+                        </>
+                      )}
+
                       </button>
                     </td>
                   </tr>
