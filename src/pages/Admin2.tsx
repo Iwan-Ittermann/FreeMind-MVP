@@ -432,6 +432,20 @@ export default function Admin2() {
                         style={actionBtn(false, "#0f1b3d")}>
                         Bannen
                       </button>
+                      <select
+                        value={resendChoice[s.id] ?? ""}
+                        onChange={(e) => setResendChoice((prev) => ({ ...prev, [s.id]: e.target.value }))}
+                        style={{ border: "1px solid #0f1b3d", fontSize: 11, padding: "3px 4px", background: "#fff", color: "#0f1b3d" }}>
+                        <option value="">E-Mail wählen…</option>
+                        {RESENDABLE.map((r) => (
+                          <option key={r.key} value={r.key}>{r.label}</option>
+                        ))}
+                      </select>
+                      <button disabled={busyRow || !resendChoice[s.id]}
+                        onClick={() => resendForSignup(s)}
+                        style={actionBtn(!resendChoice[s.id])}>
+                        Senden
+                      </button>
                     </td>
                   </tr>
                 );
