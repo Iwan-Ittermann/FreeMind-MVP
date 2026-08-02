@@ -137,7 +137,7 @@ Deno.serve(async (req) => {
       .insert({ user_id: provisioned.userId, signup_id: row.id });
     if (vpErr) console.error("verified_participants insert:", vpErr.message);
 
-    await sendPassphraseEmail(cleanEmail, provisioned.passphrase, issuedAt);
+    void issuedAt;
     await sendWelcomeEmail(cleanEmail, provisioned.passphrase, confirmedAt);
     await notifyAdmin(cleanEmail, confirmedAt);
 
