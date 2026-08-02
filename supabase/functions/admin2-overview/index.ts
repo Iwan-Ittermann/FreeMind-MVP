@@ -288,6 +288,9 @@ Deno.serve(async (req) => {
       const out = await callCampaignSender({ campaignKey: key, signupId, force: true });
       return Response.json({ ok: true, ...out }, { headers: corsHeaders });
     }
+    if (action === "email_matrix") {
+      return Response.json({ ok: true, matrix: await emailMatrix() }, { headers: corsHeaders });
+    }
     if (action === "campaign_stats") {
       const { data } = await supabase.from("campaign_sends").select("campaign_key");
       const counts: Record<string, number> = {};
