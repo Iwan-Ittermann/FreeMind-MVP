@@ -122,17 +122,19 @@ export default function Admin2() {
   }
 
   async function loadAll(pw: string) {
-    const [ov, tpl, bn, fq] = await Promise.all([
+    const [ov, tpl, bn, fq, cs] = await Promise.all([
       supabase.functions.invoke("admin2-overview", { body: { password: pw } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "get_templates" } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "list_bans" } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "list_faq" } }),
+      supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "campaign_stats" } }),
     ]);
     if (ov.error || !ov.data?.ok) return false;
     setSignups(ov.data.signups ?? []);
     setTemplates(tpl.data?.templates ?? []);
     setBans(bn.data?.bans ?? []);
     setFaq(fq.data?.faq ?? []);
+    setCampaignCounts(cs.data?.counts ?? {});
     return true;
   }
 
@@ -188,7 +190,28 @@ export default function Admin2() {
       body_md: t.body_md,
     });
     if (error || !data?.ok) flash("Fehler beim Speichern.");
-    else flash(`Vorlage "${TEMPLATE_LABEL[t.key] ?? t.key}" gespeichert.`);
+    else flash(`Vorlage "${TEMPLATE_META[t.key]?.label ?? t.key}" gespeichert.`);
+  }
+
+  async function sendCampaignNow(key: string) {
+    const label = TEMPLATE_META[key]?.label ?? key;
+    if (!confirm(`"${label}" jetzt an alle bestätigten Empfänger senden, die sie noch nicht erhalten haben?`)) return;
+    const { data, error } = await invoke({ action: "send_campaign_now", key });
+    if (error || !data?.ok) { flash("Fehler beim Senden."); return; }
+    const result = Array.isArray(data.results) ? data.results[0] : null;
+    flash(result ? `${label}: ${result.sent} gesendet, ${result.failed} Fehler.` : `${label} ausgelöst.`);
+    await refresh();
+  }
+
+  async function resendForSignup(signup: Signup) {
+    const choice = resendChoice[signup.id];
+    if (!choice) { flash("Bitte erst eine E-Mail auswählen."); return; }
+    const label = RESENDABLE.find((r) => r.key === choice)?.label ?? choice;
+    if (choice.startsWith("campaign-")) {
+      await rowAction(signup, "resend_campaign", `"${label}" an ${signup.email} senden?`, { key: choice });
+    } else {
+      await rowAction(signup, choice, `"${label}" an ${signup.email} senden?`);
+    }
   }
 
   async function unban(email: string) {
