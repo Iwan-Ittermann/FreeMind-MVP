@@ -117,6 +117,8 @@ export default function Admin2() {
   const [openTemplate, setOpenTemplate] = useState<string | null>(null);
   const [campaignCounts, setCampaignCounts] = useState<Record<string, number>>({});
   const [resendChoice, setResendChoice] = useState<Record<string, string>>({});
+  const [mailMatrix, setMailMatrix] = useState<Record<string, Record<string, string>>>({});
+  const [openMoreRow, setOpenMoreRow] = useState<string | null>(null);
 
   const sortedTemplates = [...templates].sort(
     (a, b) => TEMPLATE_ORDER.indexOf(a.key) - TEMPLATE_ORDER.indexOf(b.key),
