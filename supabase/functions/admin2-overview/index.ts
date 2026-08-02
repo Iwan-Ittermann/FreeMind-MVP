@@ -30,7 +30,6 @@ function generateToken(): string {
 
 const TEMPLATE_KEYS = [
   "signup-confirm",
-  "signup-passphrase",
   "signup-welcome",
   "campaign-prepare",
   "campaign-soft-launch",
@@ -38,6 +37,45 @@ const TEMPLATE_KEYS = [
   "campaign-final-day",
 ] as const;
 type TemplateKey = typeof TEMPLATE_KEYS[number];
+
+// Mails tracked in the per-user checkmark grid (includes the retired passphrase mail).
+const TRACKED_TEMPLATES = [
+  "signup-confirm",
+  "signup-passphrase",
+  "signup-welcome",
+  "campaign-prepare",
+  "campaign-soft-launch",
+  "campaign-start",
+  "campaign-final-day",
+];
+
+/** Latest status per (recipient email, template), keyed by signup id. */
+async function emailMatrix() {
+  const [{ data: signups }, { data: logs }] = await Promise.all([
+    supabase.from("signups").select("id, email"),
+    supabase
+      .from("email_send_log")
+      .select("template_name, recipient_email, status, created_at")
+      .in("template_name", TRACKED_TEMPLATES)
+      .order("created_at", { ascending: true }),
+  ]);
+
+  // recipient email -> template -> status (last write wins = latest row)
+  const byEmail: Record<string, Record<string, string>> = {};
+  for (const row of logs ?? []) {
+    const mail = String(row.recipient_email).trim().toLowerCase();
+    if (row.status === "pending" && byEmail[mail]?.[row.template_name]) continue;
+    (byEmail[mail] ??= {})[row.template_name] = String(row.status);
+  }
+
+  const matrix: Record<string, Record<string, string>> = {};
+  for (const s of signups ?? []) {
+    const mail = String(s.email).split("#")[0].trim().toLowerCase();
+    matrix[s.id] = byEmail[mail] ?? {};
+  }
+  return matrix;
+}
+
 
 async function callCampaignSender(payload: Record<string, unknown>) {
   const res = await fetch(`${SUPABASE_URL}/functions/v1/send-campaign-emails`, {
@@ -249,6 +287,9 @@ Deno.serve(async (req) => {
       await supabase.from("campaign_sends").delete().eq("campaign_key", key).eq("signup_id", signupId);
       const out = await callCampaignSender({ campaignKey: key, signupId, force: true });
       return Response.json({ ok: true, ...out }, { headers: corsHeaders });
+    }
+    if (action === "email_matrix") {
+      return Response.json({ ok: true, matrix: await emailMatrix() }, { headers: corsHeaders });
     }
     if (action === "campaign_stats") {
       const { data } = await supabase.from("campaign_sends").select("campaign_key");

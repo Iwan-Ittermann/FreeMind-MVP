@@ -33,24 +33,9 @@ async function notifyAdmin(signupEmail: string, confirmedAt: string) {
   if (!res.ok) console.error("Admin notify failed:", res.status, await res.text());
 }
 
-async function sendPassphraseEmail(to: string, passphrase: string, issuedAt: string) {
-  const tpl = await loadTemplate(supabase, "signup-passphrase", { passphrase, appUrl: SITE_URL }, {
-    subject: "Deine Passphrase für freemind",
-    heading: "Deine Passphrase",
-    body: `Willkommen bei freemind!\n\n\`${passphrase}\`\n\n[${SITE_URL}](${SITE_URL})`,
-  });
-  const res = await fetch(`${SUPABASE_URL}/functions/v1/send-transactional-email`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_ROLE}` },
-    body: JSON.stringify({
-      templateName: "signup-passphrase",
-      recipientEmail: to,
-      idempotencyKey: `signup-passphrase-${to}-${issuedAt}`,
-      templateData: { ...tpl, passphrase, appUrl: SITE_URL },
-    }),
-  });
-  if (!res.ok) console.error("passphrase email failed:", res.status, await res.text());
-}
+// The standalone passphrase mail is no longer sent automatically.
+// The passphrase is delivered with the "Prepare" campaign mail (19.08.).
+// Manual resend stays available in /admin2.
 
 async function sendWelcomeEmail(to: string, passphrase: string, confirmedAt: string) {
   const data = {
@@ -118,14 +103,8 @@ Deno.serve(async (req) => {
 
     const cleanEmail = row.email.replace(/#test-[a-f0-9]+$/, "");
 
-    // Already confirmed — just resend the passphrase (if we have one) and return.
+    // Already confirmed — nothing to resend automatically.
     if (row.confirmed_at) {
-      if (row.passphrase && row.passphrase_issued_at) {
-        await sendPassphraseEmail(cleanEmail, row.passphrase, row.passphrase_issued_at);
-        await supabase.from("signups")
-          .update({ last_passphrase_sent_at: new Date().toISOString() })
-          .eq("id", row.id);
-      }
       return Response.json({ status: "already_confirmed", email: cleanEmail }, { headers: corsHeaders });
     }
 
@@ -149,7 +128,6 @@ Deno.serve(async (req) => {
       passphrase: provisioned.passphrase,
       passphrase_issued_at: issuedAt,
       auth_user_id: provisioned.userId,
-      last_passphrase_sent_at: confirmedAt,
     }).eq("id", row.id);
     if (updateErr) throw updateErr;
 
@@ -159,7 +137,7 @@ Deno.serve(async (req) => {
       .insert({ user_id: provisioned.userId, signup_id: row.id });
     if (vpErr) console.error("verified_participants insert:", vpErr.message);
 
-    await sendPassphraseEmail(cleanEmail, provisioned.passphrase, issuedAt);
+    void issuedAt;
     await sendWelcomeEmail(cleanEmail, provisioned.passphrase, confirmedAt);
     await notifyAdmin(cleanEmail, confirmedAt);
 

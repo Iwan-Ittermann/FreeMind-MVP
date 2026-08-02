@@ -36,36 +36,31 @@ const TEMPLATE_META: Record<string, TemplateMeta> = {
     trigger: "Sofort nach Anmeldung",
     placeholders: "{{confirmUrl}}",
   },
-  "signup-passphrase": {
-    label: "2. Passphrase",
-    trigger: "Nach Bestätigung des Links",
-    placeholders: "{{passphrase}}, {{appUrl}}",
-  },
   "signup-welcome": {
-    label: "3. Willkommen",
+    label: "2. Willkommen",
     trigger: "Nach Bestätigung des Links",
     placeholders: "{{passphrase}}, {{appUrl}}, {{goUrl}}, {{faqUrl}}",
   },
   "campaign-prepare": {
-    label: "4. Prepare",
+    label: "3. Prepare (mit Passphrase)",
     trigger: "19.08.2026, 00:01",
     placeholders: "{{passphrase}}, {{appUrl}}, {{goUrl}}, {{faqUrl}}",
     campaign: true,
   },
   "campaign-soft-launch": {
-    label: "5. Soft launch today",
+    label: "4. Soft launch today",
     trigger: "20.08.2026, 00:01",
     placeholders: "{{passphrase}}, {{appUrl}}, {{goUrl}}, {{faqUrl}}",
     campaign: true,
   },
   "campaign-start": {
-    label: "6. Start today!",
+    label: "5. Start today!",
     trigger: "23.08.2026, 00:01",
     placeholders: "{{passphrase}}, {{appUrl}}, {{goUrl}}, {{faqUrl}}",
     campaign: true,
   },
   "campaign-final-day": {
-    label: "7. Final day",
+    label: "6. Final day",
     trigger: "29.08.2026, 00:01",
     placeholders: "{{passphrase}}, {{appUrl}}, {{goUrl}}, {{faqUrl}}",
     campaign: true,
@@ -73,6 +68,17 @@ const TEMPLATE_META: Record<string, TemplateMeta> = {
 };
 
 const TEMPLATE_ORDER = Object.keys(TEMPLATE_META);
+
+// Columns of the per-user checkmark grid.
+const MAIL_COLUMNS: Array<{ key: string; short: string; title: string }> = [
+  { key: "signup-confirm", short: "Verif", title: "Verifizierung (Bestätigungslink)" },
+  { key: "signup-welcome", short: "Willk", title: "Willkommen" },
+  { key: "campaign-prepare", short: "Prep", title: "Prepare (mit Passphrase), 19.08." },
+  { key: "campaign-soft-launch", short: "Soft", title: "Soft launch today, 20.08." },
+  { key: "campaign-start", short: "Start", title: "Start today!, 23.08." },
+  { key: "campaign-final-day", short: "Final", title: "Final day, 29.08." },
+  { key: "signup-passphrase", short: "Pass*", title: "Passphrase (alte Einzel-Mail, nur manuell)" },
+];
 
 const RESENDABLE = [
   { key: "resend_signup", label: "Bestätigung" },
@@ -83,6 +89,14 @@ const RESENDABLE = [
   { key: "campaign-start", label: "Start today" },
   { key: "campaign-final-day", label: "Final day" },
 ];
+
+function MailMark({ status }: { status?: string }) {
+  if (!status) return <span style={{ color: "#9fb0cc" }}>–</span>;
+  if (status === "sent") return <span style={{ color: "#1c7c3a", fontWeight: 700 }}>✓</span>;
+  if (status === "pending") return <span style={{ color: "#b07a00", fontWeight: 700 }}>⋯</span>;
+  return <span style={{ color: "#b3261e", fontWeight: 700 }} title={status}>✕</span>;
+}
+
 
 export default function Admin2() {
   const [unlocked, setUnlocked] = useState(false);
@@ -103,6 +117,8 @@ export default function Admin2() {
   const [openTemplate, setOpenTemplate] = useState<string | null>(null);
   const [campaignCounts, setCampaignCounts] = useState<Record<string, number>>({});
   const [resendChoice, setResendChoice] = useState<Record<string, string>>({});
+  const [mailMatrix, setMailMatrix] = useState<Record<string, Record<string, string>>>({});
+  const [openMoreRow, setOpenMoreRow] = useState<string | null>(null);
 
   const sortedTemplates = [...templates].sort(
     (a, b) => TEMPLATE_ORDER.indexOf(a.key) - TEMPLATE_ORDER.indexOf(b.key),
@@ -122,12 +138,13 @@ export default function Admin2() {
   }
 
   async function loadAll(pw: string) {
-    const [ov, tpl, bn, fq, cs] = await Promise.all([
+    const [ov, tpl, bn, fq, cs, mx] = await Promise.all([
       supabase.functions.invoke("admin2-overview", { body: { password: pw } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "get_templates" } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "list_bans" } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "list_faq" } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "campaign_stats" } }),
+      supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "email_matrix" } }),
     ]);
     if (ov.error || !ov.data?.ok) return false;
     setSignups(ov.data.signups ?? []);
@@ -135,6 +152,7 @@ export default function Admin2() {
     setBans(bn.data?.bans ?? []);
     setFaq(fq.data?.faq ?? []);
     setCampaignCounts(cs.data?.counts ?? {});
+    setMailMatrix(mx.data?.matrix ?? {});
     return true;
   }
 
@@ -392,12 +410,17 @@ export default function Admin2() {
                 <th style={th}>Angemeldet</th>
                 <th style={th}>Bestätigt</th>
                 <th style={th}>IP</th>
+                {MAIL_COLUMNS.map((c) => (
+                  <th key={c.key} style={{ ...th, textAlign: "center", padding: "8px 4px" }} title={c.title}>{c.short}</th>
+                ))}
                 <th style={th}>Aktionen</th>
               </tr>
             </thead>
             <tbody>
               {signups.map((s) => {
                 const busyRow = busyRowId === s.id;
+                const marks = mailMatrix[s.id] ?? {};
+                const moreOpen = openMoreRow === s.id;
                 return (
                   <tr key={s.id} style={{ borderBottom: "1px solid #dbe4f0" }}>
                     <td style={td}>{s.email}</td>
@@ -406,32 +429,12 @@ export default function Admin2() {
                     <td style={{ ...td, fontFamily: "ui-monospace, Menlo, monospace", fontSize: 12 }}>
                       {ipsRevealed ? (ipMap![s.id] ?? "—") : "••••"}
                     </td>
-                    <td style={{ ...td, display: "flex", gap: 4, flexWrap: "wrap" }}>
-                      <button disabled={busyRow || !!s.confirmed_at}
-                        onClick={() => rowAction(s, "resend_signup", `Bestätigungs-E-Mail erneut senden an ${s.email}?`)}
-                        title={s.confirmed_at ? "Bereits bestätigt" : "Bestätigung erneut senden"}
-                        style={actionBtn(!!s.confirmed_at)}>
-                        Bestätigung
-                      </button>
-                      <button disabled={busyRow || !s.confirmed_at}
-                        onClick={() => rowAction(s, "resend_passphrase", `Passphrase erneut senden an ${s.email}?`)}
-                        title={s.confirmed_at ? "Passphrase erneut senden" : "Noch nicht bestätigt"}
-                        style={actionBtn(!s.confirmed_at)}>
-                        Passphrase
-                      </button>
-                      <button disabled={busyRow}
-                        onClick={() => rowAction(s, "delete_signup", `${s.email} und Zugang endgültig löschen?`)}
-                        style={actionBtn(false, "#8a1a1a")}>
-                        Löschen
-                      </button>
-                      <button disabled={busyRow}
-                        onClick={() => {
-                          const reason = prompt(`Grund für Sperre von ${s.email}? (optional)`) ?? "";
-                          rowAction(s, "ban_email", `${s.email} sperren und Konto löschen?`, { reason });
-                        }}
-                        style={actionBtn(false, "#0f1b3d")}>
-                        Bannen
-                      </button>
+                    {MAIL_COLUMNS.map((c) => (
+                      <td key={c.key} style={{ ...td, textAlign: "center", padding: "8px 4px" }}>
+                        <MailMark status={marks[c.key]} />
+                      </td>
+                    ))}
+                    <td style={{ ...td, display: "flex", gap: 4, flexWrap: "wrap", alignItems: "center" }}>
                       <select
                         value={resendChoice[s.id] ?? ""}
                         onChange={(e) => setResendChoice((prev) => ({ ...prev, [s.id]: e.target.value }))}
@@ -446,6 +449,31 @@ export default function Admin2() {
                         style={actionBtn(!resendChoice[s.id])}>
                         Senden
                       </button>
+                      <button
+                        onClick={() => setOpenMoreRow(moreOpen ? null : s.id)}
+                        title="Mehr"
+                        style={{ ...actionBtn(false, "transparent"), color: "#0f1b3d", border: "1px solid #0f1b3d", padding: "3px 8px" }}>
+                        ⋯
+                      </button>
+                      {moreOpen && (
+                        <>
+                          <button disabled={busyRow}
+                            title="Nutzer löschen"
+                            onClick={() => rowAction(s, "delete_signup", `${s.email} und Zugang endgültig löschen?`)}
+                            style={actionBtn(false, "#8a1a1a")}>
+                            🗑
+                          </button>
+                          <button disabled={busyRow}
+                            title="E-Mail-Adresse sperren"
+                            onClick={() => {
+                              const reason = prompt(`Grund für Sperre von ${s.email}? (optional)`) ?? "";
+                              rowAction(s, "ban_email", `${s.email} sperren und Konto löschen?`, { reason });
+                            }}
+                            style={actionBtn(false, "#0f1b3d")}>
+                            ⛔
+                          </button>
+                        </>
+                      )}
                     </td>
                   </tr>
                 );
