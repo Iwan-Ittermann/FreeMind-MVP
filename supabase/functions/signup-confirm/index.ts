@@ -103,14 +103,8 @@ Deno.serve(async (req) => {
 
     const cleanEmail = row.email.replace(/#test-[a-f0-9]+$/, "");
 
-    // Already confirmed — just resend the passphrase (if we have one) and return.
+    // Already confirmed — nothing to resend automatically.
     if (row.confirmed_at) {
-      if (row.passphrase && row.passphrase_issued_at) {
-        await sendPassphraseEmail(cleanEmail, row.passphrase, row.passphrase_issued_at);
-        await supabase.from("signups")
-          .update({ last_passphrase_sent_at: new Date().toISOString() })
-          .eq("id", row.id);
-      }
       return Response.json({ status: "already_confirmed", email: cleanEmail }, { headers: corsHeaders });
     }
 
