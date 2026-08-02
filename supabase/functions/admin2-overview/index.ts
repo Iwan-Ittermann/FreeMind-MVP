@@ -233,6 +233,32 @@ Deno.serve(async (req) => {
       if (typeof signupId !== "string") return Response.json({ ok: false, error: "invalid_signup_id" }, { status: 400, headers: corsHeaders });
       return Response.json({ ok: true, ...(await banEmail(signupId, typeof reason === "string" ? reason : undefined)) }, { headers: corsHeaders });
     }
+    if (action === "resend_welcome") {
+      if (typeof signupId !== "string") return Response.json({ ok: false, error: "invalid_signup_id" }, { status: 400, headers: corsHeaders });
+      return Response.json({ ok: true, ...(await sendWelcome(signupId)) }, { headers: corsHeaders });
+    }
+    if (action === "send_campaign_now") {
+      if (typeof key !== "string") return Response.json({ ok: false, error: "invalid_key" }, { status: 400, headers: corsHeaders });
+      const out = await callCampaignSender({ campaignKey: key, force: true });
+      return Response.json({ ok: true, ...out }, { headers: corsHeaders });
+    }
+    if (action === "resend_campaign") {
+      if (typeof key !== "string" || typeof signupId !== "string") {
+        return Response.json({ ok: false, error: "invalid_payload" }, { status: 400, headers: corsHeaders });
+      }
+      await supabase.from("campaign_sends").delete().eq("campaign_key", key).eq("signup_id", signupId);
+      const out = await callCampaignSender({ campaignKey: key, signupId, force: true });
+      return Response.json({ ok: true, ...out }, { headers: corsHeaders });
+    }
+    if (action === "campaign_stats") {
+      const { data } = await supabase.from("campaign_sends").select("campaign_key");
+      const counts: Record<string, number> = {};
+      for (const r of data ?? []) {
+        const k = String(r.campaign_key);
+        counts[k] = (counts[k] ?? 0) + 1;
+      }
+      return Response.json({ ok: true, counts }, { headers: corsHeaders });
+    }
     if (action === "get_templates") {
       const { data } = await supabase
         .from("email_templates")
