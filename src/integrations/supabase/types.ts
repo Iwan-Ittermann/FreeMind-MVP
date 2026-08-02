@@ -86,6 +86,38 @@ export type Database = {
         }
         Relationships: []
       }
+      campaign_sends: {
+        Row: {
+          campaign_key: string
+          id: string
+          recipient_email: string
+          sent_at: string
+          signup_id: string
+        }
+        Insert: {
+          campaign_key: string
+          id?: string
+          recipient_email: string
+          sent_at?: string
+          signup_id: string
+        }
+        Update: {
+          campaign_key?: string
+          id?: string
+          recipient_email?: string
+          sent_at?: string
+          signup_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_sends_signup_id_fkey"
+            columns: ["signup_id"]
+            isOneToOne: false
+            referencedRelation: "signups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chat_message_reactions: {
         Row: {
           created_at: string

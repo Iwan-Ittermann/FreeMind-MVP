@@ -23,15 +23,66 @@ function fmt(iso: string | null) {
   return new Date(iso).toLocaleString("de-DE", { dateStyle: "short", timeStyle: "short" });
 }
 
-const PLACEHOLDERS: Record<string, string> = {
-  "signup-confirm": "{{confirmUrl}}",
-  "signup-passphrase": "{{passphrase}}, {{appUrl}}",
+type TemplateMeta = {
+  label: string;
+  trigger: string;
+  placeholders: string;
+  campaign?: boolean;
 };
 
-const TEMPLATE_LABEL: Record<string, string> = {
-  "signup-confirm": "1. Verifizierung (Bestätigungslink)",
-  "signup-passphrase": "2. Passphrase (nach Bestätigung)",
+const TEMPLATE_META: Record<string, TemplateMeta> = {
+  "signup-confirm": {
+    label: "1. Verifizierung (Bestätigungslink)",
+    trigger: "Sofort nach Anmeldung",
+    placeholders: "{{confirmUrl}}",
+  },
+  "signup-passphrase": {
+    label: "2. Passphrase",
+    trigger: "Nach Bestätigung des Links",
+    placeholders: "{{passphrase}}, {{appUrl}}",
+  },
+  "signup-welcome": {
+    label: "3. Willkommen",
+    trigger: "Nach Bestätigung des Links",
+    placeholders: "{{passphrase}}, {{appUrl}}, {{goUrl}}, {{faqUrl}}",
+  },
+  "campaign-prepare": {
+    label: "4. Prepare",
+    trigger: "19.08.2026, 00:01",
+    placeholders: "{{passphrase}}, {{appUrl}}, {{goUrl}}, {{faqUrl}}",
+    campaign: true,
+  },
+  "campaign-soft-launch": {
+    label: "5. Soft launch today",
+    trigger: "20.08.2026, 00:01",
+    placeholders: "{{passphrase}}, {{appUrl}}, {{goUrl}}, {{faqUrl}}",
+    campaign: true,
+  },
+  "campaign-start": {
+    label: "6. Start today!",
+    trigger: "23.08.2026, 00:01",
+    placeholders: "{{passphrase}}, {{appUrl}}, {{goUrl}}, {{faqUrl}}",
+    campaign: true,
+  },
+  "campaign-final-day": {
+    label: "7. Final day",
+    trigger: "29.08.2026, 00:01",
+    placeholders: "{{passphrase}}, {{appUrl}}, {{goUrl}}, {{faqUrl}}",
+    campaign: true,
+  },
 };
+
+const TEMPLATE_ORDER = Object.keys(TEMPLATE_META);
+
+const RESENDABLE = [
+  { key: "resend_signup", label: "Bestätigung" },
+  { key: "resend_passphrase", label: "Passphrase" },
+  { key: "resend_welcome", label: "Willkommen" },
+  { key: "campaign-prepare", label: "Prepare" },
+  { key: "campaign-soft-launch", label: "Soft launch" },
+  { key: "campaign-start", label: "Start today" },
+  { key: "campaign-final-day", label: "Final day" },
+];
 
 export default function Admin2() {
   const [unlocked, setUnlocked] = useState(false);
@@ -49,6 +100,13 @@ export default function Admin2() {
   const [ipPromptOpen, setIpPromptOpen] = useState(false);
   const [ipPassword, setIpPassword] = useState("");
   const [ipError, setIpError] = useState(false);
+  const [openTemplate, setOpenTemplate] = useState<string | null>(null);
+  const [campaignCounts, setCampaignCounts] = useState<Record<string, number>>({});
+  const [resendChoice, setResendChoice] = useState<Record<string, string>>({});
+
+  const sortedTemplates = [...templates].sort(
+    (a, b) => TEMPLATE_ORDER.indexOf(a.key) - TEMPLATE_ORDER.indexOf(b.key),
+  );
 
   useEffect(() => { document.title = "Admin — freemind"; }, []);
 
@@ -64,17 +122,19 @@ export default function Admin2() {
   }
 
   async function loadAll(pw: string) {
-    const [ov, tpl, bn, fq] = await Promise.all([
+    const [ov, tpl, bn, fq, cs] = await Promise.all([
       supabase.functions.invoke("admin2-overview", { body: { password: pw } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "get_templates" } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "list_bans" } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "list_faq" } }),
+      supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "campaign_stats" } }),
     ]);
     if (ov.error || !ov.data?.ok) return false;
     setSignups(ov.data.signups ?? []);
     setTemplates(tpl.data?.templates ?? []);
     setBans(bn.data?.bans ?? []);
     setFaq(fq.data?.faq ?? []);
+    setCampaignCounts(cs.data?.counts ?? {});
     return true;
   }
 
@@ -130,7 +190,28 @@ export default function Admin2() {
       body_md: t.body_md,
     });
     if (error || !data?.ok) flash("Fehler beim Speichern.");
-    else flash(`Vorlage "${TEMPLATE_LABEL[t.key] ?? t.key}" gespeichert.`);
+    else flash(`Vorlage "${TEMPLATE_META[t.key]?.label ?? t.key}" gespeichert.`);
+  }
+
+  async function sendCampaignNow(key: string) {
+    const label = TEMPLATE_META[key]?.label ?? key;
+    if (!confirm(`"${label}" jetzt an alle bestätigten Empfänger senden, die sie noch nicht erhalten haben?`)) return;
+    const { data, error } = await invoke({ action: "send_campaign_now", key });
+    if (error || !data?.ok) { flash("Fehler beim Senden."); return; }
+    const result = Array.isArray(data.results) ? data.results[0] : null;
+    flash(result ? `${label}: ${result.sent} gesendet, ${result.failed} Fehler.` : `${label} ausgelöst.`);
+    await refresh();
+  }
+
+  async function resendForSignup(signup: Signup) {
+    const choice = resendChoice[signup.id];
+    if (!choice) { flash("Bitte erst eine E-Mail auswählen."); return; }
+    const label = RESENDABLE.find((r) => r.key === choice)?.label ?? choice;
+    if (choice.startsWith("campaign-")) {
+      await rowAction(signup, "resend_campaign", `"${label}" an ${signup.email} senden?`, { key: choice });
+    } else {
+      await rowAction(signup, choice, `"${label}" an ${signup.email} senden?`);
+    }
   }
 
   async function unban(email: string) {
@@ -223,33 +304,62 @@ export default function Admin2() {
 
         {/* Email templates */}
         <h2 style={sectionTitle}>E-Mail-Vorlagen</h2>
-        <div style={{ display: "grid", gap: 16, marginBottom: 32 }}>
-          {templates.map((t, idx) => (
-            <div key={t.key} style={{ background: "#fff", border: "1px solid #0f1b3d", padding: 16 }}>
-              <div style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: "0.05em", opacity: 0.7, marginBottom: 8 }}>
-                {TEMPLATE_LABEL[t.key] ?? t.key}
+        <div style={{ display: "grid", gap: 8, marginBottom: 32 }}>
+          {sortedTemplates.map((t) => {
+            const idx = templates.findIndex((x) => x.key === t.key);
+            const meta = TEMPLATE_META[t.key];
+            const open = openTemplate === t.key;
+            return (
+              <div key={t.key} style={{ background: "#fff", border: "1px solid #0f1b3d" }}>
+                <button
+                  onClick={() => setOpenTemplate(open ? null : t.key)}
+                  style={{
+                    width: "100%", display: "flex", gap: 12, alignItems: "baseline", justifyContent: "space-between",
+                    padding: "12px 16px", background: "transparent", border: 0, cursor: "pointer",
+                    textAlign: "left", color: "#0f1b3d", fontFamily: "inherit",
+                  }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                    {open ? "▾" : "▸"} {meta?.label ?? t.key}
+                  </span>
+                  <span style={{ fontSize: 12, opacity: 0.7, flex: 1 }}>{t.subject}</span>
+                  <span style={{ fontSize: 11, opacity: 0.6, whiteSpace: "nowrap" }}>
+                    {meta?.trigger}
+                    {meta?.campaign ? ` · ${campaignCounts[t.key] ?? 0} gesendet` : ""}
+                  </span>
+                </button>
+                {open && (
+                  <div style={{ padding: "0 16px 16px" }}>
+                    <label style={label}>Betreff</label>
+                    <input value={t.subject}
+                      onChange={(e) => setTemplates((prev) => prev.map((x, i) => i === idx ? { ...x, subject: e.target.value } : x))}
+                      style={input} />
+                    <label style={label}>Überschrift</label>
+                    <input value={t.heading}
+                      onChange={(e) => setTemplates((prev) => prev.map((x, i) => i === idx ? { ...x, heading: e.target.value } : x))}
+                      style={input} />
+                    <label style={label}>Inhalt (Markdown-light: **fett**, `code`, [Label](url); Absätze mit Leerzeile)</label>
+                    <textarea value={t.body_md} rows={10}
+                      onChange={(e) => setTemplates((prev) => prev.map((x, i) => i === idx ? { ...x, body_md: e.target.value } : x))}
+                      style={{ ...input, fontFamily: "ui-monospace, Menlo, Consolas, monospace", fontSize: 13, resize: "vertical" }} />
+                    <div style={{ fontSize: 12, opacity: 0.7, margin: "4px 0 12px" }}>
+                      Verfügbare Platzhalter: <code>{meta?.placeholders}</code>
+                    </div>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <button onClick={() => saveTemplate(t)}
+                        style={{ padding: "8px 14px", background: "#0f1b3d", color: "#fff", border: 0, fontSize: 12, cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                        Speichern
+                      </button>
+                      {meta?.campaign && (
+                        <button onClick={() => sendCampaignNow(t.key)} style={ghostBtn}>
+                          Jetzt an alle senden
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
-              <label style={label}>Betreff</label>
-              <input value={t.subject}
-                onChange={(e) => setTemplates((prev) => prev.map((x, i) => i === idx ? { ...x, subject: e.target.value } : x))}
-                style={input} />
-              <label style={label}>Überschrift</label>
-              <input value={t.heading}
-                onChange={(e) => setTemplates((prev) => prev.map((x, i) => i === idx ? { ...x, heading: e.target.value } : x))}
-                style={input} />
-              <label style={label}>Inhalt (Markdown-light: **fett**, `code`, [Label](url); Absätze mit Leerzeile)</label>
-              <textarea value={t.body_md} rows={10}
-                onChange={(e) => setTemplates((prev) => prev.map((x, i) => i === idx ? { ...x, body_md: e.target.value } : x))}
-                style={{ ...input, fontFamily: "ui-monospace, Menlo, Consolas, monospace", fontSize: 13, resize: "vertical" }} />
-              <div style={{ fontSize: 12, opacity: 0.7, margin: "4px 0 12px" }}>
-                Verfügbare Platzhalter: <code>{PLACEHOLDERS[t.key]}</code>
-              </div>
-              <button onClick={() => saveTemplate(t)}
-                style={{ padding: "8px 14px", background: "#0f1b3d", color: "#fff", border: 0, fontSize: 12, cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                Speichern
-              </button>
-            </div>
-          ))}
+            );
+          })}
           {templates.length === 0 && <div style={{ fontSize: 13, opacity: 0.7 }}>Keine Vorlagen geladen.</div>}
         </div>
 
@@ -321,6 +431,20 @@ export default function Admin2() {
                         }}
                         style={actionBtn(false, "#0f1b3d")}>
                         Bannen
+                      </button>
+                      <select
+                        value={resendChoice[s.id] ?? ""}
+                        onChange={(e) => setResendChoice((prev) => ({ ...prev, [s.id]: e.target.value }))}
+                        style={{ border: "1px solid #0f1b3d", fontSize: 11, padding: "3px 4px", background: "#fff", color: "#0f1b3d" }}>
+                        <option value="">E-Mail wählen…</option>
+                        {RESENDABLE.map((r) => (
+                          <option key={r.key} value={r.key}>{r.label}</option>
+                        ))}
+                      </select>
+                      <button disabled={busyRow || !resendChoice[s.id]}
+                        onClick={() => resendForSignup(s)}
+                        style={actionBtn(!resendChoice[s.id])}>
+                        Senden
                       </button>
                     </td>
                   </tr>
