@@ -274,33 +274,62 @@ export default function Admin2() {
 
         {/* Email templates */}
         <h2 style={sectionTitle}>E-Mail-Vorlagen</h2>
-        <div style={{ display: "grid", gap: 16, marginBottom: 32 }}>
-          {templates.map((t, idx) => (
-            <div key={t.key} style={{ background: "#fff", border: "1px solid #0f1b3d", padding: 16 }}>
-              <div style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: "0.05em", opacity: 0.7, marginBottom: 8 }}>
-                {TEMPLATE_LABEL[t.key] ?? t.key}
+        <div style={{ display: "grid", gap: 8, marginBottom: 32 }}>
+          {sortedTemplates.map((t) => {
+            const idx = templates.findIndex((x) => x.key === t.key);
+            const meta = TEMPLATE_META[t.key];
+            const open = openTemplate === t.key;
+            return (
+              <div key={t.key} style={{ background: "#fff", border: "1px solid #0f1b3d" }}>
+                <button
+                  onClick={() => setOpenTemplate(open ? null : t.key)}
+                  style={{
+                    width: "100%", display: "flex", gap: 12, alignItems: "baseline", justifyContent: "space-between",
+                    padding: "12px 16px", background: "transparent", border: 0, cursor: "pointer",
+                    textAlign: "left", color: "#0f1b3d", fontFamily: "inherit",
+                  }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                    {open ? "▾" : "▸"} {meta?.label ?? t.key}
+                  </span>
+                  <span style={{ fontSize: 12, opacity: 0.7, flex: 1 }}>{t.subject}</span>
+                  <span style={{ fontSize: 11, opacity: 0.6, whiteSpace: "nowrap" }}>
+                    {meta?.trigger}
+                    {meta?.campaign ? ` · ${campaignCounts[t.key] ?? 0} gesendet` : ""}
+                  </span>
+                </button>
+                {open && (
+                  <div style={{ padding: "0 16px 16px" }}>
+                    <label style={label}>Betreff</label>
+                    <input value={t.subject}
+                      onChange={(e) => setTemplates((prev) => prev.map((x, i) => i === idx ? { ...x, subject: e.target.value } : x))}
+                      style={input} />
+                    <label style={label}>Überschrift</label>
+                    <input value={t.heading}
+                      onChange={(e) => setTemplates((prev) => prev.map((x, i) => i === idx ? { ...x, heading: e.target.value } : x))}
+                      style={input} />
+                    <label style={label}>Inhalt (Markdown-light: **fett**, `code`, [Label](url); Absätze mit Leerzeile)</label>
+                    <textarea value={t.body_md} rows={10}
+                      onChange={(e) => setTemplates((prev) => prev.map((x, i) => i === idx ? { ...x, body_md: e.target.value } : x))}
+                      style={{ ...input, fontFamily: "ui-monospace, Menlo, Consolas, monospace", fontSize: 13, resize: "vertical" }} />
+                    <div style={{ fontSize: 12, opacity: 0.7, margin: "4px 0 12px" }}>
+                      Verfügbare Platzhalter: <code>{meta?.placeholders}</code>
+                    </div>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <button onClick={() => saveTemplate(t)}
+                        style={{ padding: "8px 14px", background: "#0f1b3d", color: "#fff", border: 0, fontSize: 12, cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                        Speichern
+                      </button>
+                      {meta?.campaign && (
+                        <button onClick={() => sendCampaignNow(t.key)} style={ghostBtn}>
+                          Jetzt an alle senden
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
-              <label style={label}>Betreff</label>
-              <input value={t.subject}
-                onChange={(e) => setTemplates((prev) => prev.map((x, i) => i === idx ? { ...x, subject: e.target.value } : x))}
-                style={input} />
-              <label style={label}>Überschrift</label>
-              <input value={t.heading}
-                onChange={(e) => setTemplates((prev) => prev.map((x, i) => i === idx ? { ...x, heading: e.target.value } : x))}
-                style={input} />
-              <label style={label}>Inhalt (Markdown-light: **fett**, `code`, [Label](url); Absätze mit Leerzeile)</label>
-              <textarea value={t.body_md} rows={10}
-                onChange={(e) => setTemplates((prev) => prev.map((x, i) => i === idx ? { ...x, body_md: e.target.value } : x))}
-                style={{ ...input, fontFamily: "ui-monospace, Menlo, Consolas, monospace", fontSize: 13, resize: "vertical" }} />
-              <div style={{ fontSize: 12, opacity: 0.7, margin: "4px 0 12px" }}>
-                Verfügbare Platzhalter: <code>{PLACEHOLDERS[t.key]}</code>
-              </div>
-              <button onClick={() => saveTemplate(t)}
-                style={{ padding: "8px 14px", background: "#0f1b3d", color: "#fff", border: 0, fontSize: 12, cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                Speichern
-              </button>
-            </div>
-          ))}
+            );
+          })}
           {templates.length === 0 && <div style={{ fontSize: 13, opacity: 0.7 }}>Keine Vorlagen geladen.</div>}
         </div>
 
