@@ -47,7 +47,7 @@ export default function Landing() {
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "already">("idle");
 
   useEffect(() => {
-    document.title = "Eine Frage - Eine Woche - 500€";
+    document.title = "Eine Woche - Eine Frage - Mehr Verständnis - Weniger Spaltung";
     const meta = document.querySelector('meta[name="description"]');
     if (meta) meta.setAttribute("content", "Können wir eigentlich noch miteinander reden? Hilf mit, es herauszufinden.");
   }, []);
