@@ -13,7 +13,7 @@ const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
 
-const RESEND_MIN_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
+
 
 function generateToken(): string {
   const bytes = new Uint8Array(32);
