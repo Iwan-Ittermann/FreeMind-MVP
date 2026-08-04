@@ -59,24 +59,10 @@ async function sendConfirmEmail(to: string, confirmUrl: string, token: string) {
   if (!res.ok) console.error("send-transactional-email failed:", res.status, await res.text());
 }
 
-async function sendPassphraseEmail(to: string, passphrase: string, issuedAt: string) {
-  const tpl = await loadTemplate(supabase, "signup-passphrase", { passphrase, appUrl: SITE_URL }, {
-    subject: "Deine Passphrase für freemind",
-    heading: "Deine Passphrase",
-    body: `Willkommen bei freemind!\n\n\`${passphrase}\`\n\n[${SITE_URL}](${SITE_URL})`,
-  });
-  const res = await fetch(`${SUPABASE_URL}/functions/v1/send-transactional-email`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_ROLE}` },
-    body: JSON.stringify({
-      templateName: "signup-passphrase",
-      recipientEmail: to,
-      idempotencyKey: `signup-passphrase-${to}-${issuedAt}-${Math.floor(Date.now() / RESEND_MIN_INTERVAL_MS)}`,
-      templateData: { ...tpl, passphrase, appUrl: SITE_URL },
-    }),
-  });
-  if (!res.ok) console.error("send-transactional-email(passphrase) failed:", res.status, await res.text());
-}
+// The standalone passphrase mail is no longer sent from here.
+// The passphrase is delivered with the "Prepare" campaign mail (19.08.).
+// Manual resend stays available in /admin2.
+
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
