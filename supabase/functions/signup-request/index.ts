@@ -13,7 +13,7 @@ const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
 
-const RESEND_MIN_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
+
 
 function generateToken(): string {
   const bytes = new Uint8Array(32);
@@ -59,24 +59,10 @@ async function sendConfirmEmail(to: string, confirmUrl: string, token: string) {
   if (!res.ok) console.error("send-transactional-email failed:", res.status, await res.text());
 }
 
-async function sendPassphraseEmail(to: string, passphrase: string, issuedAt: string) {
-  const tpl = await loadTemplate(supabase, "signup-passphrase", { passphrase, appUrl: SITE_URL }, {
-    subject: "Deine Passphrase für freemind",
-    heading: "Deine Passphrase",
-    body: `Willkommen bei freemind!\n\n\`${passphrase}\`\n\n[${SITE_URL}](${SITE_URL})`,
-  });
-  const res = await fetch(`${SUPABASE_URL}/functions/v1/send-transactional-email`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_ROLE}` },
-    body: JSON.stringify({
-      templateName: "signup-passphrase",
-      recipientEmail: to,
-      idempotencyKey: `signup-passphrase-${to}-${issuedAt}-${Math.floor(Date.now() / RESEND_MIN_INTERVAL_MS)}`,
-      templateData: { ...tpl, passphrase, appUrl: SITE_URL },
-    }),
-  });
-  if (!res.ok) console.error("send-transactional-email(passphrase) failed:", res.status, await res.text());
-}
+// The standalone passphrase mail is no longer sent from here.
+// The passphrase is delivered with the "Prepare" campaign mail (19.08.).
+// Manual resend stays available in /admin2.
+
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -117,35 +103,15 @@ Deno.serve(async (req) => {
 
     const { data: existing } = await supabase
       .from("signups")
-      .select("id, email, confirmed_at, passphrase, passphrase_issued_at, last_passphrase_sent_at")
+      .select("id, email, confirmed_at, passphrase")
       .ilike("email", cleaned)
       .maybeSingle();
 
-    // Already confirmed → resend the same passphrase (throttled).
-    if (existing?.confirmed_at && existing.passphrase) {
-      const lastSent = existing.last_passphrase_sent_at ? new Date(existing.last_passphrase_sent_at).getTime() : 0;
-      if (Date.now() - lastSent < RESEND_MIN_INTERVAL_MS) {
-        return Response.json(
-          { status: "resent", throttled: true },
-          { headers: corsHeaders },
-        );
-      }
-      await sendPassphraseEmail(
-        cleaned,
-        existing.passphrase,
-        existing.passphrase_issued_at ?? new Date().toISOString(),
-      );
-      await supabase
-        .from("signups")
-        .update({ last_passphrase_sent_at: new Date().toISOString() })
-        .eq("id", existing.id);
-      return Response.json({ status: "resent" }, { headers: corsHeaders });
-    }
-
-    // Confirmed but no passphrase yet (legacy row) — treat as new confirm needed.
-    if (existing?.confirmed_at && !existing.passphrase) {
+    // Already confirmed → no mail at all. Passphrase comes with the Prepare mail.
+    if (existing?.confirmed_at) {
       return Response.json({ status: "already_confirmed" }, { headers: corsHeaders });
     }
+
 
     // New signup or reissued token — blocked if cutoff has passed.
     if (cutoffPassed) {
