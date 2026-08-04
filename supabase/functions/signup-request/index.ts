@@ -103,35 +103,15 @@ Deno.serve(async (req) => {
 
     const { data: existing } = await supabase
       .from("signups")
-      .select("id, email, confirmed_at, passphrase, passphrase_issued_at, last_passphrase_sent_at")
+      .select("id, email, confirmed_at, passphrase")
       .ilike("email", cleaned)
       .maybeSingle();
 
-    // Already confirmed → resend the same passphrase (throttled).
-    if (existing?.confirmed_at && existing.passphrase) {
-      const lastSent = existing.last_passphrase_sent_at ? new Date(existing.last_passphrase_sent_at).getTime() : 0;
-      if (Date.now() - lastSent < RESEND_MIN_INTERVAL_MS) {
-        return Response.json(
-          { status: "resent", throttled: true },
-          { headers: corsHeaders },
-        );
-      }
-      await sendPassphraseEmail(
-        cleaned,
-        existing.passphrase,
-        existing.passphrase_issued_at ?? new Date().toISOString(),
-      );
-      await supabase
-        .from("signups")
-        .update({ last_passphrase_sent_at: new Date().toISOString() })
-        .eq("id", existing.id);
-      return Response.json({ status: "resent" }, { headers: corsHeaders });
-    }
-
-    // Confirmed but no passphrase yet (legacy row) — treat as new confirm needed.
-    if (existing?.confirmed_at && !existing.passphrase) {
+    // Already confirmed → no mail at all. Passphrase comes with the Prepare mail.
+    if (existing?.confirmed_at) {
       return Response.json({ status: "already_confirmed" }, { headers: corsHeaders });
     }
+
 
     // New signup or reissued token — blocked if cutoff has passed.
     if (cutoffPassed) {
