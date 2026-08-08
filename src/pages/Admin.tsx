@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { ReportCard } from '@/components/moderation/ReportCard';
 import { AuditLogTable } from '@/components/moderation/AuditLogTable';
 import { TopicPanel } from '@/components/admin/TopicPanel';
+import { EventPhasePanel } from '@/components/admin/EventPhasePanel';
 import { TutorialSettingsPanel } from '@/components/admin/TutorialSettingsPanel';
 import { FakeNodesPanel } from '@/components/admin/FakeNodesPanel';
 import { NodeManagementPanel } from '@/components/admin/NodeManagementPanel';
@@ -247,6 +248,9 @@ export default function Admin() {
                 </TabsList>
 
                 <TabsContent value="topics">
+                  <div className="mb-6">
+                    <EventPhasePanel />
+                  </div>
                   <TopicPanel />
                 </TabsContent>
 
