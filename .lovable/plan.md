@@ -1,54 +1,66 @@
-# Zeitgesteuerte Phasen, Themenwechsel und Pflicht-Meinung
+# Testthema parallel, Zeitphasen und Pflicht-Meinung
 
 ## Ziel
 
-1. Registrierte (verifizierte) Nutzer können ihre Meinung ab **20.08. 00:01** abgeben — die Diskussion (Graph, Chats, Bewertung) startet erst am **23.08. 00:01**.
-2. Der Wechsel vom Testthema zur echten Frage passiert automatisch zu einem eingestellten Zeitpunkt.
-3. Wer eine Passphrase hat, muss zuerst eine Meinung abgeben, bevor der Graph nutzbar wird. Wer keine hat, sieht den Graph nur lesend mit Hinweis + Login-Link.
+1. **Testthema bleibt dauerhaft frei erkundbar** — ohne Pflicht-Meinung, ohne Datumssperren. Genau dafür ist der Soft Launch: Leute sollen die App verstehen, bevor sie Aufwand in eine echte Meinung stecken (und nicht „test" eintippen).
+2. **Echte Frage:** verifizierte Nutzer können ihre Meinung ab **20.08. 00:01** einreichen, die Diskussion (Chats, Bewertung) startet erst am **23.08. 00:01**.
+3. Bei der echten Frage gilt: erst Meinung, dann Graph. Ohne Passphrase gibt es nur den lesenden Graph mit Hinweis + Login-Link.
 
-## Zeitachse / Phasen
+## Zwei Themen parallel (Single-Topic-Build wird zum „Zwei-Rollen-Build")
+
+Statt einer fest verdrahteten Konstante kennt die App künftig zwei Rollen, beide in den App-Einstellungen hinterlegt:
+
+- `test_topic_short_code` — das Spielwiesen-Thema (aktuell `7mm9`)
+- `real_topic_short_code` — die echte Frage (Thema wird vorab angelegt)
+
+Routen:
 
 ```text
-        vor 21.08.            21.08.–22.08.            ab 23.08.
+/go      → echte Frage   (Phasen + Pflicht-Meinung)
+/test    → Testthema     (immer offen, keine Pflicht, keine Countdowns)
+```
+
+Beide Routen nutzen denselben Bildschirm; ein Modus-Flag (`test` | `real`) entscheidet über Gating. Kein Datenwechsel, kein Löschen: Testdaten bleiben im Testthema, die echte Frage startet leer.
+
+## Phasen (gelten nur für /go)
+
+```text
+        vor 20.08.            20.08.–22.08.            ab 23.08.
 Phase   PRELAUNCH             SUBMISSION               DISCUSSION
-Login   ja                    ja                       ja
 Form    nein (Countdown)      ja (Pflicht)             ja (Pflicht)
-Graph   gesperrt (Hinweis)    gesperrt (Countdown)     frei
+Graph   gesperrt              gesperrt (Countdown)     frei nach Einreichung
 Chats   nein                  nein                     ja
 ```
 
-Alle drei Zeitpunkte sind in den App-Einstellungen hinterlegt und in /admin2 editierbar — kein Deploy nötig, um Termine zu verschieben.
+In PRELAUNCH und SUBMISSION verweist die Karte auf `/test` („Schau dich schon mal im Testthema um") — so bekommt der Soft Launch seinen Zweck.
 
-## Themenwechsel (Single-Topic-Build ist kein Problem)
-
-Der Build ist heute per Konstante auf `7mm9` festgenagelt. Statt der Konstante liest die App künftig aus den App-Einstellungen:
-
-- `active_topic_short_code` — Testthema (aktuell `7mm9`)
-- `next_topic_short_code` — die echte Frage (neues Topic, wird vorab angelegt)
-- `topic_switch_at` — Zeitpunkt des Umschaltens (Standard: Start der Einreichungsphase, 21.08. 00:01)
-
-Die App zeigt vor `topic_switch_at` das aktive, danach automatisch das nächste Thema. Testdaten bleiben im alten Topic liegen und verschwinden mit dem Wechsel aus der Ansicht — kein Löschen nötig, nichts geht kaputt. Der Build bleibt „ein Thema zur Zeit", nur die Auswahl ist datengesteuert.
+Alle Zeitpunkte liegen in den App-Einstellungen und sind in /admin2 editierbar — Termine verschieben ohne Deploy.
 
 ## Nutzerfluss
 
-**Mit Passphrase (verifiziert):**
-- Phase PRELAUNCH: Graph unscharf/gesperrt, Karte „Einreichung startet am 21.08." mit Countdown.
-- Phase SUBMISSION: Pflicht-Formular über dem Graph. Nach dem Absenden: Bestätigung „Deine Meinung ist eingetragen — die Diskussion startet am 23.08." Graph bleibt gesperrt.
-- Phase DISCUSSION: Ohne eigene Meinung erscheint zuerst das Pflicht-Formular; danach voller Zugriff (Graph, Sidebar-Buttons, Chats, Bewertung).
+**/test (jederzeit, alle):**
+- Graph frei sichtbar und bedienbar. Verifizierte Nutzer dürfen — müssen aber nicht — eine Testmeinung abgeben; Chats und Bewertung funktionieren wie heute (Chats setzen weiterhin eine eigene Meinung voraus, das bleibt unverändert).
+- Dezenter Hinweis „Testbereich — die echte Frage startet am 23.08." mit Link auf `/go`.
 
-**Ohne Passphrase:**
-- Graph sichtbar, aber rein lesend: keine Sidebar-Pillen (Meinungen/Chats), kein Passphrase-Element in den Einstellungen, kein Bewertungsregler, kein „Diskutieren"-Button.
+**/go mit Passphrase (verifiziert):**
+- PRELAUNCH: Graph gesperrt, Karte „Einreichung startet am 20.08." + Countdown + Link zum Testbereich.
+- SUBMISSION: Pflicht-Formular über dem Graph. Nach dem Absenden: „Deine Meinung ist eingetragen — die Diskussion startet am 23.08."
+- DISCUSSION: ohne eigene Meinung zuerst das Pflicht-Formular, danach voller Zugriff (Graph, Sidebar-Pillen, Chats, Bewertung).
+
+**/go ohne Passphrase:**
+- Graph sichtbar, rein lesend: keine Sidebar-Pillen, kein Bewertungsregler, kein „Diskutieren"-Button, kein Passphrase-Element im Einstellungs-Panel.
 - Hinweisbanner: Registrierung auf freemind.chat + „Anmelden"-Link, der das Login im Einstellungs-Panel öffnet.
 
 ## /admin2
 
-Neuer Abschnitt „Phasen & Thema": Datum/Zeit-Felder für Einreichungsstart, Diskussionsstart und Themenwechsel, plus Auswahl des aktiven und des nächsten Themas. Anzeige der aktuell gültigen Phase zur Kontrolle.
+Neuer Abschnitt „Phasen & Themen": Auswahl von Test- und Echtthema, Datum/Zeit-Felder für Einreichungsstart und Diskussionsstart, Anzeige der momentan gültigen Phase zur Kontrolle.
 
 ## Technische Umsetzung
 
-- **Einstellungen:** neue Zeilen in `app_settings` (`opinions_open_at`, `discussion_open_at`, `topic_switch_at`, `active_topic_short_code`, `next_topic_short_code`). Lesen über den bestehenden Settings-Hook; Schreiben nur über /admin2 (Passwort-geschützte Edge Function).
-- **Phasen-Hook:** neuer `useEventPhase()` liefert `phase`, `opinionsOpenAt`, `discussionOpenAt` und den nächsten Umschaltzeitpunkt (Timer statt Polling).
-- **Themenauflösung:** `useTTTopics` wählt den Short-Code anhand von `topic_switch_at` statt der festen Konstante; `HELSINKI_TOPIC_SHORT_CODE` bleibt nur noch Fallback.
-- **Gating im Frontend:** `Discussion.tsx` bekommt eine Gate-Schicht — Pflicht-Formular-Overlay bzw. Countdown-Karte über dem Graph; `TTSideTabs`, `TTBottomPanel` (Bewertung, „Diskutieren") und der Passphrase-Block in `ConfigPanel` werden abhängig von Phase, Verifizierung und `hasOwnOpinion` gerendert. Beim Anti-Flackern-Muster von `useIsVerified` bleiben wir: erst rendern, wenn Zustand bekannt ist.
-- **Serverseitige Durchsetzung** (Frontend-Gates sind nicht ausreichend): `submit_opinion` prüft `opinions_open_at`, `get_or_create_chat` und der Nachrichten-Insert prüfen `discussion_open_at`; Verstöße werfen eine klare Fehlermeldung, die das UI als Hinweis anzeigt.
-- **i18n:** alle neuen Texte (Countdown, Pflicht-Formular, Lese-Hinweis, Admin-Labels) als Übersetzungsschlüssel in `de.json`/`en.json`.
+- **Einstellungen:** neue Zeilen in `app_settings` (`test_topic_short_code`, `real_topic_short_code`, `opinions_open_at`, `discussion_open_at`). Lesen über den bestehenden Settings-Hook, Schreiben nur über /admin2 (Passwort-geschützte Edge Function).
+- **Themenauflösung:** `useTTTopics` wird zu `useEventTopic(role)` und löst den Short-Code je Rolle aus den Einstellungen auf; `HELSINKI_TOPIC_SHORT_CODE` bleibt Fallback für den Testbereich.
+- **Routing:** `App.tsx` erhält `/test` neben `/go`; `Discussion.tsx` bekommt eine `mode`-Prop (`test` | `real`).
+- **Phasen-Hook:** neuer `useEventPhase()` liefert `phase` samt Zieldaten und stellt einen Timer auf den nächsten Phasenwechsel (kein Polling). Im Test-Modus ist die Phase immer `DISCUSSION`.
+- **Gating im Frontend:** Gate-Schicht in `Discussion.tsx` (Pflicht-Formular-Overlay bzw. Countdown-Karte über dem Graph), abhängig von `mode`, Phase, Verifizierung und `hasOwnOpinion`. `TTSideTabs`, `TTBottomPanel` und der Passphrase-Block in `ConfigPanel` folgen denselben Flags. Anti-Flacker-Muster von `useIsVerified` beibehalten: erst rendern, wenn der Zustand bekannt ist.
+- **Serverseitige Durchsetzung** (Frontend-Gates allein reichen nicht): `submit_opinion` und die Chat-Funktionen prüfen die Phasen-Zeitpunkte **nur für das Echtthema** — das Testthema bleibt jederzeit schreibbar. Verstöße liefern eine klare Fehlermeldung, die das UI als Hinweis anzeigt.
+- **i18n:** alle neuen Texte (Countdown, Pflicht-Formular, Testbereich-Hinweis, Lese-Hinweis, Admin-Labels) als Übersetzungsschlüssel in `de.json`/`en.json`.
