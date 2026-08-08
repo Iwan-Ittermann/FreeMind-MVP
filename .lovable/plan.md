@@ -2,7 +2,7 @@
 
 ## Ziel
 
-1. Registrierte (verifizierte) Nutzer können ihre Meinung ab **21.08. 00:01** abgeben — die Diskussion (Graph, Chats, Bewertung) startet erst am **23.08. 00:01**.
+1. Registrierte (verifizierte) Nutzer können ihre Meinung ab **20.08. 00:01** abgeben — die Diskussion (Graph, Chats, Bewertung) startet erst am **23.08. 00:01**.
 2. Der Wechsel vom Testthema zur echten Frage passiert automatisch zu einem eingestellten Zeitpunkt.
 3. Wer eine Passphrase hat, muss zuerst eine Meinung abgeben, bevor der Graph nutzbar wird. Wer keine hat, sieht den Graph nur lesend mit Hinweis + Login-Link.
 
