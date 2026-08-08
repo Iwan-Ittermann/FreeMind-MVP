@@ -7,7 +7,8 @@ import { TTSideTabs, TTSideTabsHandle } from '@/components/tt/TTSideTabs';
 import { TTBottomPanel } from '@/components/tt/TTBottomPanel';
 import { TTCenterCTA } from '@/components/tt/TTCenterCTA';
 
-import { useTTTopics } from '@/hooks/useTTTopics';
+import { useEventTopic } from '@/hooks/useEventTopic';
+import { useEventPhase } from '@/hooks/useEventConfig';
 import { useTopicData } from '@/hooks/useTopicData';
 import { useTTChats } from '@/hooks/useTTChats';
 import { useAuth } from '@/hooks/useAuth';
@@ -21,22 +22,25 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { FloatingChatManager, FloatingChatManagerHandle } from '@/components/chat/FloatingChatManager';
 import { TTHelpOverlay } from '@/components/tt/TTHelpOverlay';
 import { TTOnboardingTour } from '@/components/tt/TTOnboardingTour';
+import { TTGateOverlay } from '@/components/tt/TTGateOverlay';
 import { useTranslation } from 'react-i18next';
 
 /**
  * Single-topic mobile UI. This build is locked to the Helsinki event topic (7mm9);
  * multi-topic swipe/loop logic has been removed.
  */
-export default function TT() {
-  useParams<{ topicId?: string }>(); // route is /7mm9; params ignored
+export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
+  useParams<{ topicId?: string }>(); // single-topic routes; params ignored
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { user, loading: authLoading } = useAuth();
   const { isVerified } = useIsVerified();
   const isMobile = useIsMobile();
   const chatManagerRef = useRef<FloatingChatManagerHandle>(null);
-  const { data: topicList = [], isLoading: topicLoading } = useTTTopics();
-  const topic = topicList[0] ?? null;
+  const { topic, isLoading: topicLoading, config: eventConfig } = useEventTopic(mode);
+  const { phase, gated: phaseGated } = useEventPhase(eventConfig);
+  // Time phases apply to the real question only — /test stays open at all times.
+  const gated = mode === 'real' && phaseGated;
   const activeTopicId = topic?.id ?? '';
   const activeTopicTitle = topic?.title ?? '...';
 
@@ -116,6 +120,16 @@ export default function TT() {
     };
   }, []);
 
+  // Which blocking gate (if any) applies right now.
+  const gateVariant: 'countdown' | 'submit' | 'waiting' | null = (() => {
+    if (!gated || !ownOpinionKnown || !activeTopicId) return null;
+    if (phase === 'prelaunch') return 'countdown';
+    if (!isVerified) return null; // unverified users may browse read-only
+    if (!hasOwnOpinion) return 'submit';
+    if (phase === 'submission') return 'waiting';
+    return null;
+  })();
+
   return (
     <div className="fixed inset-0 bg-black flex items-center justify-center">
       <div data-tt-phone-viewport className="relative h-[100dvh] w-full max-w-[480px] shrink-0 bg-background overflow-hidden">
@@ -171,7 +185,7 @@ export default function TT() {
             ownOpinionId={ownOpinionId}
           />
         )}
-        {ownOpinionKnown && !hasOwnOpinion && activeTopicId && (
+        {ownOpinionKnown && !hasOwnOpinion && activeTopicId && !gateVariant && (
           isVerified ? (
             <TTCenterCTA
               topicId={activeTopicId}
@@ -226,6 +240,20 @@ export default function TT() {
             setSelectedNode(null);
           }}
         />
+
+        {gateVariant && (
+          <TTGateOverlay
+            variant={gateVariant}
+            topicId={activeTopicId}
+            topicTitle={activeTopicTitle}
+            target={gateVariant === 'countdown' ? eventConfig?.opinionsOpenAt : eventConfig?.discussionOpenAt}
+            isVerified={isVerified}
+            onSubmitted={() => {
+              queryClient.invalidateQueries({ queryKey: ['tt-own-opinion', activeTopicId, user?.id] });
+              queryClient.invalidateQueries({ queryKey: ['topic', activeTopicId] });
+            }}
+          />
+        )}
 
         <TTOnboardingTour
           open={tourStep > 0}

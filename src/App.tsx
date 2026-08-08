@@ -44,7 +44,8 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
-      <Route path="/go" element={<Discussion />} />
+      <Route path="/go" element={<Discussion mode="real" />} />
+      <Route path="/test" element={<Discussion mode="test" />} />
       <Route path="/7mm9" element={<Navigate to="/go" replace />} />
       <Route path="/confirm" element={<Confirm />} />
       <Route path="/unsubscribe" element={<Unsubscribe />} />

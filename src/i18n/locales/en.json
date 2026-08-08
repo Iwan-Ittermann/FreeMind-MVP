@@ -688,6 +688,16 @@
       "skip": "Skip",
       "next": "Next",
       "done": "Let's go!"
+    },
+    "event": {
+      "countdownTitle": "Almost there",
+      "countdownBody": "Submitting opinions for this question opens shortly. After that you can share your opinion and discuss with others.",
+      "countdownValue": "{{days}} d {{hours}} h {{minutes}} min",
+      "submitTitle": "Your opinion first",
+      "submitBody": "Before you see the opinions of others, please share your own.",
+      "waitingTitle": "Opinion saved",
+      "waitingBody": "The discussion starts right when the week begins. We'll notify you.",
+      "tryTestTopic": "Until then you can explore the app in the test question:"
     }
   }
 }

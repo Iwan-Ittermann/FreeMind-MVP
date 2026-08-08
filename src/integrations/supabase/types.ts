@@ -1161,6 +1161,7 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      event_setting: { Args: { _key: string }; Returns: string }
       fake_node_user_id: { Args: { _fake_node_id: string }; Returns: string }
       generate_topic_short_code: { Args: never; Returns: string }
       get_graph_pairs: {
@@ -1238,6 +1239,7 @@ export type Database = {
         Args: { chat_id: string; checking_user_id: string }
         Returns: boolean
       }
+      is_real_event_topic: { Args: { _topic_id: string }; Returns: boolean }
       is_verified_participant: { Args: { _user_id: string }; Returns: boolean }
       log_audit: {
         Args: {
