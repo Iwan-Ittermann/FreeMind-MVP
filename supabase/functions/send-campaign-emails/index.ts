@@ -66,6 +66,7 @@ async function sendCampaign(campaignKey: string, onlySignupId?: string) {
       passphrase: r.passphrase ?? "",
       appUrl: SITE_URL,
       goUrl: `${SITE_URL}/go`,
+      testUrl: `${SITE_URL}/test`,
       faqUrl: `${SITE_URL}/faq`,
     };
     const tpl = await loadTemplate(supabase, campaignKey, data, {
