@@ -80,13 +80,16 @@ export function TTBottomPanel({
   } = useDisagreementRating(topicId, ownOpinionId, selected?.id ?? null);
   const [ratingTouched, setRatingTouched] = useState(false);
   const [ratingConfirmed, setRatingConfirmed] = useState(false);
+  const [ratingReopened, setRatingReopened] = useState(false);
   const chatDisabled = !hasOwnOpinion;
 
   // Reset the two-step flow whenever another opinion is selected.
   useEffect(() => {
     setRatingTouched(false);
     setRatingConfirmed(false);
+    setRatingReopened(false);
   }, [selected?.id]);
+
 
 
   // Click outside collapses the textarea (if empty)
@@ -176,7 +179,7 @@ export function TTBottomPanel({
 
   const selectedOpinionPanel = selected ? (() => {
     const fontClass = getOpinionFontClass(selected.text.length);
-    const ratingDone = ratingConfirmed || hasSavedRating;
+    const ratingDone = (ratingConfirmed || hasSavedRating) && !ratingReopened;
     return (
       <div className={`absolute bottom-[84px] inset-x-0 px-3 ${highlightDisagreementScale ? 'z-[60]' : 'z-30'}`}>
           <div
