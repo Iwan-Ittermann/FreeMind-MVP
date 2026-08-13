@@ -49,7 +49,7 @@ export function useDisagreementRating(
   }, [existingRating, localDisagreement]);
 
   // The saved value from DB
-  const savedDisagreement = existingRating?.disagreement ?? 50;
+  const savedDisagreement = existingRating?.disagreement ?? 5;
 
   // Upsert mutation
   const mutation = useMutation({
