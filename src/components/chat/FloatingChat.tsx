@@ -170,10 +170,6 @@ export function FloatingChat({
 
   const formatDuration = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
-  const handleReaction = (messageId: string, reaction: string) => {
-    console.log('Reaction:', messageId, reaction);
-  };
-
   const handleSaveRating = () => {
     // Save empathy only; pass existing disagreement for DB compatibility
     onSubmitRating?.(empathy, initialDisagreement ?? 5);
@@ -321,9 +317,7 @@ export function FloatingChat({
                     content={msg.content}
                     isOwn={msg.isOwn}
                     timestamp={msg.timestamp}
-                    reactions={[]}
                     isOpinion={msg.isOpinion}
-                    onReact={(reaction) => handleReaction(msg.id, reaction)}
                     visible={msg.visible}
                     noticeText={msg.noticeText}
                     isBotMessage={isBotChat && !msg.isOwn}

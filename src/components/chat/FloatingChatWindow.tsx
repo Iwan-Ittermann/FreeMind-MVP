@@ -231,9 +231,7 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
                       content={msg.content}
                       isOwn={msg.isOwn}
                       timestamp={msg.timestamp}
-                      reactions={[]}
                       isOpinion={msg.isOpinion}
-                      onReact={() => {}}
                       visible={msg.visible}
                       noticeText={msg.noticeText}
                       isBotMessage={isBotChat && !msg.isOwn}

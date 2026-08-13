@@ -8,7 +8,7 @@ import { ChatBubble } from './ChatBubble';
 import { TypingIndicator } from './TypingIndicator';
 import { useChatSession } from '@/hooks/useChatSession';
 import { useChatMessages } from '@/hooks/useChatMessages';
-import { useChatReactions } from '@/hooks/useChatReactions';
+
 import { BOT_USER_ID } from '@/lib/constants';
 import { useTypingIndicator } from '@/hooks/useTypingIndicator';
 import { useUserBlocks } from '@/hooks/useUserBlocks';
@@ -38,7 +38,7 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
   );
   const { partnerTyping, setTyping } = useTypingIndicator(chatId);
   const { isBlocked, isBlockedByOther, blockUser, unblockUser, isBlocking, isUnblocking } = useUserBlocks(chatId, theirUserId);
-  const { getReactionsForMessage, hasReacted, addReaction, removeReaction } = useChatReactions(chatId);
+  
   const { isRecording, duration, startRecording, stopRecording } = useVoiceRecorder();
 
   const [inputValue, setInputValue] = useState('');
@@ -120,14 +120,6 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
   const handleReply = useCallback((msg: { id: string; content: string; isOwn: boolean }) => {
     setReplyingTo(msg);
   }, []);
-
-  const handleReaction = useCallback((messageId: string, reactionType: string) => {
-    if (hasReacted(messageId, reactionType)) {
-      removeReaction({ messageId, reactionType });
-    } else {
-      addReaction({ messageId, reactionType });
-    }
-  }, [hasReacted, addReaction, removeReaction]);
 
   // Build a map of message ID -> content for reply previews
   const messageContentMap = new Map<string, string>();
@@ -211,7 +203,6 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
 
             {/* Chat messages */}
             {dbMessages.map(msg => {
-              const reactions = getReactionsForMessage(msg.id);
               const replyContent = msg.replyToId ? messageContentMap.get(msg.replyToId) : undefined;
               return (
                 <ChatBubble
@@ -225,10 +216,7 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
                   noticeText={null}
                   isBotMessage={isBotChat && !msg.isOwn}
                   replyToContent={replyContent}
-                  reactions={reactions}
                   onReply={() => handleReply({ id: msg.id, content: msg.content, isOwn: msg.isOwn })}
-                  onReaction={(type) => handleReaction(msg.id, type)}
-                  hasISeenYou={hasReacted(msg.id, 'i_see_you')}
                   audioUrl={msg.audioUrl}
                   transcript={msg.transcript}
                 />
