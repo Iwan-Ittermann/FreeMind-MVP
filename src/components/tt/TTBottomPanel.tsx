@@ -164,8 +164,9 @@ export function TTBottomPanel({
 
   const selectedOpinionPanel = selected ? (() => {
     const fontClass = getOpinionFontClass(selected.text.length);
+    const ratingDone = ratingConfirmed || hasSavedRating;
     return (
-      <div className={`absolute bottom-[76px] inset-x-0 px-3 ${highlightDisagreementScale ? 'z-[60]' : 'z-30'}`}>
+      <div className={`absolute bottom-[84px] inset-x-0 px-3 ${highlightDisagreementScale ? 'z-[60]' : 'z-30'}`}>
           <div
             ref={panelRef}
             className="rounded-2xl bg-background/95 backdrop-blur-md border border-border/40 shadow-lg p-4 relative"
@@ -187,48 +188,84 @@ export function TTBottomPanel({
               </p>
             </div>
 
-            {/* Diskutieren button - centered between opinion and meter */}
-            <div className="mt-3 flex justify-center">
-              <Button
-                variant="outline"
-                size="sm"
-                className={`rounded-full h-8 text-xs px-4 transition-all duration-300 ${highlightLetsChatButton ? 'relative z-[60] border-primary ring-4 ring-primary/60 shadow-[0_0_30px_hsl(var(--primary)/0.65)] animate-pulse' : ''}`}
-                onClick={() => {
-                  if (chatDisabled) return;
-                  if (!user) {
-                    ensureSilentAuth().catch(() => {});
-                  }
-                  onLetsChat?.(selected.id);
-                }}
-                disabled={chatDisabled}
-                title={chatDisabled ? t('chat.submitOpinionRequired') : t('tt.letsChat')}
-              >
-                {t('tt.letsChat')}
-              </Button>
-            </div>
-
-            {/* Opinion difference meter */}
-            <div className="mt-3">
-              <div className={`min-w-0 flex flex-col gap-1 rounded-xl transition-all duration-300 ${highlightDisagreementScale ? 'relative z-[60] bg-background border border-primary px-2 py-1.5 ring-4 ring-primary/60 shadow-[0_0_30px_hsl(var(--primary)/0.65)] scale-[1.02]' : ''}`}>
-                <TTEmojiRating
-                  value={disagreement}
-                  onChange={setDisagreement}
-                  disabled={!canRate}
-                />
-                <div className="text-center text-[10px] text-muted-foreground tracking-wide mt-0.5">
-                  {t('tt.opinionDifferenceLabel')}
+            {/* Step 1: rate the opinion difference, confirm with OK */}
+            {!ratingDone && (
+              <div className="mt-3">
+                <div className={`min-w-0 flex flex-col gap-1 rounded-xl transition-all duration-300 ${highlightDisagreementScale ? 'relative z-[60] bg-background border border-primary px-2 py-1.5 ring-4 ring-primary/60 shadow-[0_0_30px_hsl(var(--primary)/0.65)] scale-[1.02]' : ''}`}>
+                  <TTEmojiRating
+                    value={disagreement}
+                    onChange={(v) => {
+                      setDisagreementLocal(v);
+                      setRatingTouched(true);
+                    }}
+                    disabled={!canRate}
+                    unset={!ratingTouched && !hasSavedRating}
+                  />
+                  <div className="text-center text-[10px] text-muted-foreground tracking-wide mt-0.5">
+                    {t('tt.opinionDifferenceLabel')}
+                  </div>
+                  {!canRate && !hasOwnOpinion ? (
+                    <p className="text-[10px] text-muted-foreground text-center mt-1">
+                      {t('tt.postFirstToRate')}
+                    </p>
+                  ) : (
+                    <div className="mt-2 flex justify-center">
+                      <Button
+                        size="sm"
+                        className="rounded-full h-8 text-xs px-6"
+                        disabled={!canRate || !ratingTouched || isSaving}
+                        onClick={async () => {
+                          try {
+                            await saveNow();
+                            setRatingConfirmed(true);
+                          } catch {
+                            toast.error(t('tt.ratingFailed'));
+                          }
+                        }}
+                      >
+                        {isSaving ? t('floatingChat.saving') : t('common.ok', 'OK')}
+                      </Button>
+                    </div>
+                  )}
                 </div>
-                {!canRate && !hasOwnOpinion && (
-                  <p className="text-[10px] text-muted-foreground text-center mt-1">
-                    {t('tt.postFirstToRate')}
-                  </p>
-                )}
               </div>
-            </div>
+            )}
+
+            {/* Step 2: chat unlocked once the rating is stored */}
+            {ratingDone && (
+              <div className="mt-3 flex flex-col items-center gap-1.5">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={`rounded-full h-8 text-xs px-4 transition-all duration-300 ${highlightLetsChatButton ? 'relative z-[60] border-primary ring-4 ring-primary/60 shadow-[0_0_30px_hsl(var(--primary)/0.65)] animate-pulse' : ''}`}
+                  onClick={() => {
+                    if (chatDisabled) return;
+                    if (!user) {
+                      ensureSilentAuth().catch(() => {});
+                    }
+                    onLetsChat?.(selected.id);
+                  }}
+                  disabled={chatDisabled}
+                  title={chatDisabled ? t('chat.submitOpinionRequired') : t('tt.letsChat')}
+                >
+                  {t('tt.letsChat')}
+                </Button>
+                <button
+                  onClick={() => {
+                    setRatingConfirmed(false);
+                    setRatingTouched(true);
+                  }}
+                  className="text-[10px] text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {t('tt.editRating', 'Bewertung ändern')}
+                </button>
+              </div>
+            )}
           </div>
       </div>
     );
   })() : null;
+
 
   // Add-opinion form has moved into the centered TTCenterCTA — this panel only
   // hosts the selected-opinion read/rate UI now.
