@@ -145,15 +145,23 @@ export const SignalNode = memo(function SignalNode({
   const shapeSet = ttMode
     ? (token.isCurrentUser ? ZONE_SHAPE_TT_USER : ZONE_SHAPE_TT)
     : ZONE_SHAPE;
-  const Shape = token.isBot ? BotShape : (shapeSet[token.zone] ?? MiddleShape);
-  const opacity = isDimmed ? 0.4 : token.isHidden ? 0.3 : 1;
+  // Top 5 always render as stars, whatever zone they sit in.
+  const starShape = ttMode && token.isCurrentUser ? CoreShapeRed : CoreShapeGold;
+  const Shape = token.isBot
+    ? BotShape
+    : ttMode && token.isTop5
+      ? starShape
+      : (shapeSet[token.zone] ?? MiddleShape);
+  const opacity = isDimmed ? 0.4 : token.isHidden ? 0.3 : token.isInactive && !token.isCurrentUser ? 0.45 : 1;
   const isScaled = isHighlighted && !isDimmed;
   const bubbleText = token.opinionText
     ? (token.opinionText.length > 16 ? token.opinionText.slice(0, 16) + '…' : token.opinionText)
     : '';
 
   // TT extreme nodes are visually smaller (× 0.6)
-  const effectiveScale = ttMode && !token.isBot && token.zone === 'outer' ? scale * 0.6 : scale;
+  const effectiveScale = ttMode && !token.isBot && token.zone === 'outer' && !token.isTop5
+    ? scale * 0.6
+    : scale;
   const scaledHalf = HALF * effectiveScale;
 
   // Detect "freshly added" own opinion: TTCenterCTA writes the opinion id +
