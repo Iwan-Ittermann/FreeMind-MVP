@@ -1,15 +1,17 @@
 import { cn } from '@/lib/utils';
 
 /**
- * 11-step opinion-difference meter (0%, 10%, ..., 100%).
+ * 5-step opinion-difference meter (0%, 25%, 50%, 75%, 100%).
  * Maps to 0–100 (0 = no difference, 100 = full difference).
  */
-const STEPS = Array.from({ length: 11 }, (_, i) => i * 10);
+const STEPS = [0, 25, 50, 75, 100];
 
 interface TTEmojiRatingProps {
   value: number;
   onChange: (value: number) => void;
   disabled?: boolean;
+  /** Show as unselected until the user picks a step. */
+  unset?: boolean;
 }
 
 function nearestIndex(value: number): number {
@@ -25,14 +27,13 @@ function nearestIndex(value: number): number {
   return best;
 }
 
-export function TTEmojiRating({ value, onChange, disabled }: TTEmojiRatingProps) {
-  const activeIdx = nearestIndex(value);
+export function TTEmojiRating({ value, onChange, disabled, unset = false }: TTEmojiRatingProps) {
+  const activeIdx = unset ? -1 : nearestIndex(value);
 
   return (
-    <div className="grid w-full grid-cols-11 gap-0.5" role="radiogroup" aria-label="Opinion difference">
+    <div className="grid w-full grid-cols-5 gap-1.5" role="radiogroup" aria-label="Opinion difference">
       {STEPS.map((step, i) => {
         const isActive = i === activeIdx;
-        // Gradient from agreement (green-ish) to difference (rose-ish) using semantic tokens
         const intensity = step / 100;
         return (
           <button
@@ -41,23 +42,19 @@ export function TTEmojiRating({ value, onChange, disabled }: TTEmojiRatingProps)
             disabled={disabled}
             onClick={() => onChange(step)}
             className={cn(
-              'h-7 min-w-0 rounded-full border px-0.5 text-[9px] font-semibold transition-all',
+              'h-10 min-w-0 rounded-xl border px-1 text-xs font-semibold transition-all',
               'border-border bg-muted text-foreground',
               isActive
-                ? 'scale-110 opacity-100 shadow-md ring-2 ring-foreground/30 bg-primary text-primary-foreground border-primary'
-                : 'opacity-60 hover:opacity-90',
+                ? 'scale-105 opacity-100 shadow-md ring-2 ring-foreground/30 bg-primary text-primary-foreground border-primary'
+                : 'opacity-70 hover:opacity-100',
               disabled && 'cursor-not-allowed opacity-30',
             )}
-            style={
-              isActive
-                ? undefined
-                : { opacity: 0.4 + intensity * 0.4 }
-            }
+            style={isActive ? undefined : { opacity: 0.55 + intensity * 0.35 }}
             aria-label={`${step}%`}
             aria-checked={isActive}
             role="radio"
           >
-            <span className="block truncate">{step}</span>
+            <span className="block truncate">{step}%</span>
           </button>
         );
       })}

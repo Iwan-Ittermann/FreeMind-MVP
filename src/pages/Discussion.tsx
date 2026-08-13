@@ -121,14 +121,21 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
   }, []);
 
   // Which blocking gate (if any) applies right now.
+  // /test skips the time phases but keeps the mandatory-opinion gate.
   const gateVariant: 'countdown' | 'submit' | 'waiting' | null = (() => {
-    if (!gated || !ownOpinionKnown || !activeTopicId) return null;
-    if (phase === 'prelaunch') return 'countdown';
-    if (!isVerified) return null; // unverified users may browse read-only
+    if (!ownOpinionKnown || !activeTopicId) return null;
+    if (gated) {
+      if (phase === 'prelaunch') return 'countdown';
+      if (!isVerified) return null; // unverified users may browse read-only
+      if (!hasOwnOpinion) return 'submit';
+      if (phase === 'submission') return 'waiting';
+      return null;
+    }
+    if (!isVerified) return null;
     if (!hasOwnOpinion) return 'submit';
-    if (phase === 'submission') return 'waiting';
     return null;
   })();
+
 
   return (
     <div className="fixed inset-0 bg-black flex items-center justify-center">

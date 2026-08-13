@@ -91,6 +91,20 @@ export function useDisagreementRating(
     }, 1000);
   }, [mutation]);
 
+  /** Set the local value without scheduling a save. */
+  const setDisagreementLocal = useCallback((value: number) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    setLocalDisagreement(value);
+  }, []);
+
+  /** Save immediately (used by explicit confirm buttons). */
+  const saveNow = useCallback(async (value?: number) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    const next = value ?? localDisagreement ?? savedDisagreement;
+    setLocalDisagreement(next);
+    await mutation.mutateAsync(next);
+  }, [mutation, localDisagreement, savedDisagreement]);
+
   // Cleanup debounce on unmount
   useEffect(() => {
     return () => {
@@ -103,12 +117,16 @@ export function useDisagreementRating(
   return {
     disagreement: currentValue,
     setDisagreement,
+    setDisagreementLocal,
+    saveNow,
     savedDisagreement,
+    hasSavedRating: !!existingRating,
     isLoading,
     isSaving: mutation.isPending,
     canRate: !!user && !!myOpinionId && !!targetOpinionId && myOpinionId !== targetOpinionId,
   };
 }
+
 
 /** @deprecated Use useDisagreementRating instead */
 export const useOpinionRating = useDisagreementRating;
