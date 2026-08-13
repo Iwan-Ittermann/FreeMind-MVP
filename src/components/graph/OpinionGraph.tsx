@@ -36,6 +36,9 @@ interface OpinionGraphProps {
   ttMode?: boolean;
   /** TT layout landmarks in graph-SVG coords. When set, uses TT layout. */
   ttLandmarks?: TTLandmarks;
+  /** Directed bridging points per opinion (points awarded BY the counterpart). */
+  nodePoints?: Map<string, number>;
+
 }
 
 export function OpinionGraph({ 
