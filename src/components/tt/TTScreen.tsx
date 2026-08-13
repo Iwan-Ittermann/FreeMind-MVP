@@ -142,7 +142,9 @@ function TTScreenInnerImpl({
                 chrome="naked"
                 ttMode
                 ttLandmarks={ttLandmarks}
+                nodePoints={data?.nodePoints}
               />
+
             </div>
           )}
         </div>
