@@ -114,7 +114,7 @@ function levelToZone(level: number): 'respectful' | 'moderate' | 'extreme' {
 function calculateIdealAngle(disagreement: number): number {
   const minAngle = 0.2;
   const maxAngle = Math.PI;
-  return minAngle + (disagreement / 100) * (maxAngle - minAngle);
+  return minAngle + (disagreement / 10) * (maxAngle - minAngle);
 }
 
 function normalizeAngle(angle: number): number {
@@ -217,7 +217,7 @@ function calculateDeterministicAngles(opinions: Opinion[], ratings: ChatRating[]
     for (const [connectedId, disagreement] of connections) {
       if (angleMap.has(connectedId)) {
         const ca = angleMap.get(connectedId)!;
-        const offset = (disagreement / 100) * Math.PI;
+        const offset = (disagreement / 10) * Math.PI;
         const c1 = ca + offset;
         const c2 = ca - offset;
         const w = disagreement + 1;

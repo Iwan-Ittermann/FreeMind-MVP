@@ -133,8 +133,8 @@ export function tokenizeEdge(
   const dy = ty - sy;
   const length = Math.sqrt(dx * dx + dy * dy);
 
-  // Normalize empathy from -50..+50 to 0..1
-  const respectLevel = Math.max(0, Math.min(1, (edge.empathy + 50) / 100));
+  // Normalize understanding (empathy) from 0..10 to 0..1
+  const respectLevel = Math.max(0, Math.min(1, edge.empathy / 10));
 
   const isActive = activeChats.some(
     c =>
