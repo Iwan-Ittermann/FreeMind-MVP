@@ -70,12 +70,24 @@ export function TTBottomPanel({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  const { disagreement, setDisagreement, canRate } = useDisagreementRating(
-    topicId,
-    ownOpinionId,
-    selected?.id ?? null,
-  );
+  const {
+    disagreement,
+    setDisagreementLocal,
+    saveNow,
+    hasSavedRating,
+    isSaving,
+    canRate,
+  } = useDisagreementRating(topicId, ownOpinionId, selected?.id ?? null);
+  const [ratingTouched, setRatingTouched] = useState(false);
+  const [ratingConfirmed, setRatingConfirmed] = useState(false);
   const chatDisabled = !hasOwnOpinion;
+
+  // Reset the two-step flow whenever another opinion is selected.
+  useEffect(() => {
+    setRatingTouched(false);
+    setRatingConfirmed(false);
+  }, [selected?.id]);
+
 
   // Click outside collapses the textarea (if empty)
   useEffect(() => {
