@@ -11,6 +11,7 @@ import {
   MessageSquare,
   Pencil,
   ArrowUpDown,
+  ChevronLeft,
 } from 'lucide-react';
 import type { Opinion } from '@/types/graph';
 import type { TTChatItem } from '@/hooks/useTTChats';
@@ -20,6 +21,7 @@ import { EmbeddedChatView } from '@/components/chat/EmbeddedChatView';
 import { TTRatingDialog } from './TTRatingDialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 export interface TTSideTabsHandle {
   openChat: (opinionId: string) => void;
@@ -74,6 +76,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
     const [opinionSearch, setOpinionSearch] = useState('');
     const [opinionSort, setOpinionSort] = useState<OpinionSort>('difference');
     const [ratingTarget, setRatingTarget] = useState<{ id: string; text: string } | null>(null);
+    const [expandedOpinionId, setExpandedOpinionId] = useState<string | null>(null);
 
     const { data: myRatings } = useMyOpinionRatings(topicId, myOpinionId);
     useEnsureChatTitles(chats, ['ttChats', topicId, myOpinionId]);
