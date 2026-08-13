@@ -342,6 +342,12 @@ export function calculateTTLayout(
   ratings: ChatRating[],
   config: LayoutConfig,
   landmarks: TTLandmarks,
+  /**
+   * Directed points per opinion (points awarded BY the counterpart).
+   * When provided it is the single source of truth for radial position:
+   * a node only earns points from how its opponents rated it.
+   */
+  directedPoints?: Map<string, number>,
 ): GraphData {
   const respectfulZoneSlots: RespectfulZoneSlot[] = [];
 
@@ -351,7 +357,15 @@ export function calculateTTLayout(
   //  - hasChats === false → starter position at blueR − tinyPad (unchanged).
   //  - Negative totals → extreme band (whiteR + step*n), matching legacy tiers.
   const totals = new Map<string, { total: number; hasChats: boolean }>();
-  opinions.forEach(op => totals.set(op.id, computeTotalPoints(op.id, ratings)));
+  opinions.forEach(op => {
+    if (directedPoints) {
+      const has = directedPoints.has(op.id);
+      totals.set(op.id, { total: has ? directedPoints.get(op.id)! : 0, hasChats: has });
+    } else {
+      totals.set(op.id, computeTotalPoints(op.id, ratings));
+    }
+  });
+
 
   // Deterministic maxTotal: id-sorted iteration; ties for the top go to the lowest id.
   const idSorted = [...opinions].sort((a, b) => a.id.localeCompare(b.id));

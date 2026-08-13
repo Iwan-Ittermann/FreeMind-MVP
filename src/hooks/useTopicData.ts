@@ -15,7 +15,13 @@ export interface TopicData {
   lastChatActivity: Map<string, string | null>;
   /** Set of opinion IDs that are fake (seeded) */
   fakeOpinionIds: Set<string>;
+  /**
+   * Directed bridging points per opinion: each node only collects the points
+   * its counterparts awarded it (respect × difference, rated BY the other side).
+   */
+  nodePoints: Map<string, number>;
 }
+
 
 export interface ActiveChat {
   chatId: string;
@@ -297,6 +303,29 @@ export function useTopicData(topicId: string) {
 
       if (opinionRatingsError) throw opinionRatingsError;
 
+      // Fetch DIRECTED pairs: who rated whom (respect + difference).
+      // Each node's points come only from the ratings its counterparts gave it.
+      const { data: directedData, error: directedError } = await supabase
+        .rpc('get_topic_directed_pairs', { _topic_id: topicId });
+
+      if (directedError) throw directedError;
+
+      const nodePoints = new Map<string, number>();
+      const directedSorted = [...(directedData || [])].sort((a, b) => {
+        const ka = `${a.rater_opinion_id}|${a.target_opinion_id}`;
+        const kb = `${b.rater_opinion_id}|${b.target_opinion_id}`;
+        return ka.localeCompare(kb);
+      });
+      for (const row of directedSorted) {
+        const pts = Number(row.empathy ?? 0) * Number(row.disagreement ?? 0);
+        nodePoints.set(
+          row.target_opinion_id,
+          (nodePoints.get(row.target_opinion_id) ?? 0) + pts,
+        );
+      }
+
+
+
       // Transform opinions to our graph format (including moderation fields)
       const formattedOpinions: Opinion[] = (opinions || []).map(op => ({
         id: op.id,
@@ -400,6 +429,8 @@ export function useTopicData(topicId: string) {
         ratings: allRatings,
         lastChatActivity,
         fakeOpinionIds,
+        nodePoints,
+
       };
     },
   });

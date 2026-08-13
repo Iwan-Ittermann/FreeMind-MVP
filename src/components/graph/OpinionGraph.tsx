@@ -36,6 +36,9 @@ interface OpinionGraphProps {
   ttMode?: boolean;
   /** TT layout landmarks in graph-SVG coords. When set, uses TT layout. */
   ttLandmarks?: TTLandmarks;
+  /** Directed bridging points per opinion (points awarded BY the counterpart). */
+  nodePoints?: Map<string, number>;
+
 }
 
 export function OpinionGraph({ 
@@ -59,7 +62,9 @@ export function OpinionGraph({
   chrome = 'full',
   ttMode = false,
   ttLandmarks,
+  nodePoints,
 }: OpinionGraphProps) {
+
   const [highlightedNode, setHighlightedNode] = useState<string | null>(null);
 
   // Layout configuration using semantic zone names
@@ -97,8 +102,9 @@ export function OpinionGraph({
   // Calculate layout and add chat request edges
   const graphData = useMemo(() => {
     const baseData = ttLandmarks
-      ? calculateTTLayout(opinions, ratings, config, ttLandmarks)
+      ? calculateTTLayout(opinions, ratings, config, ttLandmarks, nodePoints)
       : calculateLayout(opinions, ratings, config);
+
     
     const pendingEdges: GraphEdge[] = chatRequests
       .filter(req => req.status === 'pending' && currentUserOpinionId && (
