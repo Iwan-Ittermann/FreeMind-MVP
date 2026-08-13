@@ -232,7 +232,9 @@ export function TTBottomPanel({
                         onClick={async () => {
                           try {
                             await saveNow();
+                            setRatingReopened(false);
                             setRatingConfirmed(true);
+
                           } catch {
                             toast.error(t('tt.ratingFailed'));
                           }
