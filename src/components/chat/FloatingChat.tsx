@@ -176,11 +176,11 @@ export function FloatingChat({
 
   const handleSaveRating = () => {
     // Save empathy only; pass existing disagreement for DB compatibility
-    onSubmitRating?.(empathy, initialDisagreement ?? 50);
+    onSubmitRating?.(empathy, initialDisagreement ?? 5);
     setSavedEmpathy(empathy);
   };
 
-  const myBridgingScore = empathy * (initialDisagreement ?? 50);
+  const myBridgingScore = empathy * (initialDisagreement ?? 5);
   const displayBridgingScore = averageBridgingScore ?? myBridgingScore;
 
   const getBridgingScoreColor = (score: number) => {

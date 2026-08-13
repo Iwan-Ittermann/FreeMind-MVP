@@ -87,8 +87,8 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
 
   const handleSaveRating = async () => {
     try {
-      // Save empathy only; disagreement defaults to 50 for DB compatibility
-      await saveRating(empathy, existingRating?.disagreement ?? 50);
+      // Save understanding only; difference defaults to mid-scale (0–10)
+      await saveRating(empathy, existingRating?.disagreement ?? 5);
       setIsRatingOpen(false);
     } catch {
       toast.error(t('chat.failedToSaveRating'));
@@ -187,7 +187,7 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
                 </div>
                 <div className="relative">
                   <Slider
-                    value={[empathy + 50]}
+                    value={[empathy]}
                     onValueChange={(v) => setEmpathy(v[0] - 50)}
                     max={100}
                     step={1}
