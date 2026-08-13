@@ -15,7 +15,13 @@ export interface TopicData {
   lastChatActivity: Map<string, string | null>;
   /** Set of opinion IDs that are fake (seeded) */
   fakeOpinionIds: Set<string>;
+  /**
+   * Directed bridging points per opinion: each node only collects the points
+   * its counterparts awarded it (respect × difference, rated BY the other side).
+   */
+  nodePoints: Map<string, number>;
 }
+
 
 export interface ActiveChat {
   chatId: string;
