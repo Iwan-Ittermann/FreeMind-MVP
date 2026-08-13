@@ -1,10 +1,10 @@
 import { cn } from '@/lib/utils';
 
 /**
- * 5-step opinion-difference meter (0%, 25%, 50%, 75%, 100%).
- * Maps to 0–100 (0 = no difference, 100 = full difference).
+ * 5-step opinion-difference meter on the 0–10 scale (0, 2, 5, 8, 10).
+ * 0 = no difference, 10 = full difference.
  */
-const STEPS = [0, 25, 50, 75, 100];
+const STEPS = [0, 2, 5, 8, 10];
 
 interface TTEmojiRatingProps {
   value: number;
@@ -34,7 +34,7 @@ export function TTEmojiRating({ value, onChange, disabled, unset = false }: TTEm
     <div className="grid w-full grid-cols-5 gap-1.5" role="radiogroup" aria-label="Opinion difference">
       {STEPS.map((step, i) => {
         const isActive = i === activeIdx;
-        const intensity = step / 100;
+        const intensity = step / 10;
         return (
           <button
             key={step}
@@ -50,11 +50,11 @@ export function TTEmojiRating({ value, onChange, disabled, unset = false }: TTEm
               disabled && 'cursor-not-allowed opacity-30',
             )}
             style={isActive ? undefined : { opacity: 0.55 + intensity * 0.35 }}
-            aria-label={`${step}%`}
+            aria-label={`${step}`}
             aria-checked={isActive}
             role="radio"
           >
-            <span className="block truncate">{step}%</span>
+            <span className="block truncate">{step}</span>
           </button>
         );
       })}
