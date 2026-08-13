@@ -429,6 +429,8 @@ export function useTopicData(topicId: string) {
         ratings: allRatings,
         lastChatActivity,
         fakeOpinionIds,
+        nodePoints,
+
       };
     },
   });
