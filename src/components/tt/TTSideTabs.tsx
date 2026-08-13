@@ -252,21 +252,39 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                           const started = startedOpinionIds.has(op.id);
                           return (
                             <li key={op.id} className="px-4 py-3">
-                              <button
-                                onClick={() => {
-                                  if (!rated && hasOwnOpinion) {
-                                    setRatingTarget({ id: op.id, text: op.text });
-                                    return;
+                              <div className="flex items-start gap-2">
+                                <button
+                                  onClick={() => {
+                                    if (!rated && hasOwnOpinion) {
+                                      setRatingTarget({ id: op.id, text: op.text });
+                                    }
+                                  }}
+                                  className="min-w-0 flex-1 text-left"
+                                >
+                                  <p
+                                    className={cn(
+                                      'text-sm text-foreground leading-snug',
+                                      expandedOpinionId === op.id ? '' : 'line-clamp-1',
+                                    )}
+                                  >
+                                    {op.text}
+                                  </p>
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    setExpandedOpinionId((cur) => (cur === op.id ? null : op.id))
                                   }
-                                  setTab('graph');
-                                  onOpinionTap?.(op.id);
-                                }}
-                                className="w-full text-left"
-                              >
-                                <p className="text-sm text-foreground line-clamp-3 leading-snug">
-                                  {op.text}
-                                </p>
-                              </button>
+                                  className="shrink-0 p-1 text-muted-foreground hover:text-foreground"
+                                  aria-label={t('tt.expandOpinion', 'Meinung anzeigen')}
+                                >
+                                  <ChevronLeft
+                                    className={cn(
+                                      'h-3.5 w-3.5 transition-transform',
+                                      expandedOpinionId === op.id && '-rotate-90',
+                                    )}
+                                  />
+                                </button>
+                              </div>
                               <div className="mt-1.5 flex items-center gap-2 flex-wrap">
                                 <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground tabular-nums">
                                   {t('tt.pointsShort', 'Punkte')}: {Math.round(points)}
@@ -278,7 +296,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                                       className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary flex items-center gap-1"
                                     >
                                       <Pencil className="w-2.5 h-2.5" />
-                                      {rating}% {t('tt.differenceShort', 'Unterschied')}
+                                      {rating}/10 {t('tt.differenceShort', 'Unterschied')}
                                     </button>
                                     <Button
                                       size="sm"
