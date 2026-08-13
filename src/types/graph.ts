@@ -47,7 +47,10 @@ export interface GraphNode {
   unreadCount?: number; // Number of unread messages
   isOnline?: boolean; // Whether the user behind this opinion is currently online
   level?: number; // Discrete scale level 1-10
-  totalPoints?: number; // Sum of bridging scores (empathy × disagreement) across this node's ratings
+  totalPoints?: number; // Sum of bridging scores (understanding × difference) across this node's ratings
+  isTop5?: boolean; // Ranked in the top 5 by total points → rendered as a star
+  isInactive?: boolean; // No points yet → rendered dimmed on the outer line
+
 
 }
 

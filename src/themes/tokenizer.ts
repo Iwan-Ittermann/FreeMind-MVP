@@ -94,7 +94,10 @@ export function tokenizeNode(
     isHidden: node.opinion.visible === false,
     opinionText: node.opinion.text,
     isBot: node.opinion.authorId === BOT_USER_ID,
+    isTop5: node.isTop5 ?? false,
+    isInactive: node.isInactive ?? false,
   });
+
 }
 
 
