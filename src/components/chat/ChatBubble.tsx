@@ -22,16 +22,13 @@ export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(function C
   id, 
   content, 
   isOwn, 
-  timestamp, 
+  timestamp,
   isOpinion = false,
   visible = true,
   noticeText,
   isBotMessage = false,
   replyToContent,
-  reactions = [],
   onReply,
-  onReaction,
-  hasISeenYou = false,
   audioUrl,
   transcript,
 }: ChatBubbleProps, ref) {
@@ -72,8 +69,6 @@ export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(function C
       longPressTimer.current = null;
     }
   }, []);
-
-  const iSeenYouCount = reactions.filter(r => r.reactionType === 'i_see_you').length;
 
   // Show notice for hidden content
   if (!visible && noticeText) {
@@ -175,16 +170,6 @@ export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(function C
           )}
         </motion.div>
 
-        {/* Reactions display */}
-        {iSeenYouCount > 0 && (
-          <div className={`flex items-center gap-1 mt-0.5 ${isOwn ? 'justify-end' : 'justify-start'}`}>
-            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-accent/20 text-accent text-[10px]">
-              <Eye className="w-3 h-3" />
-              {iSeenYouCount > 1 && <span>{iSeenYouCount}</span>}
-            </span>
-          </div>
-        )}
-
         {/* Timestamp */}
         <p className={`text-[10px] text-muted-foreground mt-1 ${isOwn ? 'text-right' : 'text-left'}`}>
           {timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -199,14 +184,6 @@ export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(function C
             onMouseEnter={showMenu}
             onMouseLeave={hideMenu}
           >
-            <button
-              onClick={(e) => { e.stopPropagation(); onReaction?.('i_see_you'); setShowActions(false); }}
-              className={`flex items-center gap-1 px-2 py-1 rounded text-xs hover:bg-muted transition-colors ${hasISeenYou ? 'text-accent' : 'text-muted-foreground'}`}
-              title="I see you"
-            >
-              <Eye className="w-3.5 h-3.5" />
-            </button>
-            <div className="w-px h-4 bg-border" />
             <button
               onClick={(e) => { e.stopPropagation(); onReply?.(); setShowActions(false); }}
               className="flex items-center gap-1 px-2 py-1 rounded text-xs text-muted-foreground hover:bg-muted transition-colors"
