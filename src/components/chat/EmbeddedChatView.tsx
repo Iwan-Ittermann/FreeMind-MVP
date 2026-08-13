@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Send, Quote, Mic, Square, Ban, Unlock, Sparkles } from 'lucide-react';
+import { Send, Quote, Mic, Square, Ban, Unlock, Sparkles, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -251,6 +251,54 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
           <button onClick={() => setReplyingTo(null)} className="text-muted-foreground hover:text-foreground p-1">
             <X className="w-3.5 h-3.5" />
           </button>
+        </div>
+      )}
+
+      {/* Understanding rating — always visible, unlocked after 2 own messages */}
+      {!isBotChat && (
+        <div className="border-t border-border/60 px-2 py-2 shrink-0 bg-muted/60">
+          <div className="mb-1.5 flex items-center justify-between">
+            <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+              <UnderstandingIcon className="h-3.5 w-3.5" />
+              {t('tt.understandingLabel', 'Verständnis')}
+            </span>
+            <span className="relative text-[11px] tabular-nums text-muted-foreground">
+              {canRateRespect ? `${empathy}/10` : t('tt.respectUnlockHint')}
+              <AnimatePresence>
+                {showUnlockSpark && (
+                  <motion.span
+                    initial={{ opacity: 0, scale: 0.4, rotate: -20 }}
+                    animate={{ opacity: 1, scale: 1.6, rotate: 10 }}
+                    exit={{ opacity: 0, scale: 2 }}
+                    className="pointer-events-none absolute -right-3 -top-2 text-primary"
+                  >
+                    <Sparkles className="h-3.5 w-3.5" />
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </span>
+          </div>
+          <div className="grid grid-cols-5 gap-1.5">
+            {[0, 2, 5, 8, 10].map((step) => {
+              const isActive = canRateRespect && empathy === step;
+              return (
+                <button
+                  key={step}
+                  type="button"
+                  disabled={!canRateRespect || isSavingRating}
+                  onClick={() => handleSaveRating(step)}
+                  className={`h-7 rounded-lg border text-[11px] font-semibold transition-all ${
+                    isActive
+                      ? 'border-primary bg-primary text-primary-foreground'
+                      : 'border-border bg-background text-foreground'
+                  } ${!canRateRespect ? 'cursor-not-allowed opacity-40' : 'hover:opacity-80'}`}
+                  aria-label={`${step}`}
+                >
+                  {step}
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
 
