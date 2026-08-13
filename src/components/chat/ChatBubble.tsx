@@ -1,7 +1,6 @@
 import { forwardRef, useState, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Quote, AlertTriangle, Eye, Reply, Mic, Loader2 } from 'lucide-react';
-import type { ChatReaction } from '@/hooks/useChatReactions';
+import { Quote, AlertTriangle, Reply, Mic, Loader2 } from 'lucide-react';
 import { getVoiceSignedUrl } from '@/lib/voice-message-url';
 
 interface ChatBubbleProps {
@@ -9,16 +8,12 @@ interface ChatBubbleProps {
   content: string;
   isOwn: boolean;
   timestamp: Date;
-  reactions?: ChatReaction[];
   isOpinion?: boolean;
-  onReact?: (reaction: string) => void;
   visible?: boolean;
   noticeText?: string | null;
   isBotMessage?: boolean;
   replyToContent?: string;
   onReply?: () => void;
-  onReaction?: (type: string) => void;
-  hasISeenYou?: boolean;
   audioUrl?: string | null;
   transcript?: string | null;
 }
