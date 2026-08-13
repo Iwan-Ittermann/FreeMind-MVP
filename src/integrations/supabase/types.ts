@@ -320,6 +320,7 @@ export type Database = {
           id: string
           opinion_a_id: string
           opinion_b_id: string
+          title: string | null
           topic_id: string
         }
         Insert: {
@@ -327,6 +328,7 @@ export type Database = {
           id?: string
           opinion_a_id: string
           opinion_b_id: string
+          title?: string | null
           topic_id: string
         }
         Update: {
@@ -334,6 +336,7 @@ export type Database = {
           id?: string
           opinion_a_id?: string
           opinion_b_id?: string
+          title?: string | null
           topic_id?: string
         }
         Relationships: [
@@ -1214,6 +1217,15 @@ export type Database = {
           status: string
           target_opinion_id: string
           topic_id: string
+        }[]
+      }
+      get_topic_directed_pairs: {
+        Args: { _topic_id: string }
+        Returns: {
+          disagreement: number
+          empathy: number
+          rater_opinion_id: string
+          target_opinion_id: string
         }[]
       }
       get_topic_disagreement_pairs: {
