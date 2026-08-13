@@ -90,11 +90,14 @@ function TTScreenInnerImpl({
 
   // Empty-state: no real chat empathy anywhere for this topic yet, so
   // totalPoints is 0 for every node and the graph has no gravitational anchor.
-  const hasAnyBridging = useMemo(
-    () => (data?.ratings ?? []).some((r) => !r.isSynthetic && r.empathy > 0),
-    [data?.ratings],
-  );
+  const hasAnyBridging = useMemo(() => {
+    for (const pts of (data?.nodePoints ?? new Map()).values()) {
+      if (pts > 0) return true;
+    }
+    return false;
+  }, [data?.nodePoints]);
   const showEmptyBridgingHint = !!data && (data.opinions?.length ?? 0) >= 2 && !hasAnyBridging;
+
 
   return (
     <section
