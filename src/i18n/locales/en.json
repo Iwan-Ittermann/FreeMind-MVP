@@ -702,6 +702,8 @@
     },
     "graphTab": "Graph",
     "editRating": "Change rating",
-    "ratingFailed": "Could not save rating."
+    "ratingFailed": "Could not save rating.",
+    "understandingLabel": "Understanding",
+    "expandOpinion": "Show opinion"
   }
 }

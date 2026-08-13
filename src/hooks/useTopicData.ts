@@ -68,10 +68,10 @@ function generateFakeNodeRatings(fakeNodeIds: string[]): ChatRating[] {
       const seedStr = [fakeNodeIds[i], fakeNodeIds[j]].sort().join('-');
       const rng = seededRandom(seedStr);
       
-      // Empathy: -20 to +50
-      const empathy = Math.round(-20 + rng() * 70);
-      // Disagreement: 80 to 100
-      const disagreement = Math.round(80 + rng() * 20);
+      // Understanding: 0 to 10
+      const empathy = Math.round(rng() * 10);
+      // Difference: 8 to 10
+      const disagreement = Math.round(8 + rng() * 2);
       
       ratings.push({
         opinionA: fakeNodeIds[i],
@@ -353,7 +353,7 @@ export function useTopicData(topicId: string) {
           opinionA: r.opinion_a_id,
           opinionB: r.opinion_b_id,
           empathy: Number(r.avg_empathy ?? 0),
-          disagreement: Number(r.avg_disagreement ?? 50),
+          disagreement: Number(r.avg_disagreement ?? 5),
         });
       }
 
