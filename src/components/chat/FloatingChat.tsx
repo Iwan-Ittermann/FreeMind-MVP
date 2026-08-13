@@ -293,8 +293,8 @@ export function FloatingChat({
               color="rose"
               lowLabel={t('floatingChat.disrespectful')}
               highLabel={t('floatingChat.respectful')}
-              min={-50}
-              max={50}
+              min={0}
+              max={10}
               hasUnsavedChanges={hasUnsavedChanges}
               onSave={handleSaveRating}
               isSaving={isSavingRating}
@@ -400,8 +400,8 @@ export function FloatingChat({
                                 color="rose"
                                 lowLabel={t('floatingChat.disrespectful')}
                                 highLabel={t('floatingChat.respectful')}
-                                min={-50}
-                                max={50}
+                                min={0}
+                                max={10}
                                 compact
                               />
                             </div>
