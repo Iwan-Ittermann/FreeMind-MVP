@@ -33,7 +33,10 @@ export type SemanticNodeToken = Readonly<{
   isHidden: boolean;
   opinionText: string;
   isBot: boolean;
+  isTop5: boolean;
+  isInactive: boolean;
 }>;
+
 
 // --- Edge Token ---
 export type SemanticEdgeToken = Readonly<{

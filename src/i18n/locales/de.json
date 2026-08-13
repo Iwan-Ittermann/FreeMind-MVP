@@ -702,6 +702,8 @@
     },
     "graphTab": "Graph",
     "editRating": "Bewertung ändern",
-    "ratingFailed": "Bewertung konnte nicht gespeichert werden."
+    "ratingFailed": "Bewertung konnte nicht gespeichert werden.",
+    "understandingLabel": "Verständnis",
+    "expandOpinion": "Meinung anzeigen"
   }
 }

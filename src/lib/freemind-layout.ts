@@ -161,7 +161,7 @@ function levelToRadius(level: number, config: LayoutConfig): number {
 function calculateIdealAngle(disagreement: number): number {
   const minAngle = 0.2;
   const maxAngle = Math.PI;
-  return minAngle + (disagreement / 100) * (maxAngle - minAngle);
+  return minAngle + (disagreement / 10) * (maxAngle - minAngle);
 }
 
 /**
@@ -235,7 +235,7 @@ function calculateDeterministicAngles(
     for (const [connectedId, disagreement] of connections) {
       if (angleMap.has(connectedId)) {
         const connectedAngle = angleMap.get(connectedId)!;
-        const targetOffset = (disagreement / 100) * Math.PI;
+        const targetOffset = (disagreement / 10) * Math.PI;
         const candidateAngle1 = connectedAngle + targetOffset;
         const candidateAngle2 = connectedAngle - targetOffset;
         const weight = disagreement + 1;

@@ -114,7 +114,7 @@ function levelToZone(level: number): 'respectful' | 'moderate' | 'extreme' {
 function calculateIdealAngle(disagreement: number): number {
   const minAngle = 0.2;
   const maxAngle = Math.PI;
-  return minAngle + (disagreement / 100) * (maxAngle - minAngle);
+  return minAngle + (disagreement / 10) * (maxAngle - minAngle);
 }
 
 function normalizeAngle(angle: number): number {
@@ -217,7 +217,7 @@ function calculateDeterministicAngles(opinions: Opinion[], ratings: ChatRating[]
     for (const [connectedId, disagreement] of connections) {
       if (angleMap.has(connectedId)) {
         const ca = angleMap.get(connectedId)!;
-        const offset = (disagreement / 100) * Math.PI;
+        const offset = (disagreement / 10) * Math.PI;
         const c1 = ca + offset;
         const c2 = ca - offset;
         const w = disagreement + 1;
@@ -434,13 +434,15 @@ export function calculateTTLayout(
   });
   const groupCount = distinctTotals.length;
 
-  // Extreme-zone rendering.
+  // Outer-ring rendering.
   //
-  // All negative-score nodes line up on the outer visible ring (same radius as
-  // starter nodes). The collision resolver + deterministic angles keep them
-  // from stacking. Tiering by how negative the score is has been removed —
-  // it inverted user intuition (more negative sat closer to center).
+  // Scores can no longer be negative (both ratings are 0..10). Every node with
+  // zero points — new nodes included — lines up on the outermost visible ring
+  // and renders as inactive. The collision resolver + deterministic angles keep
+  // them from stacking.
 
+  // Top 5 by points (deterministic: total desc, id asc) render as stars.
+  const top5Ids = new Set(positives.slice(0, 5).map(op => op.id));
 
   let allNodes: GraphNode[] = opinions.map(op => {
     const { total, hasChats } = totals.get(op.id)!;
@@ -448,20 +450,14 @@ export function calculateTTLayout(
     let r: number;
     let level: number;
     let zone: 'respectful' | 'moderate' | 'extreme';
+    let isInactive = false;
 
-    if (!hasChats || (total === 0 && op.authorId !== BOT_USER_ID)) {
-      // Starter / no-activity placement — sits just inside the blue ring,
-      // padded inward by the node radius so it stays fully visible.
+    if (total <= 0 && op.authorId !== BOT_USER_ID) {
+      // No points yet → outermost visible ring, dimmed.
       r = maxVisibleR;
-      level = 3;
-      zone = 'moderate';
-    } else if (total < 0) {
-      // All negative-score nodes line up on the outer visible ring.
-      if (total < -2500) level = -3;
-      else if (total < -1000) level = -2;
-      else level = -1;
-      r = maxVisibleR;
+      level = 1;
       zone = 'extreme';
+      isInactive = true;
     } else {
       // Positive band — tie-aware group-based proximity.
       // All nodes sharing the same total sit at the same radius; the collision
@@ -484,14 +480,17 @@ export function calculateTTLayout(
       x: config.centerX + Math.cos(angle) * r,
       y: config.centerY + Math.sin(angle) * r,
       opinion: op,
-      isBridge: total > 2500,
+      isBridge: top5Ids.has(op.id),
       distanceToCenter: r,
       hasChats,
       level,
       zone,
       totalPoints: total,
+      isTop5: top5Ids.has(op.id),
+      isInactive,
     };
   });
+
 
   // Pin the bot to 6 o'clock at the legacy starter ring
   allNodes = allNodes.map(node => {

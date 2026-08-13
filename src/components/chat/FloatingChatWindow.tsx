@@ -87,8 +87,8 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
 
   const handleSaveRating = async () => {
     try {
-      // Save empathy only; disagreement defaults to 50 for DB compatibility
-      await saveRating(empathy, existingRating?.disagreement ?? 50);
+      // Save understanding only; difference defaults to mid-scale (0–10)
+      await saveRating(empathy, existingRating?.disagreement ?? 5);
       setIsRatingOpen(false);
     } catch {
       toast.error(t('chat.failedToSaveRating'));
@@ -187,14 +187,14 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
                 </div>
                 <div className="relative">
                   <Slider
-                    value={[empathy + 50]}
-                    onValueChange={(v) => setEmpathy(v[0] - 50)}
-                    max={100}
+                    value={[empathy]}
+                    onValueChange={(v) => setEmpathy(v[0])}
+                    max={10}
                     step={1}
                     className="[&_[role=slider]]:bg-rose-400 [&_[role=slider]]:border-rose-400 [&_.bg-primary]:bg-rose-400/30"
                   />
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-0.5 h-3 bg-foreground/20 pointer-events-none" />
                 </div>
+
                 <div className="flex justify-between">
                   <HeartCrack className="w-4 h-4 text-rose-400" />
                   <Heart className="w-4 h-4 text-rose-400" />

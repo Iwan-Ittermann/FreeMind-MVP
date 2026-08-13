@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Send, Heart, HeartCrack, Check, X, Quote, Mic, Square, Ban, Unlock, Sparkles } from 'lucide-react';
+import { Send, Quote, Mic, Square, Ban, Unlock, Sparkles, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Slider } from '@/components/ui/slider';
+import { UnderstandingIcon } from '@/components/icons/UnderstandingIcon';
 import { ChatBubble } from './ChatBubble';
 import { TypingIndicator } from './TypingIndicator';
 import { useChatSession } from '@/hooks/useChatSession';
@@ -42,7 +42,6 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
   const { isRecording, duration, startRecording, stopRecording } = useVoiceRecorder();
 
   const [inputValue, setInputValue] = useState('');
-  const [isRatingOpen, setIsRatingOpen] = useState(false);
   const [empathy, setEmpathy] = useState(0);
   const [initialized, setInitialized] = useState(false);
   const [replyingTo, setReplyingTo] = useState<{ id: string; content: string; isOwn: boolean } | null>(null);
@@ -105,20 +104,18 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
 
   const formatDuration = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
-  const handleSaveRating = async () => {
+  const handleSaveRating = async (value: number) => {
+    setEmpathy(value);
     try {
-      await saveRating(empathy, existingRating?.disagreement ?? 50);
-      setIsRatingOpen(false);
+      await saveRating(value, existingRating?.disagreement ?? 5);
     } catch {
       toast.error(t('chat.failedToSaveRating'));
     }
   };
 
   useEffect(() => {
-    if (!isRatingOpen) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [dbMessages, isRatingOpen]);
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [dbMessages]);
 
   const handleReply = useCallback((msg: { id: string; content: string; isOwn: boolean }) => {
     setReplyingTo(msg);
@@ -157,42 +154,6 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
         {isLoading ? (
           <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
             {t('common.loadingChat')}
-          </div>
-        ) : isRatingOpen ? (
-          <div className="p-3 flex flex-col">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-foreground">{t('floatingChat.rateConversation')}</h3>
-              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setIsRatingOpen(false)}>
-                <X className="h-3.5 w-3.5" />
-              </Button>
-            </div>
-            <div className="space-y-2 mb-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">{t('floatingChat.respect')}</span>
-                <span className="text-xs font-mono text-rose-400">{empathy}</span>
-              </div>
-              <div className="relative">
-                <Slider
-                  value={[empathy + 50]}
-                  onValueChange={(v) => setEmpathy(v[0] - 50)}
-                  max={100}
-                  step={1}
-                  className="[&_[role=slider]]:bg-rose-400 [&_[role=slider]]:border-rose-400 [&_.bg-primary]:bg-rose-400/30"
-                />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-0.5 h-3 bg-foreground/20 pointer-events-none" />
-              </div>
-              <div className="flex justify-between">
-                <HeartCrack className="w-4 h-4 text-rose-400" />
-                <Heart className="w-4 h-4 text-rose-400" />
-              </div>
-            </div>
-            <button
-              onClick={handleSaveRating}
-              disabled={isSavingRating}
-              className="mx-auto flex items-center justify-center w-10 h-10 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
-            >
-              <Check className="w-5 h-5" />
-            </button>
           </div>
         ) : (
           <div className="space-y-2">
@@ -293,6 +254,54 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
         </div>
       )}
 
+      {/* Understanding rating — always visible, unlocked after 2 own messages */}
+      {!isBotChat && (
+        <div className="border-t border-border/60 px-2 py-2 shrink-0 bg-muted/60">
+          <div className="mb-1.5 flex items-center justify-between">
+            <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+              <UnderstandingIcon className="h-3.5 w-3.5" />
+              {t('tt.understandingLabel', 'Verständnis')}
+            </span>
+            <span className="relative text-[11px] tabular-nums text-muted-foreground">
+              {canRateRespect ? `${empathy}/10` : t('tt.respectUnlockHint')}
+              <AnimatePresence>
+                {showUnlockSpark && (
+                  <motion.span
+                    initial={{ opacity: 0, scale: 0.4, rotate: -20 }}
+                    animate={{ opacity: 1, scale: 1.6, rotate: 10 }}
+                    exit={{ opacity: 0, scale: 2 }}
+                    className="pointer-events-none absolute -right-3 -top-2 text-primary"
+                  >
+                    <Sparkles className="h-3.5 w-3.5" />
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </span>
+          </div>
+          <div className="grid grid-cols-5 gap-1.5">
+            {[0, 2, 5, 8, 10].map((step) => {
+              const isActive = canRateRespect && empathy === step;
+              return (
+                <button
+                  key={step}
+                  type="button"
+                  disabled={!canRateRespect || isSavingRating}
+                  onClick={() => handleSaveRating(step)}
+                  className={`h-7 rounded-lg border text-[11px] font-semibold transition-all ${
+                    isActive
+                      ? 'border-primary bg-primary text-primary-foreground'
+                      : 'border-border bg-background text-foreground'
+                  } ${!canRateRespect ? 'cursor-not-allowed opacity-40' : 'hover:opacity-80'}`}
+                  aria-label={`${step}`}
+                >
+                  {step}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Input footer */}
       <div className="border-t border-border p-2 shrink-0 bg-muted/80">
         {isBlocked || isBlockedByOther ? (
@@ -316,49 +325,19 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
         ) : (
           <div className="flex items-center gap-1.5">
             <div className="relative min-w-0 flex-1">
-              {!isBotChat && (
-                <button
-                  type="button"
-                  onClick={() => canRateRespect && setIsRatingOpen(!isRatingOpen)}
-                  disabled={!canRateRespect}
-                  className={`absolute left-1.5 top-1/2 z-10 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full transition-colors ${
-                    canRateRespect
-                      ? isRatingOpen
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-rose-400 hover:bg-muted'
-                      : 'text-muted-foreground/40 cursor-not-allowed'
-                  }`}
-                  title={canRateRespect ? t('floatingChat.rateConversation') : t('tt.respectUnlockHint')}
-                  aria-label={t('floatingChat.respect')}
-                >
-                  <Heart className="h-3.5 w-3.5" />
-                  <AnimatePresence>
-                    {showUnlockSpark && (
-                      <motion.span
-                        initial={{ opacity: 0, scale: 0.4, rotate: -20 }}
-                        animate={{ opacity: 1, scale: 1.6, rotate: 10 }}
-                        exit={{ opacity: 0, scale: 2 }}
-                        className="pointer-events-none absolute -right-2 -top-2 text-primary"
-                      >
-                        <Sparkles className="h-3.5 w-3.5" />
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                </button>
-              )}
               <Input
                 value={inputValue}
                 onChange={(e) => handleInputChange(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
                 placeholder={t('floatingChat.typeMessage')}
-                className={`h-8 text-xs bg-background text-foreground border-border ${!isBotChat ? 'pl-8' : ''}`}
-                disabled={isSending || isRatingOpen}
+                className="h-8 text-xs bg-background text-foreground border-border"
+                disabled={isSending}
               />
             </div>
             {inputValue.trim() ? (
               <Button
                 onClick={handleSend}
-                disabled={isSending || isRatingOpen}
+                disabled={isSending}
                 size="icon"
                 className="h-8 w-8 shrink-0"
               >
@@ -367,7 +346,6 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
             ) : (
               <Button
                 onClick={handleVoiceToggle}
-                disabled={isRatingOpen}
                 size="icon"
                 className="h-8 w-8 shrink-0"
               >
