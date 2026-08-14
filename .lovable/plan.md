@@ -1,39 +1,52 @@
-# Graph Tab Restyle — Nebula Look from the Mockup
+# Fix blinking notice/countdown, restore passphrase link, footer alignment
 
-Visual-only restyle of the graph tab so it matches the uploaded mockup. No layout logic, no scoring, no features change.
+## 1. Blinking notice and countdown (root cause found)
 
-## What changes visually
+Verified in the running app: for visitors without a login, every 4-second data poll of the
+opinions view fails with HTTP 401 and the message `permission denied for function has_role`.
+Reason: the read policies on `opinions`, `chat_messages`, `opinion_ratings` and `topics`
+call the `has_role` helper, but visitors (role `anon`) no longer have permission to execute
+that function — it was removed from `anon` during earlier security hardening. The failing
+poll makes the app's loading state flip on and off, and the notice for unregistered users
+plus the countdown box are mounted/unmounted with each flip. That is the rhythmic blinking
+on both `/test` and `/go`.
 
-**Background**
-- Deep violet at the top fading through midnight navy to near-black at the bottom, filling the whole mobile frame.
-- The grey/tan bands currently visible above and below the circle disappear — the radial field spans the full space between title and tab bar.
+Fix, two layers:
 
-**Zone rings (inside out)**
-- Respectful core: warm amber/orange glow with soft inner haze, thin orange guide rings.
-- Moderate: transition ring, cool cyan-blue glow instead of today's teal.
-- Extreme: soft off-white halo as the outermost band, with faint hairline rings outside it.
-- Zone labels stay hidden (as today).
+- Database migration: give `anon` permission to execute the role-check helpers
+  (`has_role`, `is_chat_participant`). They are security-definer read-only checks and simply
+  return false for visitors — no data is exposed by this, and it restores public read access
+  the app expects.
+- Make the UI immune to transient fetch failures: once the app knows whether the visitor has
+  an opinion, that answer stays put ("latched") instead of falling back to a loading state.
+  This keeps the notice and countdown stable even if a request fails.
 
-**Nodes**
-- Small speech-bubble chips with a light translucent surface and a thin border, score label directly beneath in a small bold numeral with a soft dark shadow so it reads over the bright halo.
-- Top-5 nodes render as a glowing gold star (current user's node stays in the accent red).
-- 0-point / inactive nodes sit on the outermost line, dimmed.
-- Negative scores get a muted warm-red chip so they read as extreme without shouting.
+Verification: reload `/test` and `/go` in the browser, watch for 20+ seconds, confirm no 401
+responses and the notice/countdown stays on screen without flicker.
 
-**Title and chrome**
-- Italic serif question stays flush under the header, centered, in near-white on the violet.
-- Header keeps the slim treatment: logo left, help / bell / gear right, bell dot in accent red.
-- Tab bar gets a dark translucent blurred surface with a hairline top border; active tab in accent with a short underline.
+## 2. "Already have a passphrase?" link
 
-**Add-opinion CTA**
-- Keeps its current position and three-state behaviour; restyled as a warm amber pill so it reads as the primary action against the cold outer field.
+The login entry point currently exists only inside the settings (gear) panel, so the notice
+for unregistered users lost it. Restore it:
 
-**Motion**
-- Slow breathing glow on the core only. Nodes fade in. Nothing fast.
+- Add an "Already have a passphrase?" link to the unregistered notice on `/test` and `/go`
+  and to the countdown box.
+- Clicking it opens the settings panel with the login form already expanded (via a small
+  window event the header listens for), so there is only one login form in the app.
+- Reuse the existing translation keys (EN/DE) — no new copy.
+
+## 3. Footer
+
+Move the Impressum link in the bottom bar from centered to the left corner (keep size,
+colour and height unchanged).
 
 ## Technical notes
 
-- All new values go in as semantic tokens in `index.css` (background gradient, zone glow colors, halo, node surface, star gold, CTA gradient) and are referenced through Tailwind; no hardcoded color utilities in components.
-- Touched files: `index.css`, `tailwind.config.ts`, `TTBackground.tsx` (gradient + ring/glow rendering), the node renderer in the graph screen, `TTHeader.tsx`, `TTScreen.tsx` title block, `TTSideTabs.tsx` tab bar, `TTCenterCTA.tsx`.
-- `tt-layout.ts` is not touched: radii, determinism, tie handling, negative-point collapse to the boundary and the safe-pad clamp all stay exactly as they are.
-- Contrast checked for score labels over both the bright halo and the dark core.
+- Migration: `GRANT EXECUTE ON FUNCTION public.has_role(uuid, app_role) TO anon;` and the
+  same for `public.is_chat_participant(...)`. No policy changes.
+- `src/pages/Discussion.tsx`: latch `ownOpinionKnown` in a ref/state so it never returns to
+  the unknown state; add the passphrase link to the unregistered pill; left-align the
+  footer link.
+- `src/components/tt/TTGateOverlay.tsx`: add the same passphrase link under the countdown.
+- `src/components/tt/TTHeader.tsx`: listen for `tt:open-login` to open the account panel with
+  `showLogin` true.
