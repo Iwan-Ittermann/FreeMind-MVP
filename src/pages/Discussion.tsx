@@ -290,7 +290,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
 
 
         {/* Impressum footer — matches the header's slim size */}
-        <div className="absolute bottom-0 inset-x-0 z-40 h-7 px-3 flex items-center justify-center border-t border-border/30 bg-background/40 backdrop-blur-sm pointer-events-auto">
+        <div className="absolute bottom-0 inset-x-0 z-40 h-7 px-3 flex items-center justify-start border-t border-border/30 bg-background/40 backdrop-blur-sm pointer-events-auto">
           <a
             href="/legal"
             className="text-[11px] text-muted-foreground/80 hover:text-foreground transition-colors leading-none"
