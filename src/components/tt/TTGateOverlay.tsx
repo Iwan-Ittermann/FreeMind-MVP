@@ -100,14 +100,24 @@ export function TTGateOverlay({
               </p>
             )}
             {!isVerified && (
-              <p className="mt-4 text-xs text-muted-foreground">
-                {t('tt.registerToParticipate')}{' '}
-                <a href="https://freemind.chat" className="text-primary hover:underline font-medium">
-                  freemind.chat
-                </a>{' '}
-                {t('tt.registerToParticipateSuffix')}
-              </p>
+              <>
+                <p className="mt-4 text-xs text-muted-foreground">
+                  {t('tt.registerToParticipate')}{' '}
+                  <a href="https://freemind.chat" className="text-primary hover:underline font-medium">
+                    freemind.chat
+                  </a>{' '}
+                  {t('tt.registerToParticipateSuffix')}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => window.dispatchEvent(new CustomEvent('tt:open-login'))}
+                  className="mt-2 text-xs text-primary hover:underline font-medium"
+                >
+                  {t('tt.alreadyHavePassphrase')}
+                </button>
+              </>
             )}
+
           </>
         )}
 

@@ -76,8 +76,14 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
   });
   const ownOpinionId = visibleOwnOpinionId ?? directOwnOpinionId;
   const hasOwnOpinion = !!ownOpinionId;
-  const ownOpinionKnown =
+  const ownOpinionResolved =
     !authLoading && !topicLoading && !activeDataLoading && (!user || !directOwnOpinionLoading);
+  // Latch: once resolved, never fall back to "unknown" (transient refetch/error
+  // states must not unmount the gate / register notice → visible blinking).
+  const ownOpinionKnownRef = useRef(false);
+  if (ownOpinionResolved) ownOpinionKnownRef.current = true;
+  const ownOpinionKnown = ownOpinionResolved || ownOpinionKnownRef.current;
+
   const { notifications: ttNotifications, markAllRead } = useTTNotifications(activeTopicId);
   const { data: unreadMap } = useUnreadMessages(activeTopicId, ownOpinionId);
   const handleEdgeClick = useCallback((edge: GraphEdge) => {
@@ -208,17 +214,27 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
             />
           ) : (
             <div className="absolute left-1/2 bottom-[125px] -translate-x-1/2 z-30 w-[calc(100%-2rem)] max-w-[360px] flex justify-center">
-              <div className="pointer-events-auto inline-flex flex-wrap justify-center items-center gap-x-1.5 px-4 py-2.5 rounded-2xl bg-background/95 backdrop-blur-md border border-border/40 shadow-lg text-sm text-foreground text-center">
-                <span>{t('tt.registerToParticipate')}</span>
-                <a
-                  href="https://freemind.chat"
-                  className="text-primary hover:underline font-medium"
+              <div className="pointer-events-auto flex flex-col items-center gap-1 px-4 py-2.5 rounded-2xl bg-background/95 backdrop-blur-md border border-border/40 shadow-lg text-sm text-foreground text-center">
+                <div className="inline-flex flex-wrap justify-center items-center gap-x-1.5">
+                  <span>{t('tt.registerToParticipate')}</span>
+                  <a
+                    href="https://freemind.chat"
+                    className="text-primary hover:underline font-medium"
+                  >
+                    freemind.chat
+                  </a>
+                  <span>{t('tt.registerToParticipateSuffix')}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => window.dispatchEvent(new CustomEvent('tt:open-login'))}
+                  className="text-xs text-primary hover:underline font-medium"
                 >
-                  freemind.chat
-                </a>
-                <span>{t('tt.registerToParticipateSuffix')}</span>
+                  {t('tt.alreadyHavePassphrase')}
+                </button>
               </div>
             </div>
+
           )
         )}
         <TTBottomPanel
@@ -274,7 +290,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
 
 
         {/* Impressum footer — matches the header's slim size */}
-        <div className="absolute bottom-0 inset-x-0 z-40 h-7 px-3 flex items-center justify-center border-t border-border/30 bg-background/40 backdrop-blur-sm pointer-events-auto">
+        <div className="absolute bottom-0 inset-x-0 z-40 h-7 px-3 flex items-center justify-start border-t border-border/30 bg-background/40 backdrop-blur-sm pointer-events-auto">
           <a
             href="/legal"
             className="text-[11px] text-muted-foreground/80 hover:text-foreground transition-colors leading-none"
