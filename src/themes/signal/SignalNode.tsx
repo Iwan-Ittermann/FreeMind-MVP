@@ -158,10 +158,8 @@ export const SignalNode = memo(function SignalNode({
     ? (token.opinionText.length > 16 ? token.opinionText.slice(0, 16) + '…' : token.opinionText)
     : '';
 
-  // TT extreme nodes are visually smaller (× 0.6)
-  const effectiveScale = ttMode && !token.isBot && token.zone === 'outer' && !token.isTop5
-    ? scale * 0.6
-    : scale;
+  // All TT nodes render at the same size, regardless of ring
+  const effectiveScale = scale;
   const scaledHalf = HALF * effectiveScale;
 
   // Detect "freshly added" own opinion: TTCenterCTA writes the opinion id +
