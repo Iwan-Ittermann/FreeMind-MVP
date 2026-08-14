@@ -188,7 +188,7 @@ export default function Landing() {
           <p className="mb-10 text-lg sm:text-xl font-bold uppercase tracking-wide">
             EINE WOCHE · EINE FRAGE · <span className="text-alert">EIN BEWEIS.</span>
           </p>
-          <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-0 border-b-2 border-foreground">
+          <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-0 border border-foreground">
             <input
               type="text"
               required
