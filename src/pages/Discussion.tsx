@@ -76,8 +76,14 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
   });
   const ownOpinionId = visibleOwnOpinionId ?? directOwnOpinionId;
   const hasOwnOpinion = !!ownOpinionId;
-  const ownOpinionKnown =
+  const ownOpinionResolved =
     !authLoading && !topicLoading && !activeDataLoading && (!user || !directOwnOpinionLoading);
+  // Latch: once resolved, never fall back to "unknown" (transient refetch/error
+  // states must not unmount the gate / register notice → visible blinking).
+  const ownOpinionKnownRef = useRef(false);
+  if (ownOpinionResolved) ownOpinionKnownRef.current = true;
+  const ownOpinionKnown = ownOpinionResolved || ownOpinionKnownRef.current;
+
   const { notifications: ttNotifications, markAllRead } = useTTNotifications(activeTopicId);
   const { data: unreadMap } = useUnreadMessages(activeTopicId, ownOpinionId);
   const handleEdgeClick = useCallback((edge: GraphEdge) => {
