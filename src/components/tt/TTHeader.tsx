@@ -105,6 +105,17 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
     return () => document.removeEventListener('mousedown', onDown);
   }, [accountOpen, bellOpen]);
 
+  // Allow other parts of the app (e.g. the "register" notice) to open the login form
+  useEffect(() => {
+    const openLogin = () => {
+      setAccountOpen(true);
+      setShowLogin(true);
+    };
+    window.addEventListener('tt:open-login', openLogin);
+    return () => window.removeEventListener('tt:open-login', openLogin);
+  }, []);
+
+
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!phrase) return;
