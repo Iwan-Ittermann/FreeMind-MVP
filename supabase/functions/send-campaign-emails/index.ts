@@ -68,7 +68,10 @@ async function sendCampaign(campaignKey: string, onlySignupId?: string) {
       goUrl: `${SITE_URL}/go`,
       testUrl: `${SITE_URL}/test`,
       faqUrl: `${SITE_URL}/faq`,
+      sogehtsUrl: `${SITE_URL}/sogehts`,
+      trackingUrl: `${SUPABASE_URL}/functions/v1/email-open?c=${encodeURIComponent(campaignKey)}&s=${r.id}`,
     };
+
     const tpl = await loadTemplate(supabase, campaignKey, data, {
       subject: def.label,
       heading: def.label,
