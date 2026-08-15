@@ -705,6 +705,21 @@
     "editRating": "Bewertung ändern",
     "ratingFailed": "Bewertung konnte nicht gespeichert werden.",
     "understandingLabel": "Verständnis",
-    "expandOpinion": "Meinung anzeigen"
+    "expandOpinion": "Meinung anzeigen",
+    "diffStep": {
+      "strongAgree": "Starke Zustimmung",
+      "agree": "Zustimmung",
+      "neutral": "Neutral",
+      "disagree": "Ablehnung",
+      "strongDisagree": "Starke Ablehnung"
+    },
+    "understandingStep": {
+      "notAtAll": "Gar nicht",
+      "little": "Wenig",
+      "partly": "Teils/Teils",
+      "good": "Gut",
+      "veryGood": "Sehr gut"
+    },
+    "understandingQuestion": "Wie gut versteht der/die andere dich?"
   }
 }
