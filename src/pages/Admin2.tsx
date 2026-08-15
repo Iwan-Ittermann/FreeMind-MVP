@@ -68,7 +68,8 @@ const TEMPLATE_META: Record<string, TemplateMeta> = {
   "campaign-sogehts": {
     label: "7. So geht's",
     trigger: "Nur manuell",
-    placeholders: "{{sogehtsUrl}}, {{goUrl}}, {{appUrl}}, {{faqUrl}}, {{passphrase}}",
+    placeholders:
+      "{{sogehtsUrl}}, {{goUrl}}, {{appUrl}}, {{faqUrl}}, {{passphrase}}, Bilder: {{graphImg}}, {{diffImg}}, {{understandingImg}}, {{handImg}} (als ![alt]({{graphImg}}) einfügen)",
     campaign: true,
   },
 };
