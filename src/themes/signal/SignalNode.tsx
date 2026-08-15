@@ -1,5 +1,6 @@
 import { memo, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { SemanticNodeToken, SemanticZone } from '../types';
 
 const NODE_SIZE = 40;
