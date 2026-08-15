@@ -144,6 +144,7 @@ export const SignalNode = memo(function SignalNode({
   graphSize,
   onClick, onPointerDown, onMouseEnter, onMouseLeave,
 }: SignalNodeProps) {
+  const { t } = useTranslation();
   const shapeSet = ttMode
     ? (token.isCurrentUser ? ZONE_SHAPE_TT_USER : ZONE_SHAPE_TT)
     : ZONE_SHAPE;
