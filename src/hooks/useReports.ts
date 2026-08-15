@@ -44,10 +44,10 @@ export function useReports(isAdmin: boolean = false) {
   return useQuery({
     queryKey: ['reports', isAdmin, user?.id],
     queryFn: async () => {
-      // Fetch reports
+      // Fetch reports (IP address columns are admin-only and not selectable here)
       const { data: reportsData, error: reportsError } = await supabase
         .from('reports')
-        .select('*')
+        .select('id, content_id, content_type, reporting_user_id, law_book, paragraph, offense, description, created_at, status, admin_id, review_timestamp')
         .order('created_at', { ascending: false });
 
       if (reportsError) throw reportsError;
@@ -61,9 +61,22 @@ export function useReports(isAdmin: boolean = false) {
 
       const contentMap = new Map(contentsData?.map(c => [c.content_id, c.text]) || []);
 
+      // Admins can additionally resolve IP addresses through a protected function
+      const ipMap = new Map<string, string | undefined>();
+      if (isAdmin) {
+        await Promise.all(
+          reportsData.map(async (r) => {
+            const { data } = await supabase.rpc('get_report_ips', { _report_id: r.id });
+            const row = Array.isArray(data) ? data[0] : null;
+            if (row?.reported_user_ip_address) ipMap.set(r.id, row.reported_user_ip_address);
+          }),
+        );
+      }
+
       return reportsData.map((report): Report => {
-        // Use stored IP or fallback to sample data for older reports
-        const reportedUserIp = report.reported_user_ip_address || '192.168.1.xxx (Beispieldaten)';
+        const reportedUserIp = ipMap.get(report.id);
+        
+
         
         return {
           id: report.id,
