@@ -56,9 +56,6 @@ export function TTRatingDialog({
             disabled={!canRate}
             unset={!touched && !hasSavedRating}
           />
-          <div className="text-center text-[10px] text-muted-foreground tracking-wide mt-1">
-            {t('tt.opinionDifferenceLabel')}
-          </div>
         </div>
 
         {!canRate ? (

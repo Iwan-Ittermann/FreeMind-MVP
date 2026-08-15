@@ -705,6 +705,21 @@
     "editRating": "Change rating",
     "ratingFailed": "Could not save rating.",
     "understandingLabel": "Understanding",
-    "expandOpinion": "Show opinion"
+    "expandOpinion": "Show opinion",
+    "diffStep": {
+      "strongAgree": "Strong agreement",
+      "agree": "Agreement",
+      "neutral": "Neutral",
+      "disagree": "Disagreement",
+      "strongDisagree": "Strong disagreement"
+    },
+    "understandingStep": {
+      "notAtAll": "Not at all",
+      "little": "A little",
+      "partly": "Somewhat",
+      "good": "Well",
+      "veryGood": "Very well"
+    },
+    "understandingQuestion": "How well does the other person understand you?"
   }
 }
