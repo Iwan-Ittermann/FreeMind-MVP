@@ -90,6 +90,8 @@ export type Database = {
         Row: {
           campaign_key: string
           id: string
+          open_count: number
+          opened_at: string | null
           recipient_email: string
           sent_at: string
           signup_id: string
@@ -97,6 +99,8 @@ export type Database = {
         Insert: {
           campaign_key: string
           id?: string
+          open_count?: number
+          opened_at?: string | null
           recipient_email: string
           sent_at?: string
           signup_id: string
@@ -104,6 +108,8 @@ export type Database = {
         Update: {
           campaign_key?: string
           id?: string
+          open_count?: number
+          opened_at?: string | null
           recipient_email?: string
           sent_at?: string
           signup_id?: string
