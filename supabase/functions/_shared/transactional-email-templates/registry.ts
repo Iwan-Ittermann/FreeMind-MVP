@@ -31,4 +31,6 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'campaign-soft-launch': softLaunchTemplate,
   'campaign-start': startTemplate,
   'campaign-final-day': finalDayTemplate,
+  'campaign-sogehts': sogehtsTemplate,
 }
+
