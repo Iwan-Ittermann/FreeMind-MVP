@@ -9,7 +9,9 @@ import {
   softLaunchTemplate,
   startTemplate,
   finalDayTemplate,
+  sogehtsTemplate,
 } from './campaign.tsx'
+
 
 export interface TemplateEntry {
   // deno-lint-ignore no-explicit-any
