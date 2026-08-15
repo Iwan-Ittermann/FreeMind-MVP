@@ -205,15 +205,15 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
       <div
         aria-hidden
         className="absolute left-0 right-0 z-20 pointer-events-none bg-gradient-to-b from-background/85 via-background/60 to-transparent"
-        style={{ top: 28, height: 88 }}
+        style={{ top: 28, height: 104 }}
       />
       <div
-        className="absolute left-0 right-0 z-30 flex items-center justify-center px-6 text-center pointer-events-auto"
-        style={{ top: 32, height: 64 }}
+        className="absolute left-0 right-0 z-30 flex items-center justify-center px-7 text-center pointer-events-auto"
+        style={{ top: 36, height: 76 }}
       >
         <h1
-          className="font-serif italic leading-tight text-foreground line-clamp-2"
-          style={{ fontSize: 'clamp(0.95rem, 3.6vw, 1.2rem)' }}
+          className="font-serif italic leading-snug text-foreground line-clamp-2 px-2"
+          style={{ fontSize: 'clamp(1.05rem, 4.4vw, 1.45rem)' }}
         >
           <TopicTitleWithLinks title={topicTitle} />
         </h1>

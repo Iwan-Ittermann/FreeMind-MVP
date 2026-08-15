@@ -95,10 +95,10 @@ export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function Si
             backgroundImage: `
               radial-gradient(
                 circle closest-side,
-                rgba(0, 229, 255, 0.06) 0%,
-                rgba(0, 229, 255, 0.06) ${coreP}%,
-                rgba(20, 184, 102, 0.04) ${coreP}%,
-                rgba(20, 184, 102, 0.04) ${midP}%,
+                hsla(38, 95%, 62%, 0.07) 0%,
+                hsla(38, 95%, 62%, 0.07) ${coreP}%,
+                hsla(28, 90%, 55%, 0.05) ${coreP}%,
+                hsla(28, 90%, 55%, 0.05) ${midP}%,
                 hsla(20, 80%, 45%, 0.05) ${midP}%,
                 hsla(20, 80%, 45%, 0.05) 100%,
                 transparent 100%
@@ -129,9 +129,9 @@ export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function Si
           { level: 1, radius: r - config.nodeRadius, zone: 'extreme' },
         ];
         const zoneColors: Record<string, string> = {
-          respectful: 'rgba(0, 229, 255, 0.18)',
-          moderate: 'rgba(20, 184, 102, 0.14)',
-          extreme: 'hsla(20, 80%, 50%, 0.16)',
+          respectful: 'hsla(35, 95%, 70%, 0.30)',
+          moderate: 'hsla(28, 90%, 62%, 0.22)',
+          extreme: 'hsla(22, 85%, 58%, 0.18)',
         };
         return levelRadii.map(({ level, radius, zone }) => (
           <circle

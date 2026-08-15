@@ -80,9 +80,9 @@ function OuterShape() {
   );
 }
 
-function OuterShapeBlack() {
+function OuterShapeWarm() {
   return (
-    <rect x="15" y="15" width="10" height="10" fill="#0a0a0a" stroke="none" />
+    <rect x="13" y="13" width="14" height="14" rx="2" fill="#F0A24B" stroke="none" />
   );
 }
 
@@ -111,7 +111,8 @@ const ZONE_SHAPE: Record<SemanticZone, () => JSX.Element> = {
 const ZONE_SHAPE_TT: Record<SemanticZone, () => JSX.Element> = {
   core: CoreShapeGold,
   middle: MiddleShapeEmerald,
-  outer: OuterShapeBlack,
+  // Negative scores no longer exist — outer nodes use the warm marker, not black.
+  outer: OuterShapeWarm,
 };
 
 const ZONE_SHAPE_TT_USER: Record<SemanticZone, () => JSX.Element> = {
