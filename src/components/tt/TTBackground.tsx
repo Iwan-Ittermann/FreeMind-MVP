@@ -42,9 +42,9 @@ export function TTBackground({ hue = 0, className, viewportWidth }: TTBackground
         <defs>
           {/* Dark faded-blue field behind everything */}
           <linearGradient id="tt-bg" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#1b1c3c" />
-            <stop offset="55%" stopColor="#16203f" />
-            <stop offset="100%" stopColor="#101a33" />
+            <stop offset="0%" stopColor="#171d3a" />
+            <stop offset="55%" stopColor="#151c37" />
+            <stop offset="100%" stopColor="#141b35" />
           </linearGradient>
 
           {/* Bright blue halo ring */}
