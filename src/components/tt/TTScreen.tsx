@@ -104,7 +104,7 @@ function TTScreenInnerImpl({
       data-tt-topic={topicId}
       data-tt-real-topic={topicId}
       className="relative w-full h-[100dvh] snap-start snap-always overflow-hidden"
-      style={{ contain: 'layout size', backgroundColor: '#eef2f4', transform: 'translateZ(0)', scrollSnapStop: 'always' }}
+      style={{ contain: 'layout size', backgroundColor: '#101a33', transform: 'translateZ(0)', scrollSnapStop: 'always' }}
     >
       {/* Full-bleed background, sized so the blue ring spans the viewport width.
           Lives outside the graph wrapper so it isn't clipped. */}
