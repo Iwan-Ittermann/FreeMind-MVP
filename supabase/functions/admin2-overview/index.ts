@@ -35,6 +35,7 @@ const TEMPLATE_KEYS = [
   "campaign-soft-launch",
   "campaign-start",
   "campaign-final-day",
+  "campaign-sogehts",
 ] as const;
 type TemplateKey = typeof TEMPLATE_KEYS[number];
 
@@ -47,6 +48,7 @@ const TRACKED_TEMPLATES = [
   "campaign-soft-launch",
   "campaign-start",
   "campaign-final-day",
+  "campaign-sogehts",
 ];
 
 /** Latest status per (recipient email, template), keyed by signup id. */
@@ -71,7 +73,17 @@ async function emailMatrix() {
   const matrix: Record<string, Record<string, string>> = {};
   for (const s of signups ?? []) {
     const mail = String(s.email).split("#")[0].trim().toLowerCase();
-    matrix[s.id] = byEmail[mail] ?? {};
+    matrix[s.id] = { ...(byEmail[mail] ?? {}) };
+  }
+
+  // Campaign opens (tracking pixel) upgrade a "sent" mark to "opened".
+  const { data: opens } = await supabase
+    .from("campaign_sends")
+    .select("campaign_key, signup_id, opened_at")
+    .not("opened_at", "is", null);
+  for (const row of opens ?? []) {
+    const target = matrix[row.signup_id as string];
+    if (target) target[String(row.campaign_key)] = "opened";
   }
   return matrix;
 }
@@ -292,13 +304,15 @@ Deno.serve(async (req) => {
       return Response.json({ ok: true, matrix: await emailMatrix() }, { headers: corsHeaders });
     }
     if (action === "campaign_stats") {
-      const { data } = await supabase.from("campaign_sends").select("campaign_key");
+      const { data } = await supabase.from("campaign_sends").select("campaign_key, opened_at");
       const counts: Record<string, number> = {};
+      const opens: Record<string, number> = {};
       for (const r of data ?? []) {
         const k = String(r.campaign_key);
         counts[k] = (counts[k] ?? 0) + 1;
+        if (r.opened_at) opens[k] = (opens[k] ?? 0) + 1;
       }
-      return Response.json({ ok: true, counts }, { headers: corsHeaders });
+      return Response.json({ ok: true, counts, opens }, { headers: corsHeaders });
     }
     if (action === "get_templates") {
       const { data } = await supabase

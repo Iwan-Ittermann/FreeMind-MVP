@@ -65,6 +65,12 @@ const TEMPLATE_META: Record<string, TemplateMeta> = {
     placeholders: "{{passphrase}}, {{appUrl}}, {{goUrl}}, {{faqUrl}}",
     campaign: true,
   },
+  "campaign-sogehts": {
+    label: "7. So geht's",
+    trigger: "Nur manuell",
+    placeholders: "{{sogehtsUrl}}, {{goUrl}}, {{appUrl}}, {{faqUrl}}, {{passphrase}}",
+    campaign: true,
+  },
 };
 
 const TEMPLATE_ORDER = Object.keys(TEMPLATE_META);
@@ -77,6 +83,7 @@ const MAIL_COLUMNS: Array<{ key: string; short: string; title: string }> = [
   { key: "campaign-soft-launch", short: "Soft", title: "Soft launch today, 20.08." },
   { key: "campaign-start", short: "Start", title: "Start today!, 23.08." },
   { key: "campaign-final-day", short: "Final", title: "Final day, 29.08." },
+  { key: "campaign-sogehts", short: "Geht's", title: "So geht's (nur manuell)" },
   { key: "signup-passphrase", short: "Pass*", title: "Passphrase (alte Einzel-Mail, nur manuell)" },
 ];
 
@@ -88,11 +95,19 @@ const RESENDABLE = [
   { key: "campaign-soft-launch", label: "Soft launch" },
   { key: "campaign-start", label: "Start today" },
   { key: "campaign-final-day", label: "Final day" },
+  { key: "campaign-sogehts", label: "So geht's" },
 ];
 
 function MailMark({ status }: { status?: string }) {
   if (!status) return <span style={{ color: "#9fb0cc" }}>–</span>;
-  if (status === "sent") return <span style={{ color: "#1c7c3a", fontWeight: 700 }}>✓</span>;
+  if (status === "opened") {
+    return (
+      <span style={{ color: "#1c7c3a", fontWeight: 700, letterSpacing: "-0.15em" }} title="Gesendet und geöffnet">
+        ✓✓
+      </span>
+    );
+  }
+  if (status === "sent") return <span style={{ color: "#1c7c3a", fontWeight: 700 }} title="Gesendet">✓</span>;
   if (status === "pending") return <span style={{ color: "#b07a00", fontWeight: 700 }}>⋯</span>;
   return <span style={{ color: "#b3261e", fontWeight: 700 }} title={status}>✕</span>;
 }
@@ -116,6 +131,7 @@ export default function Admin2() {
   const [ipError, setIpError] = useState(false);
   const [openTemplate, setOpenTemplate] = useState<string | null>(null);
   const [campaignCounts, setCampaignCounts] = useState<Record<string, number>>({});
+  const [campaignOpens, setCampaignOpens] = useState<Record<string, number>>({});
   const [resendChoice, setResendChoice] = useState<Record<string, string>>({});
   const [mailMatrix, setMailMatrix] = useState<Record<string, Record<string, string>>>({});
   const [openMoreRow, setOpenMoreRow] = useState<string | null>(null);
@@ -152,6 +168,7 @@ export default function Admin2() {
     setBans(bn.data?.bans ?? []);
     setFaq(fq.data?.faq ?? []);
     setCampaignCounts(cs.data?.counts ?? {});
+    setCampaignOpens(cs.data?.opens ?? {});
     setMailMatrix(mx.data?.matrix ?? {});
     return true;
   }
@@ -342,7 +359,9 @@ export default function Admin2() {
                   <span style={{ fontSize: 12, opacity: 0.7, flex: 1 }}>{t.subject}</span>
                   <span style={{ fontSize: 11, opacity: 0.6, whiteSpace: "nowrap" }}>
                     {meta?.trigger}
-                    {meta?.campaign ? ` · ${campaignCounts[t.key] ?? 0} gesendet` : ""}
+                    {meta?.campaign
+                      ? ` · ${campaignCounts[t.key] ?? 0} gesendet · ${campaignOpens[t.key] ?? 0} geöffnet`
+                      : ""}
                   </span>
                 </button>
                 {open && (

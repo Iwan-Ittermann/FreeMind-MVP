@@ -9,7 +9,9 @@ import {
   softLaunchTemplate,
   startTemplate,
   finalDayTemplate,
+  sogehtsTemplate,
 } from './campaign.tsx'
+
 
 export interface TemplateEntry {
   // deno-lint-ignore no-explicit-any
@@ -29,4 +31,6 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'campaign-soft-launch': softLaunchTemplate,
   'campaign-start': startTemplate,
   'campaign-final-day': finalDayTemplate,
+  'campaign-sogehts': sogehtsTemplate,
 }
+
