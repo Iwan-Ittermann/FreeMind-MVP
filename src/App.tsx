@@ -16,6 +16,8 @@ import Landing from "./pages/Landing";
 import Confirm from "./pages/Confirm";
 import Unsubscribe from "./pages/Unsubscribe";
 import Faq from "./pages/Faq";
+import Sogehts from "./pages/Sogehts";
+
 import { VerificationDialog } from "@/components/VerificationDialog";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
@@ -51,6 +53,8 @@ function AppRoutes() {
       <Route path="/unsubscribe" element={<Unsubscribe />} />
       <Route path="/legal" element={<Legal />} />
       <Route path="/faq" element={<Faq />} />
+      <Route path="/sogehts" element={<Sogehts />} />
+
       <Route path="/admin2" element={<Admin2 />} />
       <Route path="/admin" element={<Admin />} />
       <Route path="/auth" element={<Navigate to="/" replace />} />
