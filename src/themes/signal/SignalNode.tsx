@@ -111,7 +111,8 @@ const ZONE_SHAPE: Record<SemanticZone, () => JSX.Element> = {
 const ZONE_SHAPE_TT: Record<SemanticZone, () => JSX.Element> = {
   core: CoreShapeGold,
   middle: MiddleShapeEmerald,
-  outer: OuterShapeBlack,
+  // Negative scores no longer exist — outer nodes use the warm marker, not black.
+  outer: OuterShape,
 };
 
 const ZONE_SHAPE_TT_USER: Record<SemanticZone, () => JSX.Element> = {
