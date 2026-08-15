@@ -1208,6 +1208,13 @@ export type Database = {
           transcript: string
         }[]
       }
+      get_report_ips: {
+        Args: { _report_id: string }
+        Returns: {
+          reported_user_ip_address: string
+          reporter_ip_address: string
+        }[]
+      }
       get_topic_chat_request_edges: {
         Args: { _topic_id: string }
         Returns: {
