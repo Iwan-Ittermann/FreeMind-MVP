@@ -47,16 +47,6 @@ export function TTBackground({ hue = 0, className, viewportWidth }: TTBackground
             <stop offset="100%" stopColor="#141b35" />
           </linearGradient>
 
-          {/* Bright blue halo ring */}
-          <radialGradient id="tt-halo" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#3aa0ff" stopOpacity="0" />
-            <stop offset="62%" stopColor="#2f8bff" stopOpacity="0.15" />
-            <stop offset="84%" stopColor="#5cc0ff" stopOpacity="0.95" />
-            <stop offset="94%" stopColor="#8fd8ff" stopOpacity="0.75" />
-            <stop offset="100%" stopColor="#8fd8ff" stopOpacity="0" />
-          </radialGradient>
-
-
           <filter id="tt-grain">
             <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves={2} />
             <feColorMatrix type="saturate" values="0" />
@@ -65,26 +55,27 @@ export function TTBackground({ hue = 0, className, viewportWidth }: TTBackground
             </feComponentTransfer>
           </filter>
 
-          {/* Warm multi-shade orange core */}
-          <radialGradient id="tt-inner" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#f5a63a" />
-            <stop offset="22%" stopColor="#e2822a" />
-            <stop offset="45%" stopColor="#b45a17" />
-            <stop offset="70%" stopColor="#7c3a11" />
-            <stop offset="100%" stopColor="#4a220c" />
+          {/* Full iris: warm pupil falloff -> deep navy -> electric blue -> light blue */}
+          <radialGradient id="tt-iris" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#8a3a0a" />
+            <stop offset="27%" stopColor="#b4581a" />
+            <stop offset="33%" stopColor="#4a2c2e" />
+            <stop offset="40%" stopColor="#0b1c3f" />
+            <stop offset="55%" stopColor="#123566" />
+            <stop offset="66%" stopColor="#1863c8" />
+            <stop offset="78%" stopColor="#2a8fff" />
+            <stop offset="90%" stopColor="#6fc4ff" />
+            <stop offset="100%" stopColor="#b8e4ff" />
           </radialGradient>
 
-          {/* Dark inner core so the centre star pops */}
-          <radialGradient id="tt-core" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#2a1405" stopOpacity="0.95" />
-            <stop offset="70%" stopColor="#3a1c08" stopOpacity="0.75" />
-            <stop offset="100%" stopColor="#5a2c0c" stopOpacity="0" />
+          {/* Dark orange pupil */}
+          <radialGradient id="tt-pupil" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#7a3208" />
+            <stop offset="70%" stopColor="#8f3f0c" />
+            <stop offset="100%" stopColor="#b4581a" />
           </radialGradient>
 
           <filter id="tt-blur">
-            <feGaussianBlur stdDeviation="8" />
-          </filter>
-          <filter id="tt-halo-blur">
             <feGaussianBlur stdDeviation="6" />
           </filter>
         </defs>
@@ -96,14 +87,11 @@ export function TTBackground({ hue = 0, className, viewportWidth }: TTBackground
         {/* White ring — crisp boundary of the discussion field */}
         <circle cx="500" cy="500" r="352" fill="#f6f2ec" />
 
-        {/* Bright blue halo just inside the white ring */}
-        <circle cx="500" cy="500" r="348" fill="url(#tt-halo)" filter="url(#tt-halo-blur)" />
+        {/* Iris */}
+        <circle cx="500" cy="500" r="348" fill="url(#tt-iris)" filter="url(#tt-blur)" />
 
-        {/* Warm orange core */}
-        <circle cx="500" cy="500" r="285" fill="url(#tt-inner)" filter="url(#tt-blur)" />
-
-        {/* Dark inner core */}
-        <circle cx="500" cy="500" r="150" fill="url(#tt-core)" />
+        {/* Dark orange pupil — drawn last, unblurred */}
+        <circle cx="500" cy="500" r="100" fill="url(#tt-pupil)" />
       </svg>
     </div>
   );
