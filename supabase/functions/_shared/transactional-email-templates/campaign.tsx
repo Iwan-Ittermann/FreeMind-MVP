@@ -6,6 +6,7 @@ import {
   Head,
   Heading,
   Html,
+  Img,
   Preview,
   Text,
 } from 'npm:@react-email/components@0.0.22'
@@ -17,6 +18,7 @@ interface Props {
   heading?: string
   body?: string
   eyebrow?: string
+  trackingUrl?: string
 }
 
 const Email = ({
@@ -24,6 +26,7 @@ const Email = ({
   heading = 'freemind',
   body = '',
   eyebrow = 'freemind',
+  trackingUrl = '',
 }: Props) => (
   <Html lang="de" dir="ltr">
     <Head />
@@ -33,6 +36,9 @@ const Email = ({
         <Text style={eyebrowStyle}>{eyebrow}</Text>
         <Heading style={h1}>{heading}</Heading>
         {renderBlocks(body)}
+        {trackingUrl ? (
+          <Img src={trackingUrl} width="1" height="1" alt="" style={pixel} />
+        ) : null}
       </Container>
     </Body>
   </Html>
@@ -56,6 +62,14 @@ export const prepareTemplate = makeTemplate('Prepare', 'Es geht bald los', 'Vorb
 export const softLaunchTemplate = makeTemplate('Soft Launch', 'Soft Launch', 'Soft Launch')
 export const startTemplate = makeTemplate('Start today', 'Heute startet es!', 'Start')
 export const finalDayTemplate = makeTemplate('Final day', 'Letzter Tag', 'Letzter Tag')
+export const sogehtsTemplate = makeTemplate(
+  "So geht's",
+  'So funktioniert freemind',
+  "So geht's",
+)
+
+const pixel = { display: 'block', width: '1px', height: '1px', border: 0 }
+
 
 const main = {
   backgroundColor: '#ffffff',
