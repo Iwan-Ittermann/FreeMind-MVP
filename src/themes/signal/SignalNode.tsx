@@ -245,7 +245,7 @@ export const SignalNode = memo(function SignalNode({
             letterSpacing="-0.2"
             style={{ pointerEvents: 'none' }}
           >
-            YOU
+            {t('common.you')}
           </text>
         )}
       </svg>
@@ -255,7 +255,7 @@ export const SignalNode = memo(function SignalNode({
         <g transform={`translate(${scaledHalf * 0.7}, ${-scaledHalf * 0.7})`}>
           <circle r={8 * scale} fill="#FF3B3B" />
           <text x={0} y={0.5} textAnchor="middle" dominantBaseline="central" fill="#FFFFFF" fontSize={5 * scale} fontWeight="bold" fontFamily="monospace">
-            YOU
+            {t('common.you')}
           </text>
         </g>
       )}
