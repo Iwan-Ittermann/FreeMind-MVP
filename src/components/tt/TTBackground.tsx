@@ -40,10 +40,22 @@ export function TTBackground({ hue = 0, className, viewportWidth }: TTBackground
         height="100%"
       >
         <defs>
+          {/* Dark faded-blue field behind everything */}
           <linearGradient id="tt-bg" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#e4d2bd" />
-            <stop offset="100%" stopColor="#9fb6c4" />
+            <stop offset="0%" stopColor="#1b1c3c" />
+            <stop offset="55%" stopColor="#16203f" />
+            <stop offset="100%" stopColor="#101a33" />
           </linearGradient>
+
+          {/* Bright blue halo ring */}
+          <radialGradient id="tt-halo" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#3aa0ff" stopOpacity="0" />
+            <stop offset="62%" stopColor="#2f8bff" stopOpacity="0.15" />
+            <stop offset="84%" stopColor="#5cc0ff" stopOpacity="0.95" />
+            <stop offset="94%" stopColor="#8fd8ff" stopOpacity="0.75" />
+            <stop offset="100%" stopColor="#8fd8ff" stopOpacity="0" />
+          </radialGradient>
+
 
           <filter id="tt-grain">
             <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves={2} />
