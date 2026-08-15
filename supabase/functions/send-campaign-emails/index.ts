@@ -69,6 +69,10 @@ async function sendCampaign(campaignKey: string, onlySignupId?: string) {
       testUrl: `${SITE_URL}/test`,
       faqUrl: `${SITE_URL}/faq`,
       sogehtsUrl: `${SITE_URL}/sogehts`,
+      graphImg: `${SITE_URL}/__l5e/assets-v1/0cdaff8e-0564-467d-8eb1-580a826033f8/mail-graph.jpg`,
+      diffImg: `${SITE_URL}/__l5e/assets-v1/ad327033-7227-4f78-9022-74df5ec96320/mail-sogehts-scale-diff.jpg`,
+      understandingImg: `${SITE_URL}/__l5e/assets-v1/b0f17748-5da8-4eb5-bc8f-0dc243429447/mail-sogehts-scale-understanding.jpg`,
+      handImg: `${SITE_URL}/__l5e/assets-v1/cc07c31b-45a7-45e9-b4be-1046aeb6b08e/hand-pad.png`,
       trackingUrl: `${SUPABASE_URL}/functions/v1/email-open?c=${encodeURIComponent(campaignKey)}&s=${r.id}`,
     };
 

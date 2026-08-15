@@ -69,7 +69,7 @@ function renderInline(text: string, keyBase: string): React.ReactNode[] {
 // prominent phrase box (used for the passphrase). Otherwise it's a normal
 // paragraph. A paragraph consisting only of a single link is rendered as a
 // button.
-export type BlockKind = 'text' | 'phrase' | 'button'
+export type BlockKind = 'text' | 'phrase' | 'button' | 'image'
 
 export interface Block {
   kind: BlockKind
@@ -80,6 +80,9 @@ export interface Block {
   // For 'button': label + href
   label?: string
   href?: string
+  // For 'image': alt + src
+  alt?: string
+  src?: string
 }
 
 export function parseBody(body: string): Block[] {
@@ -90,6 +93,8 @@ export function parseBody(body: string): Block[] {
     .filter(Boolean)
 
   return paragraphs.map<Block>((p) => {
+    const imageOnly = /^!\[([^\]]*)\]\(([^)]+)\)$/.exec(p)
+    if (imageOnly) return { kind: 'image', alt: imageOnly[1], src: imageOnly[2] }
     const codeOnly = /^`([^`]+)`$/.exec(p)
     if (codeOnly) return { kind: 'phrase', phrase: codeOnly[1] }
     const linkOnly = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(p)
@@ -121,6 +126,22 @@ export function renderBlocks(body: string): React.ReactNode[] {
         },
         b.phrase,
       )
+    }
+    if (b.kind === 'image') {
+      return React.createElement('img', {
+        key: `b-${i}`,
+        src: b.src,
+        alt: b.alt ?? '',
+        width: 512,
+        style: {
+          display: 'block',
+          width: '100%',
+          maxWidth: '512px',
+          height: 'auto',
+          border: '1px solid #0a0a0a',
+          margin: '8px 0 24px',
+        },
+      })
     }
     if (b.kind === 'button') {
       return React.createElement(
