@@ -133,6 +133,7 @@ Deno.serve(async (req) => {
     const campaignKey = typeof payload.campaignKey === "string" ? payload.campaignKey : undefined;
     const signupId = typeof payload.signupId === "string" ? payload.signupId : undefined;
     const force = payload.force === true;
+    const resend = payload.resend === true;
 
     const results: unknown[] = [];
 
@@ -142,7 +143,8 @@ Deno.serve(async (req) => {
       if (!force && (!def.dueAt || new Date(def.dueAt) > new Date())) {
         return Response.json({ ok: true, skipped: "not_due" }, { headers: corsHeaders });
       }
-      results.push(await sendCampaign(campaignKey, signupId));
+      results.push(await sendCampaign(campaignKey, signupId, resend));
+
     } else {
       const now = new Date();
       for (const def of CAMPAIGNS) {
