@@ -90,7 +90,7 @@ async function sendCampaign(campaignKey: string, onlySignupId?: string, resend =
       body: JSON.stringify({
         templateName: campaignKey,
         recipientEmail: r.email,
-        idempotencyKey: `${campaignKey}-${r.id}`,
+        idempotencyKey: resend ? `${campaignKey}-${r.id}-${attempt}` : `${campaignKey}-${r.id}`,
         templateData: { ...tpl, ...data },
       }),
     });
