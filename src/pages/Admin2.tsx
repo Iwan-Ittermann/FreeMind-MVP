@@ -392,10 +392,16 @@ export default function Admin2() {
                         Speichern
                       </button>
                       {meta?.campaign && (
-                        <button onClick={() => sendCampaignNow(t.key)} style={ghostBtn}>
-                          Jetzt an alle senden
-                        </button>
+                        <>
+                          <button onClick={() => sendCampaignNow(t.key)} style={ghostBtn}>
+                            Jetzt an alle senden
+                          </button>
+                          <button onClick={() => sendCampaignNow(t.key, true)} style={ghostBtn}>
+                            Erneut an alle senden
+                          </button>
+                        </>
                       )}
+
                     </div>
                   </div>
                 )}
