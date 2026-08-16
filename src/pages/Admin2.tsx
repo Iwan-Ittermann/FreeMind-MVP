@@ -229,15 +229,19 @@ export default function Admin2() {
     else flash(`Vorlage "${TEMPLATE_META[t.key]?.label ?? t.key}" gespeichert.`);
   }
 
-  async function sendCampaignNow(key: string) {
+  async function sendCampaignNow(key: string, resend = false) {
     const label = TEMPLATE_META[key]?.label ?? key;
-    if (!confirm(`"${label}" jetzt an alle bestätigten Empfänger senden, die sie noch nicht erhalten haben?`)) return;
-    const { data, error } = await invoke({ action: "send_campaign_now", key });
+    const question = resend
+      ? `"${label}" ERNEUT an ALLE bestätigten Empfänger senden (auch an die, die sie schon erhalten haben)?`
+      : `"${label}" jetzt an alle bestätigten Empfänger senden, die sie noch nicht erhalten haben?`;
+    if (!confirm(question)) return;
+    const { data, error } = await invoke({ action: "send_campaign_now", key, resend });
     if (error || !data?.ok) { flash("Fehler beim Senden."); return; }
     const result = Array.isArray(data.results) ? data.results[0] : null;
     flash(result ? `${label}: ${result.sent} gesendet, ${result.failed} Fehler.` : `${label} ausgelöst.`);
     await refresh();
   }
+
 
   async function resendForSignup(signup: Signup) {
     const choice = resendChoice[signup.id];
@@ -388,10 +392,16 @@ export default function Admin2() {
                         Speichern
                       </button>
                       {meta?.campaign && (
-                        <button onClick={() => sendCampaignNow(t.key)} style={ghostBtn}>
-                          Jetzt an alle senden
-                        </button>
+                        <>
+                          <button onClick={() => sendCampaignNow(t.key)} style={ghostBtn}>
+                            Jetzt an alle senden
+                          </button>
+                          <button onClick={() => sendCampaignNow(t.key, true)} style={ghostBtn}>
+                            Erneut an alle senden
+                          </button>
+                        </>
                       )}
+
                     </div>
                   </div>
                 )}

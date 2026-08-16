@@ -28,7 +28,7 @@ function cleanEmail(raw: string): string {
   return String(raw).split("#")[0].toLowerCase();
 }
 
-async function loadRecipients(campaignKey: string, onlySignupId?: string): Promise<Recipient[]> {
+async function loadRecipients(campaignKey: string, onlySignupId?: string, resend = false): Promise<Recipient[]> {
   let query = supabase
     .from("signups")
     .select("id, email, passphrase, confirmed_at")
@@ -50,14 +50,16 @@ async function loadRecipients(campaignKey: string, onlySignupId?: string): Promi
 
   return (signups ?? [])
     .map((s) => ({ id: s.id as string, email: cleanEmail(s.email as string), passphrase: (s.passphrase as string | null) ?? null }))
-    .filter((s) => !blocked.has(s.email) && !sentIds.has(s.id));
+    .filter((s) => !blocked.has(s.email) && (resend || !sentIds.has(s.id)));
 }
 
-async function sendCampaign(campaignKey: string, onlySignupId?: string) {
+async function sendCampaign(campaignKey: string, onlySignupId?: string, resend = false) {
   const def = getCampaign(campaignKey);
   if (!def) throw new Error("unknown_campaign");
 
-  const recipients = await loadRecipients(campaignKey, onlySignupId);
+  const recipients = await loadRecipients(campaignKey, onlySignupId, resend);
+  const attempt = Date.now();
+
   let sent = 0;
   let failed = 0;
 
@@ -88,7 +90,7 @@ async function sendCampaign(campaignKey: string, onlySignupId?: string) {
       body: JSON.stringify({
         templateName: campaignKey,
         recipientEmail: r.email,
-        idempotencyKey: `${campaignKey}-${r.id}`,
+        idempotencyKey: resend ? `${campaignKey}-${r.id}-${attempt}` : `${campaignKey}-${r.id}`,
         templateData: { ...tpl, ...data },
       }),
     });
@@ -131,6 +133,7 @@ Deno.serve(async (req) => {
     const campaignKey = typeof payload.campaignKey === "string" ? payload.campaignKey : undefined;
     const signupId = typeof payload.signupId === "string" ? payload.signupId : undefined;
     const force = payload.force === true;
+    const resend = payload.resend === true;
 
     const results: unknown[] = [];
 
@@ -140,7 +143,8 @@ Deno.serve(async (req) => {
       if (!force && (!def.dueAt || new Date(def.dueAt) > new Date())) {
         return Response.json({ ok: true, skipped: "not_due" }, { headers: corsHeaders });
       }
-      results.push(await sendCampaign(campaignKey, signupId));
+      results.push(await sendCampaign(campaignKey, signupId, resend));
+
     } else {
       const now = new Date();
       for (const def of CAMPAIGNS) {

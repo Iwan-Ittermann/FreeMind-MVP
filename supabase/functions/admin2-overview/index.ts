@@ -289,17 +289,18 @@ Deno.serve(async (req) => {
     }
     if (action === "send_campaign_now") {
       if (typeof key !== "string") return Response.json({ ok: false, error: "invalid_key" }, { status: 400, headers: corsHeaders });
-      const out = await callCampaignSender({ campaignKey: key, force: true });
+      const resendAll = body.resend === true;
+      const out = await callCampaignSender({ campaignKey: key, force: true, resend: resendAll });
       return Response.json({ ok: true, ...out }, { headers: corsHeaders });
     }
     if (action === "resend_campaign") {
       if (typeof key !== "string" || typeof signupId !== "string") {
         return Response.json({ ok: false, error: "invalid_payload" }, { status: 400, headers: corsHeaders });
       }
-      await supabase.from("campaign_sends").delete().eq("campaign_key", key).eq("signup_id", signupId);
-      const out = await callCampaignSender({ campaignKey: key, signupId, force: true });
+      const out = await callCampaignSender({ campaignKey: key, signupId, force: true, resend: true });
       return Response.json({ ok: true, ...out }, { headers: corsHeaders });
     }
+
     if (action === "email_matrix") {
       return Response.json({ ok: true, matrix: await emailMatrix() }, { headers: corsHeaders });
     }
