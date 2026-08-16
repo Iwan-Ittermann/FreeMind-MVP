@@ -28,7 +28,7 @@ function cleanEmail(raw: string): string {
   return String(raw).split("#")[0].toLowerCase();
 }
 
-async function loadRecipients(campaignKey: string, onlySignupId?: string): Promise<Recipient[]> {
+async function loadRecipients(campaignKey: string, onlySignupId?: string, resend = false): Promise<Recipient[]> {
   let query = supabase
     .from("signups")
     .select("id, email, passphrase, confirmed_at")
@@ -50,14 +50,16 @@ async function loadRecipients(campaignKey: string, onlySignupId?: string): Promi
 
   return (signups ?? [])
     .map((s) => ({ id: s.id as string, email: cleanEmail(s.email as string), passphrase: (s.passphrase as string | null) ?? null }))
-    .filter((s) => !blocked.has(s.email) && !sentIds.has(s.id));
+    .filter((s) => !blocked.has(s.email) && (resend || !sentIds.has(s.id)));
 }
 
-async function sendCampaign(campaignKey: string, onlySignupId?: string) {
+async function sendCampaign(campaignKey: string, onlySignupId?: string, resend = false) {
   const def = getCampaign(campaignKey);
   if (!def) throw new Error("unknown_campaign");
 
-  const recipients = await loadRecipients(campaignKey, onlySignupId);
+  const recipients = await loadRecipients(campaignKey, onlySignupId, resend);
+  const attempt = Date.now();
+
   let sent = 0;
   let failed = 0;
 
