@@ -31,11 +31,11 @@ function generateToken(): string {
 const TEMPLATE_KEYS = [
   "signup-confirm",
   "signup-welcome",
-  "campaign-prepare",
   "campaign-soft-launch",
   "campaign-start",
   "campaign-final-day",
   "campaign-sogehts",
+  "daily-report",
 ] as const;
 type TemplateKey = typeof TEMPLATE_KEYS[number];
 
@@ -44,11 +44,11 @@ const TRACKED_TEMPLATES = [
   "signup-confirm",
   "signup-passphrase",
   "signup-welcome",
-  "campaign-prepare",
   "campaign-soft-launch",
   "campaign-start",
   "campaign-final-day",
   "campaign-sogehts",
+  "daily-report",
 ];
 
 /** Latest status per (recipient email, template), keyed by signup id. */
@@ -298,6 +298,44 @@ Deno.serve(async (req) => {
         return Response.json({ ok: false, error: "invalid_payload" }, { status: 400, headers: corsHeaders });
       }
       const out = await callCampaignSender({ campaignKey: key, signupId, force: true, resend: true });
+      return Response.json({ ok: true, ...out }, { headers: corsHeaders });
+    }
+
+    if (action === "list_reports") {
+      const { data } = await supabase
+        .from("daily_reports")
+        .select("id, report_date, title, body_md, stats, created_at, updated_at")
+        .order("report_date", { ascending: false });
+      return Response.json({ ok: true, reports: data ?? [] }, { headers: corsHeaders });
+    }
+    if (action === "report_opt_ins") {
+      const { count } = await supabase
+        .from("signups")
+        .select("id", { count: "exact", head: true })
+        .eq("daily_report_opt_in", true)
+        .not("confirmed_at", "is", null);
+      return Response.json({ ok: true, optIns: count ?? 0 }, { headers: corsHeaders });
+    }
+    if (action === "generate_report") {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/generate-daily-report`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_ROLE}` },
+        body: JSON.stringify({
+          date: typeof body?.date === "string" ? body.date : undefined,
+          regenerate: body?.regenerate !== false,
+          send: body?.send === true,
+          resend: body?.resend === true,
+        }),
+      });
+      const text = await res.text();
+      if (!res.ok) {
+        console.error("generate-daily-report failed:", res.status, text);
+        throw new Error("report_failed");
+      }
+      let out: Record<string, unknown> = {};
+      try {
+        out = JSON.parse(text);
+      } catch { /* ignore */ }
       return Response.json({ ok: true, ...out }, { headers: corsHeaders });
     }
 
