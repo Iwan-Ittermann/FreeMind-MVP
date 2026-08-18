@@ -69,7 +69,7 @@ async function sendCampaign(campaignKey: string, onlySignupId?: string, resend =
       appUrl: SITE_URL,
       goUrl: `${SITE_URL}/go`,
       testUrl: `${SITE_URL}/test`,
-      faqUrl: `${SITE_URL}/faq`,
+      faqUrl: `${SITE_URL}/fragen`,
       sogehtsUrl: `${SITE_URL}/sogehts`,
       graphImg: `${SITE_URL}/__l5e/assets-v1/0cdaff8e-0564-467d-8eb1-580a826033f8/mail-graph.jpg`,
       diffImg: `${SITE_URL}/__l5e/assets-v1/ad327033-7227-4f78-9022-74df5ec96320/mail-sogehts-scale-diff.jpg`,
