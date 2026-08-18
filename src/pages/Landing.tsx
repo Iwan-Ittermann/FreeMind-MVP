@@ -45,11 +45,29 @@ function RainOverlay() {
 export default function Landing() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "already">("idle");
+  const [regClosed, setRegClosed] = useState(false);
 
   useEffect(() => {
     document.title = "Eine Woche - Eine Frage - Mehr Verständnis - Weniger Spaltung";
     const meta = document.querySelector('meta[name="description"]');
     if (meta) meta.setAttribute("content", "Können wir eigentlich noch miteinander reden? Hilf mit, es herauszufinden.");
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("app_settings")
+        .select("key, value")
+        .in("key", ["discussion_open_at", "registration_cutoff_at"]);
+      const now = Date.now();
+      const closed = (data ?? []).some((row) => {
+        const raw = String((row as { value?: string }).value ?? "").trim();
+        if (!raw) return false;
+        const d = new Date(raw);
+        return !isNaN(d.getTime()) && d.getTime() <= now;
+      });
+      setRegClosed(closed);
+    })();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -111,11 +129,16 @@ export default function Landing() {
           <p className="text-base sm:text-lg text-muted-foreground max-w-2xl leading-snug">
             {"\n"}
           </p>
+          {regClosed && (
+            <p className="w-full border border-alert text-alert px-4 py-3 text-sm font-bold uppercase tracking-wide leading-snug">
+              Die Diskussion läuft — die Registrierung ist geschlossen. Du kannst live zuschauen.
+            </p>
+          )}
           <a
-            href="#cta"
+            href={regClosed ? "/go" : "#cta"}
             className="inline-block border-b-2 border-foreground pb-1 text-sm font-bold uppercase tracking-wider hover:text-alert hover:border-alert transition-colors"
           >
-            Jetzt registrieren
+            {regClosed ? "Jetzt zuschauen" : "Jetzt registrieren"}
           </a>
         </div>
       </section>
@@ -188,6 +211,20 @@ export default function Landing() {
           <p className="mb-10 text-lg sm:text-xl font-bold uppercase tracking-wide">
             EINE WOCHE · EINE FRAGE · <span className="text-alert">EIN BEWEIS.</span>
           </p>
+          {regClosed ? (
+            <div className="space-y-6">
+              <p className="text-lg sm:text-xl font-bold uppercase tracking-wide text-alert leading-snug">
+                Die Registrierung ist geschlossen — die Diskussion hat begonnen.
+              </p>
+              <a
+                href="/go"
+                className="inline-block bg-foreground text-background px-8 py-4 text-sm font-bold uppercase hover:bg-alert transition-colors"
+              >
+                Jetzt zuschauen
+              </a>
+            </div>
+          ) : (
+          <>
           <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-0 border border-foreground">
             <input
               type="text"
@@ -227,6 +264,8 @@ export default function Landing() {
               Du bist bereits bestätigt — danke!
             </p>
           )}
+          </>
+          )}
         </div>
       </section>
 
@@ -236,6 +275,8 @@ export default function Landing() {
             <span>freemind</span>
             <span className="text-muted-foreground">/</span>
             <a href="/legal" className="hover:text-alert">Impressum</a>
+            <span className="text-muted-foreground">/</span>
+            <a href="/fragen" className="hover:text-alert">Fragen</a>
             <span className="text-muted-foreground">/</span>
             <a href="mailto:iwan@freemind.chat" className="hover:text-alert">Kontakt</a>
           </div>
