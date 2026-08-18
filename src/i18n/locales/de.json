@@ -640,7 +640,9 @@
       "needsLogin": "Bitte melde dich an, um den Tagesbericht zu erhalten.",
       "noEmail": "Für dieses Konto ist keine E-Mail-Adresse hinterlegt.",
       "on": "Tagesbericht aktiviert",
-      "off": "Tagesbericht abbestellt"
+      "off": "Tagesbericht abbestellt",
+      "statusChanged": "Status geändert",
+      "updateFailed": "Fehler bei der Aktualisierung"
     },
     "tapNodeHint": "Tippe auf einen Punkt im Auge, um eine Meinung zu lesen und zu bewerten.",
     "signInToRate": "Melde dich an, um diese Meinung zu bewerten.",
