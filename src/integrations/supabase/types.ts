@@ -440,6 +440,36 @@ export type Database = {
           },
         ]
       }
+      daily_reports: {
+        Row: {
+          body_md: string
+          created_at: string
+          id: string
+          report_date: string
+          stats: Json
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body_md: string
+          created_at?: string
+          id?: string
+          report_date: string
+          stats?: Json
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body_md?: string
+          created_at?: string
+          id?: string
+          report_date?: string
+          stats?: Json
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
@@ -838,6 +868,7 @@ export type Database = {
           confirm_token_expires_at: string | null
           confirmed_at: string | null
           created_at: string
+          daily_report_opt_in: boolean
           email: string
           id: string
           last_passphrase_sent_at: string | null
@@ -851,6 +882,7 @@ export type Database = {
           confirm_token_expires_at?: string | null
           confirmed_at?: string | null
           created_at?: string
+          daily_report_opt_in?: boolean
           email: string
           id?: string
           last_passphrase_sent_at?: string | null
@@ -864,6 +896,7 @@ export type Database = {
           confirm_token_expires_at?: string | null
           confirmed_at?: string | null
           created_at?: string
+          daily_report_opt_in?: boolean
           email?: string
           id?: string
           last_passphrase_sent_at?: string | null
@@ -1173,6 +1206,7 @@ export type Database = {
       event_setting: { Args: { _key: string }; Returns: string }
       fake_node_user_id: { Args: { _fake_node_id: string }; Returns: string }
       generate_topic_short_code: { Args: never; Returns: string }
+      get_daily_report_opt_in: { Args: never; Returns: boolean }
       get_graph_pairs: {
         Args: { topic_uuid: string }
         Returns: {
@@ -1320,6 +1354,7 @@ export type Database = {
         Args: { _new_status: string; _notice_text?: string; _report_id: string }
         Returns: undefined
       }
+      set_daily_report_opt_in: { Args: { _enabled: boolean }; Returns: boolean }
       submit_opinion: {
         Args: { _ip_address?: string; _text: string; _topic_id: string }
         Returns: string
