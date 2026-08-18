@@ -810,6 +810,60 @@ export type Database = {
           },
         ]
       }
+      polarization_responses: {
+        Row: {
+          created_at: string
+          id: string
+          least_liked_score: number | null
+          most_liked_score: number | null
+          user_id: string
+          wave: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          least_liked_score?: number | null
+          most_liked_score?: number | null
+          user_id: string
+          wave: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          least_liked_score?: number | null
+          most_liked_score?: number | null
+          user_id?: string
+          wave?: string
+        }
+        Relationships: []
+      }
+      question_submissions: {
+        Row: {
+          ai_draft: string | null
+          created_at: string
+          email: string | null
+          id: string
+          question: string
+          status: string
+        }
+        Insert: {
+          ai_draft?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          question: string
+          status?: string
+        }
+        Update: {
+          ai_draft?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          question?: string
+          status?: string
+        }
+        Relationships: []
+      }
       reports: {
         Row: {
           admin_id: string | null
