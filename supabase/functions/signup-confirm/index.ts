@@ -42,7 +42,7 @@ async function sendWelcomeEmail(to: string, passphrase: string, confirmedAt: str
     passphrase,
     appUrl: SITE_URL,
     goUrl: `${SITE_URL}/go`,
-    faqUrl: `${SITE_URL}/faq`,
+    faqUrl: `${SITE_URL}/fragen`,
   };
   const tpl = await loadTemplate(supabase, "signup-welcome", data, {
     subject: "Willkommen bei freemind!",
