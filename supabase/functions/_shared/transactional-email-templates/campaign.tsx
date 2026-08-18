@@ -58,10 +58,14 @@ function makeTemplate(displayName: string, fallbackSubject: string, eyebrow: str
 }
 
 export const welcomeTemplate = makeTemplate('Willkommen', 'Willkommen bei freemind!', 'Willkommen')
-export const prepareTemplate = makeTemplate('Prepare', 'Es geht bald los', 'Vorbereitung')
 export const softLaunchTemplate = makeTemplate('Soft Launch', 'Soft Launch', 'Soft Launch')
 export const startTemplate = makeTemplate('Start today', 'Heute startet es!', 'Start')
 export const finalDayTemplate = makeTemplate('Final day', 'Letzter Tag', 'Letzter Tag')
+export const dailyReportTemplate = makeTemplate(
+  'Tagesbericht',
+  'Der Tagesbericht',
+  'Tagesbericht',
+)
 export const sogehtsTemplate = makeTemplate(
   "So geht's",
   'So funktioniert freemind',
