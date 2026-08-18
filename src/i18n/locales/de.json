@@ -635,7 +635,13 @@
     "post": "Posten",
     "letsChat": "Diskutieren",
     "opinionDifferenceLabel": "Meinungsunterschied",
-    "report": "Melden",
+    "report": {
+      "emailToggle": "Täglicher Bericht per E-Mail",
+      "needsLogin": "Bitte melde dich an, um den Tagesbericht zu erhalten.",
+      "noEmail": "Für dieses Konto ist keine E-Mail-Adresse hinterlegt.",
+      "on": "Tagesbericht aktiviert",
+      "off": "Tagesbericht abbestellt"
+    },
     "tapNodeHint": "Tippe auf einen Punkt im Auge, um eine Meinung zu lesen und zu bewerten.",
     "signInToRate": "Melde dich an, um diese Meinung zu bewerten.",
     "postFirstToRate": "Poste zuerst deine eigene Meinung, um andere zu bewerten.",

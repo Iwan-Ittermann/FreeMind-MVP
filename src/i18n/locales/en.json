@@ -635,7 +635,13 @@
     "post": "Post",
     "letsChat": "Let's chat",
     "opinionDifferenceLabel": "Opinion difference",
-    "report": "Report",
+    "report": {
+      "emailToggle": "Daily report by email",
+      "needsLogin": "Please log in to receive the daily report.",
+      "noEmail": "No email address is stored for this account.",
+      "on": "Daily report enabled",
+      "off": "Daily report unsubscribed"
+    },
     "tapNodeHint": "Tap a node in the eye to read and rate an opinion.",
     "signInToRate": "Sign in to rate this opinion.",
     "postFirstToRate": "Post your own opinion first to rate others.",
