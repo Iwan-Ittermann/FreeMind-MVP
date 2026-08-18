@@ -19,6 +19,17 @@ const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY") ?? "";
 
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
 
+/** Reads the `role` claim of a JWT without verifying the signature (gateway verifies it). */
+function jwtRole(token: string): string | null {
+  try {
+    const part = token.split(".")[1];
+    const json = JSON.parse(atob(part.replace(/-/g, "+").replace(/_/g, "/")));
+    return typeof json?.role === "string" ? json.role : null;
+  } catch {
+    return null;
+  }
+}
+
 /** Berlin calendar date (YYYY-MM-DD) for a given instant. */
 function berlinDate(d = new Date()): string {
   return new Intl.DateTimeFormat("en-CA", {
@@ -243,9 +254,14 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") return new Response("Method not allowed", { status: 405, headers: corsHeaders });
 
+  // Only service-role callers (pg_cron / admin function) may trigger this.
   const auth = req.headers.get("Authorization") ?? "";
-  if (auth !== `Bearer ${SERVICE_ROLE}`) {
+  if (!auth.startsWith("Bearer ")) {
     return Response.json({ ok: false, error: "unauthorized" }, { status: 401, headers: corsHeaders });
+  }
+  const token = auth.slice("Bearer ".length).trim();
+  if (token !== SERVICE_ROLE && jwtRole(token) !== "service_role") {
+    return Response.json({ ok: false, error: "forbidden" }, { status: 403, headers: corsHeaders });
   }
 
   try {
