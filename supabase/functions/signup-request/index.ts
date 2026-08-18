@@ -32,12 +32,16 @@ function getClientIp(req: Request): string | null {
   return h.get("cf-connecting-ip") ?? h.get("x-real-ip") ?? null;
 }
 
+/** Registration closes at the explicit cutoff or, at the latest, when the discussion starts. */
 async function getCutoff(): Promise<Date | null> {
   const { data } = await supabase
-    .from("app_settings").select("value").eq("key", "registration_cutoff_at").maybeSingle();
-  if (!data?.value) return null;
-  const d = new Date(String(data.value));
-  return isNaN(d.getTime()) ? null : d;
+    .from("app_settings").select("key, value")
+    .in("key", ["registration_cutoff_at", "discussion_open_at"]);
+  const dates = (data ?? [])
+    .map((r) => new Date(String(r.value ?? "")))
+    .filter((d) => !isNaN(d.getTime()));
+  if (dates.length === 0) return null;
+  return new Date(Math.min(...dates.map((d) => d.getTime())));
 }
 
 async function sendConfirmEmail(to: string, confirmUrl: string, token: string) {
