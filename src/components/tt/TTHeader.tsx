@@ -349,35 +349,39 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
             className="absolute top-12 right-3 z-40 w-72 space-y-2 pointer-events-auto"
           >
             <div className="rounded-2xl bg-background/95 backdrop-blur-xl border border-border/40 shadow-2xl p-3">
-              <div className="text-xs text-muted-foreground mb-2">
-                {t('tt.yourPassphrase')}
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="flex-1 px-3 py-1.5 rounded-full bg-muted text-xs font-mono truncate">
-                  {showPhrase ? phrase || '—' : '••••••••••••'}
-                </div>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setShowPhrase((s) => !s);
-                  }}
-                  onMouseDown={(e) => e.stopPropagation()}
-                  className="p-1.5 rounded-full hover:bg-muted"
-                  aria-label={showPhrase ? 'Hide' : 'Show'}
-                >
-                  {showPhrase ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                </button>
-              </div>
-              <div className="flex gap-1.5 mt-2">
-                <button onClick={handleCopy} className="flex-1 p-1.5 rounded-md hover:bg-muted text-muted-foreground" aria-label="Copy">
-                  <Copy className="w-3.5 h-3.5 mx-auto" />
-                </button>
-                <button onClick={handleDownload} className="flex-1 p-1.5 rounded-md hover:bg-muted text-muted-foreground" aria-label="Download">
-                  <Download className="w-3.5 h-3.5 mx-auto" />
-                </button>
-              </div>
+              {user && (
+                <>
+                  <div className="text-xs text-muted-foreground mb-2">
+                    {t('tt.yourPassphrase')}
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="flex-1 px-3 py-1.5 rounded-full bg-muted text-xs font-mono truncate">
+                      {showPhrase ? phrase || '—' : '••••••••••••'}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setShowPhrase((s) => !s);
+                      }}
+                      onMouseDown={(e) => e.stopPropagation()}
+                      className="p-1.5 rounded-full hover:bg-muted"
+                      aria-label={showPhrase ? 'Hide' : 'Show'}
+                    >
+                      {showPhrase ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
+                  <div className="flex gap-1.5 mt-2">
+                    <button onClick={handleCopy} className="flex-1 p-1.5 rounded-md hover:bg-muted text-muted-foreground" aria-label="Copy">
+                      <Copy className="w-3.5 h-3.5 mx-auto" />
+                    </button>
+                    <button onClick={handleDownload} className="flex-1 p-1.5 rounded-md hover:bg-muted text-muted-foreground" aria-label="Download">
+                      <Download className="w-3.5 h-3.5 mx-auto" />
+                    </button>
+                  </div>
+                </>
+              )}
 
               {onRestartTour && (
                 <button
@@ -393,29 +397,42 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                 </button>
               )}
 
-              <button
-                onClick={() => setShowLogin((s) => !s)}
-                className="mt-3 w-full text-[11px] text-muted-foreground hover:text-foreground transition-colors underline-offset-4 hover:underline"
-              >
-                {showLogin ? t('common.cancel') : t('tt.alreadyHavePassphrase')}
-              </button>
-
-              <AnimatePresence>
-                {showLogin && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="overflow-hidden mt-3 pt-3 border-t border-border/30"
+              {user ? (
+                <button
+                  onClick={handleSignOut}
+                  className="mt-3 w-full flex items-center justify-center gap-1.5 rounded-md px-2 py-2 text-xs text-destructive hover:bg-destructive/10 transition-colors"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  {t('common.signOut', 'Logout')}
+                </button>
+              ) : (
+                <>
+                  <button
+                    onClick={() => setShowLogin((s) => !s)}
+                    className="mt-3 w-full text-[11px] text-muted-foreground hover:text-foreground transition-colors underline-offset-4 hover:underline"
                   >
-                    <p className="text-[11px] text-muted-foreground mb-2">
-                      {t('tt.switchAccountHint')}
-                    </p>
-                    <AuthForm compact initialMode="login" showModeSwitch={false} onSuccess={() => { setAccountOpen(false); setShowLogin(false); }} />
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                    {showLogin ? t('common.cancel') : t('tt.alreadyHavePassphrase')}
+                  </button>
+
+                  <AnimatePresence>
+                    {showLogin && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden mt-3 pt-3 border-t border-border/30"
+                      >
+                        <p className="text-[11px] text-muted-foreground mb-2">
+                          {t('tt.switchAccountHint')}
+                        </p>
+                        <AuthForm compact initialMode="login" showModeSwitch={false} onSuccess={() => { setAccountOpen(false); setShowLogin(false); }} />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </>
+              )}
+
             </div>
           </motion.div>
         )}
