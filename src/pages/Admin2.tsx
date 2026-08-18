@@ -41,36 +41,35 @@ const TEMPLATE_META: Record<string, TemplateMeta> = {
     trigger: "Nach Bestätigung des Links",
     placeholders: "{{passphrase}}, {{appUrl}}, {{goUrl}}, {{faqUrl}}",
   },
-  "campaign-prepare": {
-    label: "3. Prepare (mit Passphrase)",
-    trigger: "19.08.2026, 00:01",
-    placeholders: "{{passphrase}}, {{appUrl}}, {{goUrl}}, {{faqUrl}}",
-    campaign: true,
-  },
   "campaign-soft-launch": {
-    label: "4. Soft launch today",
+    label: "3. Soft launch today (mit Passphrase)",
     trigger: "20.08.2026, 00:01",
     placeholders: "{{passphrase}}, {{appUrl}}, {{goUrl}}, {{faqUrl}}",
     campaign: true,
   },
   "campaign-start": {
-    label: "5. Start today!",
+    label: "4. Start today!",
     trigger: "23.08.2026, 00:01",
     placeholders: "{{passphrase}}, {{appUrl}}, {{goUrl}}, {{faqUrl}}",
     campaign: true,
   },
   "campaign-final-day": {
-    label: "6. Final day",
+    label: "5. Final day",
     trigger: "29.08.2026, 00:01",
     placeholders: "{{passphrase}}, {{appUrl}}, {{goUrl}}, {{faqUrl}}",
     campaign: true,
   },
   "campaign-sogehts": {
-    label: "7. So geht's",
+    label: "6. So geht's",
     trigger: "Nur manuell",
     placeholders:
       "{{sogehtsUrl}}, {{goUrl}}, {{appUrl}}, {{faqUrl}}, {{passphrase}}, Bilder: {{graphImg}}, {{diffImg}}, {{understandingImg}}, {{handImg}} (als ![alt]({{graphImg}}) einfügen)",
     campaign: true,
+  },
+  "daily-report": {
+    label: "7. Tagesbericht",
+    trigger: "Täglich 23:30, nur an Abonnenten",
+    placeholders: "{{reportTitle}}, {{reportBody}}, {{reportStats}}, {{reportDate}}, {{berichtUrl}}, {{goUrl}}, {{appUrl}}",
   },
 };
 
@@ -80,11 +79,11 @@ const TEMPLATE_ORDER = Object.keys(TEMPLATE_META);
 const MAIL_COLUMNS: Array<{ key: string; short: string; title: string }> = [
   { key: "signup-confirm", short: "Verif", title: "Verifizierung (Bestätigungslink)" },
   { key: "signup-welcome", short: "Willk", title: "Willkommen" },
-  { key: "campaign-prepare", short: "Prep", title: "Prepare (mit Passphrase), 19.08." },
   { key: "campaign-soft-launch", short: "Soft", title: "Soft launch today, 20.08." },
   { key: "campaign-start", short: "Start", title: "Start today!, 23.08." },
   { key: "campaign-final-day", short: "Final", title: "Final day, 29.08." },
   { key: "campaign-sogehts", short: "Geht's", title: "So geht's (nur manuell)" },
+  { key: "daily-report", short: "Bericht", title: "Tagesbericht (letzter Versand)" },
   { key: "signup-passphrase", short: "Pass*", title: "Passphrase (alte Einzel-Mail, nur manuell)" },
 ];
 
@@ -92,7 +91,6 @@ const RESENDABLE = [
   { key: "resend_signup", label: "Bestätigung" },
   { key: "resend_passphrase", label: "Passphrase" },
   { key: "resend_welcome", label: "Willkommen" },
-  { key: "campaign-prepare", label: "Prepare" },
   { key: "campaign-soft-launch", label: "Soft launch" },
   { key: "campaign-start", label: "Start today" },
   { key: "campaign-final-day", label: "Final day" },
@@ -136,6 +134,9 @@ export default function Admin2() {
   const [resendChoice, setResendChoice] = useState<Record<string, string>>({});
   const [mailMatrix, setMailMatrix] = useState<Record<string, Record<string, string>>>({});
   const [openMoreRow, setOpenMoreRow] = useState<string | null>(null);
+  const [reports, setReports] = useState<Array<{ id: string; report_date: string; title: string; body_md: string; stats: Record<string, number> | null }>>([]);
+  const [reportOptIns, setReportOptIns] = useState(0);
+  const [reportBusy, setReportBusy] = useState(false);
 
   const sortedTemplates = [...templates].sort(
     (a, b) => TEMPLATE_ORDER.indexOf(a.key) - TEMPLATE_ORDER.indexOf(b.key),
@@ -155,13 +156,15 @@ export default function Admin2() {
   }
 
   async function loadAll(pw: string) {
-    const [ov, tpl, bn, fq, cs, mx] = await Promise.all([
+    const [ov, tpl, bn, fq, cs, mx, rp, oi] = await Promise.all([
       supabase.functions.invoke("admin2-overview", { body: { password: pw } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "get_templates" } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "list_bans" } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "list_faq" } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "campaign_stats" } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "email_matrix" } }),
+      supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "list_reports" } }),
+      supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "report_opt_ins" } }),
     ]);
     if (ov.error || !ov.data?.ok) return false;
     setSignups(ov.data.signups ?? []);
@@ -171,6 +174,8 @@ export default function Admin2() {
     setCampaignCounts(cs.data?.counts ?? {});
     setCampaignOpens(cs.data?.opens ?? {});
     setMailMatrix(mx.data?.matrix ?? {});
+    setReports(rp.data?.reports ?? []);
+    setReportOptIns(oi.data?.optIns ?? 0);
     return true;
   }
 
@@ -242,6 +247,19 @@ export default function Admin2() {
     await refresh();
   }
 
+
+  async function runReport(opts: { send: boolean; resend?: boolean; regenerate?: boolean; date?: string }) {
+    const question = opts.send
+      ? `Tagesbericht${opts.date ? ` (${opts.date})` : ""} erzeugen und an alle Abonnenten (${reportOptIns}) senden?`
+      : `Tagesbericht${opts.date ? ` (${opts.date})` : ""} nur erzeugen (kein Versand)?`;
+    if (!confirm(question)) return;
+    setReportBusy(true);
+    const { data, error } = await invoke({ action: "generate_report", ...opts });
+    setReportBusy(false);
+    if (error || !data?.ok) { flash("Fehler beim Bericht."); return; }
+    flash(`Bericht ${data.date}: ${data.sent ?? 0} Mails gesendet, ${data.failed ?? 0} Fehler.`);
+    await refresh();
+  }
 
   async function resendForSignup(signup: Signup) {
     const choice = resendChoice[signup.id];
@@ -510,6 +528,46 @@ export default function Admin2() {
               })}
             </tbody>
           </table>
+        </div>
+
+        {/* Tagesberichte */}
+        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", margin: "24px 0 8px" }}>
+          <h2 style={{ ...sectionTitle, margin: 0 }}>Tagesberichte</h2>
+          <span style={{ fontSize: 12, opacity: 0.7 }}>{reportOptIns} Abonnenten</span>
+        </div>
+        <div style={{ background: "#fff", border: "1px solid #0f1b3d", padding: 16, marginBottom: 12, display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <button disabled={reportBusy} onClick={() => runReport({ send: false })} style={ghostBtn}>
+            Heutigen Bericht erzeugen
+          </button>
+          <button disabled={reportBusy} onClick={() => runReport({ send: true })} style={ghostBtn}>
+            Erzeugen &amp; an Abonnenten senden
+          </button>
+          <button disabled={reportBusy} onClick={() => {
+            const date = prompt("Datum (JJJJ-MM-TT)?") ?? "";
+            if (/^\d{4}-\d{2}-\d{2}$/.test(date)) runReport({ send: true, resend: true, date });
+          }} style={ghostBtn}>
+            Bestimmten Tag neu senden
+          </button>
+        </div>
+        <div style={{ display: "grid", gap: 8, marginBottom: 32 }}>
+          {reports.map((r) => (
+            <div key={r.id} style={{ background: "#fff", border: "1px solid #0f1b3d", padding: 12 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "baseline" }}>
+                <strong style={{ fontSize: 13 }}>{r.title}</strong>
+                <span style={{ fontSize: 11, opacity: 0.6 }}>{r.report_date}</span>
+              </div>
+              <div style={{ fontSize: 12, opacity: 0.8, whiteSpace: "pre-wrap", marginTop: 6 }}>{r.body_md}</div>
+              <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                <button disabled={reportBusy} onClick={() => runReport({ send: false, date: r.report_date })} style={ghostBtn}>
+                  Neu erzeugen
+                </button>
+                <button disabled={reportBusy} onClick={() => runReport({ send: true, resend: true, regenerate: false, date: r.report_date })} style={ghostBtn}>
+                  Erneut senden
+                </button>
+              </div>
+            </div>
+          ))}
+          {reports.length === 0 && <div style={{ fontSize: 13, opacity: 0.7 }}>Noch keine Berichte.</div>}
         </div>
 
         {/* FAQ */}
