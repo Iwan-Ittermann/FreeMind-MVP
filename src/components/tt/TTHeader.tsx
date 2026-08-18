@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import { Bell, BellOff, Settings, Copy, Download, Eye, EyeOff, X, SlidersHorizontal, MessageSquare, MessageCircle, Sparkles, CircleHelp, HelpCircle, LogOut, Mail } from 'lucide-react';
+import { Bell, BellOff, Settings, X, SlidersHorizontal, MessageSquare, MessageCircle, Sparkles, CircleHelp, HelpCircle, LogOut, Mail } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { emailToPassphrase } from '@/lib/passphrase';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuthForm } from '@/components/AuthForm';
@@ -57,7 +56,6 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
   const [accountOpen, setAccountOpen] = useState(false);
   const [bellOpen, setBellOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [showPhrase, setShowPhrase] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [filters, setFilters] = useState<NotificationFilters>(getGlobalFilters);
   const [subscribedHere, setSubscribedHere] = useState(false);
@@ -68,7 +66,6 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
   const bellDropdownRef = useRef<HTMLDivElement>(null);
   const accountDropdownRef = useRef<HTMLDivElement>(null);
 
-  const phrase = user?.email ? emailToPassphrase(user.email) ?? '' : '';
   const hasUnread = notifications.some((n) => n.unread);
 
   useEffect(() => {
@@ -157,26 +154,6 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
     return () => window.removeEventListener('tt:open-login', openLogin);
   }, []);
 
-
-  const handleCopy = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!phrase) return;
-    await navigator.clipboard.writeText(phrase);
-    toast.success(t('auth.passphraseCopied'));
-  };
-
-  const handleDownload = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!phrase) return;
-    const content = `FreeMind Passphrase\n==================\n${phrase}\n`;
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `freemind-passphrase-${Date.now()}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
 
   const toggleFilter = (key: keyof NotificationFilters) => {
     setFilters((f) => {
