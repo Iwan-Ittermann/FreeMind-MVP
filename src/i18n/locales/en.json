@@ -707,7 +707,15 @@
       "submitBody": "Before you see the opinions of others, please share your own.",
       "waitingTitle": "Opinion saved",
       "waitingBody": "The discussion starts right when the week begins. We'll notify you.",
-      "tryTestTopic": "Until then you can explore the app in the test question:"
+      "tryTestTopic": "Until then you can explore the app in the test question:",
+      "loginTitle": "Please sign in",
+      "loginBody": "For the test discussion you need the passphrase from your email.",
+      "loginButton": "Sign in",
+      "loginSuccess": "Welcome back!",
+      "loginInvalidFormat": "Invalid format. Example: brave-ocean-dance-42",
+      "loginNotFound": "Passphrase not recognised. Please check your email.",
+      "loginError": "Something went wrong."
+
     },
     "graphTab": "Graph",
     "editRating": "Change rating",

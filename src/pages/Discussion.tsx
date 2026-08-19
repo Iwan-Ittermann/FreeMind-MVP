@@ -128,8 +128,8 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
   }, []);
 
   // Which blocking gate (if any) applies right now.
-  // /test skips the time phases but keeps the mandatory-opinion gate.
-  const gateVariant: 'countdown' | 'submit' | 'waiting' | null = (() => {
+  // /test requires a passphrase login first, then the mandatory opinion.
+  const gateVariant: 'countdown' | 'submit' | 'waiting' | 'login' | null = (() => {
     if (!ownOpinionKnown || !activeTopicId) return null;
     if (gated) {
       if (phase === 'prelaunch') return 'countdown';
@@ -138,10 +138,12 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
       if (phase === 'submission') return 'waiting';
       return null;
     }
+    if (mode === 'test' && !isVerified) return 'login';
     if (!isVerified) return null;
     if (!hasOwnOpinion) return 'submit';
     return null;
   })();
+
 
 
   return (
@@ -275,12 +277,18 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
             topicTitle={activeTopicTitle}
             target={gateVariant === 'countdown' ? eventConfig?.opinionsOpenAt : eventConfig?.discussionOpenAt}
             isVerified={isVerified}
+            onLoggedIn={() => {
+              queryClient.invalidateQueries({ queryKey: ['is-verified'] });
+              queryClient.invalidateQueries({ queryKey: ['tt-own-opinion'] });
+              queryClient.invalidateQueries({ queryKey: ['topic', activeTopicId] });
+            }}
             onSubmitted={() => {
               queryClient.invalidateQueries({ queryKey: ['tt-own-opinion', activeTopicId, user?.id] });
               queryClient.invalidateQueries({ queryKey: ['topic', activeTopicId] });
             }}
           />
         )}
+
 
         {mode === 'real' && !gateVariant && (
           <TTPolarizationPoll
