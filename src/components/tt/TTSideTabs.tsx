@@ -360,9 +360,12 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
               {tab === 'chats' && (
                 <>
                   <div className="flex items-center justify-between px-4 py-3 border-b border-border/30">
-                    {activeChatOpinionId ? (
+                    {activeChatOpinionId || activeAllChat ? (
                       <button
-                        onClick={() => setActiveChatOpinionId(null)}
+                        onClick={() => {
+                          setActiveChatOpinionId(null);
+                          setActiveAllChat(null);
+                        }}
                         className="flex items-center gap-1.5 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
                         aria-label={t('common.back', 'Back')}
                       >
@@ -376,17 +379,83 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                     )}
                   </div>
 
-                  {activeChatOpinionId ? (
+                  {activeAllChat ? (
+                    <div className="flex-1 min-h-0 overflow-hidden">
+                      <EmbeddedChatView
+                        theirOpinionId={activeAllChat.opinionBId}
+                        readOnly
+                        sourceOpinionId={activeAllChat.opinionAId}
+                      />
+                    </div>
+                  ) : activeChatOpinionId ? (
                     <div className="flex-1 min-h-0 overflow-hidden">
                       <EmbeddedChatView theirOpinionId={activeChatOpinionId} />
                     </div>
                   ) : (
                     <>
+                      {/* Scope switch: my chats vs. all chats (read-only) */}
+                      <div className="px-4 pt-2">
+                        <div className="flex rounded-full bg-muted/60 p-0.5">
+                          {(['mine', 'all'] as const).map((scope) => (
+                            <button
+                              key={scope}
+                              onClick={() => setChatScope(scope)}
+                              className={cn(
+                                'flex-1 h-7 rounded-full text-[11px] font-semibold transition-colors',
+                                chatScope === scope
+                                  ? 'bg-background text-foreground shadow-sm'
+                                  : 'text-muted-foreground hover:text-foreground',
+                              )}
+                            >
+                              {scope === 'mine'
+                                ? t('tt.myChats', 'Meine Chats')
+                                : t('tt.allChats', 'Alle Chats')}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                       <div className="px-4 py-2 border-b border-border/30">
                         {searchField(chatSearch, setChatSearch, t('tt.searchChats', 'Chats suchen…'))}
                       </div>
                       <div className="flex-1 overflow-auto">
-                        {filteredChats.length === 0 ? (
+                        {chatScope === 'all' ? (
+                          filteredAllChats.length === 0 ? (
+                            <p className="text-sm text-muted-foreground p-4">
+                              {t('tt.allChatsEmpty', 'Noch keine Gespräche.')}
+                            </p>
+                          ) : (
+                            <ul className="divide-y divide-border/30">
+                              {filteredAllChats.map((c) => (
+                                <li key={c.id}>
+                                  <button
+                                    onClick={() => setActiveAllChat(c)}
+                                    className="w-full text-left px-4 py-3 hover:bg-muted/40 transition-colors"
+                                  >
+                                    <div className="flex items-start gap-2">
+                                      <div className="min-w-0 flex-1">
+                                        <p className="text-sm font-medium text-foreground line-clamp-1">
+                                          {c.title?.trim() ||
+                                            c.opinionAText.split(/\s+/).slice(0, 6).join(' ')}
+                                        </p>
+                                        <p className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5">
+                                          {c.opinionAText} ↔ {c.opinionBText}
+                                        </p>
+                                        {c.lastMessage && (
+                                          <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
+                                            {c.lastMessage}
+                                          </p>
+                                        )}
+                                      </div>
+                                      <span className="shrink-0 text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground tabular-nums">
+                                        {c.messageCount}
+                                      </span>
+                                    </div>
+                                  </button>
+                                </li>
+                              ))}
+                            </ul>
+                          )
+                        ) : filteredChats.length === 0 ? (
                           <p className="text-sm text-muted-foreground p-4">{t('tt.chatsEmpty')}</p>
                         ) : (
                           <ul className="divide-y divide-border/30">
@@ -440,6 +509,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                     </>
                   )}
                 </>
+
               )}
             </motion.div>
           )}
