@@ -188,6 +188,8 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
           nodePoints={activeData?.nodePoints}
           unreadCount={totalUnread}
           onActiveChatChange={setChatNodeId}
+          onPanelOpen={() => setTourStep(0)}
+
 
           onOpinionTap={(opinionId) => {
             const op = activeData?.opinions.find((o) => o.id === opinionId);
