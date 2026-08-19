@@ -15,6 +15,8 @@ import { useUserBlocks } from '@/hooks/useUserBlocks';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { useVoiceRecorder } from '@/hooks/useVoiceRecorder';
+import { currentRatingRound, nextRatingThreshold } from '@/lib/rating-rounds';
+
 
 interface EmbeddedChatViewProps {
   theirOpinionId: string;
