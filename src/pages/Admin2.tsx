@@ -289,6 +289,42 @@ export default function Admin2() {
     await refresh();
   }
 
+  function addTourStep() {
+    setTourSteps((prev) => [...prev, {
+      text: "",
+      highlight: "none",
+      sort_order: (prev[prev.length - 1]?.sort_order ?? 0) + 10,
+      is_active: true,
+    }]);
+  }
+
+  async function saveTourStep(idx: number) {
+    const row = tourSteps[idx];
+    if (!row.text.trim()) { flash("Text darf nicht leer sein."); return; }
+    const { data, error } = await invoke({
+      action: "save_tutorial_step",
+      id: row.id,
+      text: row.text,
+      highlight: row.highlight,
+      sort_order: row.sort_order,
+      is_active: row.is_active,
+    });
+    if (error || !data?.ok) { flash("Fehler beim Speichern."); return; }
+    flash("Schritt gespeichert.");
+    await refresh();
+  }
+
+  async function deleteTourStep(idx: number) {
+    const row = tourSteps[idx];
+    if (!row.id) { setTourSteps((prev) => prev.filter((_, i) => i !== idx)); return; }
+    if (!confirm("Schritt löschen?")) return;
+    const { data, error } = await invoke({ action: "delete_tutorial_step", id: row.id });
+    if (error || !data?.ok) { flash("Fehler beim Löschen."); return; }
+    flash("Schritt gelöscht.");
+    await refresh();
+  }
+
+
   async function saveFaqRow(idx: number) {
     const row = faq[idx];
     if (!row.question.trim()) { flash("Frage darf nicht leer sein."); return; }
