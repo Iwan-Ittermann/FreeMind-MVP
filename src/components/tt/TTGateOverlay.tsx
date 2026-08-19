@@ -41,6 +41,7 @@ function useCountdown(target?: Date | null) {
  *  - `countdown` before the submission window opens
  *  - `submit`    mandatory opinion before the graph unlocks
  *  - `waiting`   opinion submitted, discussion not started yet
+ *  - `login`     passphrase login required before anything else
  * The header (settings / login) and footer stay reachable.
  */
 export function TTGateOverlay({
@@ -50,11 +51,37 @@ export function TTGateOverlay({
   target,
   isVerified = false,
   onSubmitted,
+  onLoggedIn,
 }: TTGateOverlayProps) {
   const { t } = useTranslation();
   const [text, setText] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [passphrase, setPassphrase] = useState('');
+  const [loggingIn, setLoggingIn] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
   const countdown = useCountdown(target);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError(null);
+    setLoggingIn(true);
+    const res = await loginWithPassphrase(passphrase);
+    setLoggingIn(false);
+    if (res.ok) {
+      setPassphrase('');
+      toast.success(t('tt.event.loginSuccess'));
+      onLoggedIn?.();
+      return;
+    }
+    setLoginError(
+      res.reason === 'invalid-format'
+        ? t('tt.event.loginInvalidFormat')
+        : res.reason === 'not-found'
+          ? t('tt.event.loginNotFound')
+          : t('tt.event.loginError'),
+    );
+  };
+
 
   const handleSubmit = async () => {
     if (text.trim().length < 10) {
