@@ -49,13 +49,15 @@ export function useChatSession(theirOpinionId: string | null, sourceOpinionId?: 
       if (!chatId) return null;
       const { data, error } = await supabase
         .from('chat_ratings')
-        .select('empathy, disagreement, rater_id')
-        .eq('chat_id', chatId);
+        .select('empathy, disagreement, rater_id, message_count')
+        .eq('chat_id', chatId)
+        .order('message_count', { ascending: true });
       if (error) throw error;
       return data;
     },
     enabled: !!chatId,
   });
+
 
   // Real-time subscription for chat ratings updates
   useEffect(() => {
