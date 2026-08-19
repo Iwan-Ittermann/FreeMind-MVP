@@ -29,7 +29,9 @@ export function TTPolarizationPoll({
   const [least, setLeast] = useState<number | null>(null);
   const [most, setMost] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
-  const [dismissed, setDismissed] = useState(0);
+  const [dismissedWaves, setDismissedWaves] = useState<string[]>(() =>
+    (['pre', 'post'] as PolarizationWave[]).filter((w) => localStorage.getItem(dismissKey(w)) === '1'),
+  );
 
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 60_000);
@@ -69,11 +71,7 @@ export function TTPolarizationPoll({
     setMost(wave === 'pre' ? 50 : null);
   }, [wave]);
 
-  const hidden = wave ? localStorage.getItem(dismissKey(wave)) === '1' : true;
-  // Re-read after a dismiss action.
-  void dismissed;
-
-  if (!wave || hidden) return null;
+  if (!wave || dismissedWaves.includes(wave)) return null;
 
   const save = async () => {
     if (least === null || most === null || !userId) return;
@@ -91,7 +89,7 @@ export function TTPolarizationPoll({
 
   const skip = () => {
     localStorage.setItem(dismissKey(wave), '1');
-    setDismissed((n) => n + 1);
+    setDismissedWaves((prev) => [...prev, wave]);
   };
 
   return (
