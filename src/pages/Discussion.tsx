@@ -277,12 +277,18 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
             topicTitle={activeTopicTitle}
             target={gateVariant === 'countdown' ? eventConfig?.opinionsOpenAt : eventConfig?.discussionOpenAt}
             isVerified={isVerified}
+            onLoggedIn={() => {
+              queryClient.invalidateQueries({ queryKey: ['is-verified'] });
+              queryClient.invalidateQueries({ queryKey: ['tt-own-opinion'] });
+              queryClient.invalidateQueries({ queryKey: ['topic', activeTopicId] });
+            }}
             onSubmitted={() => {
               queryClient.invalidateQueries({ queryKey: ['tt-own-opinion', activeTopicId, user?.id] });
               queryClient.invalidateQueries({ queryKey: ['topic', activeTopicId] });
             }}
           />
         )}
+
 
         {mode === 'real' && !gateVariant && (
           <TTPolarizationPoll
