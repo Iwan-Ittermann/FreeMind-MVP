@@ -1,13 +1,15 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Clock, Send, Lock } from 'lucide-react';
+import { Clock, Send, Lock, KeyRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { getClientIP } from '@/hooks/useClientIP';
+import { loginWithPassphrase } from '@/lib/passphrase-login';
 
-export type GateVariant = 'countdown' | 'submit' | 'waiting';
+export type GateVariant = 'countdown' | 'submit' | 'waiting' | 'login';
 
 interface TTGateOverlayProps {
   variant: GateVariant;
@@ -17,7 +19,10 @@ interface TTGateOverlayProps {
   target?: Date | null;
   isVerified?: boolean;
   onSubmitted?: () => void;
+  /** Called after a successful passphrase login. */
+  onLoggedIn?: () => void;
 }
+
 
 function useCountdown(target?: Date | null) {
   return useMemo(() => {
