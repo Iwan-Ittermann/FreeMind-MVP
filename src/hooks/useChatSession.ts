@@ -284,6 +284,8 @@ export function useChatSession(theirOpinionId: string | null, sourceOpinionId?: 
     saveRating,
     isSavingRating: ratingMutation.isPending,
     existingRating: existingRating ? { empathy: existingRating.empathy, disagreement: existingRating.disagreement } : null,
+    myRatingRounds,
+
     averageBridgingScore,
     myBridgingScore,
     theirBridgingScore,
