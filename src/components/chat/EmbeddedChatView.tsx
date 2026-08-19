@@ -174,7 +174,7 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
                       {t('chat.theirOpinion', 'Their opinion')}
                     </span>
                   </div>
-                  {theirUserId && !isBotChat && (
+                  {theirUserId && !isBotChat && !readOnly && (
                     <button
                       onClick={() => {
                         if (isBlocked) {
