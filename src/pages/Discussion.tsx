@@ -21,7 +21,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { FloatingChatManager, FloatingChatManagerHandle } from '@/components/chat/FloatingChatManager';
 import { TTHelpOverlay } from '@/components/tt/TTHelpOverlay';
-import { TTOnboardingTour, TT_TOUR_TOTAL_STEPS } from '@/components/tt/TTOnboardingTour';
+import { TTOnboardingTour } from '@/components/tt/TTOnboardingTour';
+import { useTutorialSteps } from '@/hooks/useTutorialSteps';
+
 import { TTGateOverlay } from '@/components/tt/TTGateOverlay';
 import { TTPolarizationPoll } from '@/components/tt/TTPolarizationPoll';
 import { useTranslation } from 'react-i18next';
