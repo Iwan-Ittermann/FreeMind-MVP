@@ -319,7 +319,12 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
 
       {/* Input footer */}
       <div className="border-t border-border p-2 shrink-0 bg-muted/80">
-        {isBlocked || isBlockedByOther ? (
+        {readOnly ? (
+          <p className="text-xs text-muted-foreground text-center py-1">
+            {t('floatingChat.readOnly', 'Nur zum Mitlesen')}
+          </p>
+        ) : isBlocked || isBlockedByOther ? (
+
           <p className="text-xs text-muted-foreground text-center py-1">
             {isBlocked ? t('floatingChat.blockedByYou') : t('floatingChat.blockedByThem')}
           </p>
