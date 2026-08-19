@@ -15,18 +15,24 @@ import { useUserBlocks } from '@/hooks/useUserBlocks';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { useVoiceRecorder } from '@/hooks/useVoiceRecorder';
+import { currentRatingRound, nextRatingThreshold } from '@/lib/rating-rounds';
+
 
 interface EmbeddedChatViewProps {
   theirOpinionId: string;
+  /** Read-only observation of a conversation between two other people. */
+  readOnly?: boolean;
+  /** Required in read-only mode: the "A" side of the observed chat. */
+  sourceOpinionId?: string;
 }
 
-export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
+export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpinionId }: EmbeddedChatViewProps) {
   const { t } = useTranslation();
   const {
     chatId, myOpinion, theirOpinion, theirUserId,
-    saveRating, isSavingRating, existingRating, averageBridgingScore,
+    saveRating, isSavingRating, existingRating, myRatingRounds,
     isBotChat,
-  } = useChatSession(theirOpinionId);
+  } = useChatSession(theirOpinionId, readOnly ? sourceOpinionId : undefined);
 
   const topicId = theirOpinion?.topic_id ?? null;
   const { messages: dbMessages, sendMessage, sendVoiceMessage, isSending, isBotTyping } = useChatMessages(
@@ -34,6 +40,9 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
     isBotChat,
     topicId && myOpinion && theirOpinion
       ? { topicId, myOpinionId: myOpinion.id, theirOpinionId: theirOpinion.id }
+      : undefined,
+    readOnly && sourceOpinionId
+      ? { sourceOpinionId, targetOpinionId: theirOpinionId, sourceUserId: myOpinion?.user_id }
       : undefined,
   );
   const { partnerTyping, setTyping } = useTypingIndicator(chatId);
@@ -43,18 +52,11 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
 
   const [inputValue, setInputValue] = useState('');
   const [empathy, setEmpathy] = useState(0);
-  const [initialized, setInitialized] = useState(false);
   const [replyingTo, setReplyingTo] = useState<{ id: string; content: string; isOwn: boolean } | null>(null);
   const [showUnlockSpark, setShowUnlockSpark] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
-    if (existingRating && !initialized) {
-      setEmpathy(existingRating.empathy);
-      setInitialized(true);
-    }
-  }, [existingRating, initialized]);
 
   const handleInputChange = useCallback((value: string) => {
     setInputValue(value);
@@ -105,9 +107,10 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
   const formatDuration = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
   const handleSaveRating = async (value: number) => {
+    if (currentRound == null) return;
     setEmpathy(value);
     try {
-      await saveRating(value, existingRating?.disagreement ?? 5);
+      await saveRating(value, existingRating?.disagreement ?? 5, currentRound);
     } catch {
       toast.error(t('chat.failedToSaveRating'));
     }
@@ -124,18 +127,30 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
   // Build a map of message ID -> content for reply previews
   const messageContentMap = new Map<string, string>();
   dbMessages.forEach(msg => messageContentMap.set(msg.id, msg.content));
-  const ownSentCount = dbMessages.filter((msg) => msg.isOwn).length;
-  const canRateRespect = !isBotChat && ownSentCount >= 2;
+
+  // Rating rounds: both sides' messages count; a round can be rated once.
+  const totalMessages = dbMessages.length;
+  const currentRound = currentRatingRound(totalMessages);
+  const nextThreshold = nextRatingThreshold(totalMessages);
+  const alreadyRatedRound =
+    currentRound != null && myRatingRounds.some((r) => r.messageCount === currentRound);
+  const canRateRespect = !isBotChat && !readOnly && currentRound != null && !alreadyRatedRound;
 
   useEffect(() => {
-    if (!chatId || !canRateRespect) return;
-    const key = `tt:respect-unlocked:${chatId}`;
+    if (!chatId || !canRateRespect || currentRound == null) return;
+    const key = `tt:respect-unlocked:${chatId}:${currentRound}`;
     if (sessionStorage.getItem(key) === 'true') return;
     sessionStorage.setItem(key, 'true');
     setShowUnlockSpark(true);
     const timer = setTimeout(() => setShowUnlockSpark(false), 1400);
     return () => clearTimeout(timer);
-  }, [chatId, canRateRespect]);
+  }, [chatId, canRateRespect, currentRound]);
+
+  // Reset the selection whenever a new round opens.
+  useEffect(() => {
+    setEmpathy(0);
+  }, [currentRound]);
+
 
   const isLoading = !myOpinion || !theirOpinion;
 
@@ -159,7 +174,7 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
                       {t('chat.theirOpinion', 'Their opinion')}
                     </span>
                   </div>
-                  {theirUserId && !isBotChat && (
+                  {theirUserId && !isBotChat && !readOnly && (
                     <button
                       onClick={() => {
                         if (isBlocked) {
@@ -242,8 +257,8 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
         </div>
       )}
 
-      {/* Understanding rating — always visible, unlocked after 2 own messages */}
-      {!isBotChat && (
+      {/* Understanding rating — one rating per round, reopens as the chat grows */}
+      {!isBotChat && !readOnly && (
         <div className="border-t border-border/60 px-2 pt-2 pb-3 mb-1 shrink-0 bg-muted/60">
           <div className="mb-1.5 flex items-center justify-between gap-2">
             <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
@@ -251,7 +266,10 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
               {t('tt.understandingQuestion')}
             </span>
             <span className="relative text-[11px] text-muted-foreground">
-              {!canRateRespect && t('tt.respectUnlockHint')}
+              {!canRateRespect &&
+                (alreadyRatedRound
+                  ? t('tt.respectNextRoundHint', { count: nextThreshold - totalMessages })
+                  : t('tt.respectUnlockHint'))}
               <AnimatePresence>
                 {showUnlockSpark && (
                   <motion.span
@@ -266,6 +284,7 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
               </AnimatePresence>
             </span>
           </div>
+
           <div className="grid grid-cols-5 gap-1.5">
             {([
               { value: 0, key: 'tt.understandingStep.notAtAll' },
@@ -300,7 +319,12 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
 
       {/* Input footer */}
       <div className="border-t border-border p-2 shrink-0 bg-muted/80">
-        {isBlocked || isBlockedByOther ? (
+        {readOnly ? (
+          <p className="text-xs text-muted-foreground text-center py-1">
+            {t('floatingChat.readOnly', 'Nur zum Mitlesen')}
+          </p>
+        ) : isBlocked || isBlockedByOther ? (
+
           <p className="text-xs text-muted-foreground text-center py-1">
             {isBlocked ? t('floatingChat.blockedByYou') : t('floatingChat.blockedByThem')}
           </p>

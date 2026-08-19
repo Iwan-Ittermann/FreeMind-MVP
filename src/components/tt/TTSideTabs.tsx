@@ -17,6 +17,7 @@ import type { Opinion } from '@/types/graph';
 import type { TTChatItem } from '@/hooks/useTTChats';
 import { useMyOpinionRatings } from '@/hooks/useTTChats';
 import { useEnsureChatTitles } from '@/hooks/useEnsureChatTitles';
+import { useAllTopicChats, type AllTopicChatItem } from '@/hooks/useAllTopicChats';
 import { EmbeddedChatView } from '@/components/chat/EmbeddedChatView';
 import { TTRatingDialog } from './TTRatingDialog';
 import { Input } from '@/components/ui/input';
@@ -28,11 +29,13 @@ export interface TTSideTabsHandle {
 }
 
 type TTTab = 'opinions' | 'graph' | 'chats';
+type ChatScope = 'mine' | 'all';
 type OpinionSort = 'difference' | 'new' | 'score';
 
 interface TTChatListItem extends TTChatItem {
   unreadCount?: number;
 }
+
 
 interface TTSideTabsProps {
   opinions?: Opinion[];
@@ -45,6 +48,8 @@ interface TTSideTabsProps {
   onOpinionTap?: (opinionId: string) => void;
   unreadCount?: number;
   onActiveChatChange?: (theirOpinionId: string | null) => void;
+  /** Fired when the user opens the opinion or chat list (used to close the tour). */
+  onPanelOpen?: () => void;
 }
 
 const SPRING = { type: 'spring' as const, stiffness: 320, damping: 30 };
@@ -66,12 +71,15 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
       onOpinionTap,
       unreadCount = 0,
       onActiveChatChange,
+      onPanelOpen,
     },
     ref,
   ) {
     const { t } = useTranslation();
     const [tab, setTab] = useState<TTTab>('graph');
+    const [chatScope, setChatScope] = useState<ChatScope>('mine');
     const [activeChatOpinionId, setActiveChatOpinionId] = useState<string | null>(null);
+    const [activeAllChat, setActiveAllChat] = useState<AllTopicChatItem | null>(null);
     const [chatSearch, setChatSearch] = useState('');
     const [opinionSearch, setOpinionSearch] = useState('');
     const [opinionSort, setOpinionSort] = useState<OpinionSort>('difference');
@@ -80,20 +88,28 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
 
     const { data: myRatings } = useMyOpinionRatings(topicId, myOpinionId);
     useEnsureChatTitles(chats, ['ttChats', topicId, myOpinionId]);
+    const { data: allChats = [] } = useAllTopicChats(topicId, tab === 'chats' && chatScope === 'all');
+    useEnsureChatTitles(
+      allChats.map((c) => ({ id: c.id, title: c.title })),
+      ['allTopicChats', topicId],
+    );
 
     useImperativeHandle(ref, () => ({
       openChat(opinionId: string) {
         if (!hasOwnOpinion) return;
         setTab('chats');
+        setChatScope('mine');
+        setActiveAllChat(null);
         setActiveChatOpinionId(opinionId);
       },
     }), [hasOwnOpinion]);
 
     // Notify parent which chat (= which node) is currently open, for glow effect.
     useEffect(() => {
-      const id = tab === 'chats' ? activeChatOpinionId : null;
+      const id = tab === 'chats' && chatScope === 'mine' ? activeChatOpinionId : null;
       onActiveChatChange?.(id);
-    }, [tab, activeChatOpinionId, onActiveChatChange]);
+    }, [tab, chatScope, activeChatOpinionId, onActiveChatChange]);
+
 
     const chatTitleFor = (c: TTChatListItem) =>
       c.title?.trim() || c.opinionText.split(/\s+/).slice(0, 6).join(' ');
@@ -108,6 +124,18 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
           .includes(q),
       );
     }, [chats, chatSearch]);
+
+    const filteredAllChats = useMemo(() => {
+      const q = chatSearch.trim().toLowerCase();
+      if (!q) return allChats;
+      return allChats.filter((c) =>
+        [c.title ?? '', c.opinionAText, c.opinionBText, c.lastMessage ?? '']
+          .join(' ')
+          .toLowerCase()
+          .includes(q),
+      );
+    }, [allChats, chatSearch]);
+
 
     const startedOpinionIds = useMemo(
       () => new Set(chats.filter((c) => c.started).map((c) => c.theirOpinionId)),
@@ -182,7 +210,9 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
           onClick={() => {
             if (opts?.disabled) return;
             setTab(key);
+            if (key !== 'graph') onPanelOpen?.();
           }}
+
           disabled={opts?.disabled}
           data-tt-help={opts?.helpKey}
           aria-label={label}
@@ -342,9 +372,12 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
               {tab === 'chats' && (
                 <>
                   <div className="flex items-center justify-between px-4 py-3 border-b border-border/30">
-                    {activeChatOpinionId ? (
+                    {activeChatOpinionId || activeAllChat ? (
                       <button
-                        onClick={() => setActiveChatOpinionId(null)}
+                        onClick={() => {
+                          setActiveChatOpinionId(null);
+                          setActiveAllChat(null);
+                        }}
                         className="flex items-center gap-1.5 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
                         aria-label={t('common.back', 'Back')}
                       >
@@ -358,17 +391,83 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                     )}
                   </div>
 
-                  {activeChatOpinionId ? (
+                  {activeAllChat ? (
+                    <div className="flex-1 min-h-0 overflow-hidden">
+                      <EmbeddedChatView
+                        theirOpinionId={activeAllChat.opinionBId}
+                        readOnly
+                        sourceOpinionId={activeAllChat.opinionAId}
+                      />
+                    </div>
+                  ) : activeChatOpinionId ? (
                     <div className="flex-1 min-h-0 overflow-hidden">
                       <EmbeddedChatView theirOpinionId={activeChatOpinionId} />
                     </div>
                   ) : (
                     <>
+                      {/* Scope switch: my chats vs. all chats (read-only) */}
+                      <div className="px-4 pt-2">
+                        <div className="flex rounded-full bg-muted/60 p-0.5">
+                          {(['mine', 'all'] as const).map((scope) => (
+                            <button
+                              key={scope}
+                              onClick={() => setChatScope(scope)}
+                              className={cn(
+                                'flex-1 h-7 rounded-full text-[11px] font-semibold transition-colors',
+                                chatScope === scope
+                                  ? 'bg-background text-foreground shadow-sm'
+                                  : 'text-muted-foreground hover:text-foreground',
+                              )}
+                            >
+                              {scope === 'mine'
+                                ? t('tt.myChats', 'Meine Chats')
+                                : t('tt.allChats', 'Alle Chats')}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                       <div className="px-4 py-2 border-b border-border/30">
                         {searchField(chatSearch, setChatSearch, t('tt.searchChats', 'Chats suchen…'))}
                       </div>
                       <div className="flex-1 overflow-auto">
-                        {filteredChats.length === 0 ? (
+                        {chatScope === 'all' ? (
+                          filteredAllChats.length === 0 ? (
+                            <p className="text-sm text-muted-foreground p-4">
+                              {t('tt.allChatsEmpty', 'Noch keine Gespräche.')}
+                            </p>
+                          ) : (
+                            <ul className="divide-y divide-border/30">
+                              {filteredAllChats.map((c) => (
+                                <li key={c.id}>
+                                  <button
+                                    onClick={() => setActiveAllChat(c)}
+                                    className="w-full text-left px-4 py-3 hover:bg-muted/40 transition-colors"
+                                  >
+                                    <div className="flex items-start gap-2">
+                                      <div className="min-w-0 flex-1">
+                                        <p className="text-sm font-medium text-foreground line-clamp-1">
+                                          {c.title?.trim() ||
+                                            c.opinionAText.split(/\s+/).slice(0, 6).join(' ')}
+                                        </p>
+                                        <p className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5">
+                                          {c.opinionAText} ↔ {c.opinionBText}
+                                        </p>
+                                        {c.lastMessage && (
+                                          <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
+                                            {c.lastMessage}
+                                          </p>
+                                        )}
+                                      </div>
+                                      <span className="shrink-0 text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground tabular-nums">
+                                        {c.messageCount}
+                                      </span>
+                                    </div>
+                                  </button>
+                                </li>
+                              ))}
+                            </ul>
+                          )
+                        ) : filteredChats.length === 0 ? (
                           <p className="text-sm text-muted-foreground p-4">{t('tt.chatsEmpty')}</p>
                         ) : (
                           <ul className="divide-y divide-border/30">
@@ -422,6 +521,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                     </>
                   )}
                 </>
+
               )}
             </motion.div>
           )}

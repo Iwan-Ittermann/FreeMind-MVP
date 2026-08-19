@@ -139,6 +139,8 @@ export default function Admin2() {
   const [reportBusy, setReportBusy] = useState(false);
   const [questions, setQuestions] = useState<Array<{ id: string; question: string; email: string | null; ai_draft: string | null; status: string; created_at: string }>>([]);
   const [polarization, setPolarization] = useState<Array<{ wave: string; count: number; avgLeast: number; avgMost: number }>>([]);
+  const [tourSteps, setTourSteps] = useState<Array<{ id?: string; text: string; highlight: string; sort_order: number; is_active: boolean }>>([]);
+
 
   const sortedTemplates = [...templates].sort(
     (a, b) => TEMPLATE_ORDER.indexOf(a.key) - TEMPLATE_ORDER.indexOf(b.key),
@@ -158,7 +160,7 @@ export default function Admin2() {
   }
 
   async function loadAll(pw: string) {
-    const [ov, tpl, bn, fq, cs, mx, rp, oi, qs, pol] = await Promise.all([
+    const [ov, tpl, bn, fq, cs, mx, rp, oi, qs, pol, ts] = await Promise.all([
       supabase.functions.invoke("admin2-overview", { body: { password: pw } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "get_templates" } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "list_bans" } }),
@@ -169,6 +171,7 @@ export default function Admin2() {
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "report_opt_ins" } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "list_questions" } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "polarization_stats" } }),
+      supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "list_tutorial_steps" } }),
     ]);
     if (ov.error || !ov.data?.ok) return false;
     setSignups(ov.data.signups ?? []);
@@ -182,7 +185,9 @@ export default function Admin2() {
     setReportOptIns(oi.data?.optIns ?? 0);
     setQuestions(qs.data?.questions ?? []);
     setPolarization(pol.data?.polarization ?? []);
+    setTourSteps(ts.data?.steps ?? []);
     return true;
+
   }
 
   async function submit(e: React.FormEvent) {
@@ -283,6 +288,42 @@ export default function Admin2() {
     await invoke({ action: "unban_email", email });
     await refresh();
   }
+
+  function addTourStep() {
+    setTourSteps((prev) => [...prev, {
+      text: "",
+      highlight: "none",
+      sort_order: (prev[prev.length - 1]?.sort_order ?? 0) + 10,
+      is_active: true,
+    }]);
+  }
+
+  async function saveTourStep(idx: number) {
+    const row = tourSteps[idx];
+    if (!row.text.trim()) { flash("Text darf nicht leer sein."); return; }
+    const { data, error } = await invoke({
+      action: "save_tutorial_step",
+      id: row.id,
+      text: row.text,
+      highlight: row.highlight,
+      sort_order: row.sort_order,
+      is_active: row.is_active,
+    });
+    if (error || !data?.ok) { flash("Fehler beim Speichern."); return; }
+    flash("Schritt gespeichert.");
+    await refresh();
+  }
+
+  async function deleteTourStep(idx: number) {
+    const row = tourSteps[idx];
+    if (!row.id) { setTourSteps((prev) => prev.filter((_, i) => i !== idx)); return; }
+    if (!confirm("Schritt löschen?")) return;
+    const { data, error } = await invoke({ action: "delete_tutorial_step", id: row.id });
+    if (error || !data?.ok) { flash("Fehler beim Löschen."); return; }
+    flash("Schritt gelöscht.");
+    await refresh();
+  }
+
 
   async function saveFaqRow(idx: number) {
     const row = faq[idx];
@@ -603,6 +644,65 @@ export default function Admin2() {
           ))}
           {reports.length === 0 && <div style={{ fontSize: 13, opacity: 0.7 }}>Noch keine Berichte.</div>}
         </div>
+
+        {/* Anleitung / Tutorial */}
+        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", margin: "24px 0 8px" }}>
+          <h2 style={{ ...sectionTitle, margin: 0 }}>Anleitung (Tutorial)</h2>
+          <button onClick={addTourStep} style={ghostBtn}>+ Schritt hinzufügen</button>
+        </div>
+        <div style={{ display: "grid", gap: 12, marginBottom: 32 }}>
+          {tourSteps.map((row, idx) => (
+            <div key={row.id ?? `new-step-${idx}`} style={{ background: "#fff", border: "1px solid #0f1b3d", padding: 16 }}>
+              <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                <div style={{ width: 100 }}>
+                  <label style={label}>Reihenfolge</label>
+                  <input
+                    type="number"
+                    value={row.sort_order}
+                    onChange={(e) => setTourSteps((prev) => prev.map((x, i) => i === idx ? { ...x, sort_order: Number(e.target.value) || 0 } : x))}
+                    style={input}
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={label}>Hervorhebung</label>
+                  <select
+                    value={row.highlight}
+                    onChange={(e) => setTourSteps((prev) => prev.map((x, i) => i === idx ? { ...x, highlight: e.target.value } : x))}
+                    style={input}
+                  >
+                    <option value="none">Keine</option>
+                    <option value="difference">Meinungsunterschied-Skala</option>
+                    <option value="chat">Diskutieren-Button</option>
+                  </select>
+                </div>
+                <div style={{ width: 90 }}>
+                  <label style={label}>Aktiv</label>
+                  <input
+                    type="checkbox"
+                    checked={row.is_active}
+                    onChange={(e) => setTourSteps((prev) => prev.map((x, i) => i === idx ? { ...x, is_active: e.target.checked } : x))}
+                  />
+                </div>
+              </div>
+              <label style={label}>Text</label>
+              <textarea
+                rows={3}
+                value={row.text}
+                onChange={(e) => setTourSteps((prev) => prev.map((x, i) => i === idx ? { ...x, text: e.target.value } : x))}
+                style={{ ...input, resize: "vertical" }}
+              />
+              <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                <button onClick={() => saveTourStep(idx)}
+                  style={{ padding: "8px 14px", background: "#0f1b3d", color: "#fff", border: 0, fontSize: 12, cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  Speichern
+                </button>
+                <button onClick={() => deleteTourStep(idx)} style={actionBtn(false, "#8a1a1a")}>Löschen</button>
+              </div>
+            </div>
+          ))}
+          {tourSteps.length === 0 && <div style={{ fontSize: 13, opacity: 0.7 }}>Noch keine Schritte.</div>}
+        </div>
+
 
         {/* FAQ */}
         <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", margin: "24px 0 8px" }}>

@@ -89,7 +89,9 @@
     "signInRequired": "Du musst angemeldet sein, um zu chatten.",
     "submitOpinionRequired": "Du musst zuerst deine eigene Meinung teilen, bevor du mit anderen chatten kannst.",
     "ratingSaved": "Bewertung gespeichert!",
-    "failedToSaveRating": "Bewertung konnte nicht gespeichert werden"
+    "failedToSaveRating": "Bewertung konnte nicht gespeichert werden",
+    "theirOpinion": "Andere Meinung",
+    "yourOpinion": "Deine Meinung"
   },
   "topicJoin": {
     "topicNotFound": "Thema nicht gefunden",
@@ -175,7 +177,8 @@
     "userBlocked": "Nutzer in diesem Chat blockiert",
     "failedToBlock": "Nutzer konnte nicht blockiert werden",
     "userUnblocked": "Nutzer freigegeben",
-    "failedToUnblock": "Nutzer konnte nicht freigegeben werden"
+    "failedToUnblock": "Nutzer konnte nicht freigegeben werden",
+    "readOnly": "Nur zum Mitlesen"
   },
   "about": {
     "title": "FreeMind",
@@ -590,6 +593,21 @@
       "courtCaseCreated": "Gerichtsfall erstellt",
       "courtCaseActivated": "Gerichtsfall aktiviert",
       "failedToApprove": "Gerichtsfall konnte nicht genehmigt werden"
+    },
+    "tutorialSteps": {
+      "title": "Anleitung (Tutorial)",
+      "add": "Schritt hinzufügen",
+      "text": "Text",
+      "highlight": "Hervorhebung",
+      "order": "Reihenfolge",
+      "active": "Aktiv",
+      "save": "Speichern",
+      "delete": "Löschen",
+      "saved": "Gespeichert",
+      "highlightNone": "Keine",
+      "highlightDifference": "Meinungsunterschied-Skala",
+      "highlightChat": "Diskutieren-Button",
+      "empty": "Noch keine Schritte."
     }
   },
   "notifications": {
@@ -686,7 +704,7 @@
       "comingSoon": "bald"
     },
     "scrollHint": "Wische für mehr Themen",
-    "respectUnlockHint": "Nach 2 Nachrichten freigeschaltet",
+    "respectUnlockHint": "Nach 3 Nachrichten freigeschaltet",
     "restartTour": "Anleitung starten",
     "onboarding": {
       "chatStep": "Jetzt kannst du mit ihnen chatten. Klick auf \"Diskutieren\"",
@@ -747,6 +765,10 @@
       "settings": "Einstellungen & Anleitung",
       "otherOpinions": "Andere Meinung",
       "yourOpinion": "Deine Meinung"
-    }
+    },
+    "respectNextRoundHint": "Nächste Bewertung nach {{count}} Nachrichten",
+    "myChats": "Meine Chats",
+    "allChats": "Alle Chats",
+    "allChatsEmpty": "Noch keine Gespräche."
   }
 }

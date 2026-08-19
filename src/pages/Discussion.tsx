@@ -21,7 +21,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { FloatingChatManager, FloatingChatManagerHandle } from '@/components/chat/FloatingChatManager';
 import { TTHelpOverlay } from '@/components/tt/TTHelpOverlay';
-import { TTOnboardingTour, TT_TOUR_TOTAL_STEPS } from '@/components/tt/TTOnboardingTour';
+import { TTOnboardingTour } from '@/components/tt/TTOnboardingTour';
+import { useTutorialSteps } from '@/hooks/useTutorialSteps';
+
 import { TTGateOverlay } from '@/components/tt/TTGateOverlay';
 import { TTPolarizationPoll } from '@/components/tt/TTPolarizationPoll';
 import { useTranslation } from 'react-i18next';
@@ -48,6 +50,10 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
   const [helpOpen, setHelpOpen] = useState(false);
   const [tourStep, setTourStep] = useState(0);
   const sideTabsRef = useRef<TTSideTabsHandle>(null);
+  const { steps: tourSteps, totalSteps: tourTotalSteps } = useTutorialSteps();
+  const activeTourStep = tourStep > 0 ? tourSteps[tourStep - 1] ?? null : null;
+
+
 
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [chatNodeId, setChatNodeId] = useState<string | null>(null);
@@ -188,6 +194,8 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
           nodePoints={activeData?.nodePoints}
           unreadCount={totalUnread}
           onActiveChatChange={setChatNodeId}
+          onPanelOpen={() => setTourStep(0)}
+
 
           onOpinionTap={(opinionId) => {
             const op = activeData?.opinions.find((o) => o.id === opinionId);
@@ -246,8 +254,9 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
           ownOpinionKnown={ownOpinionKnown}
           ownOpinionId={ownOpinionId}
           highlightAddOpinionForm={false}
-          highlightLetsChatButton={tourStep === 2}
-          highlightDisagreementScale={tourStep === 1}
+          highlightLetsChatButton={activeTourStep?.highlight === 'chat'}
+          highlightDisagreementScale={activeTourStep?.highlight === 'difference'}
+
           forceShowAddOpinionForm={false}
           suppressHintPanel={false}
           selected={
@@ -299,11 +308,14 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
         )}
 
         <TTOnboardingTour
-          open={tourStep > 0}
+          open={tourStep > 0 && !!activeTourStep}
           step={tourStep}
-          onNext={() => setTourStep((s) => (s >= TT_TOUR_TOTAL_STEPS ? 0 : s + 1))}
+          totalSteps={tourTotalSteps}
+          text={activeTourStep?.text ?? ''}
+          onNext={() => setTourStep((s) => (s >= tourTotalSteps ? 0 : s + 1))}
           onDone={() => setTourStep(0)}
         />
+
 
 
         {/* Impressum footer — matches the header's slim size */}

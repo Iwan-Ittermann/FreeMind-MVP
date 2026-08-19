@@ -223,6 +223,7 @@ export type Database = {
           disagreement: number
           empathy: number
           id: string
+          message_count: number
           rater_id: string
           updated_at: string
         }
@@ -232,6 +233,7 @@ export type Database = {
           disagreement: number
           empathy: number
           id?: string
+          message_count?: number
           rater_id: string
           updated_at?: string
         }
@@ -241,6 +243,7 @@ export type Database = {
           disagreement?: number
           empathy?: number
           id?: string
+          message_count?: number
           rater_id?: string
           updated_at?: string
         }
@@ -1089,6 +1092,36 @@ export type Database = {
         }
         Relationships: []
       }
+      tutorial_steps: {
+        Row: {
+          created_at: string
+          highlight: string
+          id: string
+          is_active: boolean
+          sort_order: number
+          text: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          highlight?: string
+          id?: string
+          is_active?: boolean
+          sort_order?: number
+          text: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          highlight?: string
+          id?: string
+          is_active?: boolean
+          sort_order?: number
+          text?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_blocks: {
         Row: {
           blocked_user_id: string
@@ -1318,6 +1351,20 @@ export type Database = {
           status: string
           target_opinion_id: string
           topic_id: string
+        }[]
+      }
+      get_topic_chats: {
+        Args: { _topic_id: string }
+        Returns: {
+          id: string
+          last_message: string
+          last_message_at: string
+          message_count: number
+          opinion_a_id: string
+          opinion_a_text: string
+          opinion_b_id: string
+          opinion_b_text: string
+          title: string
         }[]
       }
       get_topic_directed_pairs: {

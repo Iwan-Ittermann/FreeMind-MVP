@@ -24,15 +24,18 @@ interface ChatSession {
   theirOpinionId: string | null;
   isLoading: boolean;
   error: string | null;
-  saveRating: (empathy: number, disagreement: number) => Promise<void>;
+  saveRating: (empathy: number, disagreement: number, messageCount?: number) => Promise<void>;
   isSavingRating: boolean;
   existingRating: { empathy: number; disagreement: number } | null;
+  /** All rating rounds the current user already submitted for this chat. */
+  myRatingRounds: { empathy: number; messageCount: number }[];
   // Average bridging score from both participants
   averageBridgingScore: number | null;
   myBridgingScore: number | null;
   theirBridgingScore: number | null;
   isBotChat: boolean;
 }
+
 
 export function useChatSession(theirOpinionId: string | null, sourceOpinionId?: string | null): ChatSession {
   const { user } = useAuth();
@@ -46,13 +49,15 @@ export function useChatSession(theirOpinionId: string | null, sourceOpinionId?: 
       if (!chatId) return null;
       const { data, error } = await supabase
         .from('chat_ratings')
-        .select('empathy, disagreement, rater_id')
-        .eq('chat_id', chatId);
+        .select('empathy, disagreement, rater_id, message_count')
+        .eq('chat_id', chatId)
+        .order('message_count', { ascending: true });
       if (error) throw error;
       return data;
     },
     enabled: !!chatId,
   });
+
 
   // Real-time subscription for chat ratings updates
   useEffect(() => {
@@ -80,13 +85,29 @@ export function useChatSession(theirOpinionId: string | null, sourceOpinionId?: 
     };
   }, [chatId, queryClient]);
 
-  // Extract current user's rating and partner's rating
-  const existingRating = allRatings?.find(r => r.rater_id === user?.id) || null;
-  const partnerRating = allRatings?.find(r => r.rater_id !== user?.id) || null;
+  // Ratings can be given once per round, so a user may have several rows.
+  const myRatingRows = (allRatings ?? []).filter((r) => r.rater_id === user?.id);
+  const theirRatingRows = (allRatings ?? []).filter((r) => r.rater_id !== user?.id);
+  const myRatingRounds = myRatingRows.map((r) => ({
+    empathy: r.empathy,
+    messageCount: (r as { message_count?: number }).message_count ?? 0,
+  }));
 
-  // Calculate bridging scores
-  const myBridgingScore = existingRating ? existingRating.empathy * existingRating.disagreement : null;
-  const theirBridgingScore = partnerRating ? partnerRating.empathy * partnerRating.disagreement : null;
+  const avg = (values: number[]) =>
+    values.length ? values.reduce((a, b) => a + b, 0) / values.length : null;
+
+  // Latest round is what the UI shows as "your rating".
+  const existingRating = myRatingRows.length ? myRatingRows[myRatingRows.length - 1] : null;
+  const partnerRating = theirRatingRows.length ? theirRatingRows[theirRatingRows.length - 1] : null;
+
+  // Bridging scores use the AVERAGE of all rounds a participant rated.
+  const myAvgEmpathy = avg(myRatingRows.map((r) => r.empathy));
+  const theirAvgEmpathy = avg(theirRatingRows.map((r) => r.empathy));
+  const myBridgingScore =
+    myAvgEmpathy !== null ? Math.round(myAvgEmpathy * (existingRating?.disagreement ?? 5)) : null;
+  const theirBridgingScore =
+    theirAvgEmpathy !== null ? Math.round(theirAvgEmpathy * (partnerRating?.disagreement ?? 5)) : null;
+
   
   // Average bridging score (only if both have rated)
   const averageBridgingScore = (myBridgingScore !== null && theirBridgingScore !== null) 
@@ -173,28 +194,30 @@ export function useChatSession(theirOpinionId: string | null, sourceOpinionId?: 
     getOrCreateChat();
   }, [effectiveMyOpinion, theirOpinion, chatId, sourceOpinionId]);
 
-  // Mutation for saving/updating rating
+  // Mutation for saving a rating round (one row per round)
   const ratingMutation = useMutation({
-    mutationFn: async ({ empathy, disagreement }: { empathy: number; disagreement: number }) => {
+    mutationFn: async ({
+      empathy,
+      disagreement,
+      messageCount,
+    }: { empathy: number; disagreement: number; messageCount: number }) => {
       if (!chatId || !user?.id) throw new Error('No chat or user');
 
-      // Check if rating already exists
-      const { data: existingRating } = await supabase
+      const { data: existing } = await supabase
         .from('chat_ratings')
         .select('id')
         .eq('chat_id', chatId)
         .eq('rater_id', user.id)
+        .eq('message_count', messageCount)
         .maybeSingle();
 
-      if (existingRating) {
-        // Update existing rating
+      if (existing) {
         const { error } = await supabase
           .from('chat_ratings')
           .update({ empathy, disagreement, updated_at: new Date().toISOString() })
-          .eq('id', existingRating.id);
+          .eq('id', existing.id);
         if (error) throw error;
       } else {
-        // Insert new rating
         const { error } = await supabase
           .from('chat_ratings')
           .insert({
@@ -202,6 +225,7 @@ export function useChatSession(theirOpinionId: string | null, sourceOpinionId?: 
             rater_id: user.id,
             empathy,
             disagreement,
+            message_count: messageCount,
           });
         if (error) throw error;
       }
@@ -216,8 +240,9 @@ export function useChatSession(theirOpinionId: string | null, sourceOpinionId?: 
     },
   });
 
-  const saveRating = async (empathy: number, disagreement: number) => {
-    await ratingMutation.mutateAsync({ empathy, disagreement });
+  const saveRating = async (empathy: number, disagreement: number, messageCount = 0) => {
+    await ratingMutation.mutateAsync({ empathy, disagreement, messageCount });
+
   };
 
   const isLoading = loadingTheir || loadingMy || loadingSource || loadingRatings;
@@ -259,6 +284,8 @@ export function useChatSession(theirOpinionId: string | null, sourceOpinionId?: 
     saveRating,
     isSavingRating: ratingMutation.isPending,
     existingRating: existingRating ? { empathy: existingRating.empathy, disagreement: existingRating.disagreement } : null,
+    myRatingRounds,
+
     averageBridgingScore,
     myBridgingScore,
     theirBridgingScore,
