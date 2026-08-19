@@ -5,9 +5,10 @@ import {
   passphraseToPassword,
 } from '@/lib/passphrase';
 
-export type PassphraseLoginResult =
-  | { ok: true }
-  | { ok: false; reason: 'invalid-format' | 'not-found' | 'error' };
+export interface PassphraseLoginResult {
+  ok: boolean;
+  reason?: 'invalid-format' | 'not-found' | 'error';
+}
 
 /**
  * Signs the user in with their passphrase.
