@@ -18,15 +18,19 @@ import { useVoiceRecorder } from '@/hooks/useVoiceRecorder';
 
 interface EmbeddedChatViewProps {
   theirOpinionId: string;
+  /** Read-only observation of a conversation between two other people. */
+  readOnly?: boolean;
+  /** Required in read-only mode: the "A" side of the observed chat. */
+  sourceOpinionId?: string;
 }
 
-export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
+export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpinionId }: EmbeddedChatViewProps) {
   const { t } = useTranslation();
   const {
     chatId, myOpinion, theirOpinion, theirUserId,
-    saveRating, isSavingRating, existingRating, averageBridgingScore,
+    saveRating, isSavingRating, existingRating, myRatingRounds,
     isBotChat,
-  } = useChatSession(theirOpinionId);
+  } = useChatSession(theirOpinionId, readOnly ? sourceOpinionId : undefined);
 
   const topicId = theirOpinion?.topic_id ?? null;
   const { messages: dbMessages, sendMessage, sendVoiceMessage, isSending, isBotTyping } = useChatMessages(
@@ -34,6 +38,9 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
     isBotChat,
     topicId && myOpinion && theirOpinion
       ? { topicId, myOpinionId: myOpinion.id, theirOpinionId: theirOpinion.id }
+      : undefined,
+    readOnly && sourceOpinionId
+      ? { sourceOpinionId, targetOpinionId: theirOpinionId, sourceUserId: myOpinion?.user_id }
       : undefined,
   );
   const { partnerTyping, setTyping } = useTypingIndicator(chatId);
@@ -43,18 +50,11 @@ export function EmbeddedChatView({ theirOpinionId }: EmbeddedChatViewProps) {
 
   const [inputValue, setInputValue] = useState('');
   const [empathy, setEmpathy] = useState(0);
-  const [initialized, setInitialized] = useState(false);
   const [replyingTo, setReplyingTo] = useState<{ id: string; content: string; isOwn: boolean } | null>(null);
   const [showUnlockSpark, setShowUnlockSpark] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
-    if (existingRating && !initialized) {
-      setEmpathy(existingRating.empathy);
-      setInitialized(true);
-    }
-  }, [existingRating, initialized]);
 
   const handleInputChange = useCallback((value: string) => {
     setInputValue(value);
