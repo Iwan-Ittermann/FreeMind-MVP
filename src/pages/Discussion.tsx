@@ -254,8 +254,9 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
           ownOpinionKnown={ownOpinionKnown}
           ownOpinionId={ownOpinionId}
           highlightAddOpinionForm={false}
-          highlightLetsChatButton={tourStep === 2}
-          highlightDisagreementScale={tourStep === 1}
+          highlightLetsChatButton={activeTourStep?.highlight === 'chat'}
+          highlightDisagreementScale={activeTourStep?.highlight === 'difference'}
+
           forceShowAddOpinionForm={false}
           suppressHintPanel={false}
           selected={
