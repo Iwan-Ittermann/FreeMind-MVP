@@ -17,6 +17,7 @@ import type { Opinion } from '@/types/graph';
 import type { TTChatItem } from '@/hooks/useTTChats';
 import { useMyOpinionRatings } from '@/hooks/useTTChats';
 import { useEnsureChatTitles } from '@/hooks/useEnsureChatTitles';
+import { useAllTopicChats, type AllTopicChatItem } from '@/hooks/useAllTopicChats';
 import { EmbeddedChatView } from '@/components/chat/EmbeddedChatView';
 import { TTRatingDialog } from './TTRatingDialog';
 import { Input } from '@/components/ui/input';
@@ -28,11 +29,13 @@ export interface TTSideTabsHandle {
 }
 
 type TTTab = 'opinions' | 'graph' | 'chats';
+type ChatScope = 'mine' | 'all';
 type OpinionSort = 'difference' | 'new' | 'score';
 
 interface TTChatListItem extends TTChatItem {
   unreadCount?: number;
 }
+
 
 interface TTSideTabsProps {
   opinions?: Opinion[];
