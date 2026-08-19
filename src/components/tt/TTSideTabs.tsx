@@ -125,6 +125,18 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
       );
     }, [chats, chatSearch]);
 
+    const filteredAllChats = useMemo(() => {
+      const q = chatSearch.trim().toLowerCase();
+      if (!q) return allChats;
+      return allChats.filter((c) =>
+        [c.title ?? '', c.opinionAText, c.opinionBText, c.lastMessage ?? '']
+          .join(' ')
+          .toLowerCase()
+          .includes(q),
+      );
+    }, [allChats, chatSearch]);
+
+
     const startedOpinionIds = useMemo(
       () => new Set(chats.filter((c) => c.started).map((c) => c.theirOpinionId)),
       [chats],
