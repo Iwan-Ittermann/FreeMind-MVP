@@ -45,6 +45,8 @@ interface TTSideTabsProps {
   onOpinionTap?: (opinionId: string) => void;
   unreadCount?: number;
   onActiveChatChange?: (theirOpinionId: string | null) => void;
+  /** Fired when the user opens the opinion or chat list (used to close the tour). */
+  onPanelOpen?: () => void;
 }
 
 const SPRING = { type: 'spring' as const, stiffness: 320, damping: 30 };
@@ -66,12 +68,15 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
       onOpinionTap,
       unreadCount = 0,
       onActiveChatChange,
+      onPanelOpen,
     },
     ref,
   ) {
     const { t } = useTranslation();
     const [tab, setTab] = useState<TTTab>('graph');
+    const [chatScope, setChatScope] = useState<ChatScope>('mine');
     const [activeChatOpinionId, setActiveChatOpinionId] = useState<string | null>(null);
+    const [activeAllChat, setActiveAllChat] = useState<AllTopicChatItem | null>(null);
     const [chatSearch, setChatSearch] = useState('');
     const [opinionSearch, setOpinionSearch] = useState('');
     const [opinionSort, setOpinionSort] = useState<OpinionSort>('difference');
@@ -80,20 +85,28 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
 
     const { data: myRatings } = useMyOpinionRatings(topicId, myOpinionId);
     useEnsureChatTitles(chats, ['ttChats', topicId, myOpinionId]);
+    const { data: allChats = [] } = useAllTopicChats(topicId, tab === 'chats' && chatScope === 'all');
+    useEnsureChatTitles(
+      allChats.map((c) => ({ id: c.id, title: c.title })),
+      ['allTopicChats', topicId],
+    );
 
     useImperativeHandle(ref, () => ({
       openChat(opinionId: string) {
         if (!hasOwnOpinion) return;
         setTab('chats');
+        setChatScope('mine');
+        setActiveAllChat(null);
         setActiveChatOpinionId(opinionId);
       },
     }), [hasOwnOpinion]);
 
     // Notify parent which chat (= which node) is currently open, for glow effect.
     useEffect(() => {
-      const id = tab === 'chats' ? activeChatOpinionId : null;
+      const id = tab === 'chats' && chatScope === 'mine' ? activeChatOpinionId : null;
       onActiveChatChange?.(id);
-    }, [tab, activeChatOpinionId, onActiveChatChange]);
+    }, [tab, chatScope, activeChatOpinionId, onActiveChatChange]);
+
 
     const chatTitleFor = (c: TTChatListItem) =>
       c.title?.trim() || c.opinionText.split(/\s+/).slice(0, 6).join(' ');
