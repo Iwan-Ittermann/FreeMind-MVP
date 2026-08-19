@@ -707,7 +707,15 @@
       "submitBody": "Bevor du die Meinungen der anderen siehst, gib bitte deine eigene Meinung ab.",
       "waitingTitle": "Meinung gespeichert",
       "waitingBody": "Die Diskussion startet pünktlich zum Start der Woche. Wir benachrichtigen dich.",
-      "tryTestTopic": "Bis dahin kannst du die App im Testthema erkunden:"
+      "tryTestTopic": "Bis dahin kannst du die App im Testthema erkunden:",
+      "loginTitle": "Bitte melde dich an",
+      "loginBody": "Für die Testdiskussion brauchst du deine Passphrase aus der E-Mail.",
+      "loginButton": "Anmelden",
+      "loginSuccess": "Willkommen zurück!",
+      "loginInvalidFormat": "Ungültiges Format. Beispiel: brave-ocean-dance-42",
+      "loginNotFound": "Passphrase nicht erkannt. Bitte prüfe deine E-Mail.",
+      "loginError": "Etwas ist schiefgelaufen."
+
     },
     "graphTab": "Graph",
     "editRating": "Bewertung ändern",
