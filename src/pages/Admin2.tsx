@@ -645,6 +645,65 @@ export default function Admin2() {
           {reports.length === 0 && <div style={{ fontSize: 13, opacity: 0.7 }}>Noch keine Berichte.</div>}
         </div>
 
+        {/* Anleitung / Tutorial */}
+        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", margin: "24px 0 8px" }}>
+          <h2 style={{ ...sectionTitle, margin: 0 }}>Anleitung (Tutorial)</h2>
+          <button onClick={addTourStep} style={ghostBtn}>+ Schritt hinzufügen</button>
+        </div>
+        <div style={{ display: "grid", gap: 12, marginBottom: 32 }}>
+          {tourSteps.map((row, idx) => (
+            <div key={row.id ?? `new-step-${idx}`} style={{ background: "#fff", border: "1px solid #0f1b3d", padding: 16 }}>
+              <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                <div style={{ width: 100 }}>
+                  <label style={label}>Reihenfolge</label>
+                  <input
+                    type="number"
+                    value={row.sort_order}
+                    onChange={(e) => setTourSteps((prev) => prev.map((x, i) => i === idx ? { ...x, sort_order: Number(e.target.value) || 0 } : x))}
+                    style={input}
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={label}>Hervorhebung</label>
+                  <select
+                    value={row.highlight}
+                    onChange={(e) => setTourSteps((prev) => prev.map((x, i) => i === idx ? { ...x, highlight: e.target.value } : x))}
+                    style={input}
+                  >
+                    <option value="none">Keine</option>
+                    <option value="difference">Meinungsunterschied-Skala</option>
+                    <option value="chat">Diskutieren-Button</option>
+                  </select>
+                </div>
+                <div style={{ width: 90 }}>
+                  <label style={label}>Aktiv</label>
+                  <input
+                    type="checkbox"
+                    checked={row.is_active}
+                    onChange={(e) => setTourSteps((prev) => prev.map((x, i) => i === idx ? { ...x, is_active: e.target.checked } : x))}
+                  />
+                </div>
+              </div>
+              <label style={label}>Text</label>
+              <textarea
+                rows={3}
+                value={row.text}
+                onChange={(e) => setTourSteps((prev) => prev.map((x, i) => i === idx ? { ...x, text: e.target.value } : x))}
+                style={{ ...input, resize: "vertical" }}
+              />
+              <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                <button onClick={() => saveTourStep(idx)}
+                  style={{ padding: "8px 14px", background: "#0f1b3d", color: "#fff", border: 0, fontSize: 12, cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  Speichern
+                </button>
+                <button onClick={() => deleteTourStep(idx)} style={actionBtn(false, "#8a1a1a")}>Löschen</button>
+              </div>
+            </div>
+          ))}
+          {tourSteps.length === 0 && <div style={{ fontSize: 13, opacity: 0.7 }}>Noch keine Schritte.</div>}
+        </div>
+
+
         {/* FAQ */}
         <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", margin: "24px 0 8px" }}>
           <h2 style={{ ...sectionTitle, margin: 0 }}>FAQ</h2>
