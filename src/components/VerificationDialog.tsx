@@ -3,11 +3,8 @@ import { Link } from 'react-router-dom';
 import { Mail, KeyRound, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import {
-  isValidPassphrase,
-  passphraseToEmail,
-  passphraseToPassword,
-} from '@/lib/passphrase';
+import { loginWithPassphrase } from '@/lib/passphrase-login';
+
 import {
   subscribeVerificationDialog,
   closeVerificationDialog,
