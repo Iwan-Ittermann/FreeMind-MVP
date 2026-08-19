@@ -472,6 +472,38 @@ Deno.serve(async (req) => {
       if (error) throw error;
       return Response.json({ ok: true }, { headers: corsHeaders });
     }
+    if (action === "list_tutorial_steps") {
+      const { data, error } = await supabase
+        .from("tutorial_steps")
+        .select("id, sort_order, text, highlight, is_active")
+        .order("sort_order", { ascending: true });
+      if (error) throw error;
+      return Response.json({ ok: true, steps: data ?? [] }, { headers: corsHeaders });
+    }
+    if (action === "save_tutorial_step") {
+      const { id, text, highlight, sort_order, is_active } = body ?? {};
+      if (typeof text !== "string" || !text.trim()) {
+        return Response.json({ ok: false, error: "invalid_payload" }, { status: 400, headers: corsHeaders });
+      }
+      const allowed = ["none", "difference", "chat"];
+      const row: Record<string, unknown> = {
+        text: text.trim().slice(0, 500),
+        highlight: allowed.includes(String(highlight)) ? String(highlight) : "none",
+        sort_order: Number.isFinite(sort_order) ? Number(sort_order) : 0,
+        is_active: is_active !== false,
+      };
+      if (typeof id === "string" && id) row.id = id;
+      const { error } = await supabase.from("tutorial_steps").upsert(row);
+      if (error) throw error;
+      return Response.json({ ok: true }, { headers: corsHeaders });
+    }
+    if (action === "delete_tutorial_step") {
+      if (typeof body?.id !== "string") return Response.json({ ok: false, error: "invalid_id" }, { status: 400, headers: corsHeaders });
+      const { error } = await supabase.from("tutorial_steps").delete().eq("id", body.id);
+      if (error) throw error;
+      return Response.json({ ok: true }, { headers: corsHeaders });
+    }
+
 
 
     // Default: overview
