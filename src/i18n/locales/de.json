@@ -687,17 +687,12 @@
     },
     "scrollHint": "Wische für mehr Themen",
     "respectUnlockHint": "Nach 2 Nachrichten freigeschaltet",
-    "restartTour": "Tour neu starten",
+    "restartTour": "Anleitung starten",
     "onboarding": {
-      "firstStep": "Hi! Hier kannst du produktiv diskutieren!",
-      "opinionsStep": "Hier stehen die Meinungen",
-      "addOpinionStep": "Du kannst deine Meinung hinzufügen.",
-      "chatStep": "Dann kannst du mit anderen chatten!",
-      "ratingStep": "Du kannst anderen zustimmen oder widersprechen.\nUnd du kannst deine Chats bewerten.",
-      "back": "Zurück",
-      "skip": "Überspringen",
+      "chatStep": "Jetzt kannst du mit ihnen chatten. Klick auf \"Diskutieren\"",
       "next": "Weiter",
-      "done": "Los geht's!"
+      "done": "Los geht's!",
+      "rateStep": "Klick auf die anderen Meinungen und bewerte deine Zustimmung oder Ablehnung!"
     },
     "event": {
       "countdownTitle": "Bald geht's los",
@@ -715,9 +710,8 @@
       "loginInvalidFormat": "Ungültiges Format. Beispiel: brave-ocean-dance-42",
       "loginNotFound": "Passphrase nicht erkannt. Bitte prüfe deine E-Mail.",
       "loginError": "Etwas ist schiefgelaufen."
-
     },
-    "graphTab": "Graph",
+    "graphTab": "Kreis",
     "editRating": "Bewertung ändern",
     "ratingFailed": "Bewertung konnte nicht gespeichert werden.",
     "understandingLabel": "Verständnis",
@@ -746,6 +740,13 @@
       "veryPositive": "sehr positiv",
       "submit": "Absenden",
       "later": "Später"
+    },
+    "help": {
+      "opinionsList": "Liste aller Meinungen",
+      "chatsList": "Liste deiner Chats",
+      "settings": "Einstellungen & Anleitung",
+      "otherOpinions": "Andere Meinung",
+      "yourOpinion": "Deine Meinung"
     }
   }
 }

@@ -21,7 +21,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { FloatingChatManager, FloatingChatManagerHandle } from '@/components/chat/FloatingChatManager';
 import { TTHelpOverlay } from '@/components/tt/TTHelpOverlay';
-import { TTOnboardingTour } from '@/components/tt/TTOnboardingTour';
+import { TTOnboardingTour, TT_TOUR_TOTAL_STEPS } from '@/components/tt/TTOnboardingTour';
 import { TTGateOverlay } from '@/components/tt/TTGateOverlay';
 import { TTPolarizationPoll } from '@/components/tt/TTPolarizationPoll';
 import { useTranslation } from 'react-i18next';
@@ -246,8 +246,8 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
           ownOpinionKnown={ownOpinionKnown}
           ownOpinionId={ownOpinionId}
           highlightAddOpinionForm={false}
-          highlightLetsChatButton={false}
-          highlightDisagreementScale={false}
+          highlightLetsChatButton={tourStep === 2}
+          highlightDisagreementScale={tourStep === 1}
           forceShowAddOpinionForm={false}
           suppressHintPanel={false}
           selected={
@@ -301,7 +301,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
         <TTOnboardingTour
           open={tourStep > 0}
           step={tourStep}
-          onNext={() => setTourStep((s) => (s >= 4 ? 0 : s + 1))}
+          onNext={() => setTourStep((s) => (s >= TT_TOUR_TOTAL_STEPS ? 0 : s + 1))}
           onDone={() => setTourStep(0)}
         />
 

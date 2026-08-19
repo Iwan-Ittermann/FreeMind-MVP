@@ -687,17 +687,12 @@
     },
     "scrollHint": "Swipe for more topics",
     "respectUnlockHint": "Unlocked after 2 messages",
-    "restartTour": "Restart tour",
+    "restartTour": "Start guide",
     "onboarding": {
-      "firstStep": "Hi! Here you can discuss productively!",
-      "opinionsStep": "Hier stehen die Meinungen",
-      "addOpinionStep": "Du kannst deine Meinung hinzufügen.",
-      "chatStep": "Dann kannst du mit anderen chatten!",
-      "ratingStep": "Du kannst anderen zustimmen oder widersprechen.\nUnd du kannst deine Chats bewerten.",
-      "back": "Back",
-      "skip": "Skip",
+      "chatStep": "Now you can chat with them. Tap \"Discuss\"",
       "next": "Next",
-      "done": "Let's go!"
+      "done": "Let's go!",
+      "rateStep": "Tap the other opinions and rate how much you agree or disagree!"
     },
     "event": {
       "countdownTitle": "Almost there",
@@ -715,9 +710,8 @@
       "loginInvalidFormat": "Invalid format. Example: brave-ocean-dance-42",
       "loginNotFound": "Passphrase not recognised. Please check your email.",
       "loginError": "Something went wrong."
-
     },
-    "graphTab": "Graph",
+    "graphTab": "Circle",
     "editRating": "Change rating",
     "ratingFailed": "Could not save rating.",
     "understandingLabel": "Understanding",
@@ -746,6 +740,13 @@
       "veryPositive": "very positive",
       "submit": "Submit",
       "later": "Later"
+    },
+    "help": {
+      "opinionsList": "List of all opinions",
+      "chatsList": "Your chats",
+      "settings": "Settings & guide",
+      "otherOpinions": "Other opinion",
+      "yourOpinion": "Your opinion"
     }
   }
 }
