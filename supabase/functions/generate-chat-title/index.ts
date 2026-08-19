@@ -63,14 +63,16 @@ Deno.serve(async (req) => {
           Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: 'google/gemini-2.5-flash-lite',
+          model: 'google/gemini-3.1-flash-lite',
           messages: [
             {
               role: 'system',
               content:
-                'Du erstellst extrem kurze deutsche Gesprächstitel (maximal 4 Wörter, keine Anführungszeichen, kein Punkt am Ende). ' +
-                'Der Titel benennt den Kern des Meinungsunterschieds zwischen zwei Positionen, z. B. "Grüne vs. Klimakosten". Antworte nur mit dem Titel.',
+                'Du erfindest kreative deutsche NAMEN für Gespräche zwischen zwei Meinungen — keine Beschreibungen. ' +
+                '2 bis 4 Wörter, griffig und bildhaft, gern metaphorisch oder als Duell-Name (z. B. "Kalter Kaffee", "Feuer trifft Wasser", "Klima-Poker"). ' +
+                'Keine Anführungszeichen, kein Punkt am Ende, kein "vs.", keine Erklärung. Antworte nur mit dem Namen.',
             },
+
             {
               role: 'user',
               content: `Meinung A: ${textA}\n\nMeinung B: ${textB}`,
