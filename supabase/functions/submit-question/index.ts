@@ -5,7 +5,8 @@ import { z } from 'npm:zod@3.23.8'
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SERVICE_ROLE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY')
-const ADMIN_NOTIFY_EMAIL = Deno.env.get('ADMIN_NOTIFY_EMAIL') || 'iwan@digitalpeacetalks.com'
+// Questions go to the person answering them, independent of the general admin notify address.
+const QUESTION_NOTIFY_EMAIL = 'iwan@digitalpeacetalks.com'
 
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE)
 
@@ -82,7 +83,7 @@ Deno.serve(async (req) => {
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${SERVICE_ROLE}` },
       body: JSON.stringify({
         templateName: 'question-submitted',
-        recipientEmail: ADMIN_NOTIFY_EMAIL,
+        recipientEmail: QUESTION_NOTIFY_EMAIL,
         idempotencyKey: `question-submitted-${row.id}`,
         templateData: {
           question,
