@@ -198,7 +198,9 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
           onClick={() => {
             if (opts?.disabled) return;
             setTab(key);
+            if (key !== 'graph') onPanelOpen?.();
           }}
+
           disabled={opts?.disabled}
           data-tt-help={opts?.helpKey}
           aria-label={label}
