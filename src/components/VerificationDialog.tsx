@@ -45,32 +45,23 @@ export function VerificationDialog() {
   const handlePassphraseLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    const phrase = passphrase.trim().toLowerCase();
-    if (!isValidPassphrase(phrase)) {
-      setError('Ungültiges Format. Beispiel: brave-ocean-dance-42');
-      return;
-    }
     setBusy(true);
-    try {
-      // Sign out any silent/anonymous session first so the passphrase account
-      // becomes the active identity.
-      await supabase.auth.signOut();
-      const { error: signInErr } = await supabase.auth.signInWithPassword({
-        email: passphraseToEmail(phrase),
-        password: passphraseToPassword(phrase),
-      });
-      if (signInErr) {
-        setError('Passphrase nicht erkannt. Bitte prüfe deine E-Mail.');
-        return;
-      }
+    const res = await loginWithPassphrase(passphrase);
+    setBusy(false);
+    if (res.ok) {
       toast.success('Willkommen zurück!');
       closeVerificationDialog();
-    } catch {
+      return;
+    }
+    if (res.reason === 'invalid-format') {
+      setError('Ungültiges Format. Beispiel: brave-ocean-dance-42');
+    } else if (res.reason === 'not-found') {
+      setError('Passphrase nicht erkannt. Bitte prüfe deine E-Mail.');
+    } else {
       setError('Etwas ist schiefgelaufen.');
-    } finally {
-      setBusy(false);
     }
   };
+
 
   const handleRequestPassphrase = async (e: React.FormEvent) => {
     e.preventDefault();
