@@ -89,7 +89,9 @@
     "signInRequired": "You need to be signed in to chat.",
     "submitOpinionRequired": "You need to submit your own opinion first before chatting with others.",
     "ratingSaved": "Rating saved!",
-    "failedToSaveRating": "Failed to save rating"
+    "failedToSaveRating": "Failed to save rating",
+    "theirOpinion": "Other opinion",
+    "yourOpinion": "Your opinion"
   },
   "topicJoin": {
     "topicNotFound": "Topic Not Found",
@@ -175,7 +177,8 @@
     "userBlocked": "User blocked in this chat",
     "failedToBlock": "Failed to block user",
     "userUnblocked": "User unblocked",
-    "failedToUnblock": "Failed to unblock user"
+    "failedToUnblock": "Failed to unblock user",
+    "readOnly": "Read-only view"
   },
   "about": {
     "title": "About FreeMind",
@@ -590,6 +593,21 @@
       "courtCaseCreated": "Court case created",
       "courtCaseActivated": "Court case activated",
       "failedToApprove": "Failed to approve court case"
+    },
+    "tutorialSteps": {
+      "title": "Guide (tutorial)",
+      "add": "Add step",
+      "text": "Text",
+      "highlight": "Highlight",
+      "order": "Order",
+      "active": "Active",
+      "save": "Save",
+      "delete": "Delete",
+      "saved": "Saved",
+      "highlightNone": "None",
+      "highlightDifference": "Opinion difference scale",
+      "highlightChat": "Discuss button",
+      "empty": "No steps yet."
     }
   },
   "notifications": {
@@ -686,7 +704,7 @@
       "comingSoon": "soon"
     },
     "scrollHint": "Swipe for more topics",
-    "respectUnlockHint": "Unlocked after 2 messages",
+    "respectUnlockHint": "Unlocked after 3 messages",
     "restartTour": "Start guide",
     "onboarding": {
       "chatStep": "Now you can chat with them. Tap \"Discuss\"",
@@ -747,6 +765,10 @@
       "settings": "Settings & guide",
       "otherOpinions": "Other opinion",
       "yourOpinion": "Your opinion"
-    }
+    },
+    "respectNextRoundHint": "Next rating after {{count}} messages",
+    "myChats": "My chats",
+    "allChats": "All chats",
+    "allChatsEmpty": "No conversations yet."
   }
 }
