@@ -194,28 +194,30 @@ export function useChatSession(theirOpinionId: string | null, sourceOpinionId?: 
     getOrCreateChat();
   }, [effectiveMyOpinion, theirOpinion, chatId, sourceOpinionId]);
 
-  // Mutation for saving/updating rating
+  // Mutation for saving a rating round (one row per round)
   const ratingMutation = useMutation({
-    mutationFn: async ({ empathy, disagreement }: { empathy: number; disagreement: number }) => {
+    mutationFn: async ({
+      empathy,
+      disagreement,
+      messageCount,
+    }: { empathy: number; disagreement: number; messageCount: number }) => {
       if (!chatId || !user?.id) throw new Error('No chat or user');
 
-      // Check if rating already exists
-      const { data: existingRating } = await supabase
+      const { data: existing } = await supabase
         .from('chat_ratings')
         .select('id')
         .eq('chat_id', chatId)
         .eq('rater_id', user.id)
+        .eq('message_count', messageCount)
         .maybeSingle();
 
-      if (existingRating) {
-        // Update existing rating
+      if (existing) {
         const { error } = await supabase
           .from('chat_ratings')
           .update({ empathy, disagreement, updated_at: new Date().toISOString() })
-          .eq('id', existingRating.id);
+          .eq('id', existing.id);
         if (error) throw error;
       } else {
-        // Insert new rating
         const { error } = await supabase
           .from('chat_ratings')
           .insert({
@@ -223,6 +225,7 @@ export function useChatSession(theirOpinionId: string | null, sourceOpinionId?: 
             rater_id: user.id,
             empathy,
             disagreement,
+            message_count: messageCount,
           });
         if (error) throw error;
       }
@@ -237,8 +240,9 @@ export function useChatSession(theirOpinionId: string | null, sourceOpinionId?: 
     },
   });
 
-  const saveRating = async (empathy: number, disagreement: number) => {
-    await ratingMutation.mutateAsync({ empathy, disagreement });
+  const saveRating = async (empathy: number, disagreement: number, messageCount = 0) => {
+    await ratingMutation.mutateAsync({ empathy, disagreement, messageCount });
+
   };
 
   const isLoading = loadingTheir || loadingMy || loadingSource || loadingRatings;
