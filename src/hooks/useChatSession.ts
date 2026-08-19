@@ -24,15 +24,18 @@ interface ChatSession {
   theirOpinionId: string | null;
   isLoading: boolean;
   error: string | null;
-  saveRating: (empathy: number, disagreement: number) => Promise<void>;
+  saveRating: (empathy: number, disagreement: number, messageCount?: number) => Promise<void>;
   isSavingRating: boolean;
   existingRating: { empathy: number; disagreement: number } | null;
+  /** All rating rounds the current user already submitted for this chat. */
+  myRatingRounds: { empathy: number; messageCount: number }[];
   // Average bridging score from both participants
   averageBridgingScore: number | null;
   myBridgingScore: number | null;
   theirBridgingScore: number | null;
   isBotChat: boolean;
 }
+
 
 export function useChatSession(theirOpinionId: string | null, sourceOpinionId?: string | null): ChatSession {
   const { user } = useAuth();
