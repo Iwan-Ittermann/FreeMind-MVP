@@ -867,6 +867,35 @@ export type Database = {
         }
         Relationships: []
       }
+      report_ips: {
+        Row: {
+          created_at: string
+          report_id: string
+          reported_user_ip_address: string | null
+          reporter_ip_address: string | null
+        }
+        Insert: {
+          created_at?: string
+          report_id: string
+          reported_user_ip_address?: string | null
+          reporter_ip_address?: string | null
+        }
+        Update: {
+          created_at?: string
+          report_id?: string
+          reported_user_ip_address?: string | null
+          reporter_ip_address?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_ips_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: true
+            referencedRelation: "reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reports: {
         Row: {
           admin_id: string | null
@@ -878,8 +907,6 @@ export type Database = {
           law_book: string
           offense: string
           paragraph: string
-          reported_user_ip_address: string | null
-          reporter_ip_address: string | null
           reporting_user_id: string
           review_timestamp: string | null
           status: string | null
@@ -894,8 +921,6 @@ export type Database = {
           law_book: string
           offense: string
           paragraph: string
-          reported_user_ip_address?: string | null
-          reporter_ip_address?: string | null
           reporting_user_id: string
           review_timestamp?: string | null
           status?: string | null
@@ -910,8 +935,6 @@ export type Database = {
           law_book?: string
           offense?: string
           paragraph?: string
-          reported_user_ip_address?: string | null
-          reporter_ip_address?: string | null
           reporting_user_id?: string
           review_timestamp?: string | null
           status?: string | null
