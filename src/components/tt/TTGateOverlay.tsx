@@ -119,6 +119,42 @@ export function TTGateOverlay({
   return (
     <div className="absolute inset-0 z-[38] flex items-center justify-center px-5 pb-16 pt-14 bg-background/80 backdrop-blur-[3px]">
       <div className="w-full max-w-[360px] rounded-2xl bg-background/95 border border-border/50 shadow-2xl p-5 text-center">
+        {variant === 'login' && (
+          <>
+            <KeyRound className="w-6 h-6 mx-auto mb-3 text-primary" />
+            <h2 className="text-base font-semibold text-foreground mb-1">
+              {t('tt.event.loginTitle')}
+            </h2>
+            <p className="text-sm text-muted-foreground mb-3">{t('tt.event.loginBody')}</p>
+            <form onSubmit={handleLogin} className="space-y-2">
+              <Input
+                type="text"
+                value={passphrase}
+                onChange={(e) => setPassphrase(e.target.value)}
+                placeholder="brave-ocean-dance-42"
+                className="font-mono text-sm text-center"
+                autoCapitalize="off"
+                autoCorrect="off"
+                spellCheck={false}
+              />
+              <Button type="submit" className="w-full rounded-full" disabled={loggingIn}>
+                {t('tt.event.loginButton')}
+              </Button>
+            </form>
+            {loginError && (
+              <p className="mt-2 text-xs text-destructive">{loginError}</p>
+            )}
+            <p className="mt-4 text-xs text-muted-foreground">
+              {t('tt.registerToParticipate')}{' '}
+              <a href="https://freemind.chat" className="text-primary hover:underline font-medium">
+                freemind.chat
+              </a>{' '}
+              {t('tt.registerToParticipateSuffix')}
+            </p>
+          </>
+        )}
+
+
         {variant === 'countdown' && (
           <>
             <Clock className="w-6 h-6 mx-auto mb-3 text-primary" />
