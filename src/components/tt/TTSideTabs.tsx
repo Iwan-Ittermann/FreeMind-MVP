@@ -5,7 +5,7 @@ import {
   ArrowLeft,
   List,
   MessagesSquare,
-  Network,
+  CircleDot,
   Search,
   X,
   MessageSquare,
@@ -443,7 +443,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
           className="absolute bottom-7 inset-x-0 z-40 h-12 flex items-stretch border-t border-border/30 bg-background/90 backdrop-blur-md"
         >
           {tabButton('opinions', t('tt.opinions'), List, { helpKey: 'opinions-tab' })}
-          {tabButton('graph', t('tt.graphTab', 'Graph'), Network)}
+          {tabButton('graph', t('tt.graphTab', 'Kreis'), CircleDot)}
           {tabButton('chats', t('tt.chats'), MessagesSquare, {
             disabled: !hasOwnOpinion,
             badge: unreadCount,

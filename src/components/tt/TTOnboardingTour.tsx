@@ -9,21 +9,12 @@ interface TTOnboardingTourProps {
   onDone: () => void;
 }
 
+export const TT_TOUR_TOTAL_STEPS = 2;
+
 export function TTOnboardingTour({ open, step, onNext, onDone }: TTOnboardingTourProps) {
   const { t } = useTranslation();
-  const isOpinionsStep = step === 1;
-  const isAddOpinionStep = step === 2;
-  const isChatStep = step === 3;
-  const isRatingStep = step === 4;
-  const stepKey = isRatingStep
-    ? 'tt.onboarding.ratingStep'
-    : isChatStep
-    ? 'tt.onboarding.chatStep'
-    : isAddOpinionStep
-      ? 'tt.onboarding.addOpinionStep'
-      : isOpinionsStep
-        ? 'tt.onboarding.opinionsStep'
-        : 'tt.onboarding.firstStep';
+  const isLastStep = step >= TT_TOUR_TOTAL_STEPS;
+  const stepKey = isLastStep ? 'tt.onboarding.chatStep' : 'tt.onboarding.rateStep';
 
   return (
     <AnimatePresence>
@@ -32,7 +23,7 @@ export function TTOnboardingTour({ open, step, onNext, onDone }: TTOnboardingTou
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className={`absolute inset-0 z-[70] flex items-center justify-center px-6 ${isOpinionsStep || isAddOpinionStep || isChatStep || isRatingStep ? 'pointer-events-none' : 'bg-background/20 backdrop-blur-[1px] pointer-events-auto'}`}
+          className="absolute inset-x-0 top-0 bottom-[140px] z-[70] flex items-center justify-center px-6 pointer-events-none"
         >
           <motion.div
             initial={{ opacity: 0, y: 10, scale: 0.96 }}
@@ -58,7 +49,7 @@ export function TTOnboardingTour({ open, step, onNext, onDone }: TTOnboardingTou
                 onClick={onNext}
                 className="h-9 min-w-28 rounded-full bg-primary px-5 text-sm font-medium text-primary-foreground shadow-sm transition-opacity hover:opacity-90"
               >
-                {t(isRatingStep ? 'tt.onboarding.done' : 'tt.onboarding.next')}
+                {t(isLastStep ? 'tt.onboarding.done' : 'tt.onboarding.next')}
               </button>
             </div>
           </motion.div>

@@ -74,7 +74,7 @@ export function TTHelpOverlay({ onClose, opinions, ownOpinionId }: TTHelpOverlay
   // Pick a single random opinion id once for the lifetime of this overlay instance.
   const [randomOpinionIds] = useState<string[]>(() => {
     const others = opinions.filter((o) => o.id !== ownOpinionId);
-    return pickRandom(others, 1).map((o) => o.id);
+    return pickRandom(others, 2).map((o) => o.id);
   });
 
   const [positioned, setPositioned] = useState<PositionedCallout[]>([]);
@@ -106,7 +106,7 @@ export function TTHelpOverlay({ onClose, opinions, ownOpinionId }: TTHelpOverlay
         if (rect.width === 0) return;
         raw.push({
           rect,
-          label: t('tt.help.otherOpinions', 'Meinungen der anderen'),
+          label: t('tt.help.otherOpinions', 'Andere Meinung'),
           preferredSide: 'top',
           isCircle: true,
         });

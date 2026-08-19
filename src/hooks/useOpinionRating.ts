@@ -76,6 +76,7 @@ export function useDisagreementRating(
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
+      queryClient.invalidateQueries({ queryKey: ['myOpinionRatings'] });
       if (topicId) {
         queryClient.invalidateQueries({ queryKey: ['topic', topicId] });
       }
