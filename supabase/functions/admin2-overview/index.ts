@@ -422,6 +422,50 @@ Deno.serve(async (req) => {
       if (error) throw error;
       return Response.json({ ok: true }, { headers: corsHeaders });
     }
+    if (action === "list_questions") {
+      const { data, error } = await supabase
+        .from("question_submissions")
+        .select("id, question, email, ai_draft, status, created_at")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return Response.json({ ok: true, questions: data ?? [] }, { headers: corsHeaders });
+    }
+    if (action === "set_question_status") {
+      const { id, status } = body ?? {};
+      if (typeof id !== "string" || !["new", "answered", "archived"].includes(String(status))) {
+        return Response.json({ ok: false, error: "invalid_payload" }, { status: 400, headers: corsHeaders });
+      }
+      const { error } = await supabase.from("question_submissions").update({ status }).eq("id", id);
+      if (error) throw error;
+      return Response.json({ ok: true }, { headers: corsHeaders });
+    }
+    if (action === "delete_question") {
+      if (typeof body?.id !== "string") return Response.json({ ok: false, error: "invalid_id" }, { status: 400, headers: corsHeaders });
+      const { error } = await supabase.from("question_submissions").delete().eq("id", body.id);
+      if (error) throw error;
+      return Response.json({ ok: true }, { headers: corsHeaders });
+    }
+    if (action === "polarization_stats") {
+      const { data, error } = await supabase
+        .from("polarization_responses")
+        .select("wave, least_liked_score, most_liked_score");
+      if (error) throw error;
+      const waves: Record<string, { count: number; least: number; most: number }> = {};
+      for (const r of data ?? []) {
+        const k = String(r.wave);
+        waves[k] ??= { count: 0, least: 0, most: 0 };
+        waves[k].count += 1;
+        waves[k].least += Number(r.least_liked_score ?? 0);
+        waves[k].most += Number(r.most_liked_score ?? 0);
+      }
+      const stats = Object.entries(waves).map(([wave, v]) => ({
+        wave,
+        count: v.count,
+        avgLeast: v.count ? Math.round((v.least / v.count) * 10) / 10 : 0,
+        avgMost: v.count ? Math.round((v.most / v.count) * 10) / 10 : 0,
+      }));
+      return Response.json({ ok: true, polarization: stats }, { headers: corsHeaders });
+    }
     if (action === "delete_faq") {
       if (typeof body?.id !== "string") return Response.json({ ok: false, error: "invalid_id" }, { status: 400, headers: corsHeaders });
       const { error } = await supabase.from("faq_items").delete().eq("id", body.id);

@@ -1,0 +1,1 @@
+DELETE FROM public.question_submissions WHERE question LIKE 'Testfrage:%' OR question LIKE 'Zweiter Test:%';

@@ -137,6 +137,8 @@ export default function Admin2() {
   const [reports, setReports] = useState<Array<{ id: string; report_date: string; title: string; body_md: string; stats: Record<string, number> | null }>>([]);
   const [reportOptIns, setReportOptIns] = useState(0);
   const [reportBusy, setReportBusy] = useState(false);
+  const [questions, setQuestions] = useState<Array<{ id: string; question: string; email: string | null; ai_draft: string | null; status: string; created_at: string }>>([]);
+  const [polarization, setPolarization] = useState<Array<{ wave: string; count: number; avgLeast: number; avgMost: number }>>([]);
 
   const sortedTemplates = [...templates].sort(
     (a, b) => TEMPLATE_ORDER.indexOf(a.key) - TEMPLATE_ORDER.indexOf(b.key),
@@ -156,7 +158,7 @@ export default function Admin2() {
   }
 
   async function loadAll(pw: string) {
-    const [ov, tpl, bn, fq, cs, mx, rp, oi] = await Promise.all([
+    const [ov, tpl, bn, fq, cs, mx, rp, oi, qs, pol] = await Promise.all([
       supabase.functions.invoke("admin2-overview", { body: { password: pw } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "get_templates" } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "list_bans" } }),
@@ -165,6 +167,8 @@ export default function Admin2() {
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "email_matrix" } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "list_reports" } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "report_opt_ins" } }),
+      supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "list_questions" } }),
+      supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "polarization_stats" } }),
     ]);
     if (ov.error || !ov.data?.ok) return false;
     setSignups(ov.data.signups ?? []);
@@ -176,6 +180,8 @@ export default function Admin2() {
     setMailMatrix(mx.data?.matrix ?? {});
     setReports(rp.data?.reports ?? []);
     setReportOptIns(oi.data?.optIns ?? 0);
+    setQuestions(qs.data?.questions ?? []);
+    setPolarization(pol.data?.polarization ?? []);
     return true;
   }
 
@@ -303,6 +309,34 @@ export default function Admin2() {
     await refresh();
   }
 
+  async function publishQuestion(q: { id: string; question: string; ai_draft: string | null }) {
+    const answer = window.prompt("Antwort für die FAQ-Liste:", q.ai_draft ?? "");
+    if (answer === null) return;
+    const save = await invoke({
+      action: "save_faq",
+      question: q.question,
+      answer,
+      sort_order: (faq[faq.length - 1]?.sort_order ?? 0) + 10,
+    });
+    if (save.error || !save.data?.ok) { flash("Fehler beim Veröffentlichen."); return; }
+    await invoke({ action: "set_question_status", id: q.id, status: "answered" });
+    flash("Frage in die FAQ übernommen.");
+    await refresh();
+  }
+
+  async function setQuestionStatus(id: string, status: string) {
+    const { data, error } = await invoke({ action: "set_question_status", id, status });
+    if (error || !data?.ok) { flash("Fehler beim Aktualisieren."); return; }
+    await refresh();
+  }
+
+  async function deleteQuestion(id: string) {
+    if (!confirm("Diese Einreichung löschen?")) return;
+    const { data, error } = await invoke({ action: "delete_question", id });
+    if (error || !data?.ok) { flash("Fehler beim Löschen."); return; }
+    await refresh();
+  }
+
   function addFaqRow() {
     setFaq((prev) => [...prev, {
       question: "",
@@ -343,7 +377,7 @@ export default function Admin2() {
         <header style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 24 }}>
           <h1 style={{ margin: 0, fontSize: 28, textTransform: "uppercase", letterSpacing: "0.02em" }}>freemind admin</h1>
           <button
-            onClick={() => { setUnlocked(false); setSignups([]); setTemplates([]); setBans([]); setFaq([]); setIpMap(null); setSavedPassword(""); }}
+            onClick={() => { setUnlocked(false); setSignups([]); setTemplates([]); setBans([]); setFaq([]); setQuestions([]); setPolarization([]); setIpMap(null); setSavedPassword(""); }}
             style={{ padding: "10px 14px", background: "transparent", color: "#0f1b3d", border: "1px solid #0f1b3d", fontSize: 13, cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.05em" }}>
             Sign out
           </button>
@@ -614,6 +648,57 @@ export default function Admin2() {
             </div>
           ))}
           {faq.length === 0 && <div style={{ fontSize: 13, opacity: 0.7 }}>Noch keine Fragen.</div>}
+        </div>
+
+        {/* Eingereichte Fragen */}
+        <h2 style={sectionTitle}>Eingereichte Fragen ({questions.filter((q) => q.status === "new").length} neu)</h2>
+        <div style={{ display: "grid", gap: 12, marginBottom: 32 }}>
+          {questions.map((q) => (
+            <div key={q.id} style={{ background: "#fff", border: "1px solid #0f1b3d", padding: 16 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 11, opacity: 0.7, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                <span>{fmt(q.created_at)} · {q.email ?? "ohne E-Mail"}</span>
+                <span>{q.status}</span>
+              </div>
+              <p style={{ fontSize: 15, fontWeight: 600, margin: "8px 0" }}>{q.question}</p>
+              {q.ai_draft && (
+                <p style={{ fontSize: 13, whiteSpace: "pre-wrap", opacity: 0.85, margin: 0 }}>{q.ai_draft}</p>
+              )}
+              <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
+                <button onClick={() => publishQuestion(q)} style={ghostBtn}>In FAQ übernehmen</button>
+                {q.status !== "answered" && (
+                  <button onClick={() => setQuestionStatus(q.id, "answered")} style={ghostBtn}>Als beantwortet markieren</button>
+                )}
+                {q.status !== "archived" && (
+                  <button onClick={() => setQuestionStatus(q.id, "archived")} style={ghostBtn}>Archivieren</button>
+                )}
+                <button onClick={() => deleteQuestion(q.id)} style={actionBtn(false, "#8a1a1a")}>Löschen</button>
+              </div>
+            </div>
+          ))}
+          {questions.length === 0 && <div style={{ fontSize: 13, opacity: 0.7 }}>Noch keine Einreichungen.</div>}
+        </div>
+
+        {/* Polarisierung */}
+        <h2 style={sectionTitle}>Affektive Polarisierung</h2>
+        <div style={{ background: "#fff", border: "1px solid #0f1b3d", overflow: "auto", marginBottom: 32 }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+            <thead>
+              <tr style={{ borderBottom: "1px solid #0f1b3d", textAlign: "left" }}>
+                <th style={th}>Welle</th><th style={th}>Antworten</th><th style={th}>Ø unliebste Partei</th><th style={th}>Ø liebste Partei</th>
+              </tr>
+            </thead>
+            <tbody>
+              {polarization.map((p) => (
+                <tr key={p.wave} style={{ borderBottom: "1px solid #dbe4f0" }}>
+                  <td style={td}>{p.wave === "pre" ? "1 — nach Meinungsabgabe" : "2 — letzter Tag"}</td>
+                  <td style={td}>{p.count}</td>
+                  <td style={td}>{p.avgLeast}</td>
+                  <td style={td}>{p.avgMost}</td>
+                </tr>
+              ))}
+              {polarization.length === 0 && <tr><td colSpan={4} style={{ ...td, opacity: 0.6 }}>Noch keine Antworten</td></tr>}
+            </tbody>
+          </table>
         </div>
 
         {/* Bans */}
