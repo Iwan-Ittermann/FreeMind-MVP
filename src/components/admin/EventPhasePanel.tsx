@@ -116,6 +116,12 @@ export function EventPhasePanel() {
         hint="Vorher: keine Chats möglich (auch serverseitig gesperrt)."
         type="datetime-local"
       />
+      <Row
+        settingKey="discussion_end_at"
+        label="Diskussion endet"
+        hint="Letzter Tag: zweite Polarisierungs-Befragung wird 24 h vorher ausgelöst."
+        type="datetime-local"
+      />
     </div>
   );
 }

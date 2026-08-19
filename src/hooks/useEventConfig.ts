@@ -7,6 +7,7 @@ export const EVENT_SETTING_KEYS = [
   'real_topic_short_code',
   'opinions_open_at',
   'discussion_open_at',
+  'discussion_end_at',
 ] as const;
 
 export type EventPhase = 'prelaunch' | 'submission' | 'discussion';
@@ -16,6 +17,7 @@ export interface EventConfig {
   realShortCode: string | null;
   opinionsOpenAt: Date | null;
   discussionOpenAt: Date | null;
+  discussionEndAt: Date | null;
 }
 
 function parseDate(v?: string | null): Date | null {
@@ -41,6 +43,7 @@ export function useEventConfig() {
         realShortCode: map.get('real_topic_short_code') || null,
         opinionsOpenAt: parseDate(map.get('opinions_open_at')),
         discussionOpenAt: parseDate(map.get('discussion_open_at')),
+        discussionEndAt: parseDate(map.get('discussion_end_at')),
       };
     },
   });

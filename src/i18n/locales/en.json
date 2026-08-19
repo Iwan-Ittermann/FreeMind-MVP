@@ -728,6 +728,16 @@
       "good": "Well",
       "veryGood": "Very well"
     },
-    "understandingQuestion": "How well does the other person understand you?"
+    "understandingQuestion": "How well does the other person understand you?",
+    "polarization": {
+      "title": "A quick question",
+      "intro": "Two questions about how you feel towards political parties. Your answers are anonymous and help us measure the impact of freemind.",
+      "leastLiked": "How do you feel about the party you like the least?",
+      "mostLiked": "How do you feel about the party you like the most?",
+      "veryNegative": "very negative",
+      "veryPositive": "very positive",
+      "submit": "Submit",
+      "later": "Later"
+    }
   }
 }

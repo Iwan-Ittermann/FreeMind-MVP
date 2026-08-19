@@ -23,6 +23,7 @@ import { FloatingChatManager, FloatingChatManagerHandle } from '@/components/cha
 import { TTHelpOverlay } from '@/components/tt/TTHelpOverlay';
 import { TTOnboardingTour } from '@/components/tt/TTOnboardingTour';
 import { TTGateOverlay } from '@/components/tt/TTGateOverlay';
+import { TTPolarizationPoll } from '@/components/tt/TTPolarizationPoll';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -278,6 +279,14 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
               queryClient.invalidateQueries({ queryKey: ['tt-own-opinion', activeTopicId, user?.id] });
               queryClient.invalidateQueries({ queryKey: ['topic', activeTopicId] });
             }}
+          />
+        )}
+
+        {mode === 'real' && !gateVariant && (
+          <TTPolarizationPoll
+            userId={user?.id}
+            hasOwnOpinion={hasOwnOpinion}
+            discussionEndAt={eventConfig?.discussionEndAt}
           />
         )}
 
