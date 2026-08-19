@@ -308,11 +308,14 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
         )}
 
         <TTOnboardingTour
-          open={tourStep > 0}
+          open={tourStep > 0 && !!activeTourStep}
           step={tourStep}
-          onNext={() => setTourStep((s) => (s >= TT_TOUR_TOTAL_STEPS ? 0 : s + 1))}
+          totalSteps={tourTotalSteps}
+          text={activeTourStep?.text ?? ''}
+          onNext={() => setTourStep((s) => (s >= tourTotalSteps ? 0 : s + 1))}
           onDone={() => setTourStep(0)}
         />
+
 
 
         {/* Impressum footer — matches the header's slim size */}
