@@ -105,9 +105,10 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
   const formatDuration = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
   const handleSaveRating = async (value: number) => {
+    if (currentRound == null) return;
     setEmpathy(value);
     try {
-      await saveRating(value, existingRating?.disagreement ?? 5);
+      await saveRating(value, existingRating?.disagreement ?? 5, currentRound);
     } catch {
       toast.error(t('chat.failedToSaveRating'));
     }
@@ -124,18 +125,30 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
   // Build a map of message ID -> content for reply previews
   const messageContentMap = new Map<string, string>();
   dbMessages.forEach(msg => messageContentMap.set(msg.id, msg.content));
-  const ownSentCount = dbMessages.filter((msg) => msg.isOwn).length;
-  const canRateRespect = !isBotChat && ownSentCount >= 2;
+
+  // Rating rounds: both sides' messages count; a round can be rated once.
+  const totalMessages = dbMessages.length;
+  const currentRound = currentRatingRound(totalMessages);
+  const nextThreshold = nextRatingThreshold(totalMessages);
+  const alreadyRatedRound =
+    currentRound != null && myRatingRounds.some((r) => r.messageCount === currentRound);
+  const canRateRespect = !isBotChat && !readOnly && currentRound != null && !alreadyRatedRound;
 
   useEffect(() => {
-    if (!chatId || !canRateRespect) return;
-    const key = `tt:respect-unlocked:${chatId}`;
+    if (!chatId || !canRateRespect || currentRound == null) return;
+    const key = `tt:respect-unlocked:${chatId}:${currentRound}`;
     if (sessionStorage.getItem(key) === 'true') return;
     sessionStorage.setItem(key, 'true');
     setShowUnlockSpark(true);
     const timer = setTimeout(() => setShowUnlockSpark(false), 1400);
     return () => clearTimeout(timer);
-  }, [chatId, canRateRespect]);
+  }, [chatId, canRateRespect, currentRound]);
+
+  // Reset the selection whenever a new round opens.
+  useEffect(() => {
+    setEmpathy(0);
+  }, [currentRound]);
+
 
   const isLoading = !myOpinion || !theirOpinion;
 
