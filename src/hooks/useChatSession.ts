@@ -85,13 +85,29 @@ export function useChatSession(theirOpinionId: string | null, sourceOpinionId?: 
     };
   }, [chatId, queryClient]);
 
-  // Extract current user's rating and partner's rating
-  const existingRating = allRatings?.find(r => r.rater_id === user?.id) || null;
-  const partnerRating = allRatings?.find(r => r.rater_id !== user?.id) || null;
+  // Ratings can be given once per round, so a user may have several rows.
+  const myRatingRows = (allRatings ?? []).filter((r) => r.rater_id === user?.id);
+  const theirRatingRows = (allRatings ?? []).filter((r) => r.rater_id !== user?.id);
+  const myRatingRounds = myRatingRows.map((r) => ({
+    empathy: r.empathy,
+    messageCount: (r as { message_count?: number }).message_count ?? 0,
+  }));
 
-  // Calculate bridging scores
-  const myBridgingScore = existingRating ? existingRating.empathy * existingRating.disagreement : null;
-  const theirBridgingScore = partnerRating ? partnerRating.empathy * partnerRating.disagreement : null;
+  const avg = (values: number[]) =>
+    values.length ? values.reduce((a, b) => a + b, 0) / values.length : null;
+
+  // Latest round is what the UI shows as "your rating".
+  const existingRating = myRatingRows.length ? myRatingRows[myRatingRows.length - 1] : null;
+  const partnerRating = theirRatingRows.length ? theirRatingRows[theirRatingRows.length - 1] : null;
+
+  // Bridging scores use the AVERAGE of all rounds a participant rated.
+  const myAvgEmpathy = avg(myRatingRows.map((r) => r.empathy));
+  const theirAvgEmpathy = avg(theirRatingRows.map((r) => r.empathy));
+  const myBridgingScore =
+    myAvgEmpathy !== null ? Math.round(myAvgEmpathy * (existingRating?.disagreement ?? 5)) : null;
+  const theirBridgingScore =
+    theirAvgEmpathy !== null ? Math.round(theirAvgEmpathy * (partnerRating?.disagreement ?? 5)) : null;
+
   
   // Average bridging score (only if both have rated)
   const averageBridgingScore = (myBridgingScore !== null && theirBridgingScore !== null) 
