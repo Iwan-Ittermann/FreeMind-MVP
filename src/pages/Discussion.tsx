@@ -50,6 +50,10 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
   const [helpOpen, setHelpOpen] = useState(false);
   const [tourStep, setTourStep] = useState(0);
   const sideTabsRef = useRef<TTSideTabsHandle>(null);
+  const { steps: tourSteps, totalSteps: tourTotalSteps } = useTutorialSteps();
+  const activeTourStep = tourStep > 0 ? tourSteps[tourStep - 1] ?? null : null;
+
+
 
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [chatNodeId, setChatNodeId] = useState<string | null>(null);
