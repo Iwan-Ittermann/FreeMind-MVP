@@ -15,7 +15,7 @@ import Discussion from "./pages/Discussion";
 import Landing from "./pages/Landing";
 import Confirm from "./pages/Confirm";
 import Unsubscribe from "./pages/Unsubscribe";
-import Faq from "./pages/Faq";
+import Fragen from "./pages/Fragen";
 import Sogehts from "./pages/Sogehts";
 import Bericht from "./pages/Bericht";
 
@@ -53,7 +53,8 @@ function AppRoutes() {
       <Route path="/confirm" element={<Confirm />} />
       <Route path="/unsubscribe" element={<Unsubscribe />} />
       <Route path="/legal" element={<Legal />} />
-      <Route path="/faq" element={<Faq />} />
+      <Route path="/fragen" element={<Fragen />} />
+      <Route path="/faq" element={<Navigate to="/fragen" replace />} />
       <Route path="/sogehts" element={<Sogehts />} />
       <Route path="/bericht" element={<Bericht />} />
 
