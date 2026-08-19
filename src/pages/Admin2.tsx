@@ -160,7 +160,7 @@ export default function Admin2() {
   }
 
   async function loadAll(pw: string) {
-    const [ov, tpl, bn, fq, cs, mx, rp, oi, qs, pol] = await Promise.all([
+    const [ov, tpl, bn, fq, cs, mx, rp, oi, qs, pol, ts] = await Promise.all([
       supabase.functions.invoke("admin2-overview", { body: { password: pw } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "get_templates" } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "list_bans" } }),
@@ -171,6 +171,7 @@ export default function Admin2() {
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "report_opt_ins" } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "list_questions" } }),
       supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "polarization_stats" } }),
+      supabase.functions.invoke("admin2-overview", { body: { password: pw, action: "list_tutorial_steps" } }),
     ]);
     if (ov.error || !ov.data?.ok) return false;
     setSignups(ov.data.signups ?? []);
@@ -184,7 +185,9 @@ export default function Admin2() {
     setReportOptIns(oi.data?.optIns ?? 0);
     setQuestions(qs.data?.questions ?? []);
     setPolarization(pol.data?.polarization ?? []);
+    setTourSteps(ts.data?.steps ?? []);
     return true;
+
   }
 
   async function submit(e: React.FormEvent) {
