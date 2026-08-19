@@ -257,8 +257,8 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
         </div>
       )}
 
-      {/* Understanding rating — always visible, unlocked after 2 own messages */}
-      {!isBotChat && (
+      {/* Understanding rating — one rating per round, reopens as the chat grows */}
+      {!isBotChat && !readOnly && (
         <div className="border-t border-border/60 px-2 pt-2 pb-3 mb-1 shrink-0 bg-muted/60">
           <div className="mb-1.5 flex items-center justify-between gap-2">
             <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
@@ -266,7 +266,10 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
               {t('tt.understandingQuestion')}
             </span>
             <span className="relative text-[11px] text-muted-foreground">
-              {!canRateRespect && t('tt.respectUnlockHint')}
+              {!canRateRespect &&
+                (alreadyRatedRound
+                  ? t('tt.respectNextRoundHint', { count: nextThreshold - totalMessages })
+                  : t('tt.respectUnlockHint'))}
               <AnimatePresence>
                 {showUnlockSpark && (
                   <motion.span
@@ -281,6 +284,7 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
               </AnimatePresence>
             </span>
           </div>
+
           <div className="grid grid-cols-5 gap-1.5">
             {([
               { value: 0, key: 'tt.understandingStep.notAtAll' },
