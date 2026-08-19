@@ -139,6 +139,8 @@ export default function Admin2() {
   const [reportBusy, setReportBusy] = useState(false);
   const [questions, setQuestions] = useState<Array<{ id: string; question: string; email: string | null; ai_draft: string | null; status: string; created_at: string }>>([]);
   const [polarization, setPolarization] = useState<Array<{ wave: string; count: number; avgLeast: number; avgMost: number }>>([]);
+  const [tourSteps, setTourSteps] = useState<Array<{ id?: string; text: string; highlight: string; sort_order: number; is_active: boolean }>>([]);
+
 
   const sortedTemplates = [...templates].sort(
     (a, b) => TEMPLATE_ORDER.indexOf(a.key) - TEMPLATE_ORDER.indexOf(b.key),
