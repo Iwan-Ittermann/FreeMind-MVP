@@ -775,6 +775,15 @@
     "respectNextRoundHint": "Nächste Bewertung nach {{count}} Nachrichten",
     "myChats": "Meine Chats",
     "allChats": "Alle Chats",
-    "allChatsEmpty": "Noch keine Gespräche."
+    "allChatsEmpty": "Noch keine Gespräche.",
+    "legendArrowLength": "Pfeillänge = Gesprächslänge",
+    "legendArrowColor": "Farbe = Brückenpunkte"
+  },
+  "secret": {
+    "title": "Geschützter Bereich",
+    "subtitle": "Experiment: Chats als Pfeile im Graphen.",
+    "placeholder": "Passwort",
+    "wrong": "Falsches Passwort.",
+    "submit": "Öffnen"
   }
 }
