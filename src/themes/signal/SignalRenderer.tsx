@@ -9,6 +9,9 @@ import { SignalNode } from './SignalNode';
 import { SignalEventMarker } from './SignalEventMarker';
 import { useHidePendingEdges } from '../ThemeContext';
 import { TTLandmarks, getTTLevelRadii } from '@/lib/tt-layout';
+import { SignalChatArrows } from './SignalChatArrows';
+import type { ChatArrow } from '@/hooks/useChatArrows';
+
 
 
 interface SignalRendererProps {
@@ -33,6 +36,8 @@ interface SignalRendererProps {
   ttMode?: boolean;
   /** TT level rings will be drawn when these landmarks are provided. */
   ttLandmarks?: TTLandmarks;
+  /** When provided, chats render as short directional arrows instead of edges. */
+  chatArrows?: readonly ChatArrow[];
 }
 
 export function SignalRenderer({
@@ -45,6 +50,7 @@ export function SignalRenderer({
   showZones = true,
   ttMode = false,
   ttLandmarks,
+  chatArrows,
 }: SignalRendererProps) {
   const nodeMap = useMemo(() => new Map(nodes.map(n => [n.id, n])), [nodes]);
   const [hidePendingEdges] = useHidePendingEdges();
@@ -151,6 +157,15 @@ export function SignalRenderer({
         </g>
       )}
 
+      {chatArrows ? (
+        <SignalChatArrows
+          arrows={chatArrows}
+          nodeMap={nodeMap}
+          nodeRadius={config.nodeRadius}
+          highlightedNode={highlightedNode}
+          onArrowClick={handleEdgeClick}
+        />
+      ) : (
       <g className="signal-edges">
         {edgeTokens.map((et, i) => (
           <SignalEdge
@@ -162,6 +177,7 @@ export function SignalRenderer({
           />
         ))}
       </g>
+      )}
       <g className="signal-nodes">
         {nodeTokens.map(nt => (
           <SignalNode

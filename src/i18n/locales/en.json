@@ -775,6 +775,15 @@
     "respectNextRoundHint": "Next rating after {{count}} messages",
     "myChats": "My chats",
     "allChats": "All chats",
-    "allChatsEmpty": "No conversations yet."
+    "allChatsEmpty": "No conversations yet.",
+    "legendArrowLength": "arrow length = chat length",
+    "legendArrowColor": "color = bridging points"
+  },
+  "secret": {
+    "title": "Protected area",
+    "subtitle": "Experiment: chats rendered as arrows in the graph.",
+    "placeholder": "Password",
+    "wrong": "Wrong password.",
+    "submit": "Enter"
   }
 }

@@ -34,7 +34,7 @@ import { useTranslation } from 'react-i18next';
  * Single-topic mobile UI. This build is locked to the Helsinki event topic (7mm9);
  * multi-topic swipe/loop logic has been removed.
  */
-export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
+export default function TT({ mode = 'real', variant = 'default' }: { mode?: 'test' | 'real'; variant?: 'default' | 'arrows' }) {
   useParams<{ topicId?: string }>(); // single-topic routes; params ignored
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -168,6 +168,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
               highlightAllNodes={false}
               onNodeSelect={setSelectedNode}
               onEdgeClick={handleEdgeClick}
+              arrowMode={variant === 'arrows'}
             />
           )}
         </div>

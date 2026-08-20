@@ -6,6 +6,7 @@ import { OpinionGraph } from '@/components/graph/OpinionGraph';
 import { TTBackground } from './TTBackground';
 import { useTranslation } from 'react-i18next';
 import { GraphEdge, GraphNode } from '@/types/graph';
+import { useChatArrows } from '@/hooks/useChatArrows';
 
 interface TTScreenInnerProps {
   topicId: string;
@@ -18,6 +19,8 @@ interface TTScreenInnerProps {
   onNodeSelect: (node: GraphNode | null) => void;
   onEdgeClick?: (edge: GraphEdge) => void;
   highlightAllNodes?: boolean;
+  /** Experimental: render all chats as short directional arrows. */
+  arrowMode?: boolean;
   /** Called from parent so it can read opinions for the side panel. */
   onDataReady?: (data: ReturnType<typeof useTopicData>['data']) => void;
 }
@@ -32,10 +35,12 @@ function TTScreenInnerImpl({
   onNodeSelect,
   onEdgeClick,
   highlightAllNodes = false,
+  arrowMode = false,
 }: TTScreenInnerProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { data, activeChats, messageAnimations } = useTopicData(topicId);
+  const { data: chatArrows } = useChatArrows(topicId, arrowMode);
 
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const [size, setSize] = useState<number>(0);
@@ -146,6 +151,7 @@ function TTScreenInnerImpl({
                 ttMode
                 ttLandmarks={ttLandmarks}
                 nodePoints={data?.nodePoints}
+                chatArrows={arrowMode ? chatArrows ?? [] : undefined}
               />
 
             </div>
@@ -163,6 +169,12 @@ function TTScreenInnerImpl({
             <span className="h-2 w-2 rounded-full border border-dashed border-foreground/50" />
             {t('tt.legendInactive')}
           </span>
+          {arrowMode && (
+            <>
+              <span>{t('tt.legendArrowLength')}</span>
+              <span>{t('tt.legendArrowColor')}</span>
+            </>
+          )}
         </div>
       </div>
 
@@ -197,6 +209,7 @@ export const TTScreenInner = memo(TTScreenInnerImpl, (prev, next) => {
     prev.topicId === next.topicId &&
     prev.selectedNodeId === next.selectedNodeId &&
     prev.highlightAllNodes === next.highlightAllNodes &&
+    prev.arrowMode === next.arrowMode &&
     prev.hue === next.hue
   );
 });
