@@ -11,6 +11,7 @@ import { useFreeMindTheme } from '@/themes/ThemeContext';
 import { CityRenderer } from '@/themes/city/CityRenderer';
 import { ArcaneRenderer } from '@/themes/arcane/ArcaneRenderer';
 import { SignalRenderer } from '@/themes/signal/SignalRenderer';
+import type { ChatArrow } from '@/hooks/useChatArrows';
 
 interface OpinionGraphProps {
   opinions?: Opinion[];
@@ -38,6 +39,8 @@ interface OpinionGraphProps {
   ttLandmarks?: TTLandmarks;
   /** Directed bridging points per opinion (points awarded BY the counterpart). */
   nodePoints?: Map<string, number>;
+  /** When provided, chats render as short directional arrows instead of edges. */
+  chatArrows?: readonly ChatArrow[];
 
 }
 
@@ -63,6 +66,7 @@ export function OpinionGraph({
   ttMode = false,
   ttLandmarks,
   nodePoints,
+  chatArrows,
 }: OpinionGraphProps) {
 
   const [highlightedNode, setHighlightedNode] = useState<string | null>(null);
@@ -181,7 +185,7 @@ export function OpinionGraph({
           onNodeClick={handleNodeClick}
           onNodeHover={handleNodeHover}
           onEdgeClick={onEdgeClick}
-          {...(useSignalLike ? { showLabels, highlightAllNodes, showZones: chrome !== 'naked', ttMode, ttLandmarks } : {})}
+          {...(useSignalLike ? { showLabels, highlightAllNodes, showZones: chrome !== 'naked', ttMode, ttLandmarks, chatArrows } : {})}
         />
       </div>
     );
