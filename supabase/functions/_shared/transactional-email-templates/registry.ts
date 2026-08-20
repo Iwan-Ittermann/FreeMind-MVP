@@ -36,5 +36,7 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'campaign-sogehts': sogehtsTemplate,
   'daily-report': dailyReportTemplate,
   'question-submitted': questionSubmitted,
+  'nudge-rate': nudgeRateTemplate,
+  'nudge-chat': nudgeChatTemplate,
 }
 
