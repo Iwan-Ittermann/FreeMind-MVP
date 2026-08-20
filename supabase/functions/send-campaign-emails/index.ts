@@ -40,6 +40,21 @@ function cleanEmail(raw: string): string {
   return String(raw).split("#")[0].toLowerCase();
 }
 
+/** True while the real discussion phase is running (nudges only go out then). */
+async function discussionOpen(): Promise<boolean> {
+  const { data } = await supabase
+    .from("app_settings")
+    .select("key, value")
+    .in("key", ["discussion_open_at", "discussion_end_at"]);
+  const cfg = new Map((data ?? []).map((r) => [r.key as string, String(r.value ?? "").trim()]));
+  const start = cfg.get("discussion_open_at") ? new Date(cfg.get("discussion_open_at")!).getTime() : null;
+  const end = cfg.get("discussion_end_at") ? new Date(cfg.get("discussion_end_at")!).getTime() : null;
+  const now = Date.now();
+  if (start && now < start) return false;
+  if (end && now > end) return false;
+  return true;
+}
+
 /** Signup ids that are currently in the given funnel stage. */
 async function nudgeAudience(stage: "rate" | "chat"): Promise<Set<string> | null> {
   const { data: settings } = await supabase
