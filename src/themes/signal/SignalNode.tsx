@@ -93,6 +93,26 @@ function OuterShapeRed() {
   );
 }
 
+/** Not yet in any discussion: hollow, dashed, muted — clearly "waiting". */
+function InactiveShapeTT() {
+  return (
+    <>
+      <circle cx="20" cy="20" r="8.5" fill="#7C8AA5" fillOpacity={0.14} />
+      <circle
+        cx="20"
+        cy="20"
+        r="8.5"
+        fill="none"
+        stroke="#9FB0C9"
+        strokeOpacity={0.75}
+        strokeWidth={1.4}
+        strokeDasharray="3 2.5"
+      />
+    </>
+  );
+}
+
+
 function BotShape() {
   return (
     <>
