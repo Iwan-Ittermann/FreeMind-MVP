@@ -294,7 +294,7 @@ export default function Admin2() {
     const choice = resendChoice[signup.id];
     if (!choice) { flash("Bitte erst eine E-Mail auswählen."); return; }
     const label = RESENDABLE.find((r) => r.key === choice)?.label ?? choice;
-    if (choice.startsWith("campaign-")) {
+    if (choice.startsWith("campaign-") || choice.startsWith("nudge-")) {
       await rowAction(signup, "resend_campaign", `"${label}" an ${signup.email} senden?`, { key: choice });
     } else {
       await rowAction(signup, choice, `"${label}" an ${signup.email} senden?`);
