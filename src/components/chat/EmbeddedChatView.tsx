@@ -51,7 +51,7 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
   const { isRecording, duration, startRecording, stopRecording } = useVoiceRecorder();
 
   const [inputValue, setInputValue] = useState('');
-  const [empathy, setEmpathy] = useState(0);
+  const [empathy, setEmpathy] = useState<number | null>(null);
   const [replyingTo, setReplyingTo] = useState<{ id: string; content: string; isOwn: boolean } | null>(null);
   const [showUnlockSpark, setShowUnlockSpark] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -148,7 +148,7 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
 
   // Reset the selection whenever a new round opens.
   useEffect(() => {
-    setEmpathy(0);
+    setEmpathy(null);
   }, [currentRound]);
 
 
