@@ -252,6 +252,12 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
 
           )
         )}
+        {hasOwnOpinion && !gateVariant && !selectedNode && (
+          <TTNudgeHint
+            stage={nudgeStage}
+            onAction={() => sideTabsRef.current?.openPanel(nudgeStage === 'rate' ? 'opinions' : 'chats')}
+          />
+        )}
         <TTBottomPanel
           topicId={activeTopicId}
           hasOwnOpinion={hasOwnOpinion}
