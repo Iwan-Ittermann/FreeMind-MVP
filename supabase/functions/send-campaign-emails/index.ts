@@ -40,6 +40,62 @@ function cleanEmail(raw: string): string {
   return String(raw).split("#")[0].toLowerCase();
 }
 
+/** Signup ids that are currently in the given funnel stage. */
+async function nudgeAudience(stage: "rate" | "chat"): Promise<Set<string> | null> {
+  const { data: settings } = await supabase
+    .from("app_settings")
+    .select("key, value")
+    .in("key", ["real_topic_short_code", "discussion_open_at", "discussion_end_at"]);
+  const cfg = new Map((settings ?? []).map((r) => [r.key as string, String(r.value ?? "").trim()]));
+
+  const shortCode = cfg.get("real_topic_short_code");
+  if (!shortCode) return null;
+
+  const { data: topic } = await supabase
+    .from("topics")
+    .select("id")
+    .eq("short_code", shortCode)
+    .maybeSingle();
+  if (!topic) return null;
+  const topicId = topic.id as string;
+
+  const [{ data: signups }, { data: opinions }, { data: chats }] = await Promise.all([
+    supabase.from("signups").select("id, auth_user_id").not("auth_user_id", "is", null),
+    supabase.from("opinions").select("id, user_id").eq("topic_id", topicId),
+    supabase.from("chats").select("id").eq("topic_id", topicId),
+  ]);
+
+  const opinionByUser = new Map<string, string>();
+  for (const o of opinions ?? []) opinionByUser.set(o.user_id as string, o.id as string);
+
+  const { data: ratings } = await supabase
+    .from("opinion_ratings")
+    .select("rater_opinion_id")
+    .eq("topic_id", topicId);
+  const ratedOpinionIds = new Set((ratings ?? []).map((r) => r.rater_opinion_id as string));
+
+  const chatIds = (chats ?? []).map((c) => c.id as string);
+  const senders = new Set<string>();
+  if (chatIds.length) {
+    const { data: msgs } = await supabase
+      .from("chat_messages")
+      .select("sender_id")
+      .in("chat_id", chatIds);
+    for (const m of msgs ?? []) senders.add(m.sender_id as string);
+  }
+
+  const allowed = new Set<string>();
+  for (const s of signups ?? []) {
+    const userId = s.auth_user_id as string;
+    const opinionId = opinionByUser.get(userId);
+    if (!opinionId) continue;
+    const hasRated = ratedOpinionIds.has(opinionId);
+    const hasWritten = senders.has(userId);
+    if (stage === "rate" && !hasRated) allowed.add(s.id as string);
+    if (stage === "chat" && hasRated && !hasWritten) allowed.add(s.id as string);
+  }
+  return allowed;
+}
 
 async function loadRecipients(campaignKey: string, onlySignupId?: string, resend = false): Promise<Recipient[]> {
   let query = supabase
@@ -61,10 +117,31 @@ async function loadRecipients(campaignKey: string, onlySignupId?: string, resend
   for (const s of suppressed ?? []) blocked.add(String(s.email).toLowerCase());
   const sentIds = new Set((alreadySent ?? []).map((r) => r.signup_id as string));
 
+  // Funnel nudges: restrict to users actually in that stage and throttle to one
+  // nudge mail per user per 24h across all nudge keys.
+  const def = getCampaign(campaignKey);
+  let stageAllowed: Set<string> | null = null;
+  const recentlyNudged = new Set<string>();
+  if (def?.nudge) {
+    stageAllowed = await nudgeAudience(def.nudge);
+    if (!stageAllowed) return [];
+    const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const { data: recent } = await supabase
+      .from("campaign_sends")
+      .select("signup_id")
+      .in("campaign_key", NUDGE_KEYS)
+      .gte("sent_at", since);
+    for (const r of recent ?? []) recentlyNudged.add(r.signup_id as string);
+  }
+
   return (signups ?? [])
     .map((s) => ({ id: s.id as string, email: cleanEmail(s.email as string), passphrase: (s.passphrase as string | null) ?? null }))
-    .filter((s) => !blocked.has(s.email) && (resend || !sentIds.has(s.id)));
+    .filter((s) => !blocked.has(s.email) && (resend || !sentIds.has(s.id)))
+    .filter((s) => !stageAllowed || stageAllowed.has(s.id))
+    .filter((s) => resend || !recentlyNudged.has(s.id));
 }
+
+
 
 async function sendCampaign(campaignKey: string, onlySignupId?: string, resend = false) {
   const def = getCampaign(campaignKey);
