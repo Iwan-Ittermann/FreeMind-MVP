@@ -48,7 +48,7 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
 
   const [inputValue, setInputValue] = useState('');
   const [isRatingOpen, setIsRatingOpen] = useState(false);
-  const [empathy, setEmpathy] = useState(0);
+  const [empathy, setEmpathy] = useState<number | null>(null);
   const [initialized, setInitialized] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -88,6 +88,7 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
   const handleSaveRating = async () => {
     try {
       // Save understanding only; difference defaults to mid-scale (0–10)
+      if (empathy == null) return;
       await saveRating(empathy, existingRating?.disagreement ?? 5);
       setIsRatingOpen(false);
     } catch {
@@ -183,11 +184,11 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
               <div className="space-y-2 mb-6">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-muted-foreground">{t('floatingChat.respect')}</span>
-                  <span className="text-xs font-mono text-rose-400">{empathy}</span>
+                  <span className="text-xs font-mono text-rose-400">{empathy ?? '–'}</span>
                 </div>
                 <div className="relative">
                   <Slider
-                    value={[empathy]}
+                    value={[empathy ?? 0]}
                     onValueChange={(v) => setEmpathy(v[0])}
                     max={10}
                     step={1}
@@ -203,7 +204,7 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
 
               <Button
                 onClick={handleSaveRating}
-                disabled={isSavingRating}
+                disabled={isSavingRating || empathy == null}
                 className="w-full mt-auto"
               >
                 <Check className="w-4 h-4 mr-2" />

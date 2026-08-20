@@ -152,6 +152,20 @@ function TTScreenInnerImpl({
           )}
         </div>
       </div>
+      {/* Legend: how to read node states */}
+      <div className="absolute inset-x-0 bottom-2 z-20 flex justify-center px-4 pointer-events-none">
+        <div className="flex items-center gap-3 rounded-full bg-background/40 px-3 py-1 text-[9px] text-foreground/60 backdrop-blur-sm">
+          <span className="flex items-center gap-1">
+            <span className="h-2 w-2 rounded-full bg-green-500" />
+            {t('tt.legendOnline')}
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="h-2 w-2 rounded-full border border-dashed border-foreground/50" />
+            {t('tt.legendInactive')}
+          </span>
+        </div>
+      </div>
+
 
       {/* Empty-state hint: shown while no chat has produced an empathy rating yet.
           Non-blocking, subtle, disappears automatically once the first bridging

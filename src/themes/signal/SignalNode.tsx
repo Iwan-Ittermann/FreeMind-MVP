@@ -93,6 +93,26 @@ function OuterShapeRed() {
   );
 }
 
+/** Not yet in any discussion: hollow, dashed, muted — clearly "waiting". */
+function InactiveShapeTT() {
+  return (
+    <>
+      <circle cx="20" cy="20" r="8.5" fill="#7C8AA5" fillOpacity={0.14} />
+      <circle
+        cx="20"
+        cy="20"
+        r="8.5"
+        fill="none"
+        stroke="#9FB0C9"
+        strokeOpacity={0.75}
+        strokeWidth={1.4}
+        strokeDasharray="3 2.5"
+      />
+    </>
+  );
+}
+
+
 function BotShape() {
   return (
     <>
@@ -150,12 +170,16 @@ export const SignalNode = memo(function SignalNode({
     : ZONE_SHAPE;
   // Top 5 always render as stars, whatever zone they sit in.
   const starShape = ttMode && token.isCurrentUser ? CoreShapeRed : CoreShapeGold;
+  const showInactive = ttMode && token.isInactive && !token.isCurrentUser && !token.isBot;
   const Shape = token.isBot
     ? BotShape
-    : ttMode && token.isTop5
-      ? starShape
-      : (shapeSet[token.zone] ?? MiddleShape);
-  const opacity = isDimmed ? 0.4 : token.isHidden ? 0.3 : token.isInactive && !token.isCurrentUser ? 0.45 : 1;
+    : showInactive
+      ? InactiveShapeTT
+      : ttMode && token.isTop5
+        ? starShape
+        : (shapeSet[token.zone] ?? MiddleShape);
+  const opacity = isDimmed ? 0.4 : token.isHidden ? 0.3 : showInactive ? 0.6 : 1;
+
   const isScaled = isHighlighted && !isDimmed;
   const bubbleText = token.opinionText
     ? (token.opinionText.length > 16 ? token.opinionText.slice(0, 16) + '…' : token.opinionText)
@@ -226,11 +250,16 @@ export const SignalNode = memo(function SignalNode({
         }}
       >
         <circle cx="20" cy="20" r="22" fill="transparent" />
+        {/* Active (already discussing) — soft halo so it reads brighter than inactive nodes */}
+        {ttMode && !showInactive && !token.isBot && !isDimmed && (
+          <circle cx="20" cy="20" r="13" fill="none" stroke="#FFFFFF" strokeOpacity={0.22} strokeWidth={1} />
+        )}
         {/* Selection highlight — gold to match warm earth palette */}
         {(highlightForTour || (isHighlighted && !isDimmed)) && (
           <circle cx="20" cy="20" r="18" fill="none" stroke="#00e5ff" strokeWidth={2} filter="url(#signal-select-glow)" />
         )}
         <Shape />
+
         {ttMode && token.isCurrentUser && (
           <text
             x="20"
@@ -260,15 +289,22 @@ export const SignalNode = memo(function SignalNode({
         </g>
       )}
 
-      {/* Online badge */}
+      {/* Online marker — pulsing green dot, top-left of the node */}
       {token.isOnline && !token.isCurrentUser && (
-        <g transform={`translate(${-scaledHalf + 2}, ${4 * scale})`}>
-          <rect x={-14 * scale} y={-6 * scale} width={28 * scale} height={12 * scale} rx={2} fill="#14B866" fillOpacity={0.8} />
-          <text x={0} y={0} textAnchor="middle" dominantBaseline="central" fill="#1A1A2E" fontSize={5 * scale} fontWeight="bold" fontFamily="monospace">
-            Online
-          </text>
+        <g transform={`translate(${-scaledHalf * 0.75}, ${-scaledHalf * 0.75})`} style={{ pointerEvents: 'none' }}>
+          <circle r={4.5 * scale} fill="#0B1220" fillOpacity={0.85} />
+          <circle r={3 * scale} fill="#22C55E" />
+          <circle
+            r={3 * scale}
+            fill="none"
+            stroke="#22C55E"
+            strokeWidth={1}
+            className="animate-gentle-ring-pulse"
+            style={{ transformOrigin: 'center' }}
+          />
         </g>
       )}
+
 
       {/* Unread badge — always shows when there are unread messages */}
       {token.hasUnread && (
