@@ -250,11 +250,16 @@ export const SignalNode = memo(function SignalNode({
         }}
       >
         <circle cx="20" cy="20" r="22" fill="transparent" />
+        {/* Active (already discussing) — soft halo so it reads brighter than inactive nodes */}
+        {ttMode && !showInactive && !token.isBot && !isDimmed && (
+          <circle cx="20" cy="20" r="13" fill="none" stroke="#FFFFFF" strokeOpacity={0.22} strokeWidth={1} />
+        )}
         {/* Selection highlight — gold to match warm earth palette */}
         {(highlightForTour || (isHighlighted && !isDimmed)) && (
           <circle cx="20" cy="20" r="18" fill="none" stroke="#00e5ff" strokeWidth={2} filter="url(#signal-select-glow)" />
         )}
         <Shape />
+
         {ttMode && token.isCurrentUser && (
           <text
             x="20"
