@@ -170,12 +170,16 @@ export const SignalNode = memo(function SignalNode({
     : ZONE_SHAPE;
   // Top 5 always render as stars, whatever zone they sit in.
   const starShape = ttMode && token.isCurrentUser ? CoreShapeRed : CoreShapeGold;
+  const showInactive = ttMode && token.isInactive && !token.isCurrentUser && !token.isBot;
   const Shape = token.isBot
     ? BotShape
-    : ttMode && token.isTop5
-      ? starShape
-      : (shapeSet[token.zone] ?? MiddleShape);
-  const opacity = isDimmed ? 0.4 : token.isHidden ? 0.3 : token.isInactive && !token.isCurrentUser ? 0.45 : 1;
+    : showInactive
+      ? InactiveShapeTT
+      : ttMode && token.isTop5
+        ? starShape
+        : (shapeSet[token.zone] ?? MiddleShape);
+  const opacity = isDimmed ? 0.4 : token.isHidden ? 0.3 : showInactive ? 0.6 : 1;
+
   const isScaled = isHighlighted && !isDimmed;
   const bubbleText = token.opinionText
     ? (token.opinionText.length > 16 ? token.opinionText.slice(0, 16) + '…' : token.opinionText)
