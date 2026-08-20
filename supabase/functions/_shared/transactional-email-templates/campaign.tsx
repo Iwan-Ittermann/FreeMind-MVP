@@ -71,6 +71,16 @@ export const sogehtsTemplate = makeTemplate(
   'So funktioniert freemind',
   "So geht's",
 )
+export const nudgeRateTemplate = makeTemplate(
+  'Nudge: Bewerten',
+  'Deine Meinung steht — jetzt bewerten',
+  'Nächster Schritt',
+)
+export const nudgeChatTemplate = makeTemplate(
+  'Nudge: Diskutieren',
+  'Du hast bewertet — jetzt diskutieren',
+  'Nächster Schritt',
+)
 
 const pixel = { display: 'block', width: '1px', height: '1px', border: 0 }
 
