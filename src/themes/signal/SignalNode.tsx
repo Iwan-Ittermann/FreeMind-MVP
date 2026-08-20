@@ -289,15 +289,22 @@ export const SignalNode = memo(function SignalNode({
         </g>
       )}
 
-      {/* Online badge */}
+      {/* Online marker — pulsing green dot, top-left of the node */}
       {token.isOnline && !token.isCurrentUser && (
-        <g transform={`translate(${-scaledHalf + 2}, ${4 * scale})`}>
-          <rect x={-14 * scale} y={-6 * scale} width={28 * scale} height={12 * scale} rx={2} fill="#14B866" fillOpacity={0.8} />
-          <text x={0} y={0} textAnchor="middle" dominantBaseline="central" fill="#1A1A2E" fontSize={5 * scale} fontWeight="bold" fontFamily="monospace">
-            Online
-          </text>
+        <g transform={`translate(${-scaledHalf * 0.75}, ${-scaledHalf * 0.75})`} style={{ pointerEvents: 'none' }}>
+          <circle r={4.5 * scale} fill="#0B1220" fillOpacity={0.85} />
+          <circle r={3 * scale} fill="#22C55E" />
+          <circle
+            r={3 * scale}
+            fill="none"
+            stroke="#22C55E"
+            strokeWidth={1}
+            className="animate-gentle-ring-pulse"
+            style={{ transformOrigin: 'center' }}
+          />
         </g>
       )}
+
 
       {/* Unread badge — always shows when there are unread messages */}
       {token.hasUnread && (
