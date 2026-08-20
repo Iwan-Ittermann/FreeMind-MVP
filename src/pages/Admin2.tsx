@@ -71,6 +71,19 @@ const TEMPLATE_META: Record<string, TemplateMeta> = {
     trigger: "Täglich 23:30, nur an Abonnenten",
     placeholders: "{{reportTitle}}, {{reportBody}}, {{reportStats}}, {{reportDate}}, {{berichtUrl}}, {{goUrl}}, {{appUrl}}",
   },
+  "nudge-rate": {
+    label: "8. Nudge: Bewerten",
+    trigger: "Automatisch: Meinung da, aber nichts bewertet",
+    placeholders: "{{goUrl}}, {{appUrl}}, {{sogehtsUrl}}, {{passphrase}}",
+    campaign: true,
+  },
+  "nudge-chat": {
+    label: "9. Nudge: Diskutieren",
+    trigger: "Automatisch: bewertet, aber keine Nachricht",
+    placeholders: "{{goUrl}}, {{appUrl}}, {{sogehtsUrl}}, {{passphrase}}",
+    campaign: true,
+  },
+
 };
 
 const TEMPLATE_ORDER = Object.keys(TEMPLATE_META);
@@ -84,6 +97,8 @@ const MAIL_COLUMNS: Array<{ key: string; short: string; title: string }> = [
   { key: "campaign-final-day", short: "Final", title: "Final day, 29.08." },
   { key: "campaign-sogehts", short: "Geht's", title: "So geht's (nur manuell)" },
   { key: "daily-report", short: "Bericht", title: "Tagesbericht (letzter Versand)" },
+  { key: "nudge-rate", short: "N-Bew", title: "Nudge: Bewerten" },
+  { key: "nudge-chat", short: "N-Disk", title: "Nudge: Diskutieren" },
   { key: "signup-passphrase", short: "Pass*", title: "Passphrase (alte Einzel-Mail, nur manuell)" },
 ];
 
@@ -95,7 +110,10 @@ const RESENDABLE = [
   { key: "campaign-start", label: "Start today" },
   { key: "campaign-final-day", label: "Final day" },
   { key: "campaign-sogehts", label: "So geht's" },
+  { key: "nudge-rate", label: "Nudge: Bewerten" },
+  { key: "nudge-chat", label: "Nudge: Diskutieren" },
 ];
+
 
 function MailMark({ status }: { status?: string }) {
   if (!status) return <span style={{ color: "#9fb0cc" }}>–</span>;
@@ -276,7 +294,7 @@ export default function Admin2() {
     const choice = resendChoice[signup.id];
     if (!choice) { flash("Bitte erst eine E-Mail auswählen."); return; }
     const label = RESENDABLE.find((r) => r.key === choice)?.label ?? choice;
-    if (choice.startsWith("campaign-")) {
+    if (choice.startsWith("campaign-") || choice.startsWith("nudge-")) {
       await rowAction(signup, "resend_campaign", `"${label}" an ${signup.email} senden?`, { key: choice });
     } else {
       await rowAction(signup, choice, `"${label}" an ${signup.email} senden?`);

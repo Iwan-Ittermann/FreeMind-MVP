@@ -26,7 +26,9 @@ import { cn } from '@/lib/utils';
 
 export interface TTSideTabsHandle {
   openChat: (opinionId: string) => void;
+  openPanel: (panel: 'opinions' | 'chats') => void;
 }
+
 
 type TTTab = 'opinions' | 'graph' | 'chats';
 type ChatScope = 'mine' | 'all';
@@ -102,7 +104,13 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
         setActiveAllChat(null);
         setActiveChatOpinionId(opinionId);
       },
-    }), [hasOwnOpinion]);
+      openPanel(panel: 'opinions' | 'chats') {
+        setActiveAllChat(null);
+        setActiveChatOpinionId(null);
+        setTab(panel);
+        onPanelOpen?.();
+      },
+    }), [hasOwnOpinion, onPanelOpen]);
 
     // Notify parent which chat (= which node) is currently open, for glow effect.
     useEffect(() => {

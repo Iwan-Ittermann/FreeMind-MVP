@@ -26,6 +26,8 @@ import { useTutorialSteps } from '@/hooks/useTutorialSteps';
 
 import { TTGateOverlay } from '@/components/tt/TTGateOverlay';
 import { TTPolarizationPoll } from '@/components/tt/TTPolarizationPoll';
+import { TTNudgeHint } from '@/components/tt/TTNudgeHint';
+import { useNudgeStage } from '@/hooks/useNudgeStage';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -93,6 +95,8 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
 
   const { notifications: ttNotifications, markAllRead } = useTTNotifications(activeTopicId);
   const { data: unreadMap } = useUnreadMessages(activeTopicId, ownOpinionId);
+  const { data: nudgeStage = null } = useNudgeStage(activeTopicId, ownOpinionId);
+
   const handleEdgeClick = useCallback((edge: GraphEdge) => {
     if (isMobile) return;
     chatManagerRef.current?.openReadOnlyChat(edge.source, edge.target);
@@ -247,6 +251,12 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
             </div>
 
           )
+        )}
+        {hasOwnOpinion && !gateVariant && !selectedNode && (
+          <TTNudgeHint
+            stage={nudgeStage}
+            onAction={() => sideTabsRef.current?.openPanel(nudgeStage === 'rate' ? 'opinions' : 'chats')}
+          />
         )}
         <TTBottomPanel
           topicId={activeTopicId}

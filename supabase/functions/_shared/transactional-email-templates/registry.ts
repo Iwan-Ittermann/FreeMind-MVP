@@ -11,6 +11,8 @@ import {
   finalDayTemplate,
   sogehtsTemplate,
   dailyReportTemplate,
+  nudgeRateTemplate,
+  nudgeChatTemplate,
 } from './campaign.tsx'
 
 
@@ -34,5 +36,7 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'campaign-sogehts': sogehtsTemplate,
   'daily-report': dailyReportTemplate,
   'question-submitted': questionSubmitted,
+  'nudge-rate': nudgeRateTemplate,
+  'nudge-chat': nudgeChatTemplate,
 }
 
