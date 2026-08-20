@@ -26,6 +26,8 @@ import { useTutorialSteps } from '@/hooks/useTutorialSteps';
 
 import { TTGateOverlay } from '@/components/tt/TTGateOverlay';
 import { TTPolarizationPoll } from '@/components/tt/TTPolarizationPoll';
+import { TTNudgeHint } from '@/components/tt/TTNudgeHint';
+import { useNudgeStage } from '@/hooks/useNudgeStage';
 import { useTranslation } from 'react-i18next';
 
 /**
