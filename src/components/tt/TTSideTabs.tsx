@@ -26,7 +26,9 @@ import { cn } from '@/lib/utils';
 
 export interface TTSideTabsHandle {
   openChat: (opinionId: string) => void;
+  openPanel: (panel: 'opinions' | 'chats') => void;
 }
+
 
 type TTTab = 'opinions' | 'graph' | 'chats';
 type ChatScope = 'mine' | 'all';
