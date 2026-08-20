@@ -137,7 +137,7 @@ async function loadRecipients(campaignKey: string, onlySignupId?: string, resend
   const def = getCampaign(campaignKey);
   let stageAllowed: Set<string> | null = null;
   const recentlyNudged = new Set<string>();
-  if (def?.nudge) {
+  if (def?.nudge && !onlySignupId) {
     stageAllowed = await nudgeAudience(def.nudge);
     if (!stageAllowed) return [];
     const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
