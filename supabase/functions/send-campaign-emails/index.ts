@@ -4,7 +4,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { loadTemplate } from "../_shared/email-template-store.ts";
-import { CAMPAIGNS, getCampaign } from "../_shared/campaigns.ts";
+import { CAMPAIGNS, getCampaign, NUDGE_KEYS } from "../_shared/campaigns.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
