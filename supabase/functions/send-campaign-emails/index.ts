@@ -235,7 +235,7 @@ Deno.serve(async (req) => {
     if (campaignKey) {
       const def = getCampaign(campaignKey);
       if (!def) return Response.json({ ok: false, error: "unknown_campaign" }, { status: 400, headers: corsHeaders });
-      if (!force && (!def.dueAt || new Date(def.dueAt) > new Date())) {
+      if (!force && !def.nudge && (!def.dueAt || new Date(def.dueAt) > new Date())) {
         return Response.json({ ok: true, skipped: "not_due" }, { headers: corsHeaders });
       }
       results.push(await sendCampaign(campaignKey, signupId, resend));
@@ -245,7 +245,11 @@ Deno.serve(async (req) => {
       for (const def of CAMPAIGNS) {
         if (def.dueAt && new Date(def.dueAt) <= now) results.push(await sendCampaign(def.key));
       }
+      if (await discussionOpen()) {
+        for (const key of NUDGE_KEYS) results.push(await sendCampaign(key));
+      }
     }
+
 
 
     return Response.json({ ok: true, results }, { headers: corsHeaders });
