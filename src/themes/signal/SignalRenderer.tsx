@@ -9,6 +9,9 @@ import { SignalNode } from './SignalNode';
 import { SignalEventMarker } from './SignalEventMarker';
 import { useHidePendingEdges } from '../ThemeContext';
 import { TTLandmarks, getTTLevelRadii } from '@/lib/tt-layout';
+import { SignalChatArrows } from './SignalChatArrows';
+import type { ChatArrow } from '@/hooks/useChatArrows';
+
 
 
 interface SignalRendererProps {
