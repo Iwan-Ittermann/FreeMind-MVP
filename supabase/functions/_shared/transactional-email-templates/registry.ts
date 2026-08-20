@@ -11,6 +11,8 @@ import {
   finalDayTemplate,
   sogehtsTemplate,
   dailyReportTemplate,
+  nudgeRateTemplate,
+  nudgeChatTemplate,
 } from './campaign.tsx'
 
 
