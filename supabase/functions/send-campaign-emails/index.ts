@@ -118,10 +118,15 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") return new Response("Method not allowed", { status: 405, headers: corsHeaders });
 
+  // Defense in depth: verify_jwt=true already validates the token at the gateway.
+  // Accept any caller whose token carries the service_role claim, so key rotation
+  // does not break the scheduled invocation.
   const auth = req.headers.get("Authorization") ?? "";
-  if (auth !== `Bearer ${SERVICE_ROLE}`) {
+  const token = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
+  if (token !== SERVICE_ROLE && parseJwtRole(token) !== "service_role") {
     return Response.json({ ok: false, error: "unauthorized" }, { status: 401, headers: corsHeaders });
   }
+
 
   try {
     let payload: Record<string, unknown> = {};
