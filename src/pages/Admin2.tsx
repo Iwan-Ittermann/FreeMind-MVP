@@ -71,6 +71,19 @@ const TEMPLATE_META: Record<string, TemplateMeta> = {
     trigger: "Täglich 23:30, nur an Abonnenten",
     placeholders: "{{reportTitle}}, {{reportBody}}, {{reportStats}}, {{reportDate}}, {{berichtUrl}}, {{goUrl}}, {{appUrl}}",
   },
+  "nudge-rate": {
+    label: "8. Nudge: Bewerten",
+    trigger: "Automatisch: Meinung da, aber nichts bewertet",
+    placeholders: "{{goUrl}}, {{appUrl}}, {{sogehtsUrl}}, {{passphrase}}",
+    campaign: true,
+  },
+  "nudge-chat": {
+    label: "9. Nudge: Diskutieren",
+    trigger: "Automatisch: bewertet, aber keine Nachricht",
+    placeholders: "{{goUrl}}, {{appUrl}}, {{sogehtsUrl}}, {{passphrase}}",
+    campaign: true,
+  },
+
 };
 
 const TEMPLATE_ORDER = Object.keys(TEMPLATE_META);
