@@ -95,6 +95,8 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
 
   const { notifications: ttNotifications, markAllRead } = useTTNotifications(activeTopicId);
   const { data: unreadMap } = useUnreadMessages(activeTopicId, ownOpinionId);
+  const { data: nudgeStage = null } = useNudgeStage(activeTopicId, ownOpinionId);
+
   const handleEdgeClick = useCallback((edge: GraphEdge) => {
     if (isMobile) return;
     chatManagerRef.current?.openReadOnlyChat(edge.source, edge.target);
