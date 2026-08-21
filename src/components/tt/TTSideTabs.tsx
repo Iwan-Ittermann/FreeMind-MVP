@@ -114,14 +114,11 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
     }, [tab, chatScope, activeChatOpinionId, onActiveChatChange]);
 
 
-    const chatTitleFor = (c: TTChatListItem) =>
-      c.title?.trim() || c.opinionText.split(/\s+/).slice(0, 6).join(' ');
-
     const filteredChats = useMemo(() => {
       const q = chatSearch.trim().toLowerCase();
       if (!q) return chats;
       return chats.filter((c) =>
-        [c.title ?? '', c.opinionText, c.lastMessage ?? '', c.draft ?? '']
+        [c.opinionText, c.lastMessage ?? '', c.draft ?? '']
           .join(' ')
           .toLowerCase()
           .includes(q),
@@ -132,7 +129,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
       const q = chatSearch.trim().toLowerCase();
       if (!q) return allChats;
       return allChats.filter((c) =>
-        [c.title ?? '', c.opinionAText, c.opinionBText, c.lastMessage ?? '']
+        [c.opinionAText, c.opinionBText, c.lastMessage ?? '']
           .join(' ')
           .toLowerCase()
           .includes(q),
