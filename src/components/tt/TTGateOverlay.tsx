@@ -131,7 +131,7 @@ export function TTGateOverlay({
                 type="text"
                 value={passphrase}
                 onChange={(e) => setPassphrase(e.target.value)}
-                placeholder="brave-ocean-dance-42"
+                
                 className="font-mono text-sm text-center"
                 autoCapitalize="off"
                 autoCorrect="off"

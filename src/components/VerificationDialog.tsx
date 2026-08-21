@@ -122,7 +122,7 @@ export function VerificationDialog() {
               type="text"
               value={passphrase}
               onChange={(ev) => setPassphrase(ev.target.value)}
-              placeholder="brave-ocean-dance-42"
+              
               className="font-mono"
               autoCapitalize="off"
               autoCorrect="off"

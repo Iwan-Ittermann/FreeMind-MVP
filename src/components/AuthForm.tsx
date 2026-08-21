@@ -130,7 +130,7 @@ export function AuthForm({ onSuccess, compact = false, initialMode = "signup", s
             type="text"
             value={passphrase}
             onChange={(e) => setPassphrase(e.target.value)}
-            placeholder={t("auth.passphrasePlaceholder")}
+            
             className="font-mono text-sm h-9"
           />
           <p className="text-[10px] text-muted-foreground/70">{t("auth.passphraseFormat")}</p>

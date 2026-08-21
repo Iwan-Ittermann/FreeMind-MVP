@@ -134,12 +134,29 @@ export default function Landing() {
               Die Diskussion läuft — die Registrierung ist geschlossen. Du kannst live zuschauen.
             </p>
           )}
-          <a
-            href={regClosed ? "/go" : "#cta"}
-            className="inline-block border-b-2 border-foreground pb-1 text-sm font-bold uppercase tracking-wider hover:text-alert hover:border-alert transition-colors"
-          >
-            {regClosed ? "Jetzt zuschauen" : "Jetzt registrieren"}
-          </a>
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+            {regClosed ? (
+              <a
+                href="/go"
+                className="inline-block border-b-2 border-foreground pb-1 text-sm font-bold uppercase tracking-wider hover:text-alert hover:border-alert transition-colors"
+              >
+                Zur Diskussion
+              </a>
+            ) : (
+              <a
+                href="#cta"
+                className="inline-block border-b-2 border-foreground pb-1 text-sm font-bold uppercase tracking-wider hover:text-alert hover:border-alert transition-colors"
+              >
+                Jetzt registrieren
+              </a>
+            )}
+            <a
+              href="/test"
+              className="inline-block border-b-2 border-foreground/40 pb-1 text-sm font-bold uppercase tracking-wider hover:text-alert hover:border-alert transition-colors"
+            >
+              Zum Test
+            </a>
+          </div>
         </div>
       </section>
 
