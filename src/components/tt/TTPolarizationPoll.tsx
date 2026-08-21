@@ -152,17 +152,44 @@ function Item({
   minLabel: string;
   maxLabel: string;
 }) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const dragging = useRef(false);
+
+  const pick = (clientX: number) => {
+    const el = trackRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+    onChange(Math.round(ratio * 100));
+  };
+
   return (
-    <div className="mt-6">
-      <p className="text-center text-base font-medium leading-snug text-foreground">{label}</p>
-      <Slider
-        className={`mt-4 ${na ? 'opacity-40' : ''}`}
-        min={0}
-        max={100}
-        step={1}
-        value={[value ?? 50]}
-        onValueChange={([v]) => onChange(v)}
-      />
+    <div className="mt-7">
+      <p className="text-center text-lg font-medium leading-snug text-foreground">{label}</p>
+
+      <div
+        className={`relative mt-5 h-6 cursor-pointer touch-none select-none ${na ? 'opacity-40' : ''}`}
+        onPointerDown={(e) => {
+          dragging.current = true;
+          (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+          pick(e.clientX);
+        }}
+        onPointerMove={(e) => dragging.current && pick(e.clientX)}
+        onPointerUp={() => { dragging.current = false; }}
+        onPointerCancel={() => { dragging.current = false; }}
+      >
+        <div
+          ref={trackRef}
+          className="absolute left-0 right-0 top-1/2 h-[2px] -translate-y-1/2 rounded-full bg-white/70"
+        />
+        {!na && value !== null && (
+          <div
+            className="absolute top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow"
+            style={{ left: `${value}%` }}
+          />
+        )}
+      </div>
+
       <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
         <span>{minLabel}</span>
         <span>{maxLabel}</span>
@@ -170,6 +197,7 @@ function Item({
       <p className="mt-1 text-center text-sm font-semibold tabular-nums text-primary">
         {na || value === null ? '–' : value}
       </p>
+
       <div className="mt-1 flex justify-start">
         <button
           type="button"
