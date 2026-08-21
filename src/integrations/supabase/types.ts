@@ -673,6 +673,48 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          body: string | null
+          chat_id: string | null
+          created_at: string
+          id: string
+          link: string | null
+          opinion_id: string | null
+          read_at: string | null
+          title: string
+          topic_id: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          chat_id?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          opinion_id?: string | null
+          read_at?: string | null
+          title: string
+          topic_id?: string | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          chat_id?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          opinion_id?: string | null
+          read_at?: string | null
+          title?: string
+          topic_id?: string | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       opinion_ips: {
         Row: {
           created_at: string
@@ -1433,6 +1475,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      mark_notifications_read: { Args: never; Returns: number }
       move_to_dlq: {
         Args: {
           dlq_name: string
