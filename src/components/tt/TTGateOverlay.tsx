@@ -83,6 +83,11 @@ export function TTGateOverlay({
   };
 
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    window.location.reload();
+  };
+
   const handleSubmit = async () => {
     if (text.trim().length < 10) {
       toast.error(t('tt.opinionTooShort'));
