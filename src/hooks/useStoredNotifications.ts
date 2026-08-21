@@ -87,7 +87,7 @@ export function useStoredNotifications(topicId?: string | null) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user]);
+  }, [user, topicId]);
 
   const unreadCount = notifications.filter((n) => !n.read_at).length;
 
