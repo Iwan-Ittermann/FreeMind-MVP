@@ -5,8 +5,10 @@ import {
   Container,
   Head,
   Heading,
+  Hr,
   Html,
   Img,
+  Link,
   Preview,
   Text,
 } from 'npm:@react-email/components@0.0.22'
@@ -36,6 +38,14 @@ const Email = ({
         <Text style={eyebrowStyle}>{eyebrow}</Text>
         <Heading style={h1}>{heading}</Heading>
         {renderBlocks(body)}
+        <Hr style={hr} />
+        <Text style={footerStyle}>
+          E-Mail-Einstellungen (Tagesbericht und Benachrichtigungen) änderst du in freemind über das
+          Glocken-Symbol oben rechts:{' '}
+          <Link href="https://freemind.chat/go" style={footerLink}>
+            freemind.chat/go
+          </Link>
+        </Text>
         {trackingUrl ? (
           <Img src={trackingUrl} width="1" height="1" alt="" style={pixel} />
         ) : null}
