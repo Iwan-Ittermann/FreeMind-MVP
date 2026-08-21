@@ -135,18 +135,19 @@ export default function Landing() {
             </p>
           )}
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-            <a
-              href={regClosed ? "/go" : "#cta"}
-              className="inline-block border-b-2 border-foreground pb-1 text-sm font-bold uppercase tracking-wider hover:text-alert hover:border-alert transition-colors"
-            >
-              {regClosed ? "Jetzt zuschauen" : "Jetzt registrieren"}
-            </a>
-            {regClosed && (
+            {regClosed ? (
               <a
                 href="/go"
                 className="inline-block border-b-2 border-foreground pb-1 text-sm font-bold uppercase tracking-wider hover:text-alert hover:border-alert transition-colors"
               >
                 Zur Diskussion
+              </a>
+            ) : (
+              <a
+                href="#cta"
+                className="inline-block border-b-2 border-foreground pb-1 text-sm font-bold uppercase tracking-wider hover:text-alert hover:border-alert transition-colors"
+              >
+                Jetzt registrieren
               </a>
             )}
             <a
