@@ -445,7 +445,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                                   >
                                     <div className="flex items-start gap-2">
                                       <div className="min-w-0 flex-1">
-                                        <p className="text-sm font-medium text-foreground line-clamp-2">
+                                        <p className="text-sm font-medium text-foreground line-clamp-1">
                                           {c.opinionAText} ↔ {c.opinionBText}
                                         </p>
                                         {c.lastMessage && (
@@ -479,7 +479,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                                 >
                                   <div className="flex items-start gap-2">
                                     <div className="min-w-0 flex-1">
-                                      <p className="text-sm font-medium text-foreground line-clamp-2">
+                                      <p className="text-sm font-medium text-foreground line-clamp-1">
                                         {c.opinionText}
                                       </p>
                                       {c.draft ? (

@@ -76,12 +76,19 @@ async function nudgeAudience(stage: "rate" | "chat"): Promise<Set<string> | null
 
   const [{ data: signups }, { data: opinions }, { data: chats }] = await Promise.all([
     supabase.from("signups").select("id, auth_user_id").not("auth_user_id", "is", null),
-    supabase.from("opinions").select("id, user_id").eq("topic_id", topicId),
+    supabase.from("opinions").select("id, user_id, created_at").eq("topic_id", topicId),
     supabase.from("chats").select("id").eq("topic_id", topicId),
   ]);
 
+  // Only nudge once the opinion is at least 24h old.
+  const cutoff = Date.now() - 24 * 60 * 60 * 1000;
   const opinionByUser = new Map<string, string>();
-  for (const o of opinions ?? []) opinionByUser.set(o.user_id as string, o.id as string);
+  for (const o of opinions ?? []) {
+    const created = new Date(o.created_at as string).getTime();
+    if (!Number.isFinite(created) || created > cutoff) continue;
+    opinionByUser.set(o.user_id as string, o.id as string);
+  }
+
 
   const { data: ratings } = await supabase
     .from("opinion_ratings")
