@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Clock, Send, Lock, KeyRound } from 'lucide-react';
+import { Clock, Send, Lock, KeyRound, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -83,6 +83,11 @@ export function TTGateOverlay({
   };
 
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    window.location.reload();
+  };
+
   const handleSubmit = async () => {
     if (text.trim().length < 10) {
       toast.error(t('tt.opinionTooShort'));
@@ -118,7 +123,7 @@ export function TTGateOverlay({
 
   return (
     <div className="absolute inset-0 z-[38] flex items-center justify-center px-5 pb-16 pt-14 bg-background/80 backdrop-blur-[3px]">
-      <div className="w-full max-w-[360px] rounded-2xl bg-background/95 border border-border/50 shadow-2xl p-5 text-center">
+      <div className="relative w-full max-w-[360px] rounded-2xl bg-background/95 border border-border/50 shadow-2xl p-5 text-center">
         {variant === 'login' && (
           <>
             <KeyRound className="w-6 h-6 mx-auto mb-3 text-primary" />
@@ -191,6 +196,15 @@ export function TTGateOverlay({
 
         {variant === 'submit' && (
           <>
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="absolute top-3 left-3 flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              aria-label={t('common.signOut')}
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              {t('common.signOut')}
+            </button>
             <Lock className="w-6 h-6 mx-auto mb-3 text-primary" />
             <h2 className="text-base font-semibold text-foreground mb-1">
               {t('tt.event.submitTitle')}
