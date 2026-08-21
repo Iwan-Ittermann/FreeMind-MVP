@@ -1,25 +1,33 @@
 {
-  "name": "FreeMind",
-  "short_name": "FreeMind",
-  "description": "Discuss controversial videos with bridge-building conversations.",
-  "start_url": "/tt",
-  "scope": "/tt",
+  "id": "/go",
+  "name": "freemind – Eine Woche, eine Frage",
+  "short_name": "freemind",
+  "description": "Diskutiere respektvoll mit Menschen, die anders denken.",
+  "lang": "de",
+  "start_url": "/go",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#000000",
-  "theme_color": "#0c1f28",
+  "background_color": "#050914",
+  "theme_color": "#050914",
   "icons": [
     {
-      "src": "/placeholder.svg",
+      "src": "/app-icon-192.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/placeholder.svg",
+      "src": "/app-icon-512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "/app-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
