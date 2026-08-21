@@ -123,7 +123,7 @@ export function TTGateOverlay({
 
   return (
     <div className="absolute inset-0 z-[38] flex items-center justify-center px-5 pb-16 pt-14 bg-background/80 backdrop-blur-[3px]">
-      <div className="w-full max-w-[360px] rounded-2xl bg-background/95 border border-border/50 shadow-2xl p-5 text-center">
+      <div className="relative w-full max-w-[360px] rounded-2xl bg-background/95 border border-border/50 shadow-2xl p-5 text-center">
         {variant === 'login' && (
           <>
             <KeyRound className="w-6 h-6 mx-auto mb-3 text-primary" />
