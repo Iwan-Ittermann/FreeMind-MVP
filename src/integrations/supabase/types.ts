@@ -994,6 +994,7 @@ export type Database = {
           email: string
           id: string
           last_passphrase_sent_at: string | null
+          notification_digest_opt_in: boolean
           passphrase: string | null
           passphrase_issued_at: string | null
           signup_ip: unknown
@@ -1008,6 +1009,7 @@ export type Database = {
           email: string
           id?: string
           last_passphrase_sent_at?: string | null
+          notification_digest_opt_in?: boolean
           passphrase?: string | null
           passphrase_issued_at?: string | null
           signup_ip?: unknown
@@ -1022,6 +1024,7 @@ export type Database = {
           email?: string
           id?: string
           last_passphrase_sent_at?: string | null
+          notification_digest_opt_in?: boolean
           passphrase?: string | null
           passphrase_issued_at?: string | null
           signup_ip?: unknown
@@ -1369,6 +1372,7 @@ export type Database = {
           rating_count: number
         }[]
       }
+      get_notification_digest_opt_in: { Args: never; Returns: boolean }
       get_opinion_pair_ratings: {
         Args: { topic_uuid: string }
         Returns: {
@@ -1522,6 +1526,10 @@ export type Database = {
         Returns: undefined
       }
       set_daily_report_opt_in: { Args: { _enabled: boolean }; Returns: boolean }
+      set_notification_digest_opt_in: {
+        Args: { _enabled: boolean }
+        Returns: boolean
+      }
       submit_opinion: {
         Args: { _ip_address?: string; _text: string; _topic_id: string }
         Returns: string

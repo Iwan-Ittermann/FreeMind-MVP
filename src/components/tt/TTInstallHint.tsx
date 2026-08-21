@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Share, Plus, X, BellRing } from 'lucide-react';
 
 const DISMISS_KEY = 'tt:install-hint-dismissed';
+const FIRST_SEEN_KEY = 'tt:go-first-seen';
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
@@ -31,6 +33,15 @@ export function TTInstallHint() {
     if (isStandalone()) return;
     if (localStorage.getItem(DISMISS_KEY)) return;
     if (!/android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent)) return;
+
+    // Only from day 2 after the first visit to the discussion.
+    const firstSeen = Number(localStorage.getItem(FIRST_SEEN_KEY) || 0);
+    if (!firstSeen) {
+      localStorage.setItem(FIRST_SEEN_KEY, String(Date.now()));
+      return;
+    }
+    if (Date.now() - firstSeen < DAY_MS) return;
+
 
     const onPrompt = (e: Event) => {
       e.preventDefault();

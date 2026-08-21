@@ -13,6 +13,7 @@ import {
   dailyReportTemplate,
   nudgeRateTemplate,
   nudgeChatTemplate,
+  notificationDigestTemplate,
 } from './campaign.tsx'
 
 
@@ -38,5 +39,6 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'question-submitted': questionSubmitted,
   'nudge-rate': nudgeRateTemplate,
   'nudge-chat': nudgeChatTemplate,
+  'notification-digest': notificationDigestTemplate,
 }
 

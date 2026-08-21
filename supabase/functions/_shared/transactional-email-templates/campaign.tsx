@@ -5,8 +5,10 @@ import {
   Container,
   Head,
   Heading,
+  Hr,
   Html,
   Img,
+  Link,
   Preview,
   Text,
 } from 'npm:@react-email/components@0.0.22'
@@ -36,6 +38,14 @@ const Email = ({
         <Text style={eyebrowStyle}>{eyebrow}</Text>
         <Heading style={h1}>{heading}</Heading>
         {renderBlocks(body)}
+        <Hr style={hr} />
+        <Text style={footerStyle}>
+          E-Mail-Einstellungen (Tagesbericht und Benachrichtigungen) änderst du in freemind über das
+          Glocken-Symbol oben rechts:{' '}
+          <Link href="https://freemind.chat/go" style={footerLink}>
+            freemind.chat/go
+          </Link>
+        </Text>
         {trackingUrl ? (
           <Img src={trackingUrl} width="1" height="1" alt="" style={pixel} />
         ) : null}
@@ -82,7 +92,16 @@ export const nudgeChatTemplate = makeTemplate(
   'Nächster Schritt',
 )
 
+export const notificationDigestTemplate = makeTemplate(
+  'Benachrichtigungen (täglich)',
+  'Ungelesene Benachrichtigungen',
+  'Benachrichtigungen',
+)
+
 const pixel = { display: 'block', width: '1px', height: '1px', border: 0 }
+const hr = { borderColor: '#e5e5e5', margin: '32px 0 16px' }
+const footerStyle = { fontSize: '11px', lineHeight: '18px', color: '#6b7280', margin: 0 }
+const footerLink = { color: '#ff5a1f', textDecoration: 'underline' }
 
 
 const main = {
