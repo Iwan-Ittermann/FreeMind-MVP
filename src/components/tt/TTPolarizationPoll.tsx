@@ -100,7 +100,7 @@ export function TTPolarizationPoll({
     <div className="absolute inset-0 z-[60] flex items-center justify-center px-4 bg-background/80 backdrop-blur-sm">
       <div className="w-full max-w-[420px] rounded-2xl border border-border/50 bg-card/95 p-5 shadow-2xl">
         <h2 className="text-center text-lg font-semibold text-foreground">{t('tt.polarization.title')}</h2>
-        <p className="mt-2 text-center text-xs text-muted-foreground">{t('tt.polarization.intro')}</p>
+
 
         <Item
           label={t('tt.polarization.leastLiked')}
