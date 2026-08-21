@@ -19,6 +19,8 @@ import Fragen from "./pages/Fragen";
 import Sogehts from "./pages/Sogehts";
 import Bericht from "./pages/Bericht";
 import Secret from "./pages/Secret";
+import NotificationsPage from "./pages/Notifications";
+
 
 import { VerificationDialog } from "@/components/VerificationDialog";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
