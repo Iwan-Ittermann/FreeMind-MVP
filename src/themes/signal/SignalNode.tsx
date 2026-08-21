@@ -178,7 +178,7 @@ export const SignalNode = memo(function SignalNode({
       : ttMode && token.isTop5
         ? starShape
         : (shapeSet[token.zone] ?? MiddleShape);
-  const opacity = isDimmed ? 0.4 : token.isHidden ? 0.3 : showInactive ? 0.6 : 1;
+  const opacity = isDimmed ? 0.4 : token.isHidden ? 0.3 : showInactive ? 0.9 : 1;
 
   const isScaled = isHighlighted && !isDimmed;
   const bubbleText = token.opinionText
