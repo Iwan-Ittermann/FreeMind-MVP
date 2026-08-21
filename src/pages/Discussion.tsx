@@ -102,7 +102,7 @@ export default function TT({ mode = 'real', variant = 'default' }: { mode?: 'tes
   const {
     notifications: storedNotifications,
     markAllRead,
-  } = useStoredNotifications();
+  } = useStoredNotifications(activeTopicId);
   const ttNotifications = useMemo(
     () =>
       storedNotifications.map((n) => ({
