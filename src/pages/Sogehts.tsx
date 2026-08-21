@@ -130,7 +130,7 @@ export default function Sogehts() {
             href="/"
             className="inline-block self-start border-b-2 border-foreground pb-1 text-sm font-bold uppercase tracking-wider hover:text-alert hover:border-alert transition-colors"
           >
-            Jetzt registrieren
+            ZURÜCK
           </a>
         </div>
       </section>
