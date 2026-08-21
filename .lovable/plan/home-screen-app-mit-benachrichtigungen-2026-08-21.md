@@ -16,6 +16,7 @@ Benachrichtigungen existieren heute nur flüchtig im Browser-Tab: sie werden liv
 Was der Nutzer bekommt: App-Icon auf dem Home-Screen, Start direkt in der Diskussion, Badge mit Anzahl ungelesener Benachrichtigungen am Icon, sobald die App im Hintergrund lief oder geöffnet wird. Keine Zustellung bei vollständig geschlossener App.
 
 Arbeitsschritte:
+
 1. Persistenz + Seite `/benachrichtigungen` (siehe oben).
 2. Manifest korrigieren: `start_url`/`scope` von `/tt` auf die echte Route umstellen, Name/Beschreibung auf deutsch, echte 192/512-PNG-Icons statt `placeholder.svg`, `apple-touch-icon` im Head.
 3. Installations-Hinweis für mobile Nutzer („Zum Home-Screen hinzufügen“) mit iOS/Android-Anleitung, einmalig einblendbar.
@@ -29,6 +30,7 @@ Einschränkung: Badge/Liste aktualisieren sich nur, während die App läuft oder
 Was der Nutzer bekommt: alles aus Variante A, zusätzlich echte Push-Benachrichtigungen auf dem Sperrbildschirm, auch wenn die App geschlossen ist.
 
 Arbeitsschritte:
+
 1. Alles aus Variante A.
 2. VAPID-Schlüsselpaar erzeugen, privaten Schlüssel als Secret ablegen.
 3. Service Worker (Push-Empfänger) anlegen: Push anzeigen, Klick öffnet die richtige Stelle in der App, Badge im Hintergrund setzen. Registrierung nur in der veröffentlichten App, nicht in der Lovable-Vorschau.
