@@ -65,7 +65,7 @@ export default function TT({ mode = 'real', variant = 'default' }: { mode?: 'tes
   const [chatNodeId, setChatNodeId] = useState<string | null>(null);
 
   const { data: activeData, isLoading: activeDataLoading } = useTopicData(activeTopicId);
-  const { chats: ttChats } = useTTChats(activeTopicId);
+  
 
   const visibleOwnOpinionId = useMemo(() => {
     if (!user || !activeData) return null;
