@@ -153,7 +153,7 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
                 type="text"
                 value={passphrase}
                 onChange={(e) => setPassphrase(e.target.value)}
-                placeholder={t("auth.passphrasePlaceholder")}
+                
                 className="font-mono"
               />
               <p className="text-xs text-muted-foreground/70">{t("auth.passphraseFormat")}</p>
