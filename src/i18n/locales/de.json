@@ -758,14 +758,14 @@
     },
     "understandingQuestion": "Wie gut versteht der/die andere dich?",
     "polarization": {
-      "title": "Kurze Frage an dich",
+      "title": "Anonyme Befragung",
       "intro": "Zwei Fragen zu deinem Gefühl gegenüber Parteien. Deine Antworten sind anonym und helfen uns, die Wirkung von freemind zu messen.",
       "leastLiked": "Wie fühlst du dich gegenüber der Partei, die du am wenigsten magst?",
       "mostLiked": "Wie fühlst du dich gegenüber der Partei, die du am meisten magst?",
       "veryNegative": "sehr negativ",
       "veryPositive": "sehr positiv",
       "submit": "Absenden",
-      "later": "Später"
+      "noAnswer": "keine Angabe"
     },
     "help": {
       "opinionsList": "Liste aller Meinungen",
