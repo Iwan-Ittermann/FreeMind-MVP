@@ -13,6 +13,8 @@ import { useTopicData } from '@/hooks/useTopicData';
 import { useTTChats } from '@/hooks/useTTChats';
 import { useAuth } from '@/hooks/useAuth';
 import { useTTNotifications } from '@/hooks/useTTNotifications';
+import { useStoredNotifications } from '@/hooks/useStoredNotifications';
+
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { useIsVerified } from '@/hooks/useIsVerified';
 import { getPrefs, setPrefs } from '@/lib/tt-notification-prefs';
@@ -28,7 +30,9 @@ import { TTGateOverlay } from '@/components/tt/TTGateOverlay';
 import { TTPolarizationPoll } from '@/components/tt/TTPolarizationPoll';
 import { TTNudgeHint } from '@/components/tt/TTNudgeHint';
 import { useNudgeStage } from '@/hooks/useNudgeStage';
+import { TTInstallHint } from '@/components/tt/TTInstallHint';
 import { useTranslation } from 'react-i18next';
+
 
 /**
  * Single-topic mobile UI. This build is locked to the Helsinki event topic (7mm9);
@@ -93,7 +97,25 @@ export default function TT({ mode = 'real', variant = 'default' }: { mode?: 'tes
   if (ownOpinionResolved) ownOpinionKnownRef.current = true;
   const ownOpinionKnown = ownOpinionResolved || ownOpinionKnownRef.current;
 
-  const { notifications: ttNotifications, markAllRead } = useTTNotifications(activeTopicId);
+  // Live browser notifications (foreground) — the persisted list below drives the UI.
+  useTTNotifications(activeTopicId);
+  const {
+    notifications: storedNotifications,
+    markAllRead,
+  } = useStoredNotifications();
+  const ttNotifications = useMemo(
+    () =>
+      storedNotifications.map((n) => ({
+        id: n.id,
+        type: (n.type as 'opinion' | 'chat_request' | 'message' | 'request_accepted') ?? 'message',
+        title: n.title,
+        body: n.body ?? undefined,
+        unread: !n.read_at,
+        topicId: n.topic_id ?? undefined,
+      })),
+    [storedNotifications],
+  );
+
   const { data: unreadMap } = useUnreadMessages(activeTopicId, ownOpinionId);
   const { data: nudgeStage = null } = useNudgeStage(activeTopicId, ownOpinionId);
 
@@ -259,6 +281,8 @@ export default function TT({ mode = 'real', variant = 'default' }: { mode?: 'tes
             onAction={() => sideTabsRef.current?.openPanel(nudgeStage === 'rate' ? 'opinions' : 'chats')}
           />
         )}
+        {hasOwnOpinion && !gateVariant && !selectedNode && <TTInstallHint />}
+
         <TTBottomPanel
           topicId={activeTopicId}
           hasOwnOpinion={hasOwnOpinion}

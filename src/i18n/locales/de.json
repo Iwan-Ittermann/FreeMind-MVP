@@ -649,6 +649,8 @@
     "notifications": "Benachrichtigungen",
     "notifFilterTitle": "Filter",
     "noNotifications": "Noch keine Benachrichtigungen.",
+    "allNotifications": "Alle Benachrichtigungen",
+
     "menu": "Menü",
     "yourPassphrase": "Deine Passphrase:",
     "regenerateHint": "Neue Passphrase kopiert: {{phrase}}",

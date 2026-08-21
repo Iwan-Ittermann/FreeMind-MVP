@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Bell, BellOff, Settings, X, SlidersHorizontal, MessageSquare, MessageCircle, Sparkles, CircleHelp, HelpCircle, LogOut, Mail } from 'lucide-react';
+
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -380,6 +382,14 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                 </ul>
               )}
             </div>
+            <Link
+              to="/benachrichtigungen"
+              onClick={() => setBellOpen(false)}
+              className="block border-t border-border/30 px-4 py-2.5 text-center text-xs text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+            >
+              {t('tt.allNotifications', 'Alle Benachrichtigungen')}
+            </Link>
+
           </motion.div>
         )}
       </AnimatePresence>

@@ -19,6 +19,8 @@ import Fragen from "./pages/Fragen";
 import Sogehts from "./pages/Sogehts";
 import Bericht from "./pages/Bericht";
 import Secret from "./pages/Secret";
+import NotificationsPage from "./pages/Notifications";
+
 
 import { VerificationDialog } from "@/components/VerificationDialog";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -59,6 +61,8 @@ function AppRoutes() {
       <Route path="/faq" element={<Navigate to="/fragen" replace />} />
       <Route path="/sogehts" element={<Sogehts />} />
       <Route path="/bericht" element={<Bericht />} />
+      <Route path="/benachrichtigungen" element={<NotificationsPage />} />
+
 
       <Route path="/admin2" element={<Admin2 />} />
       <Route path="/admin" element={<Admin />} />
