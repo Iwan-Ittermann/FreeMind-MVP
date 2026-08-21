@@ -63,6 +63,8 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
   const [subscribedHere, setSubscribedHere] = useState(false);
   const [reportOptIn, setReportOptIn] = useState(false);
   const [reportBusy, setReportBusy] = useState(false);
+  const [digestOptIn, setDigestOptIn] = useState(true);
+  const [digestBusy, setDigestBusy] = useState(false);
   const accountRef = useRef<HTMLDivElement>(null);
   const bellRef = useRef<HTMLDivElement>(null);
   const bellDropdownRef = useRef<HTMLDivElement>(null);
@@ -102,6 +104,42 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
       cancelled = true;
     };
   }, [user]);
+
+  // Daily unread-notification digest opt-in (default on).
+  useEffect(() => {
+    if (!user) {
+      setDigestOptIn(true);
+      return;
+    }
+    let cancelled = false;
+    supabase.rpc('get_notification_digest_opt_in').then(({ data }) => {
+      if (!cancelled) setDigestOptIn(data !== false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  const toggleDigestOptIn = async () => {
+    if (!user) {
+      toast.error(t('tt.digest.needsLogin', 'Bitte melde dich an, um die E-Mail-Einstellung zu ändern.'));
+      return;
+    }
+    const next = !digestOptIn;
+    setDigestBusy(true);
+    const { data, error } = await supabase.rpc('set_notification_digest_opt_in', { _enabled: next });
+    setDigestBusy(false);
+    if (error || data !== true) {
+      toast.error(t('tt.report.noEmail', 'Für dieses Konto ist keine E-Mail-Adresse hinterlegt.'));
+      return;
+    }
+    setDigestOptIn(next);
+    toast.success(
+      next
+        ? t('tt.digest.on', 'Tägliche Benachrichtigungs-Mail aktiviert')
+        : t('tt.digest.off', 'Tägliche Benachrichtigungs-Mail abbestellt'),
+    );
+  };
 
   const toggleReportOptIn = async () => {
     if (!user) {
@@ -346,6 +384,29 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                   reportOptIn ? 'bg-primary border-primary text-primary-foreground' : 'border-border'
                 }`}>
                   {reportOptIn && (
+                    <svg className="w-2.5 h-2.5" viewBox="0 0 12 12" fill="none">
+                      <path d="M2 6l3 3 5-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </div>
+              </button>
+              <button
+                onClick={toggleDigestOptIn}
+                disabled={digestBusy}
+                className={`mt-0.5 w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left text-xs transition-colors ${
+                  digestOptIn ? 'bg-primary/10 text-foreground' : 'text-muted-foreground hover:bg-muted/50'
+                }`}
+              >
+                <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${digestOptIn ? 'text-primary' : 'text-muted-foreground'}`}>
+                  <Mail className="w-3.5 h-3.5" />
+                </div>
+                <span className="flex-1">
+                  {t('tt.digest.emailToggle', 'Ungelesene Benachrichtigungen täglich per E-Mail')}
+                </span>
+                <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
+                  digestOptIn ? 'bg-primary border-primary text-primary-foreground' : 'border-border'
+                }`}>
+                  {digestOptIn && (
                     <svg className="w-2.5 h-2.5" viewBox="0 0 12 12" fill="none">
                       <path d="M2 6l3 3 5-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
