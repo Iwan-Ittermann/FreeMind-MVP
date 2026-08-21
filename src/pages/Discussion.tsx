@@ -93,7 +93,25 @@ export default function TT({ mode = 'real', variant = 'default' }: { mode?: 'tes
   if (ownOpinionResolved) ownOpinionKnownRef.current = true;
   const ownOpinionKnown = ownOpinionResolved || ownOpinionKnownRef.current;
 
-  const { notifications: ttNotifications, markAllRead } = useTTNotifications(activeTopicId);
+  // Live browser notifications (foreground) — the persisted list below drives the UI.
+  useTTNotifications(activeTopicId);
+  const {
+    notifications: storedNotifications,
+    markAllRead,
+  } = useStoredNotifications();
+  const ttNotifications = useMemo(
+    () =>
+      storedNotifications.map((n) => ({
+        id: n.id,
+        type: (n.type as 'opinion' | 'chat_request' | 'message' | 'request_accepted') ?? 'message',
+        title: n.title,
+        body: n.body ?? undefined,
+        unread: !n.read_at,
+        topicId: n.topic_id ?? undefined,
+      })),
+    [storedNotifications],
+  );
+
   const { data: unreadMap } = useUnreadMessages(activeTopicId, ownOpinionId);
   const { data: nudgeStage = null } = useNudgeStage(activeTopicId, ownOpinionId);
 
