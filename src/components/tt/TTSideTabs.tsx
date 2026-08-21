@@ -445,11 +445,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                                   >
                                     <div className="flex items-start gap-2">
                                       <div className="min-w-0 flex-1">
-                                        <p className="text-sm font-medium text-foreground line-clamp-1">
-                                          {c.title?.trim() ||
-                                            c.opinionAText.split(/\s+/).slice(0, 6).join(' ')}
-                                        </p>
-                                        <p className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5">
+                                        <p className="text-sm font-medium text-foreground line-clamp-2">
                                           {c.opinionAText} ↔ {c.opinionBText}
                                         </p>
                                         {c.lastMessage && (
@@ -483,10 +479,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                                 >
                                   <div className="flex items-start gap-2">
                                     <div className="min-w-0 flex-1">
-                                      <p className="text-sm font-medium text-foreground line-clamp-1">
-                                        {chatTitleFor(c)}
-                                      </p>
-                                      <p className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5">
+                                      <p className="text-sm font-medium text-foreground line-clamp-2">
                                         {c.opinionText}
                                       </p>
                                       {c.draft ? (
