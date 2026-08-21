@@ -61,6 +61,8 @@ function AppRoutes() {
       <Route path="/faq" element={<Navigate to="/fragen" replace />} />
       <Route path="/sogehts" element={<Sogehts />} />
       <Route path="/bericht" element={<Bericht />} />
+      <Route path="/benachrichtigungen" element={<NotificationsPage />} />
+
 
       <Route path="/admin2" element={<Admin2 />} />
       <Route path="/admin" element={<Admin />} />
