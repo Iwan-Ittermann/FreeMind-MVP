@@ -37,7 +37,7 @@ export function setAppBadge(count: number) {
  * Reads the `notifications` table, keeps it in sync via realtime inserts and
  * mirrors the unread count onto the app icon badge.
  */
-export function useStoredNotifications() {
+export function useStoredNotifications(topicId?: string | null) {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState<StoredNotification[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,14 +48,15 @@ export function useStoredNotifications() {
       setLoading(false);
       return;
     }
-    const { data } = await supabase
+    let query = supabase
       .from('notifications')
-      .select('id, type, title, body, link, chat_id, topic_id, read_at, created_at')
-      .order('created_at', { ascending: false })
-      .limit(100);
+      .select('id, type, title, body, link, chat_id, topic_id, read_at, created_at');
+    // Scope to the current topic (general notifications have no topic).
+    if (topicId) query = query.or(`topic_id.eq.${topicId},topic_id.is.null`);
+    const { data } = await query.order('created_at', { ascending: false }).limit(100);
     setNotifications((data as StoredNotification[]) ?? []);
     setLoading(false);
-  }, [user]);
+  }, [user, topicId]);
 
   useEffect(() => {
     void load();
@@ -76,6 +77,7 @@ export function useStoredNotifications() {
         },
         (payload) => {
           const row = payload.new as StoredNotification;
+          if (topicId && row.topic_id && row.topic_id !== topicId) return;
           setNotifications((prev) =>
             prev.some((n) => n.id === row.id) ? prev : [row, ...prev].slice(0, 100),
           );
