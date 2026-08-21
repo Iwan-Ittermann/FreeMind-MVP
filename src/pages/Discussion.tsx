@@ -30,7 +30,9 @@ import { TTGateOverlay } from '@/components/tt/TTGateOverlay';
 import { TTPolarizationPoll } from '@/components/tt/TTPolarizationPoll';
 import { TTNudgeHint } from '@/components/tt/TTNudgeHint';
 import { useNudgeStage } from '@/hooks/useNudgeStage';
+import { TTInstallHint } from '@/components/tt/TTInstallHint';
 import { useTranslation } from 'react-i18next';
+
 
 /**
  * Single-topic mobile UI. This build is locked to the Helsinki event topic (7mm9);
