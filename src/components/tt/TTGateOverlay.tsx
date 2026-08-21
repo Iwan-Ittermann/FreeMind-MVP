@@ -196,6 +196,15 @@ export function TTGateOverlay({
 
         {variant === 'submit' && (
           <>
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="absolute top-3 left-3 flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              aria-label={t('common.signOut')}
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              {t('common.signOut')}
+            </button>
             <Lock className="w-6 h-6 mx-auto mb-3 text-primary" />
             <h2 className="text-base font-semibold text-foreground mb-1">
               {t('tt.event.submitTitle')}
