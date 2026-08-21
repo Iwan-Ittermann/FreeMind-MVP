@@ -89,12 +89,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
     const [expandedOpinionId, setExpandedOpinionId] = useState<string | null>(null);
 
     const { data: myRatings } = useMyOpinionRatings(topicId, myOpinionId);
-    useEnsureChatTitles(chats, ['ttChats', topicId, myOpinionId]);
     const { data: allChats = [] } = useAllTopicChats(topicId, tab === 'chats' && chatScope === 'all');
-    useEnsureChatTitles(
-      allChats.map((c) => ({ id: c.id, title: c.title })),
-      ['allTopicChats', topicId],
-    );
 
     useImperativeHandle(ref, () => ({
       openChat(opinionId: string) {
@@ -119,14 +114,11 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
     }, [tab, chatScope, activeChatOpinionId, onActiveChatChange]);
 
 
-    const chatTitleFor = (c: TTChatListItem) =>
-      c.title?.trim() || c.opinionText.split(/\s+/).slice(0, 6).join(' ');
-
     const filteredChats = useMemo(() => {
       const q = chatSearch.trim().toLowerCase();
       if (!q) return chats;
       return chats.filter((c) =>
-        [c.title ?? '', c.opinionText, c.lastMessage ?? '', c.draft ?? '']
+        [c.opinionText, c.lastMessage ?? '', c.draft ?? '']
           .join(' ')
           .toLowerCase()
           .includes(q),
@@ -137,7 +129,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
       const q = chatSearch.trim().toLowerCase();
       if (!q) return allChats;
       return allChats.filter((c) =>
-        [c.title ?? '', c.opinionAText, c.opinionBText, c.lastMessage ?? '']
+        [c.opinionAText, c.opinionBText, c.lastMessage ?? '']
           .join(' ')
           .toLowerCase()
           .includes(q),
@@ -453,11 +445,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                                   >
                                     <div className="flex items-start gap-2">
                                       <div className="min-w-0 flex-1">
-                                        <p className="text-sm font-medium text-foreground line-clamp-1">
-                                          {c.title?.trim() ||
-                                            c.opinionAText.split(/\s+/).slice(0, 6).join(' ')}
-                                        </p>
-                                        <p className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5">
+                                        <p className="text-sm font-medium text-foreground line-clamp-2">
                                           {c.opinionAText} ↔ {c.opinionBText}
                                         </p>
                                         {c.lastMessage && (
@@ -491,10 +479,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                                 >
                                   <div className="flex items-start gap-2">
                                     <div className="min-w-0 flex-1">
-                                      <p className="text-sm font-medium text-foreground line-clamp-1">
-                                        {chatTitleFor(c)}
-                                      </p>
-                                      <p className="text-[11px] text-muted-foreground line-clamp-1 mt-0.5">
+                                      <p className="text-sm font-medium text-foreground line-clamp-2">
                                         {c.opinionText}
                                       </p>
                                       {c.draft ? (

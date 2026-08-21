@@ -65,7 +65,7 @@ export default function TT({ mode = 'real', variant = 'default' }: { mode?: 'tes
   const [chatNodeId, setChatNodeId] = useState<string | null>(null);
 
   const { data: activeData, isLoading: activeDataLoading } = useTopicData(activeTopicId);
-  const { chats: ttChats } = useTTChats(activeTopicId);
+  
 
   const visibleOwnOpinionId = useMemo(() => {
     if (!user || !activeData) return null;
@@ -102,7 +102,7 @@ export default function TT({ mode = 'real', variant = 'default' }: { mode?: 'tes
   const {
     notifications: storedNotifications,
     markAllRead,
-  } = useStoredNotifications();
+  } = useStoredNotifications(activeTopicId);
   const ttNotifications = useMemo(
     () =>
       storedNotifications.map((n) => ({
@@ -117,6 +117,7 @@ export default function TT({ mode = 'real', variant = 'default' }: { mode?: 'tes
   );
 
   const { data: unreadMap } = useUnreadMessages(activeTopicId, ownOpinionId);
+  const { chats: ttChats } = useTTChats(activeTopicId, unreadMap);
   const { data: nudgeStage = null } = useNudgeStage(activeTopicId, ownOpinionId);
 
   const handleEdgeClick = useCallback((edge: GraphEdge) => {

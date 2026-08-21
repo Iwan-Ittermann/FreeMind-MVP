@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, Bell, CheckCheck, MessageCircle, MessageSquare, Sparkles } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useStoredNotifications, StoredNotification } from '@/hooks/useStoredNotifications';
+import { useEventTopic } from '@/hooks/useEventTopic';
 
 function fmtWhen(iso: string) {
   const d = new Date(iso);
@@ -50,7 +51,8 @@ function Row({ n }: { n: StoredNotification }) {
 
 export default function Notifications() {
   const { user, loading: authLoading } = useAuth();
-  const { notifications, unreadCount, loading, markAllRead } = useStoredNotifications();
+  const { topic } = useEventTopic('real');
+  const { notifications, unreadCount, loading, markAllRead } = useStoredNotifications(topic?.id ?? null);
 
   useEffect(() => {
     document.title = 'Benachrichtigungen — freemind';
