@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 
