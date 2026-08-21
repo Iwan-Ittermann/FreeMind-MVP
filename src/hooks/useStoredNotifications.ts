@@ -1,0 +1,106 @@
+import { useCallback, useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+
+export interface StoredNotification {
+  id: string;
+  type: string;
+  title: string;
+  body: string | null;
+  link: string | null;
+  chat_id: string | null;
+  topic_id: string | null;
+  read_at: string | null;
+  created_at: string;
+}
+
+/** Sets/clears the app icon badge (installed home-screen apps). */
+export function setAppBadge(count: number) {
+  try {
+    const nav = navigator as Navigator & {
+      setAppBadge?: (n?: number) => Promise<void>;
+      clearAppBadge?: () => Promise<void>;
+    };
+    if (count > 0 && nav.setAppBadge) {
+      void nav.setAppBadge(count);
+    } else if (nav.clearAppBadge) {
+      void nav.clearAppBadge();
+    }
+  } catch {
+    // Badging API unavailable — ignore.
+  }
+}
+
+/**
+ * Persisted notifications for the current user.
+ *
+ * Reads the `notifications` table, keeps it in sync via realtime inserts and
+ * mirrors the unread count onto the app icon badge.
+ */
+export function useStoredNotifications() {
+  const { user } = useAuth();
+  const [notifications, setNotifications] = useState<StoredNotification[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const load = useCallback(async () => {
+    if (!user) {
+      setNotifications([]);
+      setLoading(false);
+      return;
+    }
+    const { data } = await supabase
+      .from('notifications')
+      .select('id, type, title, body, link, chat_id, topic_id, read_at, created_at')
+      .order('created_at', { ascending: false })
+      .limit(100);
+    setNotifications((data as StoredNotification[]) ?? []);
+    setLoading(false);
+  }, [user]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  // Realtime: new notifications for this user
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel('stored-notifications')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          const row = payload.new as StoredNotification;
+          setNotifications((prev) =>
+            prev.some((n) => n.id === row.id) ? prev : [row, ...prev].slice(0, 100),
+          );
+        },
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
+
+  const unreadCount = notifications.filter((n) => !n.read_at).length;
+
+  // Mirror unread count onto the installed app's icon badge
+  useEffect(() => {
+    setAppBadge(unreadCount);
+  }, [unreadCount]);
+
+  const markAllRead = useCallback(async () => {
+    if (!user) return;
+    setNotifications((prev) =>
+      prev.map((n) => (n.read_at ? n : { ...n, read_at: new Date().toISOString() })),
+    );
+    await supabase.rpc('mark_notifications_read');
+  }, [user]);
+
+  return { notifications, unreadCount, loading, markAllRead, reload: load };
+}
