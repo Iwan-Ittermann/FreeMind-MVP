@@ -117,6 +117,7 @@ export default function TT({ mode = 'real', variant = 'default' }: { mode?: 'tes
   );
 
   const { data: unreadMap } = useUnreadMessages(activeTopicId, ownOpinionId);
+  const { chats: ttChats } = useTTChats(activeTopicId, unreadMap);
   const { data: nudgeStage = null } = useNudgeStage(activeTopicId, ownOpinionId);
 
   const handleEdgeClick = useCallback((edge: GraphEdge) => {

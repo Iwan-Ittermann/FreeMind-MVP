@@ -89,12 +89,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
     const [expandedOpinionId, setExpandedOpinionId] = useState<string | null>(null);
 
     const { data: myRatings } = useMyOpinionRatings(topicId, myOpinionId);
-    useEnsureChatTitles(chats, ['ttChats', topicId, myOpinionId]);
     const { data: allChats = [] } = useAllTopicChats(topicId, tab === 'chats' && chatScope === 'all');
-    useEnsureChatTitles(
-      allChats.map((c) => ({ id: c.id, title: c.title })),
-      ['allTopicChats', topicId],
-    );
 
     useImperativeHandle(ref, () => ({
       openChat(opinionId: string) {
