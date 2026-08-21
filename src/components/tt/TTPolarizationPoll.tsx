@@ -10,9 +10,9 @@ export type PolarizationWave = 'pre' | 'post';
 const dismissKey = (wave: PolarizationWave) => `tt:polarization-dismissed:${wave}`;
 
 /**
- * Two-item affective polarization poll (0–100).
+ * Two-item affective polarization poll (0–100), no default values.
  * Wave "pre" is shown right after the user submitted their opinion,
- * wave "post" on the last day of the discussion (no preset values).
+ * wave "post" on the last day of the discussion.
  */
 export function TTPolarizationPoll({
   userId,
@@ -28,6 +28,8 @@ export function TTPolarizationPoll({
   const [now, setNow] = useState(() => Date.now());
   const [least, setLeast] = useState<number | null>(null);
   const [most, setMost] = useState<number | null>(null);
+  const [leastNA, setLeastNA] = useState(false);
+  const [mostNA, setMostNA] = useState(false);
   const [saving, setSaving] = useState(false);
   const [dismissedWaves, setDismissedWaves] = useState<string[]>(() =>
     (['pre', 'post'] as PolarizationWave[]).filter((w) => localStorage.getItem(dismissKey(w)) === '1'),
@@ -64,60 +66,65 @@ export function TTPolarizationPoll({
     return null;
   }, [userId, hasOwnOpinion, isLastDay, done]);
 
-  // Wave 1 starts at the neutral midpoint, wave 2 has no preset value.
+  // No preset values for either wave.
   useEffect(() => {
     if (!wave) return;
-    setLeast(wave === 'pre' ? 50 : null);
-    setMost(wave === 'pre' ? 50 : null);
+    setLeast(null);
+    setMost(null);
+    setLeastNA(false);
+    setMostNA(false);
   }, [wave]);
 
   if (!wave || dismissedWaves.includes(wave)) return null;
 
+  const leastAnswered = leastNA || least !== null;
+  const mostAnswered = mostNA || most !== null;
+
   const save = async () => {
-    if (least === null || most === null || !userId) return;
+    if (!leastAnswered || !mostAnswered || !userId) return;
     setSaving(true);
     const { error } = await supabase.from('polarization_responses').insert({
       user_id: userId,
       wave,
-      least_liked_score: least,
-      most_liked_score: most,
+      least_liked_score: leastNA ? null : least,
+      most_liked_score: mostNA ? null : most,
     });
     setSaving(false);
     if (error) return;
-    queryClient.invalidateQueries({ queryKey: ['tt-polarization', userId] });
-  };
-
-  const skip = () => {
     localStorage.setItem(dismissKey(wave), '1');
     setDismissedWaves((prev) => [...prev, wave]);
+    queryClient.invalidateQueries({ queryKey: ['tt-polarization', userId] });
   };
 
   return (
     <div className="absolute inset-0 z-[60] flex items-center justify-center px-4 bg-background/80 backdrop-blur-sm">
-      <div className="w-full max-w-[380px] rounded-2xl border border-border/50 bg-card/95 p-5 shadow-2xl">
-        <h2 className="text-base font-semibold text-foreground">{t('tt.polarization.title')}</h2>
-        <p className="mt-1 text-xs text-muted-foreground">{t('tt.polarization.intro')}</p>
+      <div className="w-full max-w-[420px] rounded-2xl border border-border/50 bg-card/95 p-5 shadow-2xl">
+        <h2 className="text-center text-lg font-semibold text-foreground">{t('tt.polarization.title')}</h2>
+        <p className="mt-2 text-center text-xs text-muted-foreground">{t('tt.polarization.intro')}</p>
 
         <Item
           label={t('tt.polarization.leastLiked')}
           value={least}
-          onChange={setLeast}
+          onChange={(v) => { setLeast(v); setLeastNA(false); }}
+          na={leastNA}
+          onToggleNA={() => { setLeastNA(true); setLeast(null); }}
+          naLabel={t('tt.polarization.noAnswer')}
           minLabel={t('tt.polarization.veryNegative')}
           maxLabel={t('tt.polarization.veryPositive')}
         />
         <Item
           label={t('tt.polarization.mostLiked')}
           value={most}
-          onChange={setMost}
+          onChange={(v) => { setMost(v); setMostNA(false); }}
+          na={mostNA}
+          onToggleNA={() => { setMostNA(true); setMost(null); }}
+          naLabel={t('tt.polarization.noAnswer')}
           minLabel={t('tt.polarization.veryNegative')}
           maxLabel={t('tt.polarization.veryPositive')}
         />
 
-        <div className="mt-5 flex items-center justify-between gap-2">
-          <button type="button" onClick={skip} className="text-xs text-muted-foreground hover:text-foreground">
-            {t('tt.polarization.later')}
-          </button>
-          <Button size="sm" disabled={saving || least === null || most === null} onClick={save}>
+        <div className="mt-6 flex justify-center">
+          <Button size="sm" disabled={saving || !leastAnswered || !mostAnswered} onClick={save}>
             {saving ? '…' : t('tt.polarization.submit')}
           </Button>
         </div>
@@ -130,25 +137,26 @@ function Item({
   label,
   value,
   onChange,
+  na,
+  onToggleNA,
+  naLabel,
   minLabel,
   maxLabel,
 }: {
   label: string;
   value: number | null;
   onChange: (v: number) => void;
+  na: boolean;
+  onToggleNA: () => void;
+  naLabel: string;
   minLabel: string;
   maxLabel: string;
 }) {
   return (
-    <div className="mt-5">
-      <div className="flex items-baseline justify-between gap-2">
-        <p className="text-sm text-foreground">{label}</p>
-        <span className="text-sm font-semibold tabular-nums text-primary">
-          {value === null ? '–' : value}
-        </span>
-      </div>
+    <div className="mt-6">
+      <p className="text-center text-base font-medium leading-snug text-foreground">{label}</p>
       <Slider
-        className="mt-3"
+        className={`mt-4 ${na ? 'opacity-40' : ''}`}
         min={0}
         max={100}
         step={1}
@@ -156,8 +164,28 @@ function Item({
         onValueChange={([v]) => onChange(v)}
       />
       <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
-        <span>0 · {minLabel}</span>
-        <span>{maxLabel} · 100</span>
+        <span>{minLabel}</span>
+        <span>{maxLabel}</span>
+      </div>
+      <p className="mt-1 text-center text-sm font-semibold tabular-nums text-primary">
+        {na || value === null ? '–' : value}
+      </p>
+      <div className="mt-1 flex justify-start">
+        <button
+          type="button"
+          onClick={onToggleNA}
+          className="flex items-center gap-1.5 text-[11px] text-muted-foreground hover:text-foreground"
+          aria-pressed={na}
+        >
+          <span
+            className={`flex h-3.5 w-3.5 items-center justify-center rounded-full border ${
+              na ? 'border-primary' : 'border-muted-foreground/50'
+            }`}
+          >
+            {na && <span className="h-1.5 w-1.5 rounded-full bg-primary" />}
+          </span>
+          {naLabel}
+        </button>
       </div>
     </div>
   );
