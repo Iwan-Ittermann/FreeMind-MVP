@@ -55,6 +55,7 @@ const LANGUAGES = [
 export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRestartTour, onOpenHelp, activeTopicId }: TTHeaderProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { arrowMode, setArrowMode } = useArrowModePref();
   const [accountOpen, setAccountOpen] = useState(false);
   const [bellOpen, setBellOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
