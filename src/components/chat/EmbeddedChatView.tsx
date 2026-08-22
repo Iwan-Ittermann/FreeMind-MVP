@@ -31,7 +31,7 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
   const {
     chatId, myOpinion, theirOpinion, theirUserId,
     saveRating, isSavingRating, existingRating, myRatingRounds,
-    isBotChat,
+    myBridgingScore, isBotChat,
   } = useChatSession(theirOpinionId, readOnly ? sourceOpinionId : undefined);
 
   const topicId = theirOpinion?.topic_id ?? null;
