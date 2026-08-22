@@ -650,7 +650,6 @@
     "notifFilterTitle": "Filter",
     "noNotifications": "Noch keine Benachrichtigungen.",
     "allNotifications": "Alle Benachrichtigungen",
-
     "menu": "Menü",
     "yourPassphrase": "Deine Passphrase:",
     "regenerateHint": "Neue Passphrase kopiert: {{phrase}}",
@@ -712,7 +711,7 @@
       "comingSoon": "bald"
     },
     "scrollHint": "Wische für mehr Themen",
-    "respectUnlockHint": "Nach 3 Nachrichten freigeschaltet",
+    "respectUnlockHint": "Nach 2 Nachrichten von beiden freigeschaltet",
     "restartTour": "Anleitung starten",
     "backgroundToggle": "Hintergrund: Kosmos",
     "arrowModeToggle": "Chats als Pfeile zeigen",
@@ -781,7 +780,8 @@
     "allChats": "Alle Chats",
     "allChatsEmpty": "Noch keine Gespräche.",
     "legendArrowLength": "Pfeillänge = Gesprächslänge",
-    "legendArrowColor": "Farbe = Brückenpunkte"
+    "legendArrowColor": "Farbe = Brückenpunkte",
+    "startChat": "Chat starten"
   },
   "secret": {
     "title": "Geschützter Bereich",

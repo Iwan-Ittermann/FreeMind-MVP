@@ -650,7 +650,6 @@
     "notifFilterTitle": "Filter",
     "noNotifications": "No notifications yet.",
     "allNotifications": "All notifications",
-
     "menu": "Menu",
     "yourPassphrase": "Your passphrase:",
     "regenerateHint": "New passphrase copied: {{phrase}}",
@@ -712,7 +711,7 @@
       "comingSoon": "soon"
     },
     "scrollHint": "Swipe for more topics",
-    "respectUnlockHint": "Unlocked after 3 messages",
+    "respectUnlockHint": "Unlocks after 2 messages from each side",
     "restartTour": "Start guide",
     "backgroundToggle": "Background: Cosmos",
     "arrowModeToggle": "Show chats as arrows",
@@ -781,7 +780,8 @@
     "allChats": "All chats",
     "allChatsEmpty": "No conversations yet.",
     "legendArrowLength": "arrow length = chat length",
-    "legendArrowColor": "color = bridging points"
+    "legendArrowColor": "color = bridging points",
+    "startChat": "Start chat"
   },
   "secret": {
     "title": "Protected area",
