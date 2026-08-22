@@ -259,17 +259,16 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
 
       {/* Understanding rating — one rating per round, reopens as the chat grows */}
       {!isBotChat && !readOnly && (
-        <div className="border-t border-border/60 px-2 pt-2 pb-3 mb-1 shrink-0 bg-muted/60">
-          <div className="mb-1.5 flex items-center justify-between gap-2">
-            <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-              <UnderstandingIcon className="h-3.5 w-3.5" />
+        <div className="border-t border-border/60 px-3 pt-2 pb-3 mb-1 shrink-0 bg-muted/60">
+          <div className="mb-1 grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+            <span />
+            <span className="text-[11px] text-center text-muted-foreground">
               {t('tt.understandingQuestion')}
             </span>
-            <span className="relative text-[11px] text-muted-foreground">
-              {!canRateRespect &&
-                (alreadyRatedRound
-                  ? t('tt.respectNextRoundHint', { count: nextThreshold - totalMessages })
-                  : t('tt.respectUnlockHint'))}
+            <span className="relative justify-self-end text-[10px] tabular-nums text-muted-foreground">
+              {myBridgingScore != null
+                ? `${Math.round(myBridgingScore)} ${t('tt.pointsShort', 'Punkte')}`
+                : ''}
               <AnimatePresence>
                 {showUnlockSpark && (
                   <motion.span
@@ -285,34 +284,21 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
             </span>
           </div>
 
-          <div className="grid grid-cols-5 gap-1.5">
-            {([
-              { value: 0, key: 'tt.understandingStep.notAtAll' },
-              { value: 2, key: 'tt.understandingStep.little' },
-              { value: 5, key: 'tt.understandingStep.partly' },
-              { value: 8, key: 'tt.understandingStep.good' },
-              { value: 10, key: 'tt.understandingStep.veryGood' },
-            ] as const).map(({ value: step, key }) => {
-              const isActive = canRateRespect && empathy === step;
-              const label = t(key);
-              return (
-                <button
-                  key={step}
-                  type="button"
-                  disabled={!canRateRespect || isSavingRating}
-                  onClick={() => handleSaveRating(step)}
-                  className={`min-w-0 rounded-lg border px-0.5 py-1.5 text-[9px] font-semibold leading-tight transition-all ${
-                    isActive
-                      ? 'border-primary bg-primary text-primary-foreground'
-                      : 'border-border bg-background text-foreground'
-                  } ${!canRateRespect ? 'cursor-not-allowed opacity-40' : 'hover:opacity-80'}`}
-                  aria-label={label}
-                >
-                  {label}
-                </button>
-              );
-            })}
-          </div>
+          <RespectScale
+            value={canRateRespect ? empathy : null}
+            onChange={handleSaveRating}
+            disabled={!canRateRespect || isSavingRating}
+            lowLabel={t('tt.understandingStep.notAtAll')}
+            highLabel={t('tt.understandingStep.veryGood')}
+          />
+
+          {!canRateRespect && (
+            <p className="mt-1 text-center text-[10px] text-muted-foreground">
+              {alreadyRatedRound
+                ? t('tt.respectNextRoundHint', { count: Math.max(1, nextThreshold - totalMessages) })
+                : t('tt.respectUnlockHint')}
+            </p>
+          )}
         </div>
       )}
 
