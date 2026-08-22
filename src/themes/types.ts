@@ -35,6 +35,9 @@ export type SemanticNodeToken = Readonly<{
   isBot: boolean;
   isTop5: boolean;
   isInactive: boolean;
+  /** 0 = highest score in the graph, 1 = lowest. Drives star brightness. */
+  rankRatio: number;
+
 }>;
 
 
