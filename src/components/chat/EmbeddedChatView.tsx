@@ -270,10 +270,17 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
             <span className="text-[11px] text-center text-muted-foreground">
               {t('tt.understandingQuestion')}
             </span>
-            <span className="relative justify-self-end text-[10px] tabular-nums text-muted-foreground">
-              {myBridgingScore != null
-                ? `${Math.round(myBridgingScore)} ${t('tt.pointsShort', 'Punkte')}`
-                : ''}
+            <span className="relative justify-self-end text-right leading-tight">
+              {myBridgingScore != null && (
+                <>
+                  <span className="block text-[8px] text-muted-foreground/80">
+                    {t('tt.yourBridgingPoints', 'Deine Brückenpunkte')}
+                  </span>
+                  <span className="block text-[9px] tabular-nums text-muted-foreground">
+                    {Math.round(myBridgingScore)}
+                  </span>
+                </>
+              )}
               <AnimatePresence>
                 {showUnlockSpark && (
                   <motion.span
@@ -287,6 +294,7 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
                 )}
               </AnimatePresence>
             </span>
+
           </div>
 
           <RespectScale
