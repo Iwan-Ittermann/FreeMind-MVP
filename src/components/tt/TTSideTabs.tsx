@@ -319,17 +319,20 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                                 </button>
                               </div>
                               <div className="mt-1.5 flex items-center gap-2 flex-wrap">
-                                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground tabular-nums">
-                                  {t('tt.pointsShort', 'Punkte')}: {Math.round(points)}
-                                </span>
                                 {rated ? (
                                   <>
                                     <button
                                       onClick={() => setRatingTarget({ id: op.id, text: op.text })}
-                                      className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary flex items-center gap-1"
+                                      className="flex items-center gap-1.5 text-[10px] text-muted-foreground"
                                     >
                                       <Pencil className="w-2.5 h-2.5" />
-                                      {rating}/10 {t('tt.differenceShort', 'Unterschied')}
+                                      <span>{t('tt.differenceShort', 'Unterschied')}</span>
+                                      <span className="relative h-[3px] w-16 rounded-full bg-foreground/15">
+                                        <span
+                                          className="absolute inset-y-0 left-0 rounded-full bg-primary"
+                                          style={{ width: `${(Number(rating) / 10) * 100}%` }}
+                                        />
+                                      </span>
                                     </button>
                                     <Button
                                       size="sm"
@@ -344,7 +347,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                                       <MessageSquare className="w-3 h-3 mr-1" />
                                       {started
                                         ? t('tt.openChat', 'Chat öffnen')
-                                        : t('tt.letsChat', 'Diskutieren')}
+                                        : t('tt.startChat', 'Chat starten')}
                                     </Button>
                                   </>
                                 ) : (
