@@ -96,7 +96,9 @@ export function tokenizeNode(
     isBot: node.opinion.authorId === BOT_USER_ID,
     isTop5: node.isTop5 ?? false,
     isInactive: node.isInactive ?? false,
+    rankRatio: node.rankRatio ?? 1,
   });
+
 
 }
 
