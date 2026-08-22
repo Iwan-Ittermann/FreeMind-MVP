@@ -1,18 +1,18 @@
 # Nachthimmel-Hintergrund + Sterne als Nodes
 
-## 1. Hintergrund außerhalb des Graphen beruhigen
+## 1. Hintergrund außerhalb des Graphen beruhigen (nur Kosmos-Variante)
 
-Aktuell werden außerhalb des Null-Punkt-Rings mehrere Hilfsringe gezeichnet (die Ringe für die Level -1, -2, -3 aus der Layout-Logik, plus im Kosmos-Hintergrund ein zweiter Ring bei r=360). Das wirkt unruhig.
+Die Änderungen an Punkt 1 und 2 betreffen ausschließlich die Kosmos-Variante. Die Augen-Variante bleibt exakt wie sie ist.
 
-- Außerhalb des Null-Punkt-Rings bleibt genau **ein** Ring als Orientierungslinie (der Null-Punkt-Ring selbst bei r=300).
-- Alle weiteren äußeren Ringe entfallen; die Ringe innerhalb des Graphen bleiben unverändert.
+- Im Kosmos-Hintergrund bleibt außerhalb des Null-Punkt-Rings genau **ein** Ring als Orientierungslinie (r=300); der zweite Ring bei r=360 entfällt.
+- Die zusätzlichen Hilfsringe der Level -1, -2, -3 (außerhalb des Null-Punkt-Rings) werden in der Kosmos-Variante nicht mehr gezeichnet; die Ringe innerhalb des Graphen bleiben unverändert.
 
-## 2. Dezenter Nachthimmel
+## 2. Dezenter Nachthimmel (nur Kosmos-Variante)
 
-- Im Hintergrund (Fläche außerhalb des Iris-/Kosmos-Kreises) kommt ein sehr feines Sternenfeld dazu: kleine Punkte, unterschiedliche Größen (0.6–1.6 px), Deckkraft ca. 0.06–0.28, ein paar einzelne etwas hellere Sterne.
+- Außerhalb des Kosmos-Kreises kommt ein sehr feines Sternenfeld dazu: kleine Punkte, unterschiedliche Größen (0.6–1.6 px), Deckkraft ca. 0.06–0.28, ein paar einzelne etwas hellere Sterne.
 - Die Sterne sind deterministisch platziert (fester Seed), damit sich der Hintergrund nie neu "würfelt" und stabil bleibt.
 - Dichte bleibt niedrig: ein Hauch Nachthimmel, keine Milchstraße. Nur außen, damit der Graph lesbar bleibt.
-- Funktioniert für beide Hintergrundvarianten (Auge und Kosmos).
+
 
 ## 3. Alle Nodes als Sterne
 
@@ -27,7 +27,8 @@ Aktuell werden außerhalb des Null-Punkt-Rings mehrere Hilfsringe gezeichnet (di
 
 ## Technische Details
 
-- `src/components/tt/TTBackground.tsx`: Sternenfeld als deterministisch generierte `<circle>`-Liste (Seeded PRNG, nur außerhalb r≈310), äußeren Ring bei r=360 in der Kosmos-Variante entfernen.
-- `src/themes/signal/SignalRenderer.tsx`: Level-Ringe filtern — Ringe mit r > Null-Punkt-Radius werden nicht mehr gezeichnet.
+- `src/components/tt/TTBackground.tsx`: Sternenfeld als deterministisch generierte `<circle>`-Liste (Seeded PRNG, nur außerhalb r≈310) — ausschließlich im `variant === 'cosmos'`-Zweig; äußeren Ring bei r=360 dort entfernen. Der `eye`-Zweig bleibt unverändert.
+- `src/themes/signal/SignalRenderer.tsx`: Level-Ringe mit r > Null-Punkt-Radius nur ausblenden, wenn die Kosmos-Variante aktiv ist (Hintergrund-Präferenz wird als Prop durchgereicht).
+
 - `src/lib/tt-layout.ts`: pro Node ein `rankRatio` (0 = höchste Punktzahl, 1 = niedrigste) mitgeben; `src/types/graph.ts` und `src/themes/tokenizer.ts` + `src/themes/types.ts` entsprechend erweitern.
 - `src/themes/signal/SignalNode.tsx`: eine `StarShape`-Komponente mit Parametern (Farbe, Fill-Opacity, Glow-Stärke), gesteuert über `isTop5` / `rankRatio` / `isInactive`; ersetzt `MiddleShape*` und `OuterShape*` im TT-Modus. Nicht-TT-Modus bleibt unangetastet.
