@@ -909,6 +909,68 @@ export type Database = {
         }
         Relationships: []
       }
+      rating_events: {
+        Row: {
+          chat_id: string | null
+          created_at: string
+          id: string
+          kind: string
+          rater_id: string
+          target_opinion_id: string
+          topic_id: string
+          value: number
+        }
+        Insert: {
+          chat_id?: string | null
+          created_at?: string
+          id?: string
+          kind: string
+          rater_id: string
+          target_opinion_id: string
+          topic_id: string
+          value: number
+        }
+        Update: {
+          chat_id?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          rater_id?: string
+          target_opinion_id?: string
+          topic_id?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rating_events_chat_id_fkey"
+            columns: ["chat_id"]
+            isOneToOne: false
+            referencedRelation: "chats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rating_events_target_opinion_id_fkey"
+            columns: ["target_opinion_id"]
+            isOneToOne: false
+            referencedRelation: "opinions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rating_events_target_opinion_id_fkey"
+            columns: ["target_opinion_id"]
+            isOneToOne: false
+            referencedRelation: "opinions_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rating_events_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       report_ips: {
         Row: {
           created_at: string
@@ -1409,6 +1471,15 @@ export type Database = {
         Returns: {
           reported_user_ip_address: string
           reporter_ip_address: string
+        }[]
+      }
+      get_time_weighted_ratings: {
+        Args: { _topic_id: string }
+        Returns: {
+          kind: string
+          rater_id: string
+          target_opinion_id: string
+          value: number
         }[]
       }
       get_topic_chat_request_edges: {

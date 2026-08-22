@@ -101,12 +101,13 @@ export function useChatSession(theirOpinionId: string | null, sourceOpinionId?: 
   const partnerRating = theirRatingRows.length ? theirRatingRows[theirRatingRows.length - 1] : null;
 
   // Bridging scores use the AVERAGE of all rounds a participant rated.
+  // Understanding is stored 0-100 and normalised to 0-10 for the points formula.
   const myAvgEmpathy = avg(myRatingRows.map((r) => r.empathy));
   const theirAvgEmpathy = avg(theirRatingRows.map((r) => r.empathy));
   const myBridgingScore =
-    myAvgEmpathy !== null ? Math.round(myAvgEmpathy * (existingRating?.disagreement ?? 5)) : null;
+    myAvgEmpathy !== null ? Math.round((myAvgEmpathy / 10) * (existingRating?.disagreement ?? 5)) : null;
   const theirBridgingScore =
-    theirAvgEmpathy !== null ? Math.round(theirAvgEmpathy * (partnerRating?.disagreement ?? 5)) : null;
+    theirAvgEmpathy !== null ? Math.round((theirAvgEmpathy / 10) * (partnerRating?.disagreement ?? 5)) : null;
 
   
   // Average bridging score (only if both have rated)
@@ -228,6 +229,19 @@ export function useChatSession(theirOpinionId: string | null, sourceOpinionId?: 
             message_count: messageCount,
           });
         if (error) throw error;
+      }
+
+      // Append-only history so points can be weighted by how long a value was held.
+      if (theirOpinion?.topic_id && theirOpinion.id) {
+        const { error: evError } = await supabase.from('rating_events').insert({
+          topic_id: theirOpinion.topic_id,
+          rater_id: user.id,
+          kind: 'understanding',
+          target_opinion_id: theirOpinion.id,
+          chat_id: chatId,
+          value: empathy,
+        });
+        if (evError) console.error('Failed to log rating event:', evError);
       }
     },
     onSuccess: () => {

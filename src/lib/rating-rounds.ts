@@ -1,12 +1,15 @@
 /**
  * Respect/understanding rating rounds.
  *
- * A rating can be given once per round. Rounds unlock at growing intervals,
- * counting the messages of BOTH participants: 3, 7, 12, 18, 25, 33 …
- * (first gap 4, then 5, 6, 7 …).
+ * A rating can be given once per round. The first round unlocks once BOTH
+ * participants sent at least two messages; later rounds unlock at growing
+ * intervals counting the messages of both participants: 4, 9, 15, 22, 30 …
  */
-const FIRST_THRESHOLD = 3;
-const FIRST_GAP = 4;
+const FIRST_THRESHOLD = 4;
+const FIRST_GAP = 5;
+
+/** Messages each side needs before the first rating unlocks. */
+export const MIN_MESSAGES_PER_SIDE = 2;
 
 /** All round thresholds up to (and including the first one above) `total`. */
 function thresholds(total: number): number[] {
@@ -33,4 +36,9 @@ export function currentRatingRound(totalMessages: number): number | null {
 export function nextRatingThreshold(totalMessages: number): number {
   const next = thresholds(totalMessages).find((t) => t > totalMessages);
   return next ?? FIRST_THRESHOLD;
+}
+
+/** True once both participants sent at least two messages. */
+export function bothSidesEngaged(ownMessages: number, partnerMessages: number): boolean {
+  return ownMessages >= MIN_MESSAGES_PER_SIDE && partnerMessages >= MIN_MESSAGES_PER_SIDE;
 }

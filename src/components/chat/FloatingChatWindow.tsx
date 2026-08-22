@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Minus, X, Heart, HeartCrack, Check } from 'lucide-react';
+import { Send, Minus, X, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Slider } from '@/components/ui/slider';
+import { RespectScale } from './RespectScale';
 import { ChatBubble } from './ChatBubble';
 import { TypingIndicator } from './TypingIndicator';
 import { useChatSession } from '@/hooks/useChatSession';
@@ -180,26 +180,15 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
                 </Button>
               </div>
 
-              {/* Respect slider (empathy only) */}
+              {/* Understanding scale (0-100, no default position) */}
               <div className="space-y-2 mb-6">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">{t('floatingChat.respect')}</span>
-                  <span className="text-xs font-mono text-rose-400">{empathy ?? '–'}</span>
-                </div>
-                <div className="relative">
-                  <Slider
-                    value={[empathy ?? 0]}
-                    onValueChange={(v) => setEmpathy(v[0])}
-                    max={10}
-                    step={1}
-                    className="[&_[role=slider]]:bg-rose-400 [&_[role=slider]]:border-rose-400 [&_.bg-primary]:bg-rose-400/30"
-                  />
-                </div>
-
-                <div className="flex justify-between">
-                  <HeartCrack className="w-4 h-4 text-rose-400" />
-                  <Heart className="w-4 h-4 text-rose-400" />
-                </div>
+                <p className="text-center text-xs text-muted-foreground">{t('tt.understandingQuestion')}</p>
+                <RespectScale
+                  value={empathy}
+                  onChange={setEmpathy}
+                  lowLabel={t('tt.understandingStep.notAtAll')}
+                  highLabel={t('tt.understandingStep.veryGood')}
+                />
               </div>
 
               <Button
