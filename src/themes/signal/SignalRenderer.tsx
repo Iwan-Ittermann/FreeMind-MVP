@@ -74,6 +74,18 @@ export function SignalRenderer({
 
   const zoneTokens = useMemo(() => tokenizeZones(config), [config]);
 
+  // In arrow mode, hovering a node must also light up its chat partners' nodes.
+  const arrowPartnerIds = useMemo(() => {
+    const set = new Set<string>();
+    if (!chatArrows || !highlightedNode) return set;
+    for (const a of chatArrows) {
+      if (a.fromOpinionId === highlightedNode) set.add(a.toOpinionId);
+      else if (a.toOpinionId === highlightedNode) set.add(a.fromOpinionId);
+    }
+    return set;
+  }, [chatArrows, highlightedNode]);
+
+
   const eventTokens: readonly SemanticEventToken[] = useMemo(() => {
     return messageAnimations.map(anim => {
       const source = nodeMap.get(anim.sourceOpinionId);
