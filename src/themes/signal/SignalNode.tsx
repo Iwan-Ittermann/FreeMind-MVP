@@ -25,53 +25,9 @@ function CoreShape() {
   );
 }
 
-function CoreShapeGold() {
-  return (
-    <>
-      <defs>
-        <filter id="signal-glow-gold">
-          <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
-          <feFlood floodColor="#F5C542" floodOpacity="0.55" result="goldColor"/>
-          <feComposite in="goldColor" in2="coloredBlur" operator="in" result="goldGlow"/>
-          <feMerge><feMergeNode in="goldGlow"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-      </defs>
-      <path d="M20 8 L23 17 L32 20 L23 23 L20 32 L17 23 L8 20 L17 17 Z" fill="#F5C542" filter="url(#signal-glow-gold)" />
-    </>
-  );
-}
-
-function CoreShapeRed() {
-  return (
-    <>
-      <defs>
-        <filter id="signal-glow-red">
-          <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
-          <feFlood floodColor="#FF3B3B" floodOpacity="0.55" result="redColor"/>
-          <feComposite in="redColor" in2="coloredBlur" operator="in" result="redGlow"/>
-          <feMerge><feMergeNode in="redGlow"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-      </defs>
-      <path d="M20 8 L23 17 L32 20 L23 23 L20 32 L17 23 L8 20 L17 17 Z" fill="#FF3B3B" filter="url(#signal-glow-red)" />
-    </>
-  );
-}
-
 function MiddleShape() {
   return (
     <circle cx="20" cy="20" r="9" fill="#14B866" />
-  );
-}
-
-function MiddleShapeEmerald() {
-  return (
-    <circle cx="20" cy="20" r="9" fill="#10B981" />
-  );
-}
-
-function MiddleShapeRed() {
-  return (
-    <circle cx="20" cy="20" r="9" fill="#FF3B3B" />
   );
 }
 
@@ -81,17 +37,6 @@ function OuterShape() {
   );
 }
 
-function OuterShapeWarm() {
-  return (
-    <rect x="13" y="13" width="14" height="14" rx="2" fill="#F0A24B" stroke="none" />
-  );
-}
-
-function OuterShapeRed() {
-  return (
-    <rect x="15" y="15" width="10" height="10" fill="#FF3B3B" stroke="none" />
-  );
-}
 
 const STAR_PATH = 'M20 8 L23 17 L32 20 L23 23 L20 32 L17 23 L8 20 L17 17 Z';
 
