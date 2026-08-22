@@ -194,7 +194,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
               highlightAllNodes={false}
               onNodeSelect={setSelectedNode}
               onEdgeClick={handleEdgeClick}
-              arrowMode={variant === 'arrows'}
+              arrowMode={arrowMode}
             />
           )}
         </div>
