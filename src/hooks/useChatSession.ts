@@ -101,12 +101,13 @@ export function useChatSession(theirOpinionId: string | null, sourceOpinionId?: 
   const partnerRating = theirRatingRows.length ? theirRatingRows[theirRatingRows.length - 1] : null;
 
   // Bridging scores use the AVERAGE of all rounds a participant rated.
+  // Understanding is stored 0-100 and normalised to 0-10 for the points formula.
   const myAvgEmpathy = avg(myRatingRows.map((r) => r.empathy));
   const theirAvgEmpathy = avg(theirRatingRows.map((r) => r.empathy));
   const myBridgingScore =
-    myAvgEmpathy !== null ? Math.round(myAvgEmpathy * (existingRating?.disagreement ?? 5)) : null;
+    myAvgEmpathy !== null ? Math.round((myAvgEmpathy / 10) * (existingRating?.disagreement ?? 5)) : null;
   const theirBridgingScore =
-    theirAvgEmpathy !== null ? Math.round(theirAvgEmpathy * (partnerRating?.disagreement ?? 5)) : null;
+    theirAvgEmpathy !== null ? Math.round((theirAvgEmpathy / 10) * (partnerRating?.disagreement ?? 5)) : null;
 
   
   // Average bridging score (only if both have rated)
