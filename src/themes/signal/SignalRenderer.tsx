@@ -168,15 +168,7 @@ export function SignalRenderer({
       )}
 
 
-      {chatArrows ? (
-        <SignalChatArrows
-          arrows={chatArrows}
-          nodeMap={nodeMap}
-          nodeRadius={config.nodeRadius}
-          highlightedNode={highlightedNode}
-          onArrowClick={handleEdgeClick}
-        />
-      ) : (
+      {/* Edges always render (hidden until hover); arrows layer on top of them. */}
       <g className="signal-edges">
         {edgeTokens.map((et, i) => (
           <SignalEdge
@@ -188,7 +180,16 @@ export function SignalRenderer({
           />
         ))}
       </g>
+      {chatArrows && (
+        <SignalChatArrows
+          arrows={chatArrows}
+          nodeMap={nodeMap}
+          nodeRadius={config.nodeRadius}
+          highlightedNode={highlightedNode}
+          onArrowClick={handleEdgeClick}
+        />
       )}
+
       <g className="signal-nodes">
         {nodeTokens.map(nt => (
           <SignalNode
