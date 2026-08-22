@@ -204,8 +204,9 @@ export function SignalRenderer({
           <SignalNode
             key={nt.id}
             token={nt}
-            isHighlighted={highlightedNode === nt.id || arrowPartnerIds.has(nt.id)}
-            isDimmed={!!(highlightedNode && highlightedNode !== nt.id && !arrowPartnerIds.has(nt.id))}
+            isHighlighted={highlightedNode === nt.id}
+            isDimmed={!!(highlightedNode && highlightedNode !== nt.id)}
+
 
             highlightForTour={highlightAllNodes}
             showSpeechBubble={shouldShowBubble(nt.id)}
