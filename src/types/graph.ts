@@ -50,6 +50,8 @@ export interface GraphNode {
   totalPoints?: number; // Sum of bridging scores (understanding × difference) across this node's ratings
   isTop5?: boolean; // Ranked in the top 5 by total points → rendered as a star
   isInactive?: boolean; // No points yet → rendered dimmed on the outer line
+  rankRatio?: number; // 0 = highest score, 1 = lowest score → drives star brightness
+
 
 
 }
