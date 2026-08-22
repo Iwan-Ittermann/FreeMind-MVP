@@ -139,24 +139,35 @@ function BotShape() {
   );
 }
 
+/** Shared filter defs so glows resolve regardless of which shape renders. */
+function SharedDefs() {
+  return (
+    <defs>
+      <filter id="signal-glow-gold">
+        <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
+        <feFlood floodColor="#F5C542" floodOpacity="0.55" result="goldColor" />
+        <feComposite in="goldColor" in2="coloredBlur" operator="in" result="goldGlow" />
+        <feMerge><feMergeNode in="goldGlow" /><feMergeNode in="SourceGraphic" /></feMerge>
+      </filter>
+      <filter id="signal-glow-red">
+        <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
+        <feFlood floodColor="#FF3B3B" floodOpacity="0.55" result="redColor" />
+        <feComposite in="redColor" in2="coloredBlur" operator="in" result="redGlow" />
+        <feMerge><feMergeNode in="redGlow" /><feMergeNode in="SourceGraphic" /></feMerge>
+      </filter>
+      <filter id="signal-select-glow">
+        <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#00e5ff" floodOpacity="0.7" />
+      </filter>
+    </defs>
+  );
+}
+
 const ZONE_SHAPE: Record<SemanticZone, () => JSX.Element> = {
   core: CoreShape,
   middle: MiddleShape,
   outer: OuterShape,
 };
 
-const ZONE_SHAPE_TT: Record<SemanticZone, () => JSX.Element> = {
-  core: CoreShapeGold,
-  middle: MiddleShapeEmerald,
-  // Negative scores no longer exist — outer nodes use the warm marker, not black.
-  outer: OuterShapeWarm,
-};
-
-const ZONE_SHAPE_TT_USER: Record<SemanticZone, () => JSX.Element> = {
-  core: CoreShapeRed,
-  middle: MiddleShapeRed,
-  outer: OuterShapeRed,
-};
 
 interface SignalNodeProps {
   token: SemanticNodeToken;
