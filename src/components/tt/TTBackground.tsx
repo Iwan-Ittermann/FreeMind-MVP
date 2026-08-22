@@ -128,13 +128,6 @@ export function TTBackground({ hue = 0, className, viewportWidth, variant = 'eye
             {/* Deep space field + artwork scaled so the filament ring lands on r=300 */}
             <rect width="1000" height="1000" fill="url(#tt-cosmos-field)" />
 
-            {/* A hint of night sky outside the artwork — deterministic, very faint */}
-            <g pointerEvents="none">
-              {COSMOS_STARS.map((s, i) => (
-                <circle key={i} cx={s.x} cy={s.y} r={s.r} fill="#dbe9ff" fillOpacity={s.o} />
-              ))}
-            </g>
-
             <image
               href={cosmosBg}
               x="45"
@@ -146,8 +139,16 @@ export function TTBackground({ hue = 0, className, viewportWidth, variant = 'eye
             />
             <rect width="1000" height="1000" filter="url(#tt-grain)" opacity="0.18" />
 
+            {/* A hint of night sky — drawn on top of the artwork so it stays visible */}
+            <g pointerEvents="none">
+              {COSMOS_STARS.map((s, i) => (
+                <circle key={i} cx={s.x} cy={s.y} r={s.r} fill="#dbe9ff" fillOpacity={s.o} />
+              ))}
+            </g>
+
             {/* Single zero-point ring as the only orientation line outside the graph */}
             <circle cx="500" cy="500" r="300" fill="none" stroke="#8ecbff" strokeOpacity="0.28" strokeWidth="1.5" />
+
 
             {/* Core glow aligned with the graph's core landmark */}
             <circle cx="500" cy="500" r="170" fill="url(#tt-cosmos-core)" />
