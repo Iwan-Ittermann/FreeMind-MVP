@@ -230,6 +230,19 @@ export function useChatSession(theirOpinionId: string | null, sourceOpinionId?: 
           });
         if (error) throw error;
       }
+
+      // Append-only history so points can be weighted by how long a value was held.
+      if (theirOpinion?.topic_id && theirOpinion.id) {
+        const { error: evError } = await supabase.from('rating_events').insert({
+          topic_id: theirOpinion.topic_id,
+          rater_id: user.id,
+          kind: 'understanding',
+          target_opinion_id: theirOpinion.id,
+          chat_id: chatId,
+          value: empathy,
+        });
+        if (evError) console.error('Failed to log rating event:', evError);
+      }
     },
     onSuccess: () => {
       // Invalidate ratings so average updates
