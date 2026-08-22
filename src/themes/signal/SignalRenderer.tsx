@@ -53,7 +53,9 @@ export function SignalRenderer({
   chatArrows,
 }: SignalRendererProps) {
   const nodeMap = useMemo(() => new Map(nodes.map(n => [n.id, n])), [nodes]);
+  const { bgStyle } = useBackgroundPref();
   const [hidePendingEdges] = useHidePendingEdges();
+
 
   const nodeTokens: readonly SemanticNodeToken[] = useMemo(
     () => tokenizeNodes(nodes, config, edges, currentUserId, currentUserOpinionId),
