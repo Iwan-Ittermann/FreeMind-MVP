@@ -781,7 +781,8 @@
     "allChatsEmpty": "No conversations yet.",
     "legendArrowLength": "arrow length = chat length",
     "legendArrowColor": "color = bridging points",
-    "startChat": "Start chat"
+    "startChat": "Start chat",
+    "yourBridgingPoints": "Your bridging points"
   },
   "secret": {
     "title": "Protected area",

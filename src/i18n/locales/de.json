@@ -781,7 +781,8 @@
     "allChatsEmpty": "Noch keine Gespräche.",
     "legendArrowLength": "Pfeillänge = Gesprächslänge",
     "legendArrowColor": "Farbe = Brückenpunkte",
-    "startChat": "Chat starten"
+    "startChat": "Chat starten",
+    "yourBridgingPoints": "Deine Brückenpunkte"
   },
   "secret": {
     "title": "Geschützter Bereich",
