@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuthForm } from '@/components/AuthForm';
 import { TopicTitleWithLinks } from '@/components/TopicTitleWithLinks';
+import { useArrowModePref } from '@/hooks/useArrowModePref';
 import {
   NotificationFilters,
   getGlobalFilters,
