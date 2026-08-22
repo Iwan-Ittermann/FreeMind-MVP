@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Bell, BellOff, Settings, X, SlidersHorizontal, MessageSquare, MessageCircle, Sparkles, CircleHelp, HelpCircle, LogOut, Mail } from 'lucide-react';
+import { Bell, BellOff, Settings, X, SlidersHorizontal, MessageSquare, MessageCircle, Sparkles, CircleHelp, HelpCircle, LogOut, Mail, MoveUpRight } from 'lucide-react';
 
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuthForm } from '@/components/AuthForm';
 import { TopicTitleWithLinks } from '@/components/TopicTitleWithLinks';
+import { useArrowModePref } from '@/hooks/useArrowModePref';
 import {
   NotificationFilters,
   getGlobalFilters,
@@ -55,6 +56,7 @@ const LANGUAGES = [
 export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRestartTour, onOpenHelp, activeTopicId }: TTHeaderProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { arrowMode, setArrowMode } = useArrowModePref();
   const [accountOpen, setAccountOpen] = useState(false);
   const [bellOpen, setBellOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -468,6 +470,27 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
             className="absolute top-12 right-3 z-40 w-72 space-y-2 pointer-events-auto"
           >
             <div className="rounded-2xl bg-background/95 backdrop-blur-xl border border-border/40 shadow-2xl p-3">
+              <button
+                onClick={() => setArrowMode(!arrowMode)}
+                className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left text-xs transition-colors ${
+                  arrowMode ? 'bg-primary/10 text-foreground' : 'text-muted-foreground hover:bg-muted/50'
+                }`}
+              >
+                <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${arrowMode ? 'text-primary' : 'text-muted-foreground'}`}>
+                  <MoveUpRight className="w-3.5 h-3.5" />
+                </div>
+                <span className="flex-1">{t('tt.arrowModeToggle', 'Chats als Pfeile zeigen')}</span>
+                <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
+                  arrowMode ? 'bg-primary border-primary text-primary-foreground' : 'border-border'
+                }`}>
+                  {arrowMode && (
+                    <svg className="w-2.5 h-2.5" viewBox="0 0 12 12" fill="none">
+                      <path d="M2 6l3 3 5-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </div>
+              </button>
+
               {onRestartTour && (
 
                 <button
@@ -482,6 +505,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                   {t('tt.restartTour')}
                 </button>
               )}
+
 
               {user ? (
                 <button

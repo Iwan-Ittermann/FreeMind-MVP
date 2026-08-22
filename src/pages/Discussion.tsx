@@ -32,13 +32,14 @@ import { TTNudgeHint } from '@/components/tt/TTNudgeHint';
 import { useNudgeStage } from '@/hooks/useNudgeStage';
 import { TTInstallHint } from '@/components/tt/TTInstallHint';
 import { useTranslation } from 'react-i18next';
+import { useArrowModePref } from '@/hooks/useArrowModePref';
 
 
 /**
  * Single-topic mobile UI. This build is locked to the Helsinki event topic (7mm9);
  * multi-topic swipe/loop logic has been removed.
  */
-export default function TT({ mode = 'real', variant = 'default' }: { mode?: 'test' | 'real'; variant?: 'default' | 'arrows' }) {
+export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
   useParams<{ topicId?: string }>(); // single-topic routes; params ignored
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -48,12 +49,12 @@ export default function TT({ mode = 'real', variant = 'default' }: { mode?: 'tes
   const chatManagerRef = useRef<FloatingChatManagerHandle>(null);
   const { topic, isLoading: topicLoading, config: eventConfig } = useEventTopic(mode);
   const { phase, gated: phaseGated } = useEventPhase(eventConfig);
+  const { arrowMode } = useArrowModePref();
   // Time phases apply to the real question only — /test stays open at all times.
-  // The arrows experiment (/secret) is fully open: no time lock, no gates.
-  const freeAccess = variant === 'arrows';
-  const gated = mode === 'real' && phaseGated && !freeAccess;
+  const gated = mode === 'real' && phaseGated;
   const activeTopicId = topic?.id ?? '';
   const activeTopicTitle = topic?.title ?? '...';
+
 
   const [helpOpen, setHelpOpen] = useState(false);
   const [tourStep, setTourStep] = useState(0);
@@ -165,7 +166,6 @@ export default function TT({ mode = 'real', variant = 'default' }: { mode?: 'tes
   // Which blocking gate (if any) applies right now.
   // /test requires a passphrase login first, then the mandatory opinion.
   const gateVariant: 'countdown' | 'submit' | 'waiting' | 'login' | null = (() => {
-    if (freeAccess) return null;
     if (!ownOpinionKnown || !activeTopicId) return null;
     if (gated) {
       if (phase === 'prelaunch') return 'countdown';
@@ -194,7 +194,7 @@ export default function TT({ mode = 'real', variant = 'default' }: { mode?: 'tes
               highlightAllNodes={false}
               onNodeSelect={setSelectedNode}
               onEdgeClick={handleEdgeClick}
-              arrowMode={variant === 'arrows'}
+              arrowMode={arrowMode}
             />
           )}
         </div>

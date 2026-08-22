@@ -714,6 +714,7 @@
     "scrollHint": "Swipe for more topics",
     "respectUnlockHint": "Unlocked after 3 messages",
     "restartTour": "Start guide",
+    "arrowModeToggle": "Show chats as arrows",
     "onboarding": {
       "chatStep": "Now you can chat with them. Tap \"Discuss\"",
       "next": "Next",
