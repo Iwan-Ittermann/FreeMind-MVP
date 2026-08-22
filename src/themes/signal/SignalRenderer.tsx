@@ -142,7 +142,11 @@ export function SignalRenderer({
 
       {ttLandmarks && (
         <g className="tt-level-rings" pointerEvents="none">
-          {getTTLevelRadii(ttLandmarks).map(({ level, r }) => (
+          {getTTLevelRadii(ttLandmarks)
+            // Cosmos background keeps exactly one orientation line outside the
+            // zero-point radius (drawn by TTBackground), so drop the outer rings.
+            .filter(({ r }) => bgStyle !== 'cosmos' || r <= ttLandmarks.blueR)
+            .map(({ level, r }) => (
             <circle
               key={level}
               cx={config.centerX}
@@ -156,6 +160,7 @@ export function SignalRenderer({
           ))}
         </g>
       )}
+
 
       {chatArrows ? (
         <SignalChatArrows
