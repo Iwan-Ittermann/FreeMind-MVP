@@ -18,7 +18,6 @@ import Unsubscribe from "./pages/Unsubscribe";
 import Fragen from "./pages/Fragen";
 import Sogehts from "./pages/Sogehts";
 import Bericht from "./pages/Bericht";
-import Secret from "./pages/Secret";
 import NotificationsPage from "./pages/Notifications";
 
 
@@ -52,7 +51,7 @@ function AppRoutes() {
       <Route path="/" element={<Landing />} />
       <Route path="/go" element={<Discussion mode="real" />} />
       <Route path="/test" element={<Discussion mode="test" />} />
-      <Route path="/secret" element={<Secret />} />
+      <Route path="/secret" element={<Navigate to="/go" replace />} />
       <Route path="/7mm9" element={<Navigate to="/go" replace />} />
       <Route path="/confirm" element={<Confirm />} />
       <Route path="/unsubscribe" element={<Unsubscribe />} />
