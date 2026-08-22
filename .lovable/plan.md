@@ -27,7 +27,8 @@ Die Änderungen an Punkt 1 und 2 betreffen ausschließlich die Kosmos-Variante. 
 
 ## Technische Details
 
-- `src/components/tt/TTBackground.tsx`: Sternenfeld als deterministisch generierte `<circle>`-Liste (Seeded PRNG, nur außerhalb r≈310), äußeren Ring bei r=360 in der Kosmos-Variante entfernen.
-- `src/themes/signal/SignalRenderer.tsx`: Level-Ringe filtern — Ringe mit r > Null-Punkt-Radius werden nicht mehr gezeichnet.
+- `src/components/tt/TTBackground.tsx`: Sternenfeld als deterministisch generierte `<circle>`-Liste (Seeded PRNG, nur außerhalb r≈310) — ausschließlich im `variant === 'cosmos'`-Zweig; äußeren Ring bei r=360 dort entfernen. Der `eye`-Zweig bleibt unverändert.
+- `src/themes/signal/SignalRenderer.tsx`: Level-Ringe mit r > Null-Punkt-Radius nur ausblenden, wenn die Kosmos-Variante aktiv ist (Hintergrund-Präferenz wird als Prop durchgereicht).
+
 - `src/lib/tt-layout.ts`: pro Node ein `rankRatio` (0 = höchste Punktzahl, 1 = niedrigste) mitgeben; `src/types/graph.ts` und `src/themes/tokenizer.ts` + `src/themes/types.ts` entsprechend erweitern.
 - `src/themes/signal/SignalNode.tsx`: eine `StarShape`-Komponente mit Parametern (Farbe, Fill-Opacity, Glow-Stärke), gesteuert über `isTop5` / `rankRatio` / `isInactive`; ersetzt `MiddleShape*` und `OuterShape*` im TT-Modus. Nicht-TT-Modus bleibt unangetastet.
