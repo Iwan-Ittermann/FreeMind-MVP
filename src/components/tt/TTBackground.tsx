@@ -1,9 +1,14 @@
+import cosmosBg from '@/assets/tt-cosmos-bg.jpg';
+import type { TTBackgroundStyle } from '@/hooks/useBackgroundPref';
+
 interface TTBackgroundProps {
   /** Hue rotation 0-360 to differentiate topics. Default 0. */
   hue?: number;
   className?: string;
   /** Width of the TT phone viewport. Falls back to container width. */
   viewportWidth?: number;
+  /** Artwork variant: classic eye or cosmic mandala. */
+  variant?: TTBackgroundStyle;
 }
 
 /**
@@ -13,7 +18,8 @@ interface TTBackgroundProps {
  * exactly the TT phone viewport width. On desktop this must use the centered
  * mobile shell width, not the browser's global viewport width.
  */
-export function TTBackground({ hue = 0, className, viewportWidth }: TTBackgroundProps) {
+export function TTBackground({ hue = 0, className, viewportWidth, variant = 'eye' }: TTBackgroundProps) {
+
   const backgroundSize = viewportWidth && viewportWidth > 0
     ? `${viewportWidth / 0.6}px`
     : 'calc(100% / 0.6)';
@@ -74,21 +80,61 @@ export function TTBackground({ hue = 0, className, viewportWidth }: TTBackground
             <stop offset="86%" stopColor="#96420d" />
             <stop offset="100%" stopColor="#b65b1a" />
           </radialGradient>
+          {/* Cosmos fallback field (used if the artwork fails to load). */}
+          <radialGradient id="tt-cosmos-field" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#0a1330" />
+            <stop offset="55%" stopColor="#060c20" />
+            <stop offset="100%" stopColor="#03060f" />
+          </radialGradient>
+
+          {/* Warm halo around the amber core. */}
+          <radialGradient id="tt-cosmos-core" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#ffb347" stopOpacity="0.55" />
+            <stop offset="45%" stopColor="#e8801d" stopOpacity="0.22" />
+            <stop offset="100%" stopColor="#e8801d" stopOpacity="0" />
+          </radialGradient>
         </defs>
 
-        {/* Background gradient + grain */}
-        <rect width="1000" height="1000" fill="url(#tt-bg)" />
-        <rect width="1000" height="1000" filter="url(#tt-grain)" opacity="0.25" />
+        {variant === 'cosmos' ? (
+          <>
+            {/* Deep space field + artwork scaled so the filament ring lands on r=300 */}
+            <rect width="1000" height="1000" fill="url(#tt-cosmos-field)" />
+            <image
+              href={cosmosBg}
+              x="45"
+              y="45"
+              width="910"
+              height="910"
+              preserveAspectRatio="xMidYMid slice"
+              opacity="0.95"
+            />
+            <rect width="1000" height="1000" filter="url(#tt-grain)" opacity="0.18" />
 
-        {/* Broad white sclera from r=300 to r=360. */}
-        <circle cx="500" cy="500" r="360" fill="#f7f5f0" />
+            {/* Zero-point ring as a faint orientation line */}
+            <circle cx="500" cy="500" r="300" fill="none" stroke="#8ecbff" strokeOpacity="0.28" strokeWidth="1.5" />
+            <circle cx="500" cy="500" r="360" fill="none" stroke="#8ecbff" strokeOpacity="0.12" strokeWidth="1" />
 
-        {/* Iris ends at the zero-point radius. No blur may bleed into sclera. */}
-        <circle cx="500" cy="500" r="300" fill="url(#tt-iris)" />
+            {/* Core glow aligned with the graph's core landmark */}
+            <circle cx="500" cy="500" r="170" fill="url(#tt-cosmos-core)" />
+          </>
+        ) : (
+          <>
+            {/* Background gradient + grain */}
+            <rect width="1000" height="1000" fill="url(#tt-bg)" />
+            <rect width="1000" height="1000" filter="url(#tt-grain)" opacity="0.25" />
 
-        {/* Pupil aligns with the graph's core landmark. */}
-        <circle cx="500" cy="500" r="140" fill="url(#tt-pupil)" />
+            {/* Broad white sclera from r=300 to r=360. */}
+            <circle cx="500" cy="500" r="360" fill="#f7f5f0" />
+
+            {/* Iris ends at the zero-point radius. No blur may bleed into sclera. */}
+            <circle cx="500" cy="500" r="300" fill="url(#tt-iris)" />
+
+            {/* Pupil aligns with the graph's core landmark. */}
+            <circle cx="500" cy="500" r="140" fill="url(#tt-pupil)" />
+          </>
+        )}
       </svg>
+
     </div>
   );
 }
