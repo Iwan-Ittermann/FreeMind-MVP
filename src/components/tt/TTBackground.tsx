@@ -1,9 +1,14 @@
+import cosmosBg from '@/assets/tt-cosmos-bg.jpg';
+import type { TTBackgroundStyle } from '@/hooks/useBackgroundPref';
+
 interface TTBackgroundProps {
   /** Hue rotation 0-360 to differentiate topics. Default 0. */
   hue?: number;
   className?: string;
   /** Width of the TT phone viewport. Falls back to container width. */
   viewportWidth?: number;
+  /** Artwork variant: classic eye or cosmic mandala. */
+  variant?: TTBackgroundStyle;
 }
 
 /**
@@ -13,7 +18,8 @@ interface TTBackgroundProps {
  * exactly the TT phone viewport width. On desktop this must use the centered
  * mobile shell width, not the browser's global viewport width.
  */
-export function TTBackground({ hue = 0, className, viewportWidth }: TTBackgroundProps) {
+export function TTBackground({ hue = 0, className, viewportWidth, variant = 'eye' }: TTBackgroundProps) {
+
   const backgroundSize = viewportWidth && viewportWidth > 0
     ? `${viewportWidth / 0.6}px`
     : 'calc(100% / 0.6)';
