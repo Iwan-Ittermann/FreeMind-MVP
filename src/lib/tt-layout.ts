@@ -595,6 +595,8 @@ export function calculateTTLayout(
       totalPoints: total,
       isTop5: top5Ids.has(op.id),
       isInactive,
+      rankRatio: rankRatioOf.get(op.id) ?? 1,
+
     };
   });
 
