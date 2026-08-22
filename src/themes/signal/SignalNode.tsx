@@ -93,24 +93,40 @@ function OuterShapeRed() {
   );
 }
 
-/** Not yet in any discussion: hollow, dashed, muted — clearly "waiting". */
-function InactiveShapeTT() {
+const STAR_PATH = 'M20 8 L23 17 L32 20 L23 23 L20 32 L17 23 L8 20 L17 17 Z';
+
+/**
+ * TT star node. Brightness/size follow the highscore rank: the top of the
+ * board burns bright gold, weaker ranks stay quiet so the graph stays readable.
+ */
+function TTStar({ rankRatio, isTop5, isCurrentUser }: { rankRatio: number; isTop5: boolean; isCurrentUser: boolean }) {
+  if (isCurrentUser) {
+    return <path d={STAR_PATH} fill="#FF3B3B" filter="url(#signal-glow-red)" />;
+  }
+  if (isTop5) {
+    return <path d={STAR_PATH} fill="#F5C542" filter="url(#signal-glow-gold)" />;
+  }
+  const f = 1 - Math.max(0, Math.min(1, rankRatio)); // 1 = strong, 0 = weakest
+  const scale = 0.78 + f * 0.16;
+  const opacity = 0.55 + f * 0.35;
+  // Warm gold desaturating towards a pale star as the rank drops.
+  const fill = f > 0.5 ? '#EFC562' : '#D8CFB4';
   return (
-    <>
-      <circle cx="20" cy="20" r="9.5" fill="#A9BBD6" fillOpacity={0.3} />
-      <circle
-        cx="20"
-        cy="20"
-        r="9.5"
-        fill="none"
-        stroke="#D3E1F5"
-        strokeOpacity={0.95}
-        strokeWidth={2}
-        strokeDasharray="4 2.5"
-      />
-    </>
+    <g transform={`translate(20 20) scale(${scale.toFixed(3)}) translate(-20 -20)`}>
+      <path d={STAR_PATH} fill={fill} fillOpacity={opacity} />
+    </g>
   );
 }
+
+/** Not yet in any discussion: hollow, dimmed star — clearly "waiting". */
+function InactiveShapeTT() {
+  return (
+    <g transform="translate(20 20) scale(0.8) translate(-20 -20)">
+      <path d={STAR_PATH} fill="#C8DCF5" fillOpacity={0.22} stroke="#D3E1F5" strokeOpacity={0.7} strokeWidth={1.4} />
+    </g>
+  );
+}
+
 
 
 function BotShape() {
