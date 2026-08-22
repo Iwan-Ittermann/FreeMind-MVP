@@ -544,6 +544,13 @@ export function calculateTTLayout(
   // Top 5 by points (deterministic: total desc, id asc) render as stars.
   const top5Ids = new Set(positives.slice(0, 5).map(op => op.id));
 
+  // Rank ratio for star brightness: 0 = best score, 1 = weakest / no points.
+  const rankRatioOf = new Map<string, number>();
+  positives.forEach((op, i) => {
+    rankRatioOf.set(op.id, positives.length <= 1 ? 0 : i / (positives.length - 1));
+  });
+
+
   let allNodes: GraphNode[] = opinions.map(op => {
     const { total, hasChats } = totals.get(op.id)!;
 
