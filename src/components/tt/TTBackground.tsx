@@ -12,12 +12,40 @@ interface TTBackgroundProps {
 }
 
 /**
+ * Deterministic faint star field for the cosmos variant.
+ * Only outside r≈310 so the graph itself stays perfectly readable.
+ */
+const COSMOS_STARS: { x: number; y: number; r: number; o: number }[] = (() => {
+  let seed = 1337;
+  const rnd = () => {
+    seed = (seed * 1664525 + 1013904223) % 4294967296;
+    return seed / 4294967296;
+  };
+  const out: { x: number; y: number; r: number; o: number }[] = [];
+  let guard = 0;
+  while (out.length < 150 && guard++ < 4000) {
+    const x = rnd() * 1000;
+    const y = rnd() * 1000;
+    if (Math.hypot(x - 500, y - 500) < 315) continue;
+    const bright = rnd();
+    out.push({
+      x: Math.round(x * 10) / 10,
+      y: Math.round(y * 10) / 10,
+      r: bright > 0.94 ? 1.6 : 0.6 + rnd() * 0.7,
+      o: bright > 0.94 ? 0.34 : 0.06 + rnd() * 0.2,
+    });
+  }
+  return out;
+})();
+
+/**
  * Concentric background for the TT mobile UI.
  *
  * Sized so the blue ring (r=300 in a 1000-unit viewBox → 60% of width) spans
  * exactly the TT phone viewport width. On desktop this must use the centered
  * mobile shell width, not the browser's global viewport width.
  */
+
 export function TTBackground({ hue = 0, className, viewportWidth, variant = 'eye' }: TTBackgroundProps) {
 
   const backgroundSize = viewportWidth && viewportWidth > 0
@@ -99,6 +127,14 @@ export function TTBackground({ hue = 0, className, viewportWidth, variant = 'eye
           <>
             {/* Deep space field + artwork scaled so the filament ring lands on r=300 */}
             <rect width="1000" height="1000" fill="url(#tt-cosmos-field)" />
+
+            {/* A hint of night sky outside the artwork — deterministic, very faint */}
+            <g pointerEvents="none">
+              {COSMOS_STARS.map((s, i) => (
+                <circle key={i} cx={s.x} cy={s.y} r={s.r} fill="#dbe9ff" fillOpacity={s.o} />
+              ))}
+            </g>
+
             <image
               href={cosmosBg}
               x="45"
@@ -110,14 +146,14 @@ export function TTBackground({ hue = 0, className, viewportWidth, variant = 'eye
             />
             <rect width="1000" height="1000" filter="url(#tt-grain)" opacity="0.18" />
 
-            {/* Zero-point ring as a faint orientation line */}
+            {/* Single zero-point ring as the only orientation line outside the graph */}
             <circle cx="500" cy="500" r="300" fill="none" stroke="#8ecbff" strokeOpacity="0.28" strokeWidth="1.5" />
-            <circle cx="500" cy="500" r="360" fill="none" stroke="#8ecbff" strokeOpacity="0.12" strokeWidth="1" />
 
             {/* Core glow aligned with the graph's core landmark */}
             <circle cx="500" cy="500" r="170" fill="url(#tt-cosmos-core)" />
           </>
         ) : (
+
           <>
             {/* Background gradient + grain */}
             <rect width="1000" height="1000" fill="url(#tt-bg)" />

@@ -25,53 +25,9 @@ function CoreShape() {
   );
 }
 
-function CoreShapeGold() {
-  return (
-    <>
-      <defs>
-        <filter id="signal-glow-gold">
-          <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
-          <feFlood floodColor="#F5C542" floodOpacity="0.55" result="goldColor"/>
-          <feComposite in="goldColor" in2="coloredBlur" operator="in" result="goldGlow"/>
-          <feMerge><feMergeNode in="goldGlow"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-      </defs>
-      <path d="M20 8 L23 17 L32 20 L23 23 L20 32 L17 23 L8 20 L17 17 Z" fill="#F5C542" filter="url(#signal-glow-gold)" />
-    </>
-  );
-}
-
-function CoreShapeRed() {
-  return (
-    <>
-      <defs>
-        <filter id="signal-glow-red">
-          <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
-          <feFlood floodColor="#FF3B3B" floodOpacity="0.55" result="redColor"/>
-          <feComposite in="redColor" in2="coloredBlur" operator="in" result="redGlow"/>
-          <feMerge><feMergeNode in="redGlow"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-      </defs>
-      <path d="M20 8 L23 17 L32 20 L23 23 L20 32 L17 23 L8 20 L17 17 Z" fill="#FF3B3B" filter="url(#signal-glow-red)" />
-    </>
-  );
-}
-
 function MiddleShape() {
   return (
     <circle cx="20" cy="20" r="9" fill="#14B866" />
-  );
-}
-
-function MiddleShapeEmerald() {
-  return (
-    <circle cx="20" cy="20" r="9" fill="#10B981" />
-  );
-}
-
-function MiddleShapeRed() {
-  return (
-    <circle cx="20" cy="20" r="9" fill="#FF3B3B" />
   );
 }
 
@@ -81,36 +37,41 @@ function OuterShape() {
   );
 }
 
-function OuterShapeWarm() {
+
+const STAR_PATH = 'M20 8 L23 17 L32 20 L23 23 L20 32 L17 23 L8 20 L17 17 Z';
+
+/**
+ * TT star node. Brightness/size follow the highscore rank: the top of the
+ * board burns bright gold, weaker ranks stay quiet so the graph stays readable.
+ */
+function TTStar({ rankRatio, isTop5, isCurrentUser }: { rankRatio: number; isTop5: boolean; isCurrentUser: boolean }) {
+  if (isCurrentUser) {
+    return <path d={STAR_PATH} fill="#FF3B3B" filter="url(#signal-glow-red)" />;
+  }
+  if (isTop5) {
+    return <path d={STAR_PATH} fill="#F5C542" filter="url(#signal-glow-gold)" />;
+  }
+  const f = 1 - Math.max(0, Math.min(1, rankRatio)); // 1 = strong, 0 = weakest
+  const scale = 0.78 + f * 0.16;
+  const opacity = 0.55 + f * 0.35;
+  // Warm gold desaturating towards a pale star as the rank drops.
+  const fill = f > 0.5 ? '#EFC562' : '#D8CFB4';
   return (
-    <rect x="13" y="13" width="14" height="14" rx="2" fill="#F0A24B" stroke="none" />
+    <g transform={`translate(20 20) scale(${scale.toFixed(3)}) translate(-20 -20)`}>
+      <path d={STAR_PATH} fill={fill} fillOpacity={opacity} />
+    </g>
   );
 }
 
-function OuterShapeRed() {
-  return (
-    <rect x="15" y="15" width="10" height="10" fill="#FF3B3B" stroke="none" />
-  );
-}
-
-/** Not yet in any discussion: hollow, dashed, muted — clearly "waiting". */
+/** Not yet in any discussion: hollow, dimmed star — clearly "waiting". */
 function InactiveShapeTT() {
   return (
-    <>
-      <circle cx="20" cy="20" r="9.5" fill="#A9BBD6" fillOpacity={0.3} />
-      <circle
-        cx="20"
-        cy="20"
-        r="9.5"
-        fill="none"
-        stroke="#D3E1F5"
-        strokeOpacity={0.95}
-        strokeWidth={2}
-        strokeDasharray="4 2.5"
-      />
-    </>
+    <g transform="translate(20 20) scale(0.8) translate(-20 -20)">
+      <path d={STAR_PATH} fill="#C8DCF5" fillOpacity={0.22} stroke="#D3E1F5" strokeOpacity={0.7} strokeWidth={1.4} />
+    </g>
   );
 }
+
 
 
 function BotShape() {
@@ -123,24 +84,35 @@ function BotShape() {
   );
 }
 
+/** Shared filter defs so glows resolve regardless of which shape renders. */
+function SharedDefs() {
+  return (
+    <defs>
+      <filter id="signal-glow-gold">
+        <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
+        <feFlood floodColor="#F5C542" floodOpacity="0.55" result="goldColor" />
+        <feComposite in="goldColor" in2="coloredBlur" operator="in" result="goldGlow" />
+        <feMerge><feMergeNode in="goldGlow" /><feMergeNode in="SourceGraphic" /></feMerge>
+      </filter>
+      <filter id="signal-glow-red">
+        <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
+        <feFlood floodColor="#FF3B3B" floodOpacity="0.55" result="redColor" />
+        <feComposite in="redColor" in2="coloredBlur" operator="in" result="redGlow" />
+        <feMerge><feMergeNode in="redGlow" /><feMergeNode in="SourceGraphic" /></feMerge>
+      </filter>
+      <filter id="signal-select-glow">
+        <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#00e5ff" floodOpacity="0.7" />
+      </filter>
+    </defs>
+  );
+}
+
 const ZONE_SHAPE: Record<SemanticZone, () => JSX.Element> = {
   core: CoreShape,
   middle: MiddleShape,
   outer: OuterShape,
 };
 
-const ZONE_SHAPE_TT: Record<SemanticZone, () => JSX.Element> = {
-  core: CoreShapeGold,
-  middle: MiddleShapeEmerald,
-  // Negative scores no longer exist — outer nodes use the warm marker, not black.
-  outer: OuterShapeWarm,
-};
-
-const ZONE_SHAPE_TT_USER: Record<SemanticZone, () => JSX.Element> = {
-  core: CoreShapeRed,
-  middle: MiddleShapeRed,
-  outer: OuterShapeRed,
-};
 
 interface SignalNodeProps {
   token: SemanticNodeToken;
@@ -165,19 +137,20 @@ export const SignalNode = memo(function SignalNode({
   onClick, onPointerDown, onMouseEnter, onMouseLeave,
 }: SignalNodeProps) {
   const { t } = useTranslation();
-  const shapeSet = ttMode
-    ? (token.isCurrentUser ? ZONE_SHAPE_TT_USER : ZONE_SHAPE_TT)
-    : ZONE_SHAPE;
-  // Top 5 always render as stars, whatever zone they sit in.
-  const starShape = ttMode && token.isCurrentUser ? CoreShapeRed : CoreShapeGold;
+  const shapeSet = ZONE_SHAPE;
   const showInactive = ttMode && token.isInactive && !token.isCurrentUser && !token.isBot;
+  // TT mode: every opinion is a star, brightness by highscore rank.
+  const TTStarShape = () => (
+    <TTStar rankRatio={token.rankRatio} isTop5={token.isTop5} isCurrentUser={token.isCurrentUser} />
+  );
   const Shape = token.isBot
     ? BotShape
     : showInactive
       ? InactiveShapeTT
-      : ttMode && token.isTop5
-        ? starShape
+      : ttMode
+        ? TTStarShape
         : (shapeSet[token.zone] ?? MiddleShape);
+
   const opacity = isDimmed ? 0.4 : token.isHidden ? 0.3 : showInactive ? 0.9 : 1;
 
   const isScaled = isHighlighted && !isDimmed;
@@ -249,7 +222,9 @@ export const SignalNode = memo(function SignalNode({
           transition: 'transform 0.15s ease',
         }}
       >
+        <SharedDefs />
         <circle cx="20" cy="20" r="22" fill="transparent" />
+
         {/* Active (already discussing) — soft halo so it reads brighter than inactive nodes */}
         {ttMode && !showInactive && !token.isBot && !isDimmed && (
           <circle cx="20" cy="20" r="13" fill="none" stroke="#FFFFFF" strokeOpacity={0.22} strokeWidth={1} />
