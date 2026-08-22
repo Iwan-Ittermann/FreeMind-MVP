@@ -49,7 +49,9 @@ export default function TT({ mode = 'real', variant = 'default' }: { mode?: 'tes
   const { topic, isLoading: topicLoading, config: eventConfig } = useEventTopic(mode);
   const { phase, gated: phaseGated } = useEventPhase(eventConfig);
   // Time phases apply to the real question only — /test stays open at all times.
-  const gated = mode === 'real' && phaseGated;
+  // The arrows experiment (/secret) is fully open: no time lock, no gates.
+  const freeAccess = variant === 'arrows';
+  const gated = mode === 'real' && phaseGated && !freeAccess;
   const activeTopicId = topic?.id ?? '';
   const activeTopicTitle = topic?.title ?? '...';
 
@@ -163,6 +165,7 @@ export default function TT({ mode = 'real', variant = 'default' }: { mode?: 'tes
   // Which blocking gate (if any) applies right now.
   // /test requires a passphrase login first, then the mandatory opinion.
   const gateVariant: 'countdown' | 'submit' | 'waiting' | 'login' | null = (() => {
+    if (freeAccess) return null;
     if (!ownOpinionKnown || !activeTopicId) return null;
     if (gated) {
       if (phase === 'prelaunch') return 'countdown';
