@@ -281,7 +281,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                         {visibleOpinions.map((op) => {
                           const rating = myRatings?.get(op.id);
                           const rated = rating != null;
-                          const points = nodePoints?.get(op.id) ?? 0;
+                          
                           const started = startedOpinionIds.has(op.id);
                           return (
                             <li key={op.id} className="px-4 py-3">
