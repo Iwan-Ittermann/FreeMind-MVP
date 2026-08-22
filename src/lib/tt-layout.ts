@@ -160,7 +160,7 @@ function adjustForMinSeparation(angle: number, placed: Map<string, number>, minS
       let dist = Math.abs(adjusted - normalizeAngle(placedAngle));
       if (dist > Math.PI) dist = 2 * Math.PI - dist;
       if (dist < minSep) {
-        adjusted = normalizeAngle(adjusted + 0.15);
+        adjusted = normalizeAngle(adjusted + 0.08);
         tooClose = true;
         break;
       }
@@ -170,6 +170,29 @@ function adjustForMinSeparation(angle: number, placed: Map<string, number>, minS
   return adjusted;
 }
 
+/** Absolute angular distance in [0, PI]. */
+function angularDistance(a: number, b: number): number {
+  let d = Math.abs(normalizeAngle(a) - normalizeAngle(b));
+  if (d > Math.PI) d = 2 * Math.PI - d;
+  return d;
+}
+
+/** Desired angular distance for a pair-averaged disagreement (0..10). */
+function desiredSeparation(disagreement: number): number {
+  const clamped = Math.max(0, Math.min(10, disagreement));
+  return (clamped / 10) * Math.PI;
+}
+
+/**
+ * Deterministic angular layout driven by the pair-AVERAGED disagreement.
+ *
+ * Similar opinions (low disagreement) are pulled towards each other, which is
+ * what makes clusters emerge; opposing opinions end up on opposite sides.
+ * For each node we build the candidate angles implied by every already placed
+ * neighbour and pick the candidate with the lowest weighted error against ALL
+ * placed neighbours (cluster-fit), instead of the candidate that maximises the
+ * distance to everything (which used to scatter clusters apart).
+ */
 function calculateDeterministicAngles(opinions: Opinion[], ratings: ChatRating[]): Map<string, number> {
   const angleMap = new Map<string, number>();
   if (opinions.length === 0) return angleMap;
@@ -190,6 +213,7 @@ function calculateDeterministicAngles(opinions: Opinion[], ratings: ChatRating[]
     return angleMap;
   }
 
+  // Anchor pair: the strongest opposition, placed at 0 and PI.
   let maxDisagreement = -1;
   let anchorPair: [string, string] | null = null;
   const sortedRatings = [...ratings].sort((a, b) =>
@@ -209,27 +233,65 @@ function calculateDeterministicAngles(opinions: Opinion[], ratings: ChatRating[]
   angleMap.set(anchorPair[0], 0);
   if (anchorPair[1] !== anchorPair[0]) angleMap.set(anchorPair[1], Math.PI);
 
-  const remaining = activeNodes.filter(n => !angleMap.has(n.id)).sort((a, b) => a.id.localeCompare(b.id));
-  for (const node of remaining) {
-    const connections = adjacency.get(node.id) || new Map();
-    let weightedSum = 0;
-    let totalWeight = 0;
-    for (const [connectedId, disagreement] of connections) {
-      if (angleMap.has(connectedId)) {
-        const ca = angleMap.get(connectedId)!;
-        const offset = (disagreement / 10) * Math.PI;
-        const c1 = ca + offset;
-        const c2 = ca - offset;
-        const w = disagreement + 1;
-        const s1 = getMinAngularDistance(c1, angleMap);
-        const s2 = getMinAngularDistance(c2, angleMap);
-        const best = s1 >= s2 ? c1 : c2;
-        weightedSum += normalizeAngle(best) * w;
-        totalWeight += w;
-      }
+  // Cluster cores first: the best connected nodes are placed early so later
+  // nodes can attach to an existing structure. Deterministic: degree desc, id asc.
+  const remaining = activeNodes
+    .filter(n => !angleMap.has(n.id))
+    .sort((a, b) => {
+      const da = adjacency.get(a.id)?.size || 0;
+      const db = adjacency.get(b.id)?.size || 0;
+      if (db !== da) return db - da;
+      return a.id.localeCompare(b.id);
+    });
+
+  /** Weighted error of a candidate angle against all placed neighbours. */
+  const candidateError = (candidate: number, connections: Map<string, number>): number => {
+    let err = 0;
+    let wSum = 0;
+    for (const [id, disagreement] of [...connections.entries()].sort((x, y) => x[0].localeCompare(y[0]))) {
+      const placedAngle = angleMap.get(id);
+      if (placedAngle == null) continue;
+      const want = desiredSeparation(disagreement);
+      const have = angularDistance(candidate, placedAngle);
+      // Agreement (low disagreement) weighs more so clusters hold together.
+      const w = 11 - Math.max(0, Math.min(10, disagreement));
+      err += w * (have - want) * (have - want);
+      wSum += w;
     }
-    let finalAngle = totalWeight > 0 ? weightedSum / totalWeight : findLargestGap(angleMap);
-    finalAngle = adjustForMinSeparation(finalAngle, angleMap, 0.35);
+    return wSum > 0 ? err / wSum : Number.POSITIVE_INFINITY;
+  };
+
+  for (const node of remaining) {
+    const connections = adjacency.get(node.id) || new Map<string, number>();
+
+    const candidates: number[] = [];
+    for (const [id, disagreement] of [...connections.entries()].sort((x, y) => x[0].localeCompare(y[0]))) {
+      const placedAngle = angleMap.get(id);
+      if (placedAngle == null) continue;
+      const offset = desiredSeparation(disagreement);
+      candidates.push(normalizeAngle(placedAngle + offset));
+      candidates.push(normalizeAngle(placedAngle - offset));
+    }
+
+    let finalAngle: number;
+    if (candidates.length === 0) {
+      finalAngle = findLargestGap(angleMap);
+    } else {
+      let best = candidates[0];
+      let bestErr = Number.POSITIVE_INFINITY;
+      for (const c of candidates) {
+        const e = candidateError(c, connections);
+        // Deterministic tie-break: lower angle wins.
+        if (e < bestErr - 1e-9 || (Math.abs(e - bestErr) <= 1e-9 && c < best)) {
+          bestErr = e;
+          best = c;
+        }
+      }
+      finalAngle = best;
+    }
+
+    // Small minimum separation only — clusters are allowed to stay tight.
+    finalAngle = adjustForMinSeparation(finalAngle, angleMap, 0.18);
     angleMap.set(node.id, normalizeAngle(finalAngle));
   }
 
@@ -239,7 +301,7 @@ function calculateDeterministicAngles(opinions: Opinion[], ratings: ChatRating[]
     const angleStep = (2 * Math.PI) / sortedUnconnected.length;
     sortedUnconnected.forEach((node, index) => {
       let target = normalizeAngle(startAngle + index * angleStep);
-      target = adjustForMinSeparation(target, angleMap, 0.2);
+      target = adjustForMinSeparation(target, angleMap, 0.15);
       angleMap.set(node.id, target);
     });
   }
@@ -247,26 +309,53 @@ function calculateDeterministicAngles(opinions: Opinion[], ratings: ChatRating[]
   return angleMap;
 }
 
+/**
+ * Cluster-friendly collision resolution.
+ *
+ * Angular displacement is capped so the disagreement-derived angles survive;
+ * when the cap is not enough, nodes are nudged radially by a few pixels inside
+ * their own points ring instead of sliding far along the circle.
+ */
 function resolveCollisions(nodes: GraphNode[], config: LayoutConfig, pinnedIds: Set<string>): GraphNode[] {
   if (nodes.length < 2) return nodes;
   const VISUAL_NODE_SIZE = 26;
   const minDist = VISUAL_NODE_SIZE + 4;
+  /** Max angular deviation from the semantic angle (radians). */
+  const MAX_ANGULAR_DRIFT = 0.22;
+  /** Max radial deviation from the points ring (px). */
+  const MAX_RADIAL_DRIFT = 14;
 
   const sorted = [...nodes].map(n => ({ ...n }));
   sorted.sort((a, b) => a.id.localeCompare(b.id));
   const polar = sorted.map(n => {
     const dx = n.x - config.centerX;
     const dy = n.y - config.centerY;
+    const radius = Math.sqrt(dx * dx + dy * dy);
     return {
       id: n.id,
-      radius: Math.sqrt(dx * dx + dy * dy),
+      radius,
+      baseRadius: radius,
       angle: Math.atan2(dy, dx),
+      baseAngle: Math.atan2(dy, dx),
       pinned: pinnedIds.has(n.id),
     };
   });
 
-  for (let iter = 0; iter < 20; iter++) {
-    const deltas = new Array(polar.length).fill(0);
+  const clampDrift = (p: typeof polar[number]) => {
+    let drift = normalizeAngle(p.angle) - normalizeAngle(p.baseAngle);
+    if (drift > Math.PI) drift -= 2 * Math.PI;
+    if (drift < -Math.PI) drift += 2 * Math.PI;
+    if (drift > MAX_ANGULAR_DRIFT) p.angle = p.baseAngle + MAX_ANGULAR_DRIFT;
+    if (drift < -MAX_ANGULAR_DRIFT) p.angle = p.baseAngle - MAX_ANGULAR_DRIFT;
+    p.radius = Math.max(
+      p.baseRadius - MAX_RADIAL_DRIFT,
+      Math.min(p.baseRadius + MAX_RADIAL_DRIFT, p.radius),
+    );
+  };
+
+  for (let iter = 0; iter < 30; iter++) {
+    const angDeltas = new Array(polar.length).fill(0);
+    const radDeltas = new Array(polar.length).fill(0);
     let anyOverlap = false;
 
     for (let i = 0; i < polar.length; i++) {
@@ -284,17 +373,24 @@ function resolveCollisions(nodes: GraphNode[], config: LayoutConfig, pinnedIds: 
         anyOverlap = true;
         const overlap = minDist - dist;
         const avgR = Math.max((a.radius + b.radius) / 2, 1);
-        const angularPush = (overlap / avgR) * 0.5;
+        const angularPush = Math.min((overlap / avgR) * 0.5, MAX_ANGULAR_DRIFT * 0.35);
+        // Radial split: the outer node moves out, the inner node moves in.
+        const radialPush = Math.min(overlap * 0.35, 4);
+        const aIsOuter = a.radius > b.radius || (a.radius === b.radius && a.id < b.id);
 
         if (a.pinned && b.pinned) {
           // Both pinned — no push
         } else if (a.pinned) {
-          deltas[j] -= angularPush * 2;
+          angDeltas[j] -= angularPush * 2;
+          radDeltas[j] += aIsOuter ? -radialPush * 2 : radialPush * 2;
         } else if (b.pinned) {
-          deltas[i] += angularPush * 2;
+          angDeltas[i] += angularPush * 2;
+          radDeltas[i] += aIsOuter ? radialPush * 2 : -radialPush * 2;
         } else {
-          deltas[i] += angularPush;
-          deltas[j] -= angularPush;
+          angDeltas[i] += angularPush;
+          angDeltas[j] -= angularPush;
+          radDeltas[i] += aIsOuter ? radialPush : -radialPush;
+          radDeltas[j] += aIsOuter ? -radialPush : radialPush;
         }
       }
     }
@@ -302,9 +398,11 @@ function resolveCollisions(nodes: GraphNode[], config: LayoutConfig, pinnedIds: 
     if (!anyOverlap) break;
 
     for (let i = 0; i < polar.length; i++) {
-      if (!polar[i].pinned) {
-        polar[i].angle += deltas[i];
-      }
+      const p = polar[i];
+      if (p.pinned) continue;
+      p.angle += angDeltas[i];
+      p.radius = Math.max(0, p.radius + radDeltas[i]);
+      clampDrift(p);
     }
   }
 
@@ -316,9 +414,11 @@ function resolveCollisions(nodes: GraphNode[], config: LayoutConfig, pinnedIds: 
       ...n,
       x: config.centerX + Math.cos(p.angle) * p.radius,
       y: config.centerY + Math.sin(p.angle) * p.radius,
+      distanceToCenter: p.radius,
     };
   });
 }
+
 
 /**
  * Compute the total bridging points for a node.
