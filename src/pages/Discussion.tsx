@@ -38,7 +38,7 @@ import { useTranslation } from 'react-i18next';
  * Single-topic mobile UI. This build is locked to the Helsinki event topic (7mm9);
  * multi-topic swipe/loop logic has been removed.
  */
-export default function TT({ mode = 'real', variant = 'default' }: { mode?: 'test' | 'real'; variant?: 'default' | 'arrows' }) {
+export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
   useParams<{ topicId?: string }>(); // single-topic routes; params ignored
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -48,12 +48,12 @@ export default function TT({ mode = 'real', variant = 'default' }: { mode?: 'tes
   const chatManagerRef = useRef<FloatingChatManagerHandle>(null);
   const { topic, isLoading: topicLoading, config: eventConfig } = useEventTopic(mode);
   const { phase, gated: phaseGated } = useEventPhase(eventConfig);
+  const { arrowMode } = useArrowModePref();
   // Time phases apply to the real question only — /test stays open at all times.
-  // The arrows experiment (/secret) is fully open: no time lock, no gates.
-  const freeAccess = variant === 'arrows';
-  const gated = mode === 'real' && phaseGated && !freeAccess;
+  const gated = mode === 'real' && phaseGated;
   const activeTopicId = topic?.id ?? '';
   const activeTopicTitle = topic?.title ?? '...';
+
 
   const [helpOpen, setHelpOpen] = useState(false);
   const [tourStep, setTourStep] = useState(0);
