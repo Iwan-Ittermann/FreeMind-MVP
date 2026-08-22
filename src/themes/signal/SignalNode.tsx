@@ -181,19 +181,20 @@ export const SignalNode = memo(function SignalNode({
   onClick, onPointerDown, onMouseEnter, onMouseLeave,
 }: SignalNodeProps) {
   const { t } = useTranslation();
-  const shapeSet = ttMode
-    ? (token.isCurrentUser ? ZONE_SHAPE_TT_USER : ZONE_SHAPE_TT)
-    : ZONE_SHAPE;
-  // Top 5 always render as stars, whatever zone they sit in.
-  const starShape = ttMode && token.isCurrentUser ? CoreShapeRed : CoreShapeGold;
+  const shapeSet = ZONE_SHAPE;
   const showInactive = ttMode && token.isInactive && !token.isCurrentUser && !token.isBot;
+  // TT mode: every opinion is a star, brightness by highscore rank.
+  const TTStarShape = () => (
+    <TTStar rankRatio={token.rankRatio} isTop5={token.isTop5} isCurrentUser={token.isCurrentUser} />
+  );
   const Shape = token.isBot
     ? BotShape
     : showInactive
       ? InactiveShapeTT
-      : ttMode && token.isTop5
-        ? starShape
+      : ttMode
+        ? TTStarShape
         : (shapeSet[token.zone] ?? MiddleShape);
+
   const opacity = isDimmed ? 0.4 : token.isHidden ? 0.3 : showInactive ? 0.9 : 1;
 
   const isScaled = isHighlighted && !isDimmed;
