@@ -165,7 +165,6 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
   // Which blocking gate (if any) applies right now.
   // /test requires a passphrase login first, then the mandatory opinion.
   const gateVariant: 'countdown' | 'submit' | 'waiting' | 'login' | null = (() => {
-    if (freeAccess) return null;
     if (!ownOpinionKnown || !activeTopicId) return null;
     if (gated) {
       if (phase === 'prelaunch') return 'countdown';
