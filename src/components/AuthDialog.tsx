@@ -19,11 +19,13 @@ type AuthMode = "login" | "signup";
 interface AuthDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** When true, only existing passphrases can be used (no account creation). */
+  loginOnly?: boolean;
 }
 
-export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
+export function AuthDialog({ open, onOpenChange, loginOnly = false }: AuthDialogProps) {
   const { t } = useTranslation();
-  const [mode, setMode] = useState<AuthMode>("signup");
+  const [mode, setMode] = useState<AuthMode>(loginOnly ? "login" : "signup");
   const [passphrase, setPassphrase] = useState("");
   const [generatedPassphrase, setGeneratedPassphrase] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,10 +33,10 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    if (open && mode === "signup") {
+    if (open && mode === "signup" && !loginOnly) {
       setGeneratedPassphrase(generatePassphrase());
     }
-  }, [open, mode]);
+  }, [open, mode, loginOnly]);
 
   // Reset state when dialog closes
   useEffect(() => {
@@ -88,7 +90,7 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
     const password = passphraseToPassword(phraseToUse);
 
     try {
-      if (mode === "signup") {
+      if (mode === "signup" && !loginOnly) {
         const { error: signUpError } = await supabase.auth.signUp({
           email,
           password,
@@ -127,7 +129,7 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-2">
-          {mode === "signup" ? (
+          {mode === "signup" && !loginOnly ? (
             <div className="space-y-2">
               <label className="text-sm text-muted-foreground">{t("auth.yourSecretPassphrase")}</label>
               <p className="text-xs text-muted-foreground/70">{t("auth.passphraseHelp")}</p>
@@ -176,6 +178,7 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
             ) : mode === "signup" ? t("common.signUp") : t("common.logIn")}
           </Button>
 
+          {!loginOnly && (
           <p className="text-center text-sm">
             <button
               type="button"
@@ -185,6 +188,7 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
               {mode === "signup" ? t("auth.alreadyHavePassphrase") : t("auth.dontHavePassphrase")}
             </button>
           </p>
+          )}
         </form>
       </DialogContent>
     </Dialog>

@@ -132,10 +132,10 @@ export default function Admin() {
                 </p>
                 <Button onClick={() => setAuthDialogOpen(true)} className="w-full">
                   <LogIn className="w-4 h-4 mr-2" />
-                  Einloggen / Anmelden
+                  Einloggen
                 </Button>
               </div>
-              <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
+              <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} loginOnly />
             </motion.div>
           ) : !isUnlocked ? (
             /* State 2: Signed in, needs password */
