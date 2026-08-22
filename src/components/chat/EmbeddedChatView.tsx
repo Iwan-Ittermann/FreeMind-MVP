@@ -128,13 +128,18 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
   const messageContentMap = new Map<string, string>();
   dbMessages.forEach(msg => messageContentMap.set(msg.id, msg.content));
 
-  // Rating rounds: both sides' messages count; a round can be rated once.
+  // Rating rounds: both sides' messages count; a round can be rated once and
+  // unlocks only once both participants sent at least two messages.
   const totalMessages = dbMessages.length;
+  const ownMessages = dbMessages.filter((m) => m.isOwn).length;
+  const partnerMessages = totalMessages - ownMessages;
   const currentRound = currentRatingRound(totalMessages);
   const nextThreshold = nextRatingThreshold(totalMessages);
   const alreadyRatedRound =
     currentRound != null && myRatingRounds.some((r) => r.messageCount === currentRound);
-  const canRateRespect = !isBotChat && !readOnly && currentRound != null && !alreadyRatedRound;
+  const canRateRespect =
+    !isBotChat && !readOnly && currentRound != null && !alreadyRatedRound &&
+    bothSidesEngaged(ownMessages, partnerMessages);
 
   useEffect(() => {
     if (!chatId || !canRateRespect || currentRound == null) return;
