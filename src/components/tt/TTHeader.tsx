@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Bell, BellOff, Settings, X, SlidersHorizontal, MessageSquare, MessageCircle, Sparkles, CircleHelp, HelpCircle, LogOut, Mail, MoveUpRight } from 'lucide-react';
+import { Bell, BellOff, Settings, X, SlidersHorizontal, MessageSquare, MessageCircle, Sparkles, CircleHelp, HelpCircle, LogOut, Mail, MoveUpRight, Orbit } from 'lucide-react';
 
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AuthForm } from '@/components/AuthForm';
 import { TopicTitleWithLinks } from '@/components/TopicTitleWithLinks';
 import { useArrowModePref } from '@/hooks/useArrowModePref';
+import { useBackgroundPref } from '@/hooks/useBackgroundPref';
 import {
   NotificationFilters,
   getGlobalFilters,
@@ -57,6 +58,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
   const { t } = useTranslation();
   const { user } = useAuth();
   const { arrowMode, setArrowMode } = useArrowModePref();
+  const { bgStyle, setBgStyle } = useBackgroundPref();
   const [accountOpen, setAccountOpen] = useState(false);
   const [bellOpen, setBellOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -484,6 +486,29 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                   arrowMode ? 'bg-primary border-primary text-primary-foreground' : 'border-border'
                 }`}>
                   {arrowMode && (
+                    <svg className="w-2.5 h-2.5" viewBox="0 0 12 12" fill="none">
+                      <path d="M2 6l3 3 5-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </div>
+              </button>
+
+              <button
+                onClick={() => setBgStyle(bgStyle === 'cosmos' ? 'eye' : 'cosmos')}
+                className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left text-xs transition-colors ${
+                  bgStyle === 'cosmos' ? 'bg-primary/10 text-foreground' : 'text-muted-foreground hover:bg-muted/50'
+                }`}
+              >
+                <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${bgStyle === 'cosmos' ? 'text-primary' : 'text-muted-foreground'}`}>
+                  <Orbit className="w-3.5 h-3.5" />
+                </div>
+                <span className="flex-1">
+                  {t('tt.backgroundToggle', 'Hintergrund: Kosmos')}
+                </span>
+                <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
+                  bgStyle === 'cosmos' ? 'bg-primary border-primary text-primary-foreground' : 'border-border'
+                }`}>
+                  {bgStyle === 'cosmos' && (
                     <svg className="w-2.5 h-2.5" viewBox="0 0 12 12" fill="none">
                       <path d="M2 6l3 3 5-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>

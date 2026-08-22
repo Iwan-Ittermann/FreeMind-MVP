@@ -7,6 +7,7 @@ import { TTBackground } from './TTBackground';
 import { useTranslation } from 'react-i18next';
 import { GraphEdge, GraphNode } from '@/types/graph';
 import { useChatArrows } from '@/hooks/useChatArrows';
+import { useBackgroundPref } from '@/hooks/useBackgroundPref';
 
 interface TTScreenInnerProps {
   topicId: string;
@@ -41,6 +42,7 @@ function TTScreenInnerImpl({
   const { user } = useAuth();
   const { data, activeChats, messageAnimations } = useTopicData(topicId);
   const { data: chatArrows } = useChatArrows(topicId, arrowMode);
+  const { bgStyle } = useBackgroundPref();
 
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const [size, setSize] = useState<number>(0);
@@ -113,7 +115,7 @@ function TTScreenInnerImpl({
     >
       {/* Full-bleed background, sized so the blue ring spans the viewport width.
           Lives outside the graph wrapper so it isn't clipped. */}
-      <TTBackground hue={hue} viewportWidth={phoneViewportW} />
+      <TTBackground hue={hue} viewportWidth={phoneViewportW} variant={bgStyle} />
 
       {/* Zone labels are intentionally hidden in the Helsinki event build (introduced via help overlay). */}
 
