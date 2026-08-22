@@ -3,7 +3,7 @@ import { Send, Quote, Mic, Square, Ban, Unlock, Sparkles, X } from 'lucide-react
 import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { UnderstandingIcon } from '@/components/icons/UnderstandingIcon';
+import { RespectScale } from './RespectScale';
 import { ChatBubble } from './ChatBubble';
 import { TypingIndicator } from './TypingIndicator';
 import { useChatSession } from '@/hooks/useChatSession';
@@ -15,7 +15,7 @@ import { useUserBlocks } from '@/hooks/useUserBlocks';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { useVoiceRecorder } from '@/hooks/useVoiceRecorder';
-import { currentRatingRound, nextRatingThreshold } from '@/lib/rating-rounds';
+import { currentRatingRound, nextRatingThreshold, bothSidesEngaged } from '@/lib/rating-rounds';
 
 
 interface EmbeddedChatViewProps {
