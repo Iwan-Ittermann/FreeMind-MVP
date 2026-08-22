@@ -277,7 +277,9 @@ export const SignalNode = memo(function SignalNode({
           transition: 'transform 0.15s ease',
         }}
       >
+        <SharedDefs />
         <circle cx="20" cy="20" r="22" fill="transparent" />
+
         {/* Active (already discussing) — soft halo so it reads brighter than inactive nodes */}
         {ttMode && !showInactive && !token.isBot && !isDimmed && (
           <circle cx="20" cy="20" r="13" fill="none" stroke="#FFFFFF" strokeOpacity={0.22} strokeWidth={1} />
