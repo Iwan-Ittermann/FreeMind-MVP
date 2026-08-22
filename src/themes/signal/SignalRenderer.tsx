@@ -11,6 +11,8 @@ import { useHidePendingEdges } from '../ThemeContext';
 import { TTLandmarks, getTTLevelRadii } from '@/lib/tt-layout';
 import { SignalChatArrows } from './SignalChatArrows';
 import type { ChatArrow } from '@/hooks/useChatArrows';
+import { useBackgroundPref } from '@/hooks/useBackgroundPref';
+
 
 
 
