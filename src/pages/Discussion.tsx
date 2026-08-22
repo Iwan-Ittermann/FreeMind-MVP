@@ -32,6 +32,7 @@ import { TTNudgeHint } from '@/components/tt/TTNudgeHint';
 import { useNudgeStage } from '@/hooks/useNudgeStage';
 import { TTInstallHint } from '@/components/tt/TTInstallHint';
 import { useTranslation } from 'react-i18next';
+import { useArrowModePref } from '@/hooks/useArrowModePref';
 
 
 /**
