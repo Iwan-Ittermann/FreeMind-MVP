@@ -73,6 +73,18 @@ export function useDisagreementRating(
           });
         if (error) throw error;
       }
+
+      // Append-only history so points can be weighted by how long a value was held.
+      if (user?.id) {
+        const { error: evError } = await supabase.from('rating_events').insert({
+          topic_id: topicId,
+          rater_id: user.id,
+          kind: 'difference',
+          target_opinion_id: targetOpinionId,
+          value: disagreement,
+        });
+        if (evError) console.error('Failed to log rating event:', evError);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
