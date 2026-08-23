@@ -338,13 +338,16 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
         )}
 
 
-        {mode === 'real' && !gateVariant && (
+        {/* Poll also runs while the "waiting" gate is up: the user already
+            submitted their opinion, so the pre-wave question applies. */}
+        {mode === 'real' && (!gateVariant || gateVariant === 'waiting') && (
           <TTPolarizationPoll
             userId={user?.id}
             hasOwnOpinion={hasOwnOpinion}
             discussionEndAt={eventConfig?.discussionEndAt}
           />
         )}
+
 
         <TTOnboardingTour
           open={tourStep > 0 && !!activeTourStep}

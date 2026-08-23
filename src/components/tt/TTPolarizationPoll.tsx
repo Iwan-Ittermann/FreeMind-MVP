@@ -39,7 +39,9 @@ export function TTPolarizationPoll({
     return () => window.clearInterval(id);
   }, []);
 
-  const { data: done = [] } = useQuery({
+  const [saveError, setSaveError] = useState(false);
+
+  const { data: done, isLoading: doneLoading } = useQuery({
     queryKey: ['tt-polarization', userId],
     enabled: !!userId,
     queryFn: async () => {
@@ -52,6 +54,7 @@ export function TTPolarizationPoll({
     },
   });
 
+
   const isLastDay = useMemo(() => {
     const end = discussionEndAt?.getTime();
     if (!end) return false;
@@ -59,7 +62,9 @@ export function TTPolarizationPoll({
   }, [discussionEndAt, now]);
 
   const wave: PolarizationWave | null = useMemo(() => {
-    if (!userId || !hasOwnOpinion) return null;
+    // Never render before the already-answered waves are known — otherwise the
+    // poll flashes for one render and disappears again.
+    if (!userId || !hasOwnOpinion || !done) return null;
     if (isLastDay && !done.includes('post')) return 'post';
     if (!done.includes('pre')) return 'pre';
     return null;
@@ -72,9 +77,10 @@ export function TTPolarizationPoll({
     setMost(null);
     setLeastNA(false);
     setMostNA(false);
+    setSaveError(false);
   }, [wave]);
 
-  if (!wave || dismissedWaves.includes(wave)) return null;
+  if (doneLoading || !wave || dismissedWaves.includes(wave)) return null;
 
   const leastAnswered = leastNA || least !== null;
   const mostAnswered = mostNA || most !== null;
@@ -82,6 +88,7 @@ export function TTPolarizationPoll({
   const save = async () => {
     if (!leastAnswered || !mostAnswered || !userId) return;
     setSaving(true);
+    setSaveError(false);
     const { error } = await supabase.from('polarization_responses').insert({
       user_id: userId,
       wave,
@@ -89,11 +96,15 @@ export function TTPolarizationPoll({
       most_liked_score: mostNA ? null : most,
     });
     setSaving(false);
-    if (error) return;
+    if (error) {
+      setSaveError(true);
+      return;
+    }
     localStorage.setItem(dismissKey(wave), '1');
     setDismissedWaves((prev) => [...prev, wave]);
     queryClient.invalidateQueries({ queryKey: ['tt-polarization', userId] });
   };
+
 
   return (
     <div className="absolute inset-0 z-[60] flex items-center justify-center px-4 bg-background/80 backdrop-blur-sm">
@@ -122,11 +133,16 @@ export function TTPolarizationPoll({
           maxLabel={t('tt.polarization.veryPositive')}
         />
 
+        {saveError && (
+          <p className="mt-4 text-center text-xs text-destructive">{t('tt.polarization.saveError')}</p>
+        )}
+
         <div className="mt-6 flex justify-center">
           <Button size="sm" disabled={saving || !leastAnswered || !mostAnswered} onClick={save}>
             {saving ? '…' : t('tt.polarization.submit')}
           </Button>
         </div>
+
       </div>
     </div>
   );

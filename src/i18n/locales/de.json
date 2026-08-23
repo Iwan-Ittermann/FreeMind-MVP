@@ -766,7 +766,8 @@
       "veryNegative": "sehr negativ",
       "veryPositive": "sehr positiv",
       "submit": "Absenden",
-      "noAnswer": "keine Angabe"
+      "noAnswer": "keine Angabe",
+      "saveError": "Speichern fehlgeschlagen. Bitte erneut versuchen."
     },
     "help": {
       "opinionsList": "Liste aller Meinungen",

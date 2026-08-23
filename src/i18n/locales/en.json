@@ -766,7 +766,8 @@
       "veryNegative": "very negative",
       "veryPositive": "very positive",
       "submit": "Submit",
-      "noAnswer": "no answer"
+      "noAnswer": "no answer",
+      "saveError": "Could not save. Please try again."
     },
     "help": {
       "opinionsList": "List of all opinions",
