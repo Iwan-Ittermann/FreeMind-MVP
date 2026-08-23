@@ -18,7 +18,7 @@ export function interpolate(
 // content is admin-authored, not user-authored.
 function renderInline(text: string, keyBase: string): React.ReactNode[] {
   const out: React.ReactNode[] = []
-  const pattern = /\*\*([^*]+)\*\*|`([^`]+)`|\[([^\]]+)\]\(([^)]+)\)/g
+  const pattern = /\*\*([^*]+)\*\*|\*([^*\n]+)\*|`([^`]+)`|\[([^\]]+)\]\(([^)]+)\)/g
   let lastIndex = 0
   let i = 0
   let m: RegExpExecArray | null
@@ -30,6 +30,8 @@ function renderInline(text: string, keyBase: string): React.ReactNode[] {
     if (m[1] !== undefined) {
       out.push(React.createElement('strong', { key: k }, m[1]))
     } else if (m[2] !== undefined) {
+      out.push(React.createElement('em', { key: k }, m[2]))
+    } else if (m[3] !== undefined) {
       out.push(
         React.createElement(
           'code',
@@ -43,19 +45,19 @@ function renderInline(text: string, keyBase: string): React.ReactNode[] {
               fontSize: '0.95em',
             },
           },
-          m[2],
+          m[3],
         ),
       )
-    } else if (m[3] !== undefined && m[4] !== undefined) {
+    } else if (m[4] !== undefined && m[5] !== undefined) {
       out.push(
         React.createElement(
           'a',
           {
             key: k,
-            href: m[4],
+            href: m[5],
             style: { color: '#0a0a0a', textDecoration: 'underline' },
           },
-          m[3],
+          m[4],
         ),
       )
     }
@@ -69,7 +71,7 @@ function renderInline(text: string, keyBase: string): React.ReactNode[] {
 // prominent phrase box (used for the passphrase). Otherwise it's a normal
 // paragraph. A paragraph consisting only of a single link is rendered as a
 // button.
-export type BlockKind = 'text' | 'phrase' | 'button' | 'image'
+export type BlockKind = 'text' | 'phrase' | 'button' | 'image' | 'quote'
 
 export interface Block {
   kind: BlockKind
@@ -95,6 +97,9 @@ export function parseBody(body: string): Block[] {
   return paragraphs.map<Block>((p) => {
     const imageOnly = /^!\[([^\]]*)\]\(([^)]+)\)$/.exec(p)
     if (imageOnly) return { kind: 'image', alt: imageOnly[1], src: imageOnly[2] }
+    if (p.split('\n').every((l) => l.startsWith('>'))) {
+      return { kind: 'quote', text: p.split('\n').map((l) => l.replace(/^>\s?/, '')).join('\n') }
+    }
     const codeOnly = /^`([^`]+)`$/.exec(p)
     if (codeOnly) return { kind: 'phrase', phrase: codeOnly[1] }
     const linkOnly = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(p)
@@ -125,6 +130,23 @@ export function renderBlocks(body: string): React.ReactNode[] {
           },
         },
         b.phrase,
+      )
+    }
+    if (b.kind === 'quote') {
+      return React.createElement(
+        'div',
+        {
+          key: `b-${i}`,
+          style: {
+            borderLeft: '3px solid #ff5a1f',
+            padding: '2px 0 2px 14px',
+            margin: '0 0 18px',
+            fontSize: '16px',
+            lineHeight: 1.5,
+            color: '#3f3f46',
+          },
+        },
+        ...renderInline(b.text ?? '', `b-${i}`),
       )
     }
     if (b.kind === 'image') {
