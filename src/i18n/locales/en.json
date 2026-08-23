@@ -90,6 +90,8 @@
     "submitOpinionRequired": "You need to submit your own opinion first before chatting with others.",
     "ratingSaved": "Rating saved!",
     "failedToSaveRating": "Failed to save rating",
+    "sendFailed": "Couldn't send. Please try again.",
+
     "theirOpinion": "Other opinion",
     "yourOpinion": "Your opinion"
   },
