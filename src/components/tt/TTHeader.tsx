@@ -173,7 +173,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
   };
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
+    await supabase.auth.signOut({ scope: 'local' });
     setAccountOpen(false);
     setShowLogin(false);
     toast.success(t('config.signedOut', 'Signed out'));
