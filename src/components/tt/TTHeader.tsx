@@ -203,10 +203,60 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
     setFilters((f) => {
       const next = { ...f, [key]: !f[key] };
       setGlobalFilters(next);
+      void syncPushFilters(next);
       window.dispatchEvent(new CustomEvent('tt:subscription-changed'));
       return next;
     });
   };
+
+  // ── Web Push (installed home-screen app) ──
+  const [pushStatus, setPushStatus] = useState<'unsupported' | 'blocked' | 'off' | 'on'>('off');
+  const [pushBusy, setPushBusy] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    getPushStatus().then((s) => {
+      if (!cancelled) setPushStatus(s);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  const togglePush = async () => {
+    setPushBusy(true);
+    try {
+      if (pushStatus === 'on') {
+        await unsubscribeFromPush();
+        setPushStatus('off');
+        toast.success(t('tt.push.off', 'Push-Benachrichtigungen aus'));
+        return;
+      }
+      const result = await subscribeToPush();
+      if (result === 'subscribed') {
+        setPushStatus('on');
+        await syncPushFilters(filters);
+        toast.success(t('tt.push.on', 'Push-Benachrichtigungen aktiviert'));
+      } else if (result === 'needs-install') {
+        toast.error(
+          t('tt.push.needsInstall', 'Auf dem iPhone zuerst über „Teilen → Zum Home-Bildschirm“ installieren.'),
+        );
+      } else if (result === 'needs-login') {
+        toast.error(t('tt.push.needsLogin', 'Bitte melde dich an, um Push zu aktivieren.'));
+      } else if (result === 'denied') {
+        toast.error(t('tt.push.denied', 'Benachrichtigungen sind im Gerät blockiert.'));
+      } else if (result === 'blocked') {
+        toast.error(t('tt.push.previewHint', 'Push funktioniert nur in der veröffentlichten App.'));
+      } else if (result === 'unsupported') {
+        toast.error(t('tt.push.unsupported', 'Dieses Gerät unterstützt kein Web-Push.'));
+      } else {
+        toast.error(t('tt.push.error', 'Push konnte nicht aktiviert werden.'));
+      }
+    } finally {
+      setPushBusy(false);
+    }
+  };
+
 
   return (
     <>
