@@ -27,7 +27,7 @@ Ziel: Passphrase nur beim ersten Mal pro Gerät.
 ## 4. Benachrichtigungen: Brückenpunkte statt neuer Nachrichten
 
 - Neue Benachrichtigung „Du hast X Brückenpunkte erhalten" bei **jeder** Bewertung, die jemand für die eigene Meinung abgibt (mit Link in den betreffenden Chat).
-- Benachrichtigungen vom Typ „neue Nachricht" werden nicht mehr erzeugt — neue Nachrichten sind bereits über die Unread-Badges in der Chatliste sichtbar. Das gilt auch für Push und die Tages-Digest-Mail.
+- Benachrichtigungen vom Typ „neue Nachricht" werden nicht mehr erzeugt — neue Nachrichten sind bereits über die Unread-Badges in der Chatliste sichtbar. Das gilt NICHT  für Push und die Tages-Digest-Mail.
 - Der Glocken-Filter „Neue Nachrichten" wird durch „Brückenpunkte" ersetzt.
 
 ## 5. Warum der Knoten mit 15 Punkten am Rand sitzt

@@ -19,7 +19,7 @@ export async function loginWithPassphrase(raw: string): Promise<PassphraseLoginR
   const phrase = raw.trim().toLowerCase();
   if (!isValidPassphrase(phrase)) return { ok: false, reason: 'invalid-format' };
   try {
-    await supabase.auth.signOut();
+    await supabase.auth.signOut({ scope: 'local' });
     const { error } = await supabase.auth.signInWithPassword({
       email: passphraseToEmail(phrase),
       password: passphraseToPassword(phrase),

@@ -6,7 +6,9 @@ import { supabase } from '@/integrations/supabase/client';
 
 export type PolarizationWave = 'pre' | 'post';
 
-const dismissKey = (wave: PolarizationWave) => `tt:polarization-dismissed:${wave}`;
+// v2: earlier builds had a "später" button that stored a permanent dismissal.
+// Versioning the key makes the poll reappear for everyone without a DB answer.
+const dismissKey = (wave: PolarizationWave) => `tt:polarization-dismissed:v2:${wave}`;
 
 /**
  * Two-item affective polarization poll (0–100), no default values.

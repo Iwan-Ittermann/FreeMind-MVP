@@ -704,6 +704,8 @@
       "newMessage": "Neue Nachrichten",
       "newMessageDesc": "Wenn du eine Chat-Nachricht erhältst",
       "newChat": "Neue Gespräche",
+      "bridgePoints": "Brückenpunkte",
+      "bridgePointsDesc": "Wenn du Brückenpunkte für deine Meinung erhältst",
       "newChatDesc": "Wenn jemand ein Gespräch mit dir beginnt",
       "newTopic": "Neue Themen",
       "newTopicDesc": "Wenn ein neues Diskussionsthema hinzugefügt wird",
@@ -712,7 +714,7 @@
       "comingSoon": "bald"
     },
     "scrollHint": "Wische für mehr Themen",
-    "respectUnlockHint": "Nach 2 Nachrichten von beiden freigeschaltet",
+    "respectUnlockHint": "Nach je einer Nachricht von beiden freigeschaltet",
     "restartTour": "Anleitung starten",
     "backgroundToggle": "Hintergrund: Kosmos",
     "arrowModeToggle": "Chats als Pfeile zeigen",

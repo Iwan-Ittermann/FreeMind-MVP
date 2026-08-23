@@ -12,11 +12,12 @@ const VAPID_SUBJECT = Deno.env.get('VAPID_SUBJECT') ?? 'mailto:info@freemind.cha
 
 webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
 
-type PrefKey = 'new_opinion' | 'new_message' | 'new_chat';
+type PrefKey = 'new_opinion' | 'new_message' | 'new_chat' | 'new_bridge_points';
 
 function prefKeyForType(type: string): PrefKey | null {
   if (type === 'opinion' || type === 'new_opinion') return 'new_opinion';
   if (type === 'message' || type === 'new_message') return 'new_message';
+  if (type === 'bridge_points') return 'new_bridge_points';
   if (type === 'chat' || type === 'new_chat' || type === 'chat_request' || type === 'request_accepted') {
     return 'new_chat';
   }
@@ -72,7 +73,7 @@ Deno.serve(async (req) => {
   // Preferences — missing row means "all on".
   const { data: prefs } = await supabase
     .from('push_prefs')
-    .select('enabled, new_opinion, new_message, new_chat')
+    .select('enabled, new_opinion, new_message, new_chat, new_bridge_points')
     .eq('user_id', userId)
     .maybeSingle();
 

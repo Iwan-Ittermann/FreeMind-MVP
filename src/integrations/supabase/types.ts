@@ -885,6 +885,7 @@ export type Database = {
       push_prefs: {
         Row: {
           enabled: boolean
+          new_bridge_points: boolean
           new_chat: boolean
           new_message: boolean
           new_opinion: boolean
@@ -893,6 +894,7 @@ export type Database = {
         }
         Insert: {
           enabled?: boolean
+          new_bridge_points?: boolean
           new_chat?: boolean
           new_message?: boolean
           new_opinion?: boolean
@@ -901,6 +903,7 @@ export type Database = {
         }
         Update: {
           enabled?: boolean
+          new_bridge_points?: boolean
           new_chat?: boolean
           new_message?: boolean
           new_opinion?: boolean

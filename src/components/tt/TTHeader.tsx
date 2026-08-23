@@ -53,6 +53,8 @@ const FILTER_ITEMS: {
 }[] = [
   { key: 'newOpinion', iconEl: <Bell className="w-3.5 h-3.5" />, labelKey: 'tt.notifFilter.newOpinion' },
   { key: 'newMessage', iconEl: <MessageSquare className="w-3.5 h-3.5" />, labelKey: 'tt.notifFilter.newMessage' },
+  { key: 'bridgePoints', iconEl: <Sparkles className="w-3.5 h-3.5" />, labelKey: 'tt.notifFilter.bridgePoints' },
+
   { key: 'newChat', iconEl: <MessageCircle className="w-3.5 h-3.5" />, labelKey: 'tt.notifFilter.newChat' },
   { key: 'newHighlight', iconEl: <Sparkles className="w-3.5 h-3.5" />, labelKey: 'tt.notifFilter.newHighlight', disabled: true },
 ];
@@ -171,7 +173,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
   };
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
+    await supabase.auth.signOut({ scope: 'local' });
     setAccountOpen(false);
     setShowLogin(false);
     toast.success(t('config.signedOut', 'Signed out'));

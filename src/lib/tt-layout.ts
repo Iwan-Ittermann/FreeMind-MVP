@@ -499,12 +499,12 @@ export function calculateTTLayout(
 
   const angleMap = calculateDeterministicAngles(opinions, ratings);
 
-  // Rank-based radial positioning for nodes with positive totals.
-  //  - Sort by (total desc, id asc) — deterministic.
-  //  - Rank 0 (highest) sits at center; last positive rank sits near blueR.
-  //  - This naturally dampens low-score nodes: a node with 10% of the top
-  //    score is not automatically pushed to 90% of the way out — it's placed
-  //    by its ordinal position among the positive-score cohort.
+  // Score-based radial positioning for nodes with positive totals.
+  //  - Radius comes from the ratio of a node's points to the current top score,
+  //    NOT from its ordinal rank. Rank-based placement pushed the runner-up to
+  //    the outermost ring whenever only two scores existed.
+  //  - The best node sits at the center; nodes with points always stay clearly
+  //    inside the outermost ring, which is reserved for "no points yet".
   const positives = idSorted
     .filter(op => {
       const t = totals.get(op.id)!;
@@ -516,23 +516,15 @@ export function calculateTTLayout(
       if (tb !== ta) return tb - ta;
       return a.id.localeCompare(b.id);
     });
-  // (positives.length retained implicitly via groupCount below)
-  // Tie-aware radial rank: nodes sharing the same total sit at the same radius,
-  // then get spread angularly by resolveCollisions instead of being stretched
-  // across the whole graph.
-  const distinctTotals: number[] = [];
-  positives.forEach((op) => {
-    const t = totals.get(op.id)!.total;
-    if (distinctTotals.length === 0 || distinctTotals[distinctTotals.length - 1] !== t) {
-      distinctTotals.push(t);
-    }
-  });
-  const groupIndexOf = new Map<string, number>();
-  positives.forEach((op) => {
-    const t = totals.get(op.id)!.total;
-    groupIndexOf.set(op.id, distinctTotals.indexOf(t));
-  });
-  const groupCount = distinctTotals.length;
+
+  /** Radial fraction (0 = center, 1 = outermost visible ring) for a score. */
+  const fracForTotal = (total: number): number => {
+    const ratio = Math.min(1, Math.max(0, total / safeMax));
+    // Soft curve: mid scores land mid-field instead of near the rim.
+    // 0.85 keeps scoring nodes off the zero-point ring.
+    return Math.pow(1 - ratio, 0.8) * 0.85;
+  };
+
 
   // Outer-ring rendering.
   //
@@ -566,20 +558,18 @@ export function calculateTTLayout(
       zone = 'extreme';
       isInactive = true;
     } else {
-      // Positive band — tie-aware group-based proximity.
-      // All nodes sharing the same total sit at the same radius; the collision
-      // resolver then spreads them angularly. This avoids the previous
-      // behaviour where tied nodes were split between center and fringe.
-      const gi = groupIndexOf.get(op.id) ?? 0;
-      const frac = groupCount <= 1 ? 0 : gi / (groupCount - 1);
+      // Positive band — radius from the points/top-score ratio. Nodes sharing a
+      // total share a radius; the collision resolver spreads them angularly.
+      const frac = fracForTotal(total);
       const baseR = frac * maxVisibleR;
       // Top-tied cohort needs a small orbit — angular collision push at r=0
       // moves nodes by ~0, so ties would stack on the exact center.
-      const isTopGroup = gi === 0;
+      const isTopGroup = total >= maxTotal && maxTotal > 0;
       r = isTopGroup && topIds.length > 1 ? Math.max(baseR, topOrbitRadius) : baseR;
-      level = gi === 0 ? 10 : gi < groupCount / 2 ? 7 : 4;
+      level = frac <= 0.05 ? 10 : frac < 0.5 ? 7 : 4;
       zone = r <= landmarks.coreR ? 'respectful' : 'moderate';
     }
+
 
     const angle = angleMap.get(op.id) || 0;
     return {

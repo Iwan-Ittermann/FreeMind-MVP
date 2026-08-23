@@ -704,6 +704,8 @@
       "newMessage": "New messages",
       "newMessageDesc": "When you receive a chat message",
       "newChat": "New conversations",
+      "bridgePoints": "Bridging points",
+      "bridgePointsDesc": "When you receive bridging points for your opinion",
       "newChatDesc": "When someone starts chatting with you",
       "newTopic": "New topics",
       "newTopicDesc": "When a new discussion topic is added",
@@ -712,7 +714,7 @@
       "comingSoon": "soon"
     },
     "scrollHint": "Swipe for more topics",
-    "respectUnlockHint": "Unlocks after 2 messages from each side",
+    "respectUnlockHint": "Unlocks after one message from each side",
     "restartTour": "Start guide",
     "backgroundToggle": "Background: Cosmos",
     "arrowModeToggle": "Show chats as arrows",
