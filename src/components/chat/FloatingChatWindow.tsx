@@ -48,7 +48,7 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
   const { partnerTyping, setTyping } = useTypingIndicator(chatId);
   const { isBlocked, isBlockedByOther } = useUserBlocks(chatId, theirUserId);
 
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState(() => (readOnly ? '' : readDraft(theirOpinionId)));
   const [isRatingOpen, setIsRatingOpen] = useState(false);
   const [empathy, setEmpathy] = useState<number | null>(null);
   const [initialized, setInitialized] = useState(false);
@@ -63,8 +63,14 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
     }
   }, [existingRating, initialized]);
 
+  // Restore the per-chat draft when switching conversations.
+  useEffect(() => {
+    setInputValue(readOnly ? '' : readDraft(theirOpinionId));
+  }, [theirOpinionId, readOnly]);
+
   const handleInputChange = useCallback((value: string) => {
     setInputValue(value);
+    writeDraft(theirOpinionId, value);
     if (value.trim()) {
       setTyping(true);
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
@@ -72,18 +78,21 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
     } else {
       setTyping(false);
     }
-  }, [setTyping]);
+  }, [setTyping, theirOpinionId]);
 
   const handleSend = async () => {
     if (!inputValue.trim() || isSending) return;
     const content = inputValue;
     setInputValue('');
+    writeDraft(theirOpinionId, '');
     setTyping(false);
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     try {
       await sendMessage(content);
     } catch {
       setInputValue(content);
+      writeDraft(theirOpinionId, content);
+      toast.error(t('chat.sendFailed', 'Senden fehlgeschlagen. Bitte erneut versuchen.'));
     }
   };
 
@@ -98,12 +107,15 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
     }
   };
 
+  const scrollToEnd = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, []);
+
   // Auto-scroll
   useEffect(() => {
-    if (!isRatingOpen) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [dbMessages, isRatingOpen]);
+    if (!isRatingOpen) scrollToEnd();
+  }, [dbMessages, isRatingOpen, scrollToEnd]);
+
 
   const displayMessages = [
     ...(theirOpinion ? [{
