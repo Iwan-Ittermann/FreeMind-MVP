@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Bell, BellOff, Settings, X, SlidersHorizontal, MessageSquare, MessageCircle, Sparkles, CircleHelp, HelpCircle, LogOut, Mail, MoveUpRight, Orbit } from 'lucide-react';
+import { Bell, BellOff, Settings, X, SlidersHorizontal, MessageSquare, MessageCircle, Sparkles, CircleHelp, HelpCircle, LogOut, Mail, MoveUpRight, Orbit, Smartphone } from 'lucide-react';
 
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
@@ -18,6 +18,14 @@ import {
   getPrefs,
   setPrefs,
 } from '@/lib/tt-notification-prefs';
+import {
+  getPushStatus,
+  subscribeToPush,
+  unsubscribeFromPush,
+  syncPushFilters,
+  needsInstallFirst,
+} from '@/lib/web-push';
+
 
 export interface TTNotification {
   id: string;
@@ -203,10 +211,60 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
     setFilters((f) => {
       const next = { ...f, [key]: !f[key] };
       setGlobalFilters(next);
+      void syncPushFilters(next);
       window.dispatchEvent(new CustomEvent('tt:subscription-changed'));
       return next;
     });
   };
+
+  // ── Web Push (installed home-screen app) ──
+  const [pushStatus, setPushStatus] = useState<'unsupported' | 'blocked' | 'off' | 'on'>('off');
+  const [pushBusy, setPushBusy] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    getPushStatus().then((s) => {
+      if (!cancelled) setPushStatus(s);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  const togglePush = async () => {
+    setPushBusy(true);
+    try {
+      if (pushStatus === 'on') {
+        await unsubscribeFromPush();
+        setPushStatus('off');
+        toast.success(t('tt.push.off', 'Push-Benachrichtigungen aus'));
+        return;
+      }
+      const result = await subscribeToPush();
+      if (result === 'subscribed') {
+        setPushStatus('on');
+        await syncPushFilters(filters);
+        toast.success(t('tt.push.on', 'Push-Benachrichtigungen aktiviert'));
+      } else if (result === 'needs-install') {
+        toast.error(
+          t('tt.push.needsInstall', 'Auf dem iPhone zuerst über „Teilen → Zum Home-Bildschirm“ installieren.'),
+        );
+      } else if (result === 'needs-login') {
+        toast.error(t('tt.push.needsLogin', 'Bitte melde dich an, um Push zu aktivieren.'));
+      } else if (result === 'denied') {
+        toast.error(t('tt.push.denied', 'Benachrichtigungen sind im Gerät blockiert.'));
+      } else if (result === 'blocked') {
+        toast.error(t('tt.push.previewHint', 'Push funktioniert nur in der veröffentlichten App.'));
+      } else if (result === 'unsupported') {
+        toast.error(t('tt.push.unsupported', 'Dieses Gerät unterstützt kein Web-Push.'));
+      } else {
+        toast.error(t('tt.push.error', 'Push konnte nicht aktiviert werden.'));
+      }
+    } finally {
+      setPushBusy(false);
+    }
+  };
+
 
   return (
     <>
@@ -372,7 +430,46 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
               )}
             </AnimatePresence>
 
+            {pushStatus !== 'unsupported' && (
+              <div className="px-3 py-2 border-b border-border/30">
+                <button
+                  onClick={togglePush}
+                  disabled={pushBusy || pushStatus === 'blocked'}
+                  className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left text-xs transition-colors ${
+                    pushStatus === 'on' ? 'bg-primary/10 text-foreground' : 'text-muted-foreground hover:bg-muted/50'
+                  } ${pushStatus === 'blocked' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${pushStatus === 'on' ? 'text-primary' : 'text-muted-foreground'}`}>
+                    <Smartphone className="w-3.5 h-3.5" />
+                  </div>
+                  <span className="flex-1">
+                    {t('tt.push.toggle', 'Push-Benachrichtigungen aufs Handy')}
+                  </span>
+                  <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
+                    pushStatus === 'on' ? 'bg-primary border-primary text-primary-foreground' : 'border-border'
+                  }`}>
+                    {pushStatus === 'on' && (
+                      <svg className="w-2.5 h-2.5" viewBox="0 0 12 12" fill="none">
+                        <path d="M2 6l3 3 5-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
+                  </div>
+                </button>
+                {pushStatus === 'blocked' && (
+                  <p className="px-2 pt-1 text-[10px] text-muted-foreground">
+                    {t('tt.push.previewHint', 'Push funktioniert nur in der veröffentlichten App.')}
+                  </p>
+                )}
+                {pushStatus !== 'blocked' && needsInstallFirst() && (
+                  <p className="px-2 pt-1 text-[10px] text-muted-foreground">
+                    {t('tt.push.iosHint', 'iPhone: zuerst über „Teilen → Zum Home-Bildschirm“ installieren, dann hier aktivieren.')}
+                  </p>
+                )}
+              </div>
+            )}
+
             <div className="px-3 py-2 border-b border-border/30">
+
               <button
                 onClick={toggleReportOptIn}
                 disabled={reportBusy}

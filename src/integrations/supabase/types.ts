@@ -882,6 +882,66 @@ export type Database = {
         }
         Relationships: []
       }
+      push_prefs: {
+        Row: {
+          enabled: boolean
+          new_chat: boolean
+          new_message: boolean
+          new_opinion: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          enabled?: boolean
+          new_chat?: boolean
+          new_message?: boolean
+          new_opinion?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          enabled?: boolean
+          new_chat?: boolean
+          new_message?: boolean
+          new_opinion?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          last_success_at: string | null
+          p256dh: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          last_success_at?: string | null
+          p256dh: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          last_success_at?: string | null
+          p256dh?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       question_submissions: {
         Row: {
           ai_draft: string | null
@@ -1632,6 +1692,7 @@ export type Database = {
         Args: { _text: string; _topic_id: string }
         Returns: string
       }
+      verify_push_trigger_token: { Args: { _token: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
