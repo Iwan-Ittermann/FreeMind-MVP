@@ -50,13 +50,16 @@ export function useStoredNotifications(topicId?: string | null) {
     }
     let query = supabase
       .from('notifications')
-      .select('id, type, title, body, link, chat_id, topic_id, read_at, created_at');
+      .select('id, type, title, body, link, chat_id, topic_id, read_at, created_at')
+      // New chat messages are already surfaced via unread badges in the chat list.
+      .neq('type', 'message');
     // Scope to the current topic (general notifications have no topic).
     if (topicId) query = query.or(`topic_id.eq.${topicId},topic_id.is.null`);
     const { data } = await query.order('created_at', { ascending: false }).limit(100);
     setNotifications((data as StoredNotification[]) ?? []);
     setLoading(false);
   }, [user, topicId]);
+
 
   useEffect(() => {
     void load();
@@ -77,7 +80,9 @@ export function useStoredNotifications(topicId?: string | null) {
         },
         (payload) => {
           const row = payload.new as StoredNotification;
+          if (row.type === 'message') return;
           if (topicId && row.topic_id && row.topic_id !== topicId) return;
+
           setNotifications((prev) =>
             prev.some((n) => n.id === row.id) ? prev : [row, ...prev].slice(0, 100),
           );
