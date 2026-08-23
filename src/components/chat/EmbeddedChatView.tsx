@@ -2,8 +2,10 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Send, Quote, Mic, Square, Ban, Unlock, Sparkles, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { ChatComposer } from './ChatComposer';
+import { readDraft, writeDraft } from '@/hooks/useChatDrafts';
 import { RespectScale } from './RespectScale';
+
 import { ChatBubble } from './ChatBubble';
 import { TypingIndicator } from './TypingIndicator';
 import { useChatSession } from '@/hooks/useChatSession';
@@ -50,16 +52,21 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
   
   const { isRecording, duration, startRecording, stopRecording } = useVoiceRecorder();
 
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState(() => (readOnly ? '' : readDraft(theirOpinionId)));
   const [empathy, setEmpathy] = useState<number | null>(null);
   const [replyingTo, setReplyingTo] = useState<{ id: string; content: string; isOwn: boolean } | null>(null);
   const [showUnlockSpark, setShowUnlockSpark] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Restore the per-chat draft when switching conversations.
+  useEffect(() => {
+    setInputValue(readOnly ? '' : readDraft(theirOpinionId));
+  }, [theirOpinionId, readOnly]);
 
   const handleInputChange = useCallback((value: string) => {
     setInputValue(value);
+    writeDraft(theirOpinionId, value);
     if (value.trim()) {
       setTyping(true);
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
@@ -67,13 +74,14 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
     } else {
       setTyping(false);
     }
-  }, [setTyping]);
+  }, [setTyping, theirOpinionId]);
 
   const handleSend = async () => {
     if (!inputValue.trim() || isSending) return;
     const content = inputValue;
     const replyId = replyingTo?.id ?? null;
     setInputValue('');
+    writeDraft(theirOpinionId, '');
     setReplyingTo(null);
     setTyping(false);
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
@@ -81,8 +89,11 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
       await sendMessage(content, replyId);
     } catch {
       setInputValue(content);
+      writeDraft(theirOpinionId, content);
+      toast.error(t('chat.sendFailed', 'Senden fehlgeschlagen. Bitte erneut versuchen.'));
     }
   };
+
 
   const handleVoiceToggle = async () => {
     if (isRecording) {
@@ -116,9 +127,14 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
     }
   };
 
-  useEffect(() => {
+  const scrollToEnd = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [dbMessages]);
+  }, []);
+
+  useEffect(() => {
+    scrollToEnd();
+  }, [dbMessages, scrollToEnd]);
+
 
   const handleReply = useCallback((msg: { id: string; content: string; isOwn: boolean }) => {
     setReplyingTo(msg);
@@ -342,37 +358,17 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
             </Button>
           </div>
         ) : (
-          <div className="flex items-center gap-1.5">
-            <div className="relative min-w-0 flex-1">
-              <Input
-                value={inputValue}
-                onChange={(e) => handleInputChange(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-                placeholder={t('floatingChat.typeMessage')}
-                className="h-8 text-xs bg-background text-foreground border-border"
-                disabled={isSending}
-              />
-            </div>
-            {inputValue.trim() ? (
-              <Button
-                onClick={handleSend}
-                disabled={isSending}
-                size="icon"
-                className="h-8 w-8 shrink-0"
-              >
-                <Send className="h-3.5 w-3.5" />
-              </Button>
-            ) : (
-              <Button
-                onClick={handleVoiceToggle}
-                size="icon"
-                className="h-8 w-8 shrink-0"
-              >
-                <Mic className="h-3.5 w-3.5" />
-              </Button>
-            )}
-          </div>
+          <ChatComposer
+            value={inputValue}
+            onChange={handleInputChange}
+            onSend={handleSend}
+            isSending={isSending}
+            placeholder={t('floatingChat.typeMessage')}
+            onVoiceToggle={handleVoiceToggle}
+            onHeightChange={scrollToEnd}
+          />
         )}
+
       </div>
     </div>
   );
