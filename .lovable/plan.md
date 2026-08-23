@@ -1,24 +1,31 @@
-# Kampagnen-Mails näher am Zieltermin versenden
+# Notfall-Fix: App liest und schreibt keine Daten mehr
 
-## Ausgangslage (geprüft)
+## Was kaputt ist (bestätigt)
 
-- Die Mail "Start today!" (`campaign-start`) ist fällig ab 00:01 Berlin (22:01 UTC).
-- Der Versand-Job läuft nur alle 15 Minuten (zu :00, :15, :30, :45). Der erste Lauf nach der Fälligkeit ist 00:15 Berlin — die Mail geht also ca. 14 Minuten zu spät raus.
-- Empfängerkreis: 38 bestätigte Anmeldungen, bisher 0 Sends für diese Kampagne. Der Job läuft fehlerfrei.
+Ein Live-Test gegen die Datenbank mit dem App-Schlüssel gibt sofort Fehler:
 
-## Vorschlag
+- Meinungen laden: `permission denied for function has_role`
+- Chats laden: `permission denied for function is_chat_participant`
 
-Den Takt des Versand-Jobs von 15 auf 5 Minuten verkürzen. Damit gehen alle datierten Kampagnen künftig maximal ~5 Minuten nach ihrem Zieltermin raus (heute Nacht: 00:05 statt 00:15).
+Ursache: beim letzten Security-Durchgang wurde `EXECUTE` für die Rollen `anon` und `authenticated` auf internen Hilfsfunktionen entzogen. Diese Funktionen werden aber **innerhalb der RLS-Policies** aufgerufen, und Policies laufen mit der Rolle des Nutzers. Dadurch schlägt jede Abfrage auf Tabellen mit solchen Policies komplett fehl — daher keine Nodes im Admin-Panel, kein Graph, und "Posten" bricht ab.
 
-Zusätzlich heute Nacht nichts manuell auslösen — der Job übernimmt den Versand automatisch.
+Betroffene Funktionen (in Policies referenziert, aber ohne Rechte für Client-Rollen):
+`has_role`, `is_chat_participant`, `can_view_opinion`, `event_setting`, `is_real_event_topic`, `fake_node_user_id`.
 
-## Auswirkungen
+Betroffene Tabellen u.a.: `opinions`, `chats`, `chat_messages`, `chat_message_reactions`, `chat_ratings`, `chat_requests`, `opinion_ratings`, `opinion_ips`, `app_settings`, `audit_logs`, `court_cases`, `fake_nodes`.
 
-- Keine doppelten Mails: pro Empfänger und Kampagne wird der Versand protokolliert, bereits versendete Empfänger werden übersprungen.
-- Nudge-Mails bleiben unverändert (eigene 24-Stunden-Sperre pro Empfänger).
-- Keine Änderungen an Texten, Empfängerlogik oder App-Oberfläche.
+## Fix (eine Migration, sofort)
 
-## Technische Details
+1. `GRANT EXECUTE` auf die oben genannten Hilfsfunktionen an `anon` und `authenticated` zurückgeben. Das ist sicher: alle sind `SECURITY DEFINER` mit fixem `search_path` und geben nur boolesche/Einzelwerte über die eigene `auth.uid()` bzw. Settings zurück — sie öffnen keine Daten, sie sind die Bedingung *für* die Policies.
+2. Danach den kompletten Funktionsbestand prüfen: jede Funktion, die in einer RLS-Policy vorkommt oder direkt vom Client per RPC gerufen wird, muss Rechte für die passende Client-Rolle haben. Fehlende Fälle in derselben Migration nachziehen (z.B. `get_time_weighted_ratings`, falls vom Client genutzt).
 
-- Zeitplan des geplanten Jobs `send-campaign-emails` von `*/15 * * * *` auf `*/5 * * * *` ändern (Neuplanung des bestehenden Jobs, gleiche Aufruf-URL und Header).
-- Keine Code- oder Schema-Änderungen nötig; `supabase/functions/_shared/campaigns.ts` bleibt unverändert.
+## Verifikation vor Abschluss
+
+- Lesetest mit App-Schlüssel: `opinions`, `chats`, `chat_messages` liefern Daten statt `42501`.
+- Angemeldeter End-to-End-Test im Browser auf `/go`: Meinung posten funktioniert, Graph zeigt Nodes, Chatliste lädt.
+- Admin-Panel: Node-Liste ist wieder gefüllt.
+- Security-Linter laufen lassen, damit keine neue echte Lücke entsteht.
+
+## Nachtrag zur Security-Memory
+
+Regel festhalten: `EXECUTE` für `anon`/`authenticated` darf niemals von Funktionen entzogen werden, die in RLS-Policies vorkommen — der Entzug bricht die gesamte Tabelle, statt sie zu schützen.
