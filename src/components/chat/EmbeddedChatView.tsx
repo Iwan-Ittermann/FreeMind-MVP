@@ -342,37 +342,17 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
             </Button>
           </div>
         ) : (
-          <div className="flex items-center gap-1.5">
-            <div className="relative min-w-0 flex-1">
-              <Input
-                value={inputValue}
-                onChange={(e) => handleInputChange(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-                placeholder={t('floatingChat.typeMessage')}
-                className="h-8 text-xs bg-background text-foreground border-border"
-                disabled={isSending}
-              />
-            </div>
-            {inputValue.trim() ? (
-              <Button
-                onClick={handleSend}
-                disabled={isSending}
-                size="icon"
-                className="h-8 w-8 shrink-0"
-              >
-                <Send className="h-3.5 w-3.5" />
-              </Button>
-            ) : (
-              <Button
-                onClick={handleVoiceToggle}
-                size="icon"
-                className="h-8 w-8 shrink-0"
-              >
-                <Mic className="h-3.5 w-3.5" />
-              </Button>
-            )}
-          </div>
+          <ChatComposer
+            value={inputValue}
+            onChange={handleInputChange}
+            onSend={handleSend}
+            isSending={isSending}
+            placeholder={t('floatingChat.typeMessage')}
+            onVoiceToggle={handleVoiceToggle}
+            onHeightChange={scrollToEnd}
+          />
         )}
+
       </div>
     </div>
   );
