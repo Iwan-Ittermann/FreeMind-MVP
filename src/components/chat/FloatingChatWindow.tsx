@@ -2,8 +2,10 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Minus, X, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { ChatComposer } from './ChatComposer';
+import { readDraft, writeDraft } from '@/hooks/useChatDrafts';
 import { RespectScale } from './RespectScale';
+
 import { ChatBubble } from './ChatBubble';
 import { TypingIndicator } from './TypingIndicator';
 import { useChatSession } from '@/hooks/useChatSession';
