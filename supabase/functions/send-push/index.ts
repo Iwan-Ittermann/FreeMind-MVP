@@ -32,11 +32,20 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
-  // Only the trigger (service role) may call this.
+  const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
+
+  // Only the database trigger (shared vault token) or the service role may call this.
   const auth = req.headers.get('Authorization') ?? '';
-  if (auth !== `Bearer ${SERVICE_ROLE_KEY}`) {
+  const token = req.headers.get('x-push-token') ?? '';
+  let allowed = auth === `Bearer ${SERVICE_ROLE_KEY}`;
+  if (!allowed && token) {
+    const { data: ok } = await supabase.rpc('verify_push_trigger_token', { _token: token });
+    allowed = ok === true;
+  }
+  if (!allowed) {
     return json({ error: 'unauthorized' }, 401);
   }
+
 
   let notificationId: string | undefined;
   try {
