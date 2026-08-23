@@ -66,9 +66,14 @@ const TEMPLATE_META: Record<string, TemplateMeta> = {
       "{{sogehtsUrl}}, {{goUrl}}, {{appUrl}}, {{faqUrl}}, {{passphrase}}, Bilder: {{graphImg}}, {{diffImg}}, {{understandingImg}}, {{handImg}} (als ![alt]({{graphImg}}) einfügen)",
     campaign: true,
   },
+  "daily-brief": {
+    label: "7. Dein Tag (Kurz-Mail)",
+    trigger: "Täglich 21:00 an Abonnenten",
+    placeholders: "{{briefBody}}, {{briefYourDay}}, {{briefDate}}, {{goUrl}}, {{berichtUrl}}, {{appUrl}}",
+  },
   "daily-report": {
-    label: "7. Tagesbericht",
-    trigger: "Täglich 23:30, nur an Abonnenten",
+    label: "7b. Tagesbericht (nur /bericht-Seite)",
+    trigger: "Täglich 23:30, kein Mailversand",
     placeholders: "{{reportTitle}}, {{reportBody}}, {{reportStats}}, {{reportDate}}, {{berichtUrl}}, {{goUrl}}, {{appUrl}}",
   },
   "nudge-rate": {
@@ -96,7 +101,8 @@ const MAIL_COLUMNS: Array<{ key: string; short: string; title: string }> = [
   { key: "campaign-start", short: "Start", title: "Start today!, 23.08." },
   { key: "campaign-final-day", short: "Final", title: "Final day, 29.08." },
   { key: "campaign-sogehts", short: "Geht's", title: "So geht's (nur manuell)" },
-  { key: "daily-report", short: "Bericht", title: "Tagesbericht (letzter Versand)" },
+  { key: "daily-brief", short: "Tag", title: "Dein Tag (Kurz-Mail, letzter Versand)" },
+  { key: "daily-report", short: "Bericht", title: "Tagesbericht-Mail (stillgelegt)" },
   { key: "nudge-rate", short: "N-Bew", title: "Nudge: Bewerten" },
   { key: "nudge-chat", short: "N-Disk", title: "Nudge: Diskutieren" },
   { key: "signup-passphrase", short: "Pass*", title: "Passphrase (alte Einzel-Mail, nur manuell)" },
@@ -287,6 +293,23 @@ export default function Admin2() {
     setReportBusy(false);
     if (error || !data?.ok) { flash("Fehler beim Bericht."); return; }
     flash(`Bericht ${data.date}: ${data.sent ?? 0} Mails gesendet, ${data.failed ?? 0} Fehler.`);
+    await refresh();
+  }
+
+  async function runBrief(opts: { resend?: boolean; date?: string; preview?: boolean }) {
+    if (!opts.preview) {
+      const question = `Kurz-Mail "Dein Tag"${opts.date ? ` (${opts.date})` : ""} an alle Abonnenten (${reportOptIns}) senden?`;
+      if (!confirm(question)) return;
+    }
+    setReportBusy(true);
+    const { data, error } = await invoke({ action: "send_daily_brief", ...opts });
+    setReportBusy(false);
+    if (error || !data?.ok) { flash("Fehler bei der Kurz-Mail."); return; }
+    if (opts.preview) {
+      alert(String(data.body ?? "(leer)"));
+      return;
+    }
+    flash(`Kurz-Mail ${data.date}: ${data.sent ?? 0} gesendet, ${data.failed ?? 0} Fehler.`);
     await refresh();
   }
 
@@ -632,14 +655,17 @@ export default function Admin2() {
           <button disabled={reportBusy} onClick={() => runReport({ send: false })} style={ghostBtn}>
             Heutigen Bericht erzeugen
           </button>
-          <button disabled={reportBusy} onClick={() => runReport({ send: true })} style={ghostBtn}>
-            Erzeugen &amp; an Abonnenten senden
+          <button disabled={reportBusy} onClick={() => runBrief({ preview: true })} style={ghostBtn}>
+            Kurz-Mail „Dein Tag" ansehen
+          </button>
+          <button disabled={reportBusy} onClick={() => runBrief({})} style={ghostBtn}>
+            Kurz-Mail jetzt senden
           </button>
           <button disabled={reportBusy} onClick={() => {
             const date = prompt("Datum (JJJJ-MM-TT)?") ?? "";
-            if (/^\d{4}-\d{2}-\d{2}$/.test(date)) runReport({ send: true, resend: true, date });
+            if (/^\d{4}-\d{2}-\d{2}$/.test(date)) runBrief({ resend: true, date });
           }} style={ghostBtn}>
-            Bestimmten Tag neu senden
+            Kurz-Mail für Tag neu senden
           </button>
         </div>
         <div style={{ display: "grid", gap: 8, marginBottom: 32 }}>
@@ -654,8 +680,8 @@ export default function Admin2() {
                 <button disabled={reportBusy} onClick={() => runReport({ send: false, date: r.report_date })} style={ghostBtn}>
                   Neu erzeugen
                 </button>
-                <button disabled={reportBusy} onClick={() => runReport({ send: true, resend: true, regenerate: false, date: r.report_date })} style={ghostBtn}>
-                  Erneut senden
+                <button disabled={reportBusy} onClick={() => runBrief({ resend: true, date: r.report_date })} style={ghostBtn}>
+                  Kurz-Mail neu senden
                 </button>
               </div>
             </div>

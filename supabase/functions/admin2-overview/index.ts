@@ -36,6 +36,7 @@ const TEMPLATE_KEYS = [
   "campaign-final-day",
   "campaign-sogehts",
   "daily-report",
+  "daily-brief",
 ] as const;
 type TemplateKey = typeof TEMPLATE_KEYS[number];
 
@@ -49,6 +50,7 @@ const TRACKED_TEMPLATES = [
   "campaign-final-day",
   "campaign-sogehts",
   "daily-report",
+  "daily-brief",
 ];
 
 /** Latest status per (recipient email, template), keyed by signup id. */
@@ -316,6 +318,29 @@ Deno.serve(async (req) => {
         .not("confirmed_at", "is", null);
       return Response.json({ ok: true, optIns: count ?? 0 }, { headers: corsHeaders });
     }
+    if (action === "send_daily_brief") {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/send-daily-brief`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_ROLE}` },
+        body: JSON.stringify({
+          date: typeof body?.date === "string" ? body.date : undefined,
+          resend: body?.resend === true,
+          preview: body?.preview === true,
+          signupId: typeof signupId === "string" ? signupId : undefined,
+        }),
+      });
+      const text = await res.text();
+      if (!res.ok) {
+        console.error("send-daily-brief failed:", res.status, text);
+        throw new Error("brief_failed");
+      }
+      let out: Record<string, unknown> = {};
+      try {
+        out = JSON.parse(text);
+      } catch { /* ignore */ }
+      return Response.json({ ok: true, ...out }, { headers: corsHeaders });
+    }
+
     if (action === "generate_report") {
       const res = await fetch(`${SUPABASE_URL}/functions/v1/generate-daily-report`, {
         method: "POST",

@@ -76,6 +76,12 @@ export const dailyReportTemplate = makeTemplate(
   'Der Tagesbericht',
   'Tagesbericht',
 )
+export const dailyBriefTemplate = makeTemplate(
+  'Dein Tag (Kurz-Mail)',
+  'Dein Tag bei freemind',
+  'Dein Tag',
+)
+
 export const sogehtsTemplate = makeTemplate(
   "So geht's",
   'So funktioniert freemind',
