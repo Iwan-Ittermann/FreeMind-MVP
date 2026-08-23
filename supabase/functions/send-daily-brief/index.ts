@@ -60,6 +60,20 @@ function short(text: string, max = 90): string {
   return clean.length > max ? `${clean.slice(0, max - 1)}…` : clean;
 }
 
+/** Shortens an opinion to its core statement: first sentence, then clause. */
+function core(text: string, max = 90): string {
+  const clean = String(text ?? "").replace(/\s+/g, " ").trim();
+  if (!clean) return "";
+  const first = clean.split(/(?<=[.!?])\s+/)[0] ?? clean;
+  let out = first.length <= max ? first : first.slice(0, max);
+  if (first.length > max) {
+    const cut = Math.max(out.lastIndexOf(", "), out.lastIndexOf(" – "), out.lastIndexOf(" — "));
+    out = cut > max * 0.5 ? out.slice(0, cut) : out.slice(0, out.lastIndexOf(" ") > 0 ? out.lastIndexOf(" ") : max);
+    out = `${out.trim()}…`;
+  }
+  return out.trim();
+}
+
 function cleanEmail(raw: string): string {
   return String(raw).split("#")[0].toLowerCase();
 }
@@ -93,6 +107,10 @@ interface Snapshot {
   messagesByUser: Map<string, number>;
   /** one surprising encounter per opinion involved */
   surprises: Array<{ a: string; b: string; quote: string; diff: number; respect: number }>;
+  /** the day's most substantial chat lines */
+  quotes: Array<{ opinion: string; text: string }>;
+  /** total visible messages written today */
+  messageCount: number;
 }
 
 async function snapshot(topicId: string, date: string): Promise<Snapshot> {
@@ -199,11 +217,29 @@ async function snapshot(topicId: string, date: string): Promise<Snapshot> {
     .map((o) => ({ id: String(o.id), text: String(o.text ?? "") }));
 
   // Surprising encounters: high difference met with high respect today.
-  const quoteFor = (chatId: string | null): string => {
+  const bestOfChat = (chatId: string | null): string => {
     if (!chatId) return "";
-    const msg = todayMessages.find((m) => String((m as { chat_id: string }).chat_id) === chatId);
-    return msg ? short(String((msg as { content: string }).content ?? ""), 110) : "";
+    const msgs = todayMessages
+      .filter((m) => String((m as { chat_id: string }).chat_id) === chatId)
+      .map((m) => String((m as { content: string }).content ?? "").replace(/\s+/g, " ").trim())
+      .filter((t) => t.length >= 25 && !/^https?:/i.test(t))
+      .sort((a, b) => b.length - a.length);
+    return msgs[0] ? short(msgs[0], 140) : "";
   };
+  const quoteFor = bestOfChat;
+
+  // Quotes of the day: the most substantial line per chat, attributed to its author's opinion.
+  const perChatBest = new Map<string, { opinion: string; text: string }>();
+  for (const m of todayMessages) {
+    const raw = String((m as { content: string }).content ?? "").replace(/\s+/g, " ").trim();
+    if (raw.length < 40 || raw.length > 400 || /^https?:/i.test(raw)) continue;
+    const chatId = String((m as { chat_id: string }).chat_id);
+    const op = ownOpinionOf.get(String((m as { sender_id: string }).sender_id));
+    const entry = { opinion: core(opinionText.get(op ?? "") ?? "", 60), text: short(raw, 150) };
+    const prev = perChatBest.get(chatId);
+    if (!prev || prev.text.length < entry.text.length) perChatBest.set(chatId, entry);
+  }
+  const quotes = [...perChatBest.values()].sort((a, b) => b.text.length - a.text.length).slice(0, 3);
   const surprises = surpriseCandidates
     .sort((a, b) => b.respect * b.diff - a.respect * a.diff)
     .slice(0, 2)
@@ -239,6 +275,8 @@ async function snapshot(topicId: string, date: string): Promise<Snapshot> {
     newOpinions,
     messagesByUser,
     surprises,
+    quotes,
+    messageCount: todayMessages.length,
   };
 }
 
