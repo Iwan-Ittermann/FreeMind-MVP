@@ -91,7 +91,6 @@
     "ratingSaved": "Bewertung gespeichert!",
     "failedToSaveRating": "Bewertung konnte nicht gespeichert werden",
     "sendFailed": "Senden fehlgeschlagen. Bitte erneut versuchen.",
-
     "theirOpinion": "Andere Meinung",
     "yourOpinion": "Deine Meinung"
   },
@@ -785,7 +784,19 @@
     "legendArrowLength": "Pfeillänge = Gesprächslänge",
     "legendArrowColor": "Farbe = Brückenpunkte",
     "startChat": "Chat starten",
-    "yourBridgingPoints": "Deine Brückenpunkte"
+    "yourBridgingPoints": "Deine Brückenpunkte",
+    "push": {
+      "toggle": "Push-Benachrichtigungen aufs Handy",
+      "on": "Push-Benachrichtigungen aktiviert",
+      "off": "Push-Benachrichtigungen aus",
+      "denied": "Benachrichtigungen sind im Gerät blockiert.",
+      "unsupported": "Dieses Gerät unterstützt kein Web-Push.",
+      "error": "Push konnte nicht aktiviert werden.",
+      "needsLogin": "Bitte melde dich an, um Push zu aktivieren.",
+      "needsInstall": "Auf dem iPhone zuerst über „Teilen → Zum Home-Bildschirm“ installieren.",
+      "iosHint": "iPhone: zuerst über „Teilen → Zum Home-Bildschirm“ installieren, dann hier aktivieren.",
+      "previewHint": "Push funktioniert nur in der veröffentlichten App."
+    }
   },
   "secret": {
     "title": "Geschützter Bereich",

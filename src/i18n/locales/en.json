@@ -91,7 +91,6 @@
     "ratingSaved": "Rating saved!",
     "failedToSaveRating": "Failed to save rating",
     "sendFailed": "Couldn't send. Please try again.",
-
     "theirOpinion": "Other opinion",
     "yourOpinion": "Your opinion"
   },
@@ -785,7 +784,19 @@
     "legendArrowLength": "arrow length = chat length",
     "legendArrowColor": "color = bridging points",
     "startChat": "Start chat",
-    "yourBridgingPoints": "Your bridging points"
+    "yourBridgingPoints": "Your bridging points",
+    "push": {
+      "toggle": "Push notifications on your phone",
+      "on": "Push notifications enabled",
+      "off": "Push notifications off",
+      "denied": "Notifications are blocked on this device.",
+      "unsupported": "This device does not support web push.",
+      "error": "Could not enable push notifications.",
+      "needsLogin": "Please sign in to enable push.",
+      "needsInstall": "On iPhone, first add the app via Share → Add to Home Screen.",
+      "iosHint": "iPhone: add to your home screen first, then enable it here.",
+      "previewHint": "Push only works in the published app."
+    }
   },
   "secret": {
     "title": "Protected area",
