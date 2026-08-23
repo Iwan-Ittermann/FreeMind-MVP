@@ -1,44 +1,16 @@
 /**
- * Respect/understanding rating rounds.
+ * Respect/understanding rating gate.
  *
- * A rating can be given once per round. The first round unlocks once BOTH
- * participants sent at least two messages; later rounds unlock at growing
- * intervals counting the messages of both participants: 4, 9, 15, 22, 30 …
+ * The scale unlocks as soon as BOTH participants sent at least one message and
+ * then stays open permanently — users can adjust their rating at any time.
+ * Points remain manipulation-proof because every change is appended to
+ * `rating_events` and weighted by how long a value was held.
  */
-const FIRST_THRESHOLD = 4;
-const FIRST_GAP = 5;
 
-/** Messages each side needs before the first rating unlocks. */
-export const MIN_MESSAGES_PER_SIDE = 2;
+/** Messages each side needs before the rating unlocks. */
+export const MIN_MESSAGES_PER_SIDE = 1;
 
-/** All round thresholds up to (and including the first one above) `total`. */
-function thresholds(total: number): number[] {
-  const list: number[] = [];
-  let t = FIRST_THRESHOLD;
-  let gap = FIRST_GAP;
-  while (t <= total + 200) {
-    list.push(t);
-    if (t > total) break;
-    t += gap;
-    gap += 1;
-  }
-  return list;
-}
-
-/** The round currently open for rating, or null when none is unlocked yet. */
-export function currentRatingRound(totalMessages: number): number | null {
-  if (totalMessages < FIRST_THRESHOLD) return null;
-  const open = thresholds(totalMessages).filter((t) => t <= totalMessages);
-  return open.length ? open[open.length - 1] : null;
-}
-
-/** The message count at which the next round unlocks. */
-export function nextRatingThreshold(totalMessages: number): number {
-  const next = thresholds(totalMessages).find((t) => t > totalMessages);
-  return next ?? FIRST_THRESHOLD;
-}
-
-/** True once both participants sent at least two messages. */
-export function bothSidesEngaged(ownMessages: number, partnerMessages: number): boolean {
+/** True once both participants sent at least one message. */
+export function respectUnlocked(ownMessages: number, partnerMessages: number): boolean {
   return ownMessages >= MIN_MESSAGES_PER_SIDE && partnerMessages >= MIN_MESSAGES_PER_SIDE;
 }
