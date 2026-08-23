@@ -52,16 +52,21 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
   
   const { isRecording, duration, startRecording, stopRecording } = useVoiceRecorder();
 
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState(() => (readOnly ? '' : readDraft(theirOpinionId)));
   const [empathy, setEmpathy] = useState<number | null>(null);
   const [replyingTo, setReplyingTo] = useState<{ id: string; content: string; isOwn: boolean } | null>(null);
   const [showUnlockSpark, setShowUnlockSpark] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Restore the per-chat draft when switching conversations.
+  useEffect(() => {
+    setInputValue(readOnly ? '' : readDraft(theirOpinionId));
+  }, [theirOpinionId, readOnly]);
 
   const handleInputChange = useCallback((value: string) => {
     setInputValue(value);
+    writeDraft(theirOpinionId, value);
     if (value.trim()) {
       setTyping(true);
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
@@ -69,13 +74,14 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
     } else {
       setTyping(false);
     }
-  }, [setTyping]);
+  }, [setTyping, theirOpinionId]);
 
   const handleSend = async () => {
     if (!inputValue.trim() || isSending) return;
     const content = inputValue;
     const replyId = replyingTo?.id ?? null;
     setInputValue('');
+    writeDraft(theirOpinionId, '');
     setReplyingTo(null);
     setTyping(false);
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
@@ -83,8 +89,11 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
       await sendMessage(content, replyId);
     } catch {
       setInputValue(content);
+      writeDraft(theirOpinionId, content);
+      toast.error(t('chat.sendFailed', 'Senden fehlgeschlagen. Bitte erneut versuchen.'));
     }
   };
+
 
   const handleVoiceToggle = async () => {
     if (isRecording) {
