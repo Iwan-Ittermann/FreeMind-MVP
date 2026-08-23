@@ -90,6 +90,8 @@
     "submitOpinionRequired": "Du musst zuerst deine eigene Meinung teilen, bevor du mit anderen chatten kannst.",
     "ratingSaved": "Bewertung gespeichert!",
     "failedToSaveRating": "Bewertung konnte nicht gespeichert werden",
+    "sendFailed": "Senden fehlgeschlagen. Bitte erneut versuchen.",
+
     "theirOpinion": "Andere Meinung",
     "yourOpinion": "Deine Meinung"
   },
