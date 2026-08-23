@@ -171,6 +171,7 @@ export async function syncPushFilters(filters: {
   newOpinion: boolean;
   newMessage: boolean;
   newChat: boolean;
+  bridgePoints?: boolean;
 }) {
   const { data: auth } = await supabase.auth.getUser();
   if (!auth.user) return;
@@ -180,8 +181,10 @@ export async function syncPushFilters(filters: {
       new_opinion: filters.newOpinion,
       new_message: filters.newMessage,
       new_chat: filters.newChat,
+      new_bridge_points: filters.bridgePoints ?? true,
       updated_at: new Date().toISOString(),
     },
     { onConflict: 'user_id' },
   );
 }
+

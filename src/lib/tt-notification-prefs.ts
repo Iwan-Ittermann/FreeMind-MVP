@@ -9,6 +9,7 @@ export interface NotificationFilters {
   newOpinion: boolean;
   newMessage: boolean;
   newChat: boolean;
+  bridgePoints: boolean;
   newHighlight: boolean;
 }
 
@@ -23,8 +24,10 @@ const DEFAULT_FILTERS: NotificationFilters = {
   newOpinion: true,
   newMessage: true,
   newChat: true,
+  bridgePoints: true,
   newHighlight: true,
 };
+
 
 function readFlat(): TopicNotificationPrefs {
   try {
