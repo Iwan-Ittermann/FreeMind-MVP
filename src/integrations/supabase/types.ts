@@ -1692,6 +1692,7 @@ export type Database = {
         Args: { _text: string; _topic_id: string }
         Returns: string
       }
+      verify_push_trigger_token: { Args: { _token: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
