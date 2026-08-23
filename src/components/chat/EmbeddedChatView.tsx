@@ -118,14 +118,15 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
   const formatDuration = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
   const handleSaveRating = async (value: number) => {
-    if (currentRound == null) return;
+    if (!canRateRespect) return;
     setEmpathy(value);
     try {
-      await saveRating(value, existingRating?.disagreement ?? 5, currentRound);
+      await saveRating(value, existingRating?.disagreement ?? 5, 0);
     } catch {
       toast.error(t('chat.failedToSaveRating'));
     }
   };
+
 
   const scrollToEnd = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -144,33 +145,28 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
   const messageContentMap = new Map<string, string>();
   dbMessages.forEach(msg => messageContentMap.set(msg.id, msg.content));
 
-  // Rating rounds: both sides' messages count; a round can be rated once and
-  // unlocks only once both participants sent at least two messages.
+  // Rating gate: unlocks once both sides sent one message, then stays open.
   const totalMessages = dbMessages.length;
   const ownMessages = dbMessages.filter((m) => m.isOwn).length;
   const partnerMessages = totalMessages - ownMessages;
-  const currentRound = currentRatingRound(totalMessages);
-  const nextThreshold = nextRatingThreshold(totalMessages);
-  const alreadyRatedRound =
-    currentRound != null && myRatingRounds.some((r) => r.messageCount === currentRound);
   const canRateRespect =
-    !isBotChat && !readOnly && currentRound != null && !alreadyRatedRound &&
-    bothSidesEngaged(ownMessages, partnerMessages);
+    !isBotChat && !readOnly && respectUnlocked(ownMessages, partnerMessages);
 
   useEffect(() => {
-    if (!chatId || !canRateRespect || currentRound == null) return;
-    const key = `tt:respect-unlocked:${chatId}:${currentRound}`;
+    if (!chatId || !canRateRespect) return;
+    const key = `tt:respect-unlocked:${chatId}`;
     if (sessionStorage.getItem(key) === 'true') return;
     sessionStorage.setItem(key, 'true');
     setShowUnlockSpark(true);
     const timer = setTimeout(() => setShowUnlockSpark(false), 1400);
     return () => clearTimeout(timer);
-  }, [chatId, canRateRespect, currentRound]);
+  }, [chatId, canRateRespect]);
 
-  // Reset the selection whenever a new round opens.
+  // Show the currently saved value so users can adjust it.
   useEffect(() => {
-    setEmpathy(null);
-  }, [currentRound]);
+    setEmpathy(existingRating?.empathy ?? null);
+  }, [existingRating?.empathy, chatId]);
+
 
 
   const isLoading = !myOpinion || !theirOpinion;
