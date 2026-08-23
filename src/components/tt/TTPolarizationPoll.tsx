@@ -133,11 +133,16 @@ export function TTPolarizationPoll({
           maxLabel={t('tt.polarization.veryPositive')}
         />
 
+        {saveError && (
+          <p className="mt-4 text-center text-xs text-destructive">{t('tt.polarization.saveError')}</p>
+        )}
+
         <div className="mt-6 flex justify-center">
           <Button size="sm" disabled={saving || !leastAnswered || !mostAnswered} onClick={save}>
             {saving ? '…' : t('tt.polarization.submit')}
           </Button>
         </div>
+
       </div>
     </div>
   );
