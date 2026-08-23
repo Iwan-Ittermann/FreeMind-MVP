@@ -274,7 +274,7 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
         </div>
       )}
 
-      {/* Understanding rating — one rating per round, reopens as the chat grows */}
+      {/* Understanding rating — open once both sides wrote, adjustable anytime */}
       {!isBotChat && !readOnly && (
         <div className="border-t border-border/60 px-3 pt-2 pb-3 mb-1 shrink-0 bg-muted/60">
           <div className="mb-1 grid grid-cols-[1fr_auto_1fr] items-center gap-2">
@@ -319,11 +319,10 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
 
           {!canRateRespect && (
             <p className="mt-1 text-center text-[10px] text-muted-foreground">
-              {alreadyRatedRound
-                ? t('tt.respectNextRoundHint', { count: Math.max(1, nextThreshold - totalMessages) })
-                : t('tt.respectUnlockHint')}
+              {t('tt.respectUnlockHint')}
             </p>
           )}
+
         </div>
       )}
 
