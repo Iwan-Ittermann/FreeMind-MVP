@@ -11,10 +11,12 @@ import {
   finalDayTemplate,
   sogehtsTemplate,
   dailyReportTemplate,
+  dailyBriefTemplate,
   nudgeRateTemplate,
   nudgeChatTemplate,
   notificationDigestTemplate,
 } from './campaign.tsx'
+
 
 
 export interface TemplateEntry {
@@ -36,6 +38,8 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'campaign-final-day': finalDayTemplate,
   'campaign-sogehts': sogehtsTemplate,
   'daily-report': dailyReportTemplate,
+  'daily-brief': dailyBriefTemplate,
+
   'question-submitted': questionSubmitted,
   'nudge-rate': nudgeRateTemplate,
   'nudge-chat': nudgeChatTemplate,

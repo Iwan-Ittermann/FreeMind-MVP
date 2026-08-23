@@ -66,6 +66,8 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
 
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [chatNodeId, setChatNodeId] = useState<string | null>(null);
+  const [nudgeVisible, setNudgeVisible] = useState(false);
+
 
   const { data: activeData, isLoading: activeDataLoading } = useTopicData(activeTopicId);
   
@@ -283,9 +285,11 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
           <TTNudgeHint
             stage={nudgeStage}
             onAction={() => sideTabsRef.current?.openPanel(nudgeStage === 'rate' ? 'opinions' : 'chats')}
+            onVisibilityChange={setNudgeVisible}
           />
         )}
-        {hasOwnOpinion && !gateVariant && !selectedNode && <TTInstallHint />}
+        {hasOwnOpinion && !gateVariant && !selectedNode && !nudgeVisible && <TTInstallHint />}
+
 
         <TTBottomPanel
           topicId={activeTopicId}

@@ -1,10 +1,9 @@
 // Generates the daily discussion report (AI summary + metrics), stores it in
-// public.daily_reports and optionally mails it to opted-in participants.
+// public.daily_reports (shown on /bericht). Mailing lives in send-daily-brief.
 //
 // Auth: service role bearer token (pg_cron job and admin2-overview).
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { loadTemplate } from "../_shared/email-template-store.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -14,7 +13,6 @@ const corsHeaders = {
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const SITE_URL = Deno.env.get("SITE_URL") ?? "https://freemind.chat";
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY") ?? "";
 
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
@@ -71,15 +69,40 @@ interface ReportStats {
   activeChats: number;
 }
 
+/** Resolves the real event topic id from app_settings (the /test topic is excluded). */
+async function eventTopicId(): Promise<string | null> {
+  const { data: setting } = await supabase
+    .from("app_settings")
+    .select("value")
+    .eq("key", "real_topic_short_code")
+    .maybeSingle();
+  const code = setting?.value ? String(setting.value) : null;
+  if (!code) return null;
+  const { data: topic } = await supabase
+    .from("topics")
+    .select("id")
+    .eq("short_code", code)
+    .maybeSingle();
+  return topic?.id ? String(topic.id) : null;
+}
+
 async function collect(date: string) {
   const { start, end } = berlinDayWindow(date);
+  const topicId = await eventTopicId();
+
+  const opinionQuery = supabase
+    .from("opinions")
+    .select("id, text, created_at, visible")
+    .order("created_at", { ascending: true });
+  const chatQuery = supabase.from("chats").select("id, title, opinion_a_id, opinion_b_id, created_at");
+  if (topicId) {
+    opinionQuery.eq("topic_id", topicId);
+    chatQuery.eq("topic_id", topicId);
+  }
 
   const [opinionsRes, chatsRes, messagesRes, ratingsRes] = await Promise.all([
-    supabase
-      .from("opinions")
-      .select("id, text, created_at, visible")
-      .order("created_at", { ascending: true }),
-    supabase.from("chats").select("id, title, opinion_a_id, opinion_b_id, created_at"),
+    opinionQuery,
+    chatQuery,
     supabase
       .from("chat_messages")
       .select("id, chat_id, sender_id, content, created_at, visible")
@@ -97,16 +120,21 @@ async function collect(date: string) {
   const opinionById = new Map(opinions.map((o) => [o.id as string, String(o.text ?? "")]));
   const chats = chatsRes.data ?? [];
   const chatById = new Map(chats.map((c) => [c.id as string, c]));
-  const messages = (messagesRes.data ?? []).filter((m) => m.visible !== false);
+  const topicChatIds = new Set(chats.map((c) => String(c.id)));
+  const messages = (messagesRes.data ?? [])
+    .filter((m) => m.visible !== false)
+    .filter((m) => topicChatIds.has(String(m.chat_id)));
+  const ratings = (ratingsRes.data ?? []).filter((r) => topicChatIds.has(String(r.chat_id)));
 
   const stats: ReportStats = {
     opinionsTotal: opinions.length,
     opinionsNew: opinions.filter((o) => String(o.created_at) >= start && String(o.created_at) < end).length,
     chatsNew: chats.filter((c) => String(c.created_at) >= start && String(c.created_at) < end).length,
     messagesNew: messages.length,
-    ratingsNew: (ratingsRes.data ?? []).length,
+    ratingsNew: ratings.length,
     activeChats: new Set(messages.map((m) => m.chat_id as string)).size,
   };
+
 
   // Build a compact transcript grouped by chat, with opinion labels instead of names.
   const byChat = new Map<string, typeof messages>();
@@ -184,71 +212,6 @@ async function summarise(
   return String(json?.choices?.[0]?.message?.content ?? "").trim() || "Zusammenfassung konnte nicht erzeugt werden.";
 }
 
-function statsLine(s: ReportStats): string {
-  return `${s.opinionsNew} neue Meinungen · ${s.chatsNew} neue Diskussionen · ${s.messagesNew} Nachrichten · ${s.ratingsNew} Bewertungen`;
-}
-
-async function mailReport(date: string, title: string, body: string, stats: ReportStats, resend: boolean) {
-  const [{ data: signups }, { data: bans }, { data: suppressed }] = await Promise.all([
-    supabase
-      .from("signups")
-      .select("id, email, confirmed_at, daily_report_opt_in")
-      .not("confirmed_at", "is", null)
-      .eq("daily_report_opt_in", true),
-    supabase.from("banned_emails").select("email"),
-    supabase.from("suppressed_emails").select("email"),
-  ]);
-
-  const blocked = new Set<string>();
-  for (const b of bans ?? []) blocked.add(String(b.email).toLowerCase());
-  for (const s of suppressed ?? []) blocked.add(String(s.email).toLowerCase());
-
-  let sent = 0;
-  let failed = 0;
-
-  for (const s of signups ?? []) {
-    const email = String(s.email).split("#")[0].toLowerCase();
-    if (blocked.has(email)) continue;
-
-    const data = {
-      reportDate: date,
-      reportTitle: title,
-      reportBody: body,
-      reportStats: statsLine(stats),
-      berichtUrl: `${SITE_URL}/bericht`,
-      goUrl: `${SITE_URL}/go`,
-      appUrl: SITE_URL,
-    };
-
-    const tpl = await loadTemplate(supabase, "daily-report", data, {
-      subject: `Tagesbericht ${date}`,
-      heading: title,
-      body: `{{reportStats}}\n\n{{reportBody}}\n\n[Alle Berichte ansehen]({{berichtUrl}})`,
-    });
-
-    const res = await fetch(`${SUPABASE_URL}/functions/v1/send-transactional-email`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_ROLE}` },
-      body: JSON.stringify({
-        templateName: "daily-report",
-        recipientEmail: email,
-        idempotencyKey: resend
-          ? `daily-report-${date}-${s.id}-${Date.now()}`
-          : `daily-report-${date}-${s.id}`,
-        templateData: { ...tpl, ...data },
-      }),
-    });
-
-    if (!res.ok) {
-      failed++;
-      console.error("daily-report send failed:", email, res.status, await res.text());
-      continue;
-    }
-    sent++;
-  }
-
-  return { sent, failed };
-}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -275,8 +238,6 @@ Deno.serve(async (req) => {
     const date = typeof payload.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(payload.date)
       ? payload.date
       : berlinDate();
-    const send = payload.send !== false;
-    const resend = payload.resend === true;
     const regenerate = payload.regenerate !== false;
 
     const { data: existing } = await supabase
@@ -301,9 +262,8 @@ Deno.serve(async (req) => {
       if (error) throw error;
     }
 
-    const mail = send ? await mailReport(date, title, body, stats, resend) : { sent: 0, failed: 0 };
-
-    return Response.json({ ok: true, date, title, stats, ...mail }, { headers: corsHeaders });
+    // Mailing moved to send-daily-brief; this function only generates /bericht content.
+    return Response.json({ ok: true, date, title, stats, sent: 0, failed: 0 }, { headers: corsHeaders });
   } catch (err) {
     console.error("generate-daily-report error:", err);
     return Response.json({ ok: false, error: "server_error" }, { status: 500, headers: corsHeaders });
