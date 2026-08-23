@@ -56,7 +56,8 @@ Deno.serve(async (req) => {
   }
   if (!notificationId) return json({ error: 'notification_id required' }, 400);
 
-  const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
+
+
 
   const { data: notification, error } = await supabase
     .from('notifications')
