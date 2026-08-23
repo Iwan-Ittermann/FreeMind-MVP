@@ -116,9 +116,14 @@ export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpini
     }
   };
 
-  useEffect(() => {
+  const scrollToEnd = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [dbMessages]);
+  }, []);
+
+  useEffect(() => {
+    scrollToEnd();
+  }, [dbMessages, scrollToEnd]);
+
 
   const handleReply = useCallback((msg: { id: string; content: string; isOwn: boolean }) => {
     setReplyingTo(msg);
