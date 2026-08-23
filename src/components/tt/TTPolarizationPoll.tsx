@@ -39,7 +39,9 @@ export function TTPolarizationPoll({
     return () => window.clearInterval(id);
   }, []);
 
-  const { data: done = [] } = useQuery({
+  const [saveError, setSaveError] = useState(false);
+
+  const { data: done, isLoading: doneLoading } = useQuery({
     queryKey: ['tt-polarization', userId],
     enabled: !!userId,
     queryFn: async () => {
@@ -51,6 +53,7 @@ export function TTPolarizationPoll({
       return (data ?? []).map((r) => String(r.wave));
     },
   });
+
 
   const isLastDay = useMemo(() => {
     const end = discussionEndAt?.getTime();
