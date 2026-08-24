@@ -75,7 +75,7 @@ export function TTInstallHint() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 24 }}
           transition={{ type: 'spring', stiffness: 320, damping: 30 }}
-          className="pointer-events-auto absolute bottom-20 left-3 right-3 z-50 rounded-2xl border border-border/40 bg-background/95 p-3 shadow-2xl backdrop-blur-xl"
+          className="pointer-events-auto absolute bottom-[118px] left-3 right-3 z-50 rounded-2xl border border-border/40 bg-background/95 p-3 shadow-2xl backdrop-blur-xl"
         >
           <button
             onClick={dismiss}
