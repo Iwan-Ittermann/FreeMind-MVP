@@ -160,8 +160,10 @@ function TTScreenInnerImpl({
           )}
         </div>
       </div>
-      {/* Legend: how to read node states */}
-      <div className="absolute inset-x-0 bottom-2 z-20 flex justify-center px-4 pointer-events-none">
+      {/* Legend: how to read node states — must sit above the bottom bar
+          (bar: bottom 33px + 48px height) and never be covered. */}
+      {!selectedNodeId && (
+      <div className="absolute inset-x-0 bottom-[86px] z-20 flex justify-center px-4 pointer-events-none">
         <div className="flex items-center gap-3 rounded-full bg-background/40 px-3 py-1 text-[9px] text-foreground/60 backdrop-blur-sm">
           <span className="flex items-center gap-1">
             <span className="h-2 w-2 rounded-full bg-green-500" />
