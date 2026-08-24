@@ -536,7 +536,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
         {/* Tab bar — sits directly above the Impressum footer */}
         <div
           role="tablist"
-          className="absolute bottom-7 inset-x-0 z-40 h-12 flex items-stretch border-t border-border/30 bg-background/90 backdrop-blur-md"
+          className="absolute bottom-[33px] inset-x-0 z-40 h-12 flex items-stretch border-t border-border/30 bg-background/90 backdrop-blur-md"
         >
           {tabButton('opinions', t('tt.opinions'), List, { helpKey: 'opinions-tab' })}
           {tabButton('graph', t('tt.graphTab', 'Kreis'), CircleDot)}
