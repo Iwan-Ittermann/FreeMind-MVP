@@ -250,7 +250,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 16 }}
               transition={SPRING}
-              className="absolute top-7 bottom-[76px] inset-x-0 z-30 bg-background/95 backdrop-blur-xl border-y border-border/30 overflow-hidden flex flex-col"
+              className="absolute top-7 bottom-[81px] inset-x-0 z-30 bg-background/95 backdrop-blur-xl border-y border-border/30 overflow-hidden flex flex-col"
             >
               {tab === 'opinions' && (
                 <>
