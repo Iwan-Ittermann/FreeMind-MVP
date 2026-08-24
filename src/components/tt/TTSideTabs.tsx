@@ -250,7 +250,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 16 }}
               transition={SPRING}
-              className="absolute top-7 bottom-[76px] inset-x-0 z-30 bg-background/95 backdrop-blur-xl border-y border-border/30 overflow-hidden flex flex-col"
+              className="absolute top-7 bottom-[81px] inset-x-0 z-30 bg-background/95 backdrop-blur-xl border-y border-border/30 overflow-hidden flex flex-col"
             >
               {tab === 'opinions' && (
                 <>
@@ -536,7 +536,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
         {/* Tab bar — sits directly above the Impressum footer */}
         <div
           role="tablist"
-          className="absolute bottom-7 inset-x-0 z-40 h-12 flex items-stretch border-t border-border/30 bg-background/90 backdrop-blur-md"
+          className="absolute bottom-[33px] inset-x-0 z-40 h-12 flex items-stretch border-t border-border/30 bg-background/90 backdrop-blur-md"
         >
           {tabButton('opinions', t('tt.opinions'), List, { helpKey: 'opinions-tab' })}
           {tabButton('graph', t('tt.graphTab', 'Kreis'), CircleDot)}
