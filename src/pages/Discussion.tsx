@@ -14,6 +14,7 @@ import { useTTChats } from '@/hooks/useTTChats';
 import { useAuth } from '@/hooks/useAuth';
 import { useTTNotifications } from '@/hooks/useTTNotifications';
 import { useStoredNotifications } from '@/hooks/useStoredNotifications';
+import { useAppBadge } from '@/hooks/useAppBadge';
 
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { useIsVerified } from '@/hooks/useIsVerified';
