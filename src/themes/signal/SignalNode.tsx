@@ -307,7 +307,7 @@ export const SignalNode = memo(function SignalNode({
 
       {/* Total-points count — tiny label to the lower-right of each real node. */}
       {ttMode && !token.isBot && (
-        <g transform={`translate(${scaledHalf + 3}, ${scaledHalf + 1})`} style={{ pointerEvents: 'none' }}>
+        <g transform={`translate(${scaledHalf * 0.72}, ${scaledHalf * 0.62})`} style={{ pointerEvents: 'none' }}>
           <text
             x={0}
             y={0}
