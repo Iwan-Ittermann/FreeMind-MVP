@@ -55,8 +55,119 @@ async function discussionOpen(): Promise<boolean> {
   return true;
 }
 
+/** Shortens a text to its core statement. */
+function core(text: string, max = 90): string {
+  const clean = String(text ?? "").replace(/\s+/g, " ").trim();
+  const firstSentence = clean.split(/(?<=[.!?])\s/)[0] ?? clean;
+  let out = firstSentence.length <= max ? firstSentence : clean;
+  if (out.length > max) {
+    const cut = out.slice(0, max);
+    const lastSpace = cut.lastIndexOf(" ");
+    out = (lastSpace > 40 ? cut.slice(0, lastSpace) : cut).replace(/[,;:.\s]+$/, "") + "…";
+  }
+  return out;
+}
+
+/** Resolves the event topic id from app settings. */
+async function eventTopicId(): Promise<string | null> {
+  const { data } = await supabase
+    .from("app_settings")
+    .select("value")
+    .eq("key", "real_topic_short_code")
+    .maybeSingle();
+  const shortCode = String(data?.value ?? "").trim();
+  if (!shortCode) return null;
+  const { data: topic } = await supabase
+    .from("topics")
+    .select("id")
+    .eq("short_code", shortCode)
+    .maybeSingle();
+  return (topic?.id as string | undefined) ?? null;
+}
+
+interface LiveStats {
+  opinionCount: string;
+  messageCount: string;
+  chatCount: string;
+  daysLeft: string;
+  endDate: string;
+  topicTitle: string;
+  quote1: string;
+  quote1Author: string;
+  quote2: string;
+  quote2Author: string;
+}
+
+/** Live numbers plus two real chat quotes from the event topic. */
+async function liveStats(): Promise<LiveStats> {
+  const empty: LiveStats = {
+    opinionCount: "0", messageCount: "0", chatCount: "0", daysLeft: "0", endDate: "",
+    topicTitle: "", quote1: "", quote1Author: "", quote2: "", quote2Author: "",
+  };
+  const topicId = await eventTopicId();
+  if (!topicId) return empty;
+
+  const [{ data: topic }, { data: settings }, { data: opinions }, { data: chats }] = await Promise.all([
+    supabase.from("topics").select("title").eq("id", topicId).maybeSingle(),
+    supabase.from("app_settings").select("value").eq("key", "discussion_end_at").maybeSingle(),
+    supabase.from("opinions").select("id, user_id, text").eq("topic_id", topicId),
+    supabase.from("chats").select("id").eq("topic_id", topicId),
+  ]);
+
+  const opinionByUser = new Map<string, string>();
+  for (const o of opinions ?? []) opinionByUser.set(o.user_id as string, String(o.text ?? ""));
+
+  const chatIds = (chats ?? []).map((c) => c.id as string);
+  let messages: Array<{ sender_id: string; content: string }> = [];
+  if (chatIds.length) {
+    const { data: msgs } = await supabase
+      .from("chat_messages")
+      .select("sender_id, content, created_at, visible")
+      .in("chat_id", chatIds)
+      .order("created_at", { ascending: false })
+      .limit(400);
+    messages = (msgs ?? [])
+      .filter((m) => m.visible !== false)
+      .map((m) => ({ sender_id: m.sender_id as string, content: String(m.content ?? "") }));
+  }
+
+  // Two distinct, substantial quotes from different authors.
+  const picked: Array<{ text: string; author: string }> = [];
+  const seenAuthors = new Set<string>();
+  for (const m of messages) {
+    const t = m.content.replace(/\s+/g, " ").trim();
+    if (t.length < 40 || t.length > 180) continue;
+    if (seenAuthors.has(m.sender_id)) continue;
+    const author = core(opinionByUser.get(m.sender_id) ?? "", 60);
+    if (!author) continue;
+    seenAuthors.add(m.sender_id);
+    picked.push({ text: t, author });
+    if (picked.length === 2) break;
+  }
+
+  const endRaw = String(settings?.value ?? "").trim();
+  const end = endRaw ? new Date(endRaw) : null;
+  const daysLeft = end ? Math.max(0, Math.ceil((end.getTime() - Date.now()) / 86400000)) : 0;
+  const endDate = end
+    ? end.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", timeZone: "Europe/Berlin" })
+    : "";
+
+  return {
+    opinionCount: String((opinions ?? []).length),
+    messageCount: String(messages.length),
+    chatCount: String(chatIds.length),
+    daysLeft: String(daysLeft),
+    endDate,
+    topicTitle: String(topic?.title ?? ""),
+    quote1: picked[0]?.text ?? "",
+    quote1Author: picked[0]?.author ?? "",
+    quote2: picked[1]?.text ?? "",
+    quote2Author: picked[1]?.author ?? "",
+  };
+}
+
 /** Signup ids that are currently in the given funnel stage. */
-async function nudgeAudience(stage: "rate" | "chat"): Promise<Set<string> | null> {
+async function nudgeAudience(stage: "opinion" | "rate" | "chat"): Promise<Set<string> | null> {
   const { data: settings } = await supabase
     .from("app_settings")
     .select("key, value")
@@ -75,13 +186,27 @@ async function nudgeAudience(stage: "rate" | "chat"): Promise<Set<string> | null
   const topicId = topic.id as string;
 
   const [{ data: signups }, { data: opinions }, { data: chats }] = await Promise.all([
-    supabase.from("signups").select("id, auth_user_id").not("auth_user_id", "is", null),
+    supabase.from("signups").select("id, auth_user_id, confirmed_at").not("auth_user_id", "is", null),
     supabase.from("opinions").select("id, user_id, created_at").eq("topic_id", topicId),
     supabase.from("chats").select("id").eq("topic_id", topicId),
   ]);
 
-  // Only nudge once the opinion is at least 24h old.
   const cutoff = Date.now() - 24 * 60 * 60 * 1000;
+
+  // Stage "opinion": confirmed for at least 24h, still no opinion in the event topic.
+  if (stage === "opinion") {
+    const withOpinion = new Set((opinions ?? []).map((o) => o.user_id as string));
+    const allowed = new Set<string>();
+    for (const s of signups ?? []) {
+      if (withOpinion.has(s.auth_user_id as string)) continue;
+      const confirmed = new Date(String(s.confirmed_at ?? "")).getTime();
+      if (!Number.isFinite(confirmed) || confirmed > cutoff) continue;
+      allowed.add(s.id as string);
+    }
+    return allowed;
+  }
+
+  // Only nudge once the opinion is at least 24h old.
   const opinionByUser = new Map<string, string>();
   for (const o of opinions ?? []) {
     const created = new Date(o.created_at as string).getTime();
@@ -118,6 +243,7 @@ async function nudgeAudience(stage: "rate" | "chat"): Promise<Set<string> | null
   }
   return allowed;
 }
+
 
 async function loadRecipients(campaignKey: string, onlySignupId?: string, resend = false): Promise<Recipient[]> {
   let query = supabase
