@@ -8,10 +8,11 @@ export interface CampaignDef {
   dueAt?: string;
   /**
    * Funnel nudge: audience is computed at send time from the user's progress.
-   * `rate` = has an opinion but rated nothing; `chat` = rated but never wrote.
+   * `opinion` = registered but never posted an opinion; `rate` = has an opinion
+   * but rated nothing; `chat` = rated but never wrote.
    * Runs on every scheduled invocation while the discussion phase is open.
    */
-  nudge?: "rate" | "chat";
+  nudge?: "opinion" | "rate" | "chat";
 }
 
 export const CAMPAIGNS: CampaignDef[] = [
@@ -19,9 +20,11 @@ export const CAMPAIGNS: CampaignDef[] = [
   { key: "campaign-start", label: "Start today! (23.08.2026, 00:01)", dueAt: "2026-08-22T22:01:00Z" },
   { key: "campaign-final-day", label: "Final day (29.08.2026, 00:01)", dueAt: "2026-08-28T22:01:00Z" },
   { key: "campaign-sogehts", label: "So geht's (manuell)" },
+  { key: "nudge-opinion", label: "Nudge: Meinung posten", nudge: "opinion" },
   { key: "nudge-rate", label: "Nudge: Bewerten", nudge: "rate" },
   { key: "nudge-chat", label: "Nudge: Diskutieren", nudge: "chat" },
 ];
+
 
 export const CAMPAIGN_KEYS = CAMPAIGNS.map((c) => c.key);
 
