@@ -111,54 +111,56 @@ export default function Landing() {
       <HeroFlash />
       <div className="relative z-[1]">
 
-      <section className={panelClass}>
-        <div className={`${panelInner} flex flex-col items-start gap-8`}>
-          <p className={eyebrowClass}>23. - 29. AUGUST · EINE FRAGE</p>
+      <section className={`${panelClass} relative overflow-hidden`}>
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 opacity-[0.07]"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, hsl(var(--foreground)) 1px, transparent 1px)",
+            backgroundSize: "clamp(48px, 12vw, 120px) 100%",
+          }}
+        />
+        <div className={`${panelInner} relative flex flex-col items-start gap-10`}>
+          <p className={`${eyebrowClass} flex items-center gap-3`}>
+            <span className="inline-block h-2 w-2 rounded-full bg-alert animate-pulse" />
+            23. - 29. AUGUST · EINE FRAGE
+          </p>
           <h1
             className={`${displayClass} text-left`}
             style={{ fontSize: "clamp(2.25rem, 6.5vw, 5rem)" }}
           >
             DIE WAHRSCHEINLICH FAIRSTE POLITISCHE DISKUSSION IM INTERNET.
           </h1>
+          <div className="w-16 h-[3px] bg-alert" />
           <div className="text-xl sm:text-2xl md:text-3xl font-bold leading-tight space-y-2">
             <p>Nicht, weil Menschen netter sind.</p>
             <p>
               Sondern weil <span className="text-alert">die Spielregeln andere sind.</span>
             </p>
           </div>
-          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl leading-snug">
-            {"\n"}
-          </p>
-          {regClosed && (
-            <p className="w-full border border-alert text-alert px-4 py-3 text-sm font-bold uppercase tracking-wide leading-snug">
-              Die Diskussion läuft — die Registrierung ist geschlossen. Du kannst live zuschauen.
-            </p>
-          )}
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
             {regClosed ? (
               <a
                 href="/go"
-                className="inline-block border-b-2 border-foreground pb-1 text-sm font-bold uppercase tracking-wider hover:text-alert hover:border-alert transition-colors"
+                className="group inline-flex items-center gap-3 bg-foreground text-background px-7 py-4 text-sm font-bold uppercase tracking-wider hover:bg-alert transition-colors"
               >
-                Zur Diskussion
+                Live zuschauen
+                <span className="transition-transform group-hover:translate-x-1">→</span>
               </a>
             ) : (
               <a
                 href="#cta"
-                className="inline-block border-b-2 border-foreground pb-1 text-sm font-bold uppercase tracking-wider hover:text-alert hover:border-alert transition-colors"
+                className="group inline-flex items-center gap-3 bg-foreground text-background px-7 py-4 text-sm font-bold uppercase tracking-wider hover:bg-alert transition-colors"
               >
                 Jetzt registrieren
+                <span className="transition-transform group-hover:translate-x-1">→</span>
               </a>
             )}
-            <a
-              href="/test"
-              className="inline-block border-b-2 border-foreground/40 pb-1 text-sm font-bold uppercase tracking-wider hover:text-alert hover:border-alert transition-colors"
-            >
-              Zum Test
-            </a>
           </div>
         </div>
       </section>
+
 
       <section className={panelClass}>
         <div className={`${panelInner} flex flex-col gap-8`}>
