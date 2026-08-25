@@ -14,6 +14,7 @@ import { useTTChats } from '@/hooks/useTTChats';
 import { useAuth } from '@/hooks/useAuth';
 import { useTTNotifications } from '@/hooks/useTTNotifications';
 import { useStoredNotifications } from '@/hooks/useStoredNotifications';
+import { useAppBadge } from '@/hooks/useAppBadge';
 
 import { useUnreadMessages } from '@/hooks/useUnreadMessages';
 import { useIsVerified } from '@/hooks/useIsVerified';
@@ -106,6 +107,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
   useTTNotifications(activeTopicId);
   const {
     notifications: storedNotifications,
+    unreadCount: unreadNotificationCount,
     markAllRead,
   } = useStoredNotifications(activeTopicId);
   const ttNotifications = useMemo(
@@ -135,6 +137,11 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
     unreadMap.forEach((v) => { sum += v; });
     return sum;
   }, [unreadMap]);
+
+  // Home-screen icon badge: unread notifications + unread chat messages.
+  useAppBadge(unreadNotificationCount + totalUnread);
+
+
 
   // Auto-subscribe bell on first opinion
   const prevHasOwnRef = useRef<boolean | null>(null);

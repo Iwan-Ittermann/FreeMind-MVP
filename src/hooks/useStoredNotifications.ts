@@ -96,10 +96,9 @@ export function useStoredNotifications(topicId?: string | null) {
 
   const unreadCount = notifications.filter((n) => !n.read_at).length;
 
-  // Mirror unread count onto the installed app's icon badge
-  useEffect(() => {
-    setAppBadge(unreadCount);
-  }, [unreadCount]);
+  // NOTE: the app icon badge is set by `useAppBadge` at the screen level, so it
+  // can combine unread notifications with unread chat messages.
+
 
   const markAllRead = useCallback(async () => {
     if (!user) return;
