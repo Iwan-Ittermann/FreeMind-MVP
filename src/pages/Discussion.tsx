@@ -138,6 +138,11 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
     return sum;
   }, [unreadMap]);
 
+  // Home-screen icon badge: unread notifications + unread chat messages.
+  useAppBadge(unreadNotificationCount + totalUnread);
+
+
+
   // Auto-subscribe bell on first opinion
   const prevHasOwnRef = useRef<boolean | null>(null);
   useEffect(() => {
