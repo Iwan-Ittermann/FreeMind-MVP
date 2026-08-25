@@ -106,6 +106,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
   useTTNotifications(activeTopicId);
   const {
     notifications: storedNotifications,
+    unreadCount: unreadNotificationCount,
     markAllRead,
   } = useStoredNotifications(activeTopicId);
   const ttNotifications = useMemo(
