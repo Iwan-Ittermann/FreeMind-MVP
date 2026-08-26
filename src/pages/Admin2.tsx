@@ -111,8 +111,10 @@ const MAIL_COLUMNS: Array<{ key: string; short: string; title: string }> = [
   { key: "campaign-sogehts", short: "Geht's", title: "So geht's (nur manuell)" },
   { key: "daily-brief", short: "Tag", title: "Dein Tag (Kurz-Mail, letzter Versand)" },
   { key: "daily-report", short: "Bericht", title: "Tagesbericht-Mail (stillgelegt)" },
+  { key: "nudge-opinion", short: "N-Mein", title: "Nudge: Meinung posten" },
   { key: "nudge-rate", short: "N-Bew", title: "Nudge: Bewerten" },
   { key: "nudge-chat", short: "N-Disk", title: "Nudge: Diskutieren" },
+
   { key: "signup-passphrase", short: "Pass*", title: "Passphrase (alte Einzel-Mail, nur manuell)" },
 ];
 
