@@ -96,6 +96,9 @@ interface LiveStats {
   quote1Author: string;
   quote2: string;
   quote2Author: string;
+  /** Pre-rendered markdown block with the quotes (empty when none exist). */
+  quotesBlock: string;
+
 }
 
 /** Live numbers plus two real chat quotes from the event topic. */
