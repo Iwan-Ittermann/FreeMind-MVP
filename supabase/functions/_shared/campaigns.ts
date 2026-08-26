@@ -13,6 +13,8 @@ export interface CampaignDef {
    * Runs on every scheduled invocation while the discussion phase is open.
    */
   nudge?: "opinion" | "rate" | "chat";
+  /** Nudge only starts going out at this instant (scheduled runs skip it before). */
+  startAt?: string;
 }
 
 export const CAMPAIGNS: CampaignDef[] = [
@@ -20,9 +22,11 @@ export const CAMPAIGNS: CampaignDef[] = [
   { key: "campaign-start", label: "Start today! (23.08.2026, 00:01)", dueAt: "2026-08-22T22:01:00Z" },
   { key: "campaign-final-day", label: "Final day (29.08.2026, 00:01)", dueAt: "2026-08-28T22:01:00Z" },
   { key: "campaign-sogehts", label: "So geht's (manuell)" },
-  { key: "nudge-opinion", label: "Nudge: Meinung posten", nudge: "opinion" },
+  // Activation mail for registered users without an opinion: first send 26.08. 08:30 Berlin.
+  { key: "nudge-opinion", label: "Nudge: Meinung posten", nudge: "opinion", startAt: "2026-08-26T06:30:00Z" },
   { key: "nudge-rate", label: "Nudge: Bewerten", nudge: "rate" },
   { key: "nudge-chat", label: "Nudge: Diskutieren", nudge: "chat" },
+
 ];
 
 
