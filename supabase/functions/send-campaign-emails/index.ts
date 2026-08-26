@@ -211,17 +211,24 @@ async function nudgeAudience(stage: "opinion" | "rate" | "chat"): Promise<Set<st
   const cutoff = Date.now() - 24 * 60 * 60 * 1000;
 
   // Stage "opinion": confirmed for at least 24h, still no opinion in the event topic.
+  // Includes signups that never logged in (no auth_user_id yet) — the most inactive group.
   if (stage === "opinion") {
+    const { data: allSignups } = await supabase
+      .from("signups")
+      .select("id, auth_user_id, confirmed_at")
+      .not("confirmed_at", "is", null);
     const withOpinion = new Set((opinions ?? []).map((o) => o.user_id as string));
     const allowed = new Set<string>();
-    for (const s of signups ?? []) {
-      if (withOpinion.has(s.auth_user_id as string)) continue;
+    for (const s of allSignups ?? []) {
+      const uid = s.auth_user_id as string | null;
+      if (uid && withOpinion.has(uid)) continue;
       const confirmed = new Date(String(s.confirmed_at ?? "")).getTime();
       if (!Number.isFinite(confirmed) || confirmed > cutoff) continue;
       allowed.add(s.id as string);
     }
     return allowed;
   }
+
 
   // Only nudge once the opinion is at least 24h old.
   const opinionByUser = new Map<string, string>();
