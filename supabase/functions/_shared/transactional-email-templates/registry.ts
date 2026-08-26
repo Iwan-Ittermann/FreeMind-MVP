@@ -12,7 +12,9 @@ import {
   sogehtsTemplate,
   dailyReportTemplate,
   dailyBriefTemplate,
+  nudgeOpinionTemplate,
   nudgeRateTemplate,
+
   nudgeChatTemplate,
   notificationDigestTemplate,
 } from './campaign.tsx'
