@@ -105,7 +105,7 @@ interface LiveStats {
 async function liveStats(): Promise<LiveStats> {
   const empty: LiveStats = {
     opinionCount: "0", messageCount: "0", chatCount: "0", daysLeft: "0", endDate: "",
-    topicTitle: "", quote1: "", quote1Author: "", quote2: "", quote2Author: "",
+    topicTitle: "", quote1: "", quote1Author: "", quote2: "", quote2Author: "", quotesBlock: "",
   };
   const topicId = await eventTopicId();
   if (!topicId) return empty;
@@ -122,13 +122,21 @@ async function liveStats(): Promise<LiveStats> {
 
   const chatIds = (chats ?? []).map((c) => c.id as string);
   let messages: Array<{ sender_id: string; content: string }> = [];
+  let messageTotal = 0;
   if (chatIds.length) {
-    const { data: msgs } = await supabase
-      .from("chat_messages")
-      .select("sender_id, content, created_at, visible")
-      .in("chat_id", chatIds)
-      .order("created_at", { ascending: false })
-      .limit(400);
+    const [{ data: msgs }, { count }] = await Promise.all([
+      supabase
+        .from("chat_messages")
+        .select("sender_id, content, created_at, visible")
+        .in("chat_id", chatIds)
+        .order("created_at", { ascending: false })
+        .limit(400),
+      supabase
+        .from("chat_messages")
+        .select("id", { count: "exact", head: true })
+        .in("chat_id", chatIds),
+    ]);
+    messageTotal = count ?? 0;
     messages = (msgs ?? [])
       .filter((m) => m.visible !== false)
       .map((m) => ({ sender_id: m.sender_id as string, content: String(m.content ?? "") }));
@@ -148,6 +156,10 @@ async function liveStats(): Promise<LiveStats> {
     if (picked.length === 2) break;
   }
 
+  const quotesBlock = picked
+    .map((q) => `> *„${q.text}"*\n>\n> — ${q.author}`)
+    .join("\n\n");
+
   const endRaw = String(settings?.value ?? "").trim();
   const end = endRaw ? new Date(endRaw) : null;
   const daysLeft = end ? Math.max(0, Math.ceil((end.getTime() - Date.now()) / 86400000)) : 0;
@@ -157,7 +169,7 @@ async function liveStats(): Promise<LiveStats> {
 
   return {
     opinionCount: String((opinions ?? []).length),
-    messageCount: String(messages.length),
+    messageCount: String(messageTotal),
     chatCount: String(chatIds.length),
     daysLeft: String(daysLeft),
     endDate,
@@ -166,8 +178,10 @@ async function liveStats(): Promise<LiveStats> {
     quote1Author: picked[0]?.author ?? "",
     quote2: picked[1]?.text ?? "",
     quote2Author: picked[1]?.author ?? "",
+    quotesBlock,
   };
 }
+
 
 /** Signup ids that are currently in the given funnel stage. */
 async function nudgeAudience(stage: "opinion" | "rate" | "chat"): Promise<Set<string> | null> {
