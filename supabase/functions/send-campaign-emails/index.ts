@@ -422,8 +422,13 @@ Deno.serve(async (req) => {
         if (def.dueAt && new Date(def.dueAt) <= now) results.push(await sendCampaign(def.key));
       }
       if (await discussionOpen()) {
-        for (const key of NUDGE_KEYS) results.push(await sendCampaign(key));
+        for (const key of NUDGE_KEYS) {
+          const def = getCampaign(key);
+          if (def?.startAt && new Date(def.startAt) > now) continue;
+          results.push(await sendCampaign(key));
+        }
       }
+
     }
 
 
