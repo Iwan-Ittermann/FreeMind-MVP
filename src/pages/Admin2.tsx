@@ -76,7 +76,15 @@ const TEMPLATE_META: Record<string, TemplateMeta> = {
     trigger: "Täglich 23:30, kein Mailversand",
     placeholders: "{{reportTitle}}, {{reportBody}}, {{reportStats}}, {{reportDate}}, {{berichtUrl}}, {{goUrl}}, {{appUrl}}",
   },
+  "nudge-opinion": {
+    label: "8. Nudge: Meinung posten",
+    trigger: "Automatisch: registriert, aber keine Meinung (24 h)",
+    placeholders:
+      "{{goUrl}}, {{appUrl}}, {{passphrase}}, {{topicTitle}}, {{opinionCount}}, {{messageCount}}, {{chatCount}}, {{daysLeft}}, {{endDate}}, {{quote1}}, {{quote1Author}}, {{quote2}}, {{quote2Author}}",
+    campaign: true,
+  },
   "nudge-rate": {
+
     label: "8. Nudge: Bewerten",
     trigger: "Automatisch: Meinung da, aber nichts bewertet",
     placeholders: "{{goUrl}}, {{appUrl}}, {{sogehtsUrl}}, {{passphrase}}",
