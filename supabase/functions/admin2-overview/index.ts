@@ -55,6 +55,10 @@ const TRACKED_TEMPLATES = [
   "campaign-sogehts",
   "daily-report",
   "daily-brief",
+  "nudge-opinion",
+  "nudge-rate",
+  "nudge-chat",
+
 ];
 
 /** Latest status per (recipient email, template), keyed by signup id. */
