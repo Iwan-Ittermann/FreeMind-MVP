@@ -96,13 +96,16 @@ interface LiveStats {
   quote1Author: string;
   quote2: string;
   quote2Author: string;
+  /** Pre-rendered markdown block with the quotes (empty when none exist). */
+  quotesBlock: string;
+
 }
 
 /** Live numbers plus two real chat quotes from the event topic. */
 async function liveStats(): Promise<LiveStats> {
   const empty: LiveStats = {
     opinionCount: "0", messageCount: "0", chatCount: "0", daysLeft: "0", endDate: "",
-    topicTitle: "", quote1: "", quote1Author: "", quote2: "", quote2Author: "",
+    topicTitle: "", quote1: "", quote1Author: "", quote2: "", quote2Author: "", quotesBlock: "",
   };
   const topicId = await eventTopicId();
   if (!topicId) return empty;
@@ -119,13 +122,21 @@ async function liveStats(): Promise<LiveStats> {
 
   const chatIds = (chats ?? []).map((c) => c.id as string);
   let messages: Array<{ sender_id: string; content: string }> = [];
+  let messageTotal = 0;
   if (chatIds.length) {
-    const { data: msgs } = await supabase
-      .from("chat_messages")
-      .select("sender_id, content, created_at, visible")
-      .in("chat_id", chatIds)
-      .order("created_at", { ascending: false })
-      .limit(400);
+    const [{ data: msgs }, { count }] = await Promise.all([
+      supabase
+        .from("chat_messages")
+        .select("sender_id, content, created_at, visible")
+        .in("chat_id", chatIds)
+        .order("created_at", { ascending: false })
+        .limit(400),
+      supabase
+        .from("chat_messages")
+        .select("id", { count: "exact", head: true })
+        .in("chat_id", chatIds),
+    ]);
+    messageTotal = count ?? 0;
     messages = (msgs ?? [])
       .filter((m) => m.visible !== false)
       .map((m) => ({ sender_id: m.sender_id as string, content: String(m.content ?? "") }));
@@ -145,6 +156,10 @@ async function liveStats(): Promise<LiveStats> {
     if (picked.length === 2) break;
   }
 
+  const quotesBlock = picked
+    .map((q) => `> *„${q.text}"*\n>\n> — ${q.author}`)
+    .join("\n\n");
+
   const endRaw = String(settings?.value ?? "").trim();
   const end = endRaw ? new Date(endRaw) : null;
   const daysLeft = end ? Math.max(0, Math.ceil((end.getTime() - Date.now()) / 86400000)) : 0;
@@ -154,7 +169,7 @@ async function liveStats(): Promise<LiveStats> {
 
   return {
     opinionCount: String((opinions ?? []).length),
-    messageCount: String(messages.length),
+    messageCount: String(messageTotal),
     chatCount: String(chatIds.length),
     daysLeft: String(daysLeft),
     endDate,
@@ -163,8 +178,10 @@ async function liveStats(): Promise<LiveStats> {
     quote1Author: picked[0]?.author ?? "",
     quote2: picked[1]?.text ?? "",
     quote2Author: picked[1]?.author ?? "",
+    quotesBlock,
   };
 }
+
 
 /** Signup ids that are currently in the given funnel stage. */
 async function nudgeAudience(stage: "opinion" | "rate" | "chat"): Promise<Set<string> | null> {
@@ -194,17 +211,24 @@ async function nudgeAudience(stage: "opinion" | "rate" | "chat"): Promise<Set<st
   const cutoff = Date.now() - 24 * 60 * 60 * 1000;
 
   // Stage "opinion": confirmed for at least 24h, still no opinion in the event topic.
+  // Includes signups that never logged in (no auth_user_id yet) — the most inactive group.
   if (stage === "opinion") {
+    const { data: allSignups } = await supabase
+      .from("signups")
+      .select("id, auth_user_id, confirmed_at")
+      .not("confirmed_at", "is", null);
     const withOpinion = new Set((opinions ?? []).map((o) => o.user_id as string));
     const allowed = new Set<string>();
-    for (const s of signups ?? []) {
-      if (withOpinion.has(s.auth_user_id as string)) continue;
+    for (const s of allSignups ?? []) {
+      const uid = s.auth_user_id as string | null;
+      if (uid && withOpinion.has(uid)) continue;
       const confirmed = new Date(String(s.confirmed_at ?? "")).getTime();
       if (!Number.isFinite(confirmed) || confirmed > cutoff) continue;
       allowed.add(s.id as string);
     }
     return allowed;
   }
+
 
   // Only nudge once the opinion is at least 24h old.
   const opinionByUser = new Map<string, string>();
@@ -297,6 +321,8 @@ async function sendCampaign(campaignKey: string, onlySignupId?: string, resend =
 
   const recipients = await loadRecipients(campaignKey, onlySignupId, resend);
   const attempt = Date.now();
+  // Live numbers and real chat quotes, only needed for the activation nudge.
+  const stats = campaignKey === "nudge-opinion" && recipients.length ? await liveStats() : null;
 
   let sent = 0;
   let failed = 0;
@@ -314,7 +340,9 @@ async function sendCampaign(campaignKey: string, onlySignupId?: string, resend =
       understandingImg: `${SITE_URL}/__l5e/assets-v1/b0f17748-5da8-4eb5-bc8f-0dc243429447/mail-sogehts-scale-understanding.jpg`,
       handImg: `${SITE_URL}/__l5e/assets-v1/cc07c31b-45a7-45e9-b4be-1046aeb6b08e/hand-pad.png`,
       trackingUrl: `${SUPABASE_URL}/functions/v1/email-open?c=${encodeURIComponent(campaignKey)}&s=${r.id}`,
+      ...(stats ?? {}),
     };
+
 
     const tpl = await loadTemplate(supabase, campaignKey, data, {
       subject: def.label,
@@ -394,8 +422,13 @@ Deno.serve(async (req) => {
         if (def.dueAt && new Date(def.dueAt) <= now) results.push(await sendCampaign(def.key));
       }
       if (await discussionOpen()) {
-        for (const key of NUDGE_KEYS) results.push(await sendCampaign(key));
+        for (const key of NUDGE_KEYS) {
+          const def = getCampaign(key);
+          if (def?.startAt && new Date(def.startAt) > now) continue;
+          results.push(await sendCampaign(key));
+        }
       }
+
     }
 
 

@@ -87,7 +87,13 @@ export const sogehtsTemplate = makeTemplate(
   'So funktioniert freemind',
   "So geht's",
 )
+export const nudgeOpinionTemplate = makeTemplate(
+  'Nudge: Meinung posten',
+  'Deine Meinung fehlt noch',
+  'Noch offen',
+)
 export const nudgeRateTemplate = makeTemplate(
+
   'Nudge: Bewerten',
   'Deine Meinung steht — jetzt bewerten',
   'Nächster Schritt',

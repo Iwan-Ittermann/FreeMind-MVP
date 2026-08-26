@@ -76,7 +76,15 @@ const TEMPLATE_META: Record<string, TemplateMeta> = {
     trigger: "Täglich 23:30, kein Mailversand",
     placeholders: "{{reportTitle}}, {{reportBody}}, {{reportStats}}, {{reportDate}}, {{berichtUrl}}, {{goUrl}}, {{appUrl}}",
   },
+  "nudge-opinion": {
+    label: "8. Nudge: Meinung posten",
+    trigger: "Automatisch: registriert, aber keine Meinung (24 h)",
+    placeholders:
+      "{{goUrl}}, {{appUrl}}, {{passphrase}}, {{topicTitle}}, {{opinionCount}}, {{messageCount}}, {{chatCount}}, {{daysLeft}}, {{endDate}}, {{quote1}}, {{quote1Author}}, {{quote2}}, {{quote2Author}}",
+    campaign: true,
+  },
   "nudge-rate": {
+
     label: "8. Nudge: Bewerten",
     trigger: "Automatisch: Meinung da, aber nichts bewertet",
     placeholders: "{{goUrl}}, {{appUrl}}, {{sogehtsUrl}}, {{passphrase}}",
@@ -103,8 +111,10 @@ const MAIL_COLUMNS: Array<{ key: string; short: string; title: string }> = [
   { key: "campaign-sogehts", short: "Geht's", title: "So geht's (nur manuell)" },
   { key: "daily-brief", short: "Tag", title: "Dein Tag (Kurz-Mail, letzter Versand)" },
   { key: "daily-report", short: "Bericht", title: "Tagesbericht-Mail (stillgelegt)" },
+  { key: "nudge-opinion", short: "N-Mein", title: "Nudge: Meinung posten" },
   { key: "nudge-rate", short: "N-Bew", title: "Nudge: Bewerten" },
   { key: "nudge-chat", short: "N-Disk", title: "Nudge: Diskutieren" },
+
   { key: "signup-passphrase", short: "Pass*", title: "Passphrase (alte Einzel-Mail, nur manuell)" },
 ];
 
@@ -116,7 +126,9 @@ const RESENDABLE = [
   { key: "campaign-start", label: "Start today" },
   { key: "campaign-final-day", label: "Final day" },
   { key: "campaign-sogehts", label: "So geht's" },
+  { key: "nudge-opinion", label: "Nudge: Meinung" },
   { key: "nudge-rate", label: "Nudge: Bewerten" },
+
   { key: "nudge-chat", label: "Nudge: Diskutieren" },
 ];
 

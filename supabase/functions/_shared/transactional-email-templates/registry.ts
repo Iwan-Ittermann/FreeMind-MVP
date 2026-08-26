@@ -12,7 +12,9 @@ import {
   sogehtsTemplate,
   dailyReportTemplate,
   dailyBriefTemplate,
+  nudgeOpinionTemplate,
   nudgeRateTemplate,
+
   nudgeChatTemplate,
   notificationDigestTemplate,
 } from './campaign.tsx'
@@ -41,7 +43,9 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'daily-brief': dailyBriefTemplate,
 
   'question-submitted': questionSubmitted,
+  'nudge-opinion': nudgeOpinionTemplate,
   'nudge-rate': nudgeRateTemplate,
+
   'nudge-chat': nudgeChatTemplate,
   'notification-digest': notificationDigestTemplate,
 }
