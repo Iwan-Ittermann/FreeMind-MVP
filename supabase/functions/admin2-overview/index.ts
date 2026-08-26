@@ -37,6 +37,10 @@ const TEMPLATE_KEYS = [
   "campaign-sogehts",
   "daily-report",
   "daily-brief",
+  "nudge-opinion",
+  "nudge-rate",
+  "nudge-chat",
+
 ] as const;
 type TemplateKey = typeof TEMPLATE_KEYS[number];
 
