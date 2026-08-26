@@ -126,7 +126,9 @@ const RESENDABLE = [
   { key: "campaign-start", label: "Start today" },
   { key: "campaign-final-day", label: "Final day" },
   { key: "campaign-sogehts", label: "So geht's" },
+  { key: "nudge-opinion", label: "Nudge: Meinung" },
   { key: "nudge-rate", label: "Nudge: Bewerten" },
+
   { key: "nudge-chat", label: "Nudge: Diskutieren" },
 ];
 
