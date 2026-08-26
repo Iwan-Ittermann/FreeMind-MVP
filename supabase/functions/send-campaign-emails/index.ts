@@ -297,6 +297,8 @@ async function sendCampaign(campaignKey: string, onlySignupId?: string, resend =
 
   const recipients = await loadRecipients(campaignKey, onlySignupId, resend);
   const attempt = Date.now();
+  // Live numbers and real chat quotes, only needed for the activation nudge.
+  const stats = campaignKey === "nudge-opinion" && recipients.length ? await liveStats() : null;
 
   let sent = 0;
   let failed = 0;
@@ -314,7 +316,9 @@ async function sendCampaign(campaignKey: string, onlySignupId?: string, resend =
       understandingImg: `${SITE_URL}/__l5e/assets-v1/b0f17748-5da8-4eb5-bc8f-0dc243429447/mail-sogehts-scale-understanding.jpg`,
       handImg: `${SITE_URL}/__l5e/assets-v1/cc07c31b-45a7-45e9-b4be-1046aeb6b08e/hand-pad.png`,
       trackingUrl: `${SUPABASE_URL}/functions/v1/email-open?c=${encodeURIComponent(campaignKey)}&s=${r.id}`,
+      ...(stats ?? {}),
     };
+
 
     const tpl = await loadTemplate(supabase, campaignKey, data, {
       subject: def.label,
