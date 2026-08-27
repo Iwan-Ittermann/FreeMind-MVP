@@ -157,6 +157,12 @@ export default function Landing() {
                 <span className="transition-transform group-hover:translate-x-1">→</span>
               </a>
             )}
+            <a
+              href="/passphrase-vergessen"
+              className="text-sm text-foreground/60 underline underline-offset-4 hover:text-alert transition-colors"
+            >
+              Passphrase vergessen?
+            </a>
           </div>
         </div>
       </section>
