@@ -57,6 +57,7 @@ function AppRoutes() {
       <Route path="/confirm" element={<Confirm />} />
       <Route path="/unsubscribe" element={<Unsubscribe />} />
       <Route path="/legal" element={<Legal />} />
+      <Route path="/passphrase-vergessen" element={<PassphraseRecall />} />
       <Route path="/fragen" element={<Fragen />} />
       <Route path="/faq" element={<Navigate to="/fragen" replace />} />
       <Route path="/sogehts" element={<Sogehts />} />
