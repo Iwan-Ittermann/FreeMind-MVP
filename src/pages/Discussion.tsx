@@ -32,6 +32,8 @@ import { TTPolarizationPoll } from '@/components/tt/TTPolarizationPoll';
 import { TTNudgeHint } from '@/components/tt/TTNudgeHint';
 import { useNudgeStage } from '@/hooks/useNudgeStage';
 import { TTInstallHint } from '@/components/tt/TTInstallHint';
+import { TTFinalCountdown } from '@/components/tt/TTFinalCountdown';
+import { TTEndPanel } from '@/components/tt/TTEndPanel';
 import { useTranslation } from 'react-i18next';
 import { useArrowModePref } from '@/hooks/useArrowModePref';
 
