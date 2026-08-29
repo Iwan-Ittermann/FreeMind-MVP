@@ -51,7 +51,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
   const isMobile = useIsMobile();
   const chatManagerRef = useRef<FloatingChatManagerHandle>(null);
   const { topic, isLoading: topicLoading, config: eventConfig } = useEventTopic(mode);
-  const { phase, gated: phaseGated } = useEventPhase(eventConfig);
+  const { phase, gated: phaseGated, now } = useEventPhase(eventConfig);
   const { arrowMode } = useArrowModePref();
   // Time phases apply to the real question only — /test stays open at all times.
   const gated = mode === 'real' && phaseGated;
