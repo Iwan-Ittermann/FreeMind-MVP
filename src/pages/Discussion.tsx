@@ -32,6 +32,8 @@ import { TTPolarizationPoll } from '@/components/tt/TTPolarizationPoll';
 import { TTNudgeHint } from '@/components/tt/TTNudgeHint';
 import { useNudgeStage } from '@/hooks/useNudgeStage';
 import { TTInstallHint } from '@/components/tt/TTInstallHint';
+import { TTFinalCountdown } from '@/components/tt/TTFinalCountdown';
+import { TTEndPanel } from '@/components/tt/TTEndPanel';
 import { useTranslation } from 'react-i18next';
 import { useArrowModePref } from '@/hooks/useArrowModePref';
 
@@ -49,7 +51,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
   const isMobile = useIsMobile();
   const chatManagerRef = useRef<FloatingChatManagerHandle>(null);
   const { topic, isLoading: topicLoading, config: eventConfig } = useEventTopic(mode);
-  const { phase, gated: phaseGated } = useEventPhase(eventConfig);
+  const { phase, gated: phaseGated, now } = useEventPhase(eventConfig);
   const { arrowMode } = useArrowModePref();
   // Time phases apply to the real question only — /test stays open at all times.
   const gated = mode === 'real' && phaseGated;
@@ -126,6 +128,20 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
   const { data: unreadMap } = useUnreadMessages(activeTopicId, ownOpinionId);
   const { chats: ttChats } = useTTChats(activeTopicId, unreadMap);
   const { data: nudgeStage = null } = useNudgeStage(activeTopicId, ownOpinionId);
+
+  // After the discussion has ended: winners (top 5 by bridge points) get the
+  // prize panel, everyone else the wrap-up panel.
+  const discussionEnded =
+    mode === 'real' && !!eventConfig?.discussionEndAt && now >= eventConfig.discussionEndAt.getTime();
+  const ownRank = useMemo(() => {
+    if (!discussionEnded || !ownOpinionId || !activeData) return null;
+    const ranked = activeData.opinions
+      .filter((o) => !activeData.fakeOpinionIds.has(o.id))
+      .map((o) => ({ id: o.id, pts: activeData.nodePoints?.get(o.id) ?? 0 }))
+      .sort((a, b) => b.pts - a.pts || a.id.localeCompare(b.id));
+    const idx = ranked.findIndex((r) => r.id === ownOpinionId);
+    return idx >= 0 ? idx + 1 : null;
+  }, [discussionEnded, ownOpinionId, activeData]);
 
   const handleEdgeClick = useCallback((edge: GraphEdge) => {
     if (isMobile) return;
@@ -288,14 +304,24 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
 
           )
         )}
-        {hasOwnOpinion && !gateVariant && !selectedNode && (
+        {mode === 'real' && !gateVariant && !discussionEnded && (
+          <TTFinalCountdown endAt={eventConfig?.discussionEndAt} />
+        )}
+        {discussionEnded && !gateVariant && !selectedNode && (
+          <TTEndPanel
+            isWinner={!!ownRank && ownRank <= 5}
+            rank={ownRank}
+            ownOpinionId={ownOpinionId}
+          />
+        )}
+        {hasOwnOpinion && !gateVariant && !selectedNode && !discussionEnded && (
           <TTNudgeHint
             stage={nudgeStage}
             onAction={() => sideTabsRef.current?.openPanel(nudgeStage === 'rate' ? 'opinions' : 'chats')}
             onVisibilityChange={setNudgeVisible}
           />
         )}
-        {hasOwnOpinion && !gateVariant && !selectedNode && !nudgeVisible && <TTInstallHint />}
+        {hasOwnOpinion && !gateVariant && !selectedNode && !nudgeVisible && !discussionEnded && <TTInstallHint />}
 
 
         <TTBottomPanel
