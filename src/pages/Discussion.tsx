@@ -304,14 +304,24 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
 
           )
         )}
-        {hasOwnOpinion && !gateVariant && !selectedNode && (
+        {mode === 'real' && !gateVariant && !discussionEnded && (
+          <TTFinalCountdown endAt={eventConfig?.discussionEndAt} />
+        )}
+        {discussionEnded && !gateVariant && !selectedNode && (
+          <TTEndPanel
+            isWinner={!!ownRank && ownRank <= 5}
+            rank={ownRank}
+            ownOpinionId={ownOpinionId}
+          />
+        )}
+        {hasOwnOpinion && !gateVariant && !selectedNode && !discussionEnded && (
           <TTNudgeHint
             stage={nudgeStage}
             onAction={() => sideTabsRef.current?.openPanel(nudgeStage === 'rate' ? 'opinions' : 'chats')}
             onVisibilityChange={setNudgeVisible}
           />
         )}
-        {hasOwnOpinion && !gateVariant && !selectedNode && !nudgeVisible && <TTInstallHint />}
+        {hasOwnOpinion && !gateVariant && !selectedNode && !nudgeVisible && !discussionEnded && <TTInstallHint />}
 
 
         <TTBottomPanel
