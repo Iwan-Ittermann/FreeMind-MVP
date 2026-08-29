@@ -129,6 +129,20 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
   const { chats: ttChats } = useTTChats(activeTopicId, unreadMap);
   const { data: nudgeStage = null } = useNudgeStage(activeTopicId, ownOpinionId);
 
+  // After the discussion has ended: winners (top 5 by bridge points) get the
+  // prize panel, everyone else the wrap-up panel.
+  const discussionEnded =
+    mode === 'real' && !!eventConfig?.discussionEndAt && now >= eventConfig.discussionEndAt.getTime();
+  const ownRank = useMemo(() => {
+    if (!discussionEnded || !ownOpinionId || !activeData) return null;
+    const ranked = activeData.opinions
+      .filter((o) => !activeData.fakeOpinionIds.has(o.id))
+      .map((o) => ({ id: o.id, pts: activeData.nodePoints?.get(o.id) ?? 0 }))
+      .sort((a, b) => b.pts - a.pts || a.id.localeCompare(b.id));
+    const idx = ranked.findIndex((r) => r.id === ownOpinionId);
+    return idx >= 0 ? idx + 1 : null;
+  }, [discussionEnded, ownOpinionId, activeData]);
+
   const handleEdgeClick = useCallback((edge: GraphEdge) => {
     if (isMobile) return;
     chatManagerRef.current?.openReadOnlyChat(edge.source, edge.target);
