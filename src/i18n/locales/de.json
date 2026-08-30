@@ -656,7 +656,7 @@
     "regenerateHint": "Neue Passphrase kopiert: {{phrase}}",
     "signOut": "Abmelden",
     "opinionPlaceholder": "Was ist deine Meinung zu dem Thema?",
-    "archiveOpenNotice": "Das war die August-Diskussion. Sie ist beendet \u2014 die Ergebnisse bleiben, aber du kannst jetzt mitmachen und freemind mit den Bots A, B und C ausprobieren.",
+    "archiveOpenNotice": "Das war die August-Diskussion. Sie ist beendet — aber du kannst jetzt mitmachen und sie wie eine laufende Diskussion nutzen.",
     "registerToParticipate": "Registriere dich unter",
     "registerToParticipateSuffix": "um teilzunehmen",
     "post": "Posten",
@@ -799,7 +799,12 @@
       "needsInstall": "Auf dem iPhone zuerst über „Teilen → Zum Home-Bildschirm“ installieren.",
       "iosHint": "iPhone: zuerst über „Teilen → Zum Home-Bildschirm“ installieren, dann hier aktivieren.",
       "previewHint": "Push funktioniert nur in der veröffentlichten App."
-    }
+    },
+    "deleteOpinion": "Meine Meinung löschen",
+    "deleteOpinionConfirm": "Deine Meinung und alle zugehörigen Gespräche löschen?",
+    "deleteOpinionDone": "Deine Meinung wurde gelöscht.",
+    "deleteOpinionFailed": "Meinung konnte nicht gelöscht werden.",
+    "yourRating": "Deine Bewertung"
   },
   "secret": {
     "title": "Geschützter Bereich",

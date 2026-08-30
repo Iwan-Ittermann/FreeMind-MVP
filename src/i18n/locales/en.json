@@ -656,7 +656,7 @@
     "regenerateHint": "New passphrase copied: {{phrase}}",
     "signOut": "Sign out",
     "opinionPlaceholder": "What is your opinion on this topic?",
-    "archiveOpenNotice": "This was the August discussion. It has ended \u2014 the results stay as they are, but you can join in now and try freemind with bots A, B and C.",
+    "archiveOpenNotice": "This was the August discussion. It has ended — but you can join in now and use it like a live discussion.",
     "registerToParticipate": "Register at",
     "registerToParticipateSuffix": "to participate",
     "post": "Post",
@@ -799,7 +799,12 @@
       "needsInstall": "On iPhone, first add the app via Share → Add to Home Screen.",
       "iosHint": "iPhone: add to your home screen first, then enable it here.",
       "previewHint": "Push only works in the published app."
-    }
+    },
+    "deleteOpinion": "Delete my opinion",
+    "deleteOpinionConfirm": "Delete your opinion and all its conversations?",
+    "deleteOpinionDone": "Your opinion was deleted.",
+    "deleteOpinionFailed": "Could not delete your opinion.",
+    "yourRating": "Your rating"
   },
   "secret": {
     "title": "Protected area",
