@@ -67,7 +67,9 @@ const LANGUAGES = [
   { code: 'en', flag: '🇬🇧', labelKey: 'common.english' },
 ];
 
-export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRestartTour, onOpenHelp, activeTopicId }: TTHeaderProps) {
+export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRestartTour, onOpenHelp, activeTopicId, onDeleteOpinion }: TTHeaderProps) {
+  const [deleteBusy, setDeleteBusy] = useState(false);
+
   const { t } = useTranslation();
   const { user } = useAuth();
   const { arrowMode, setArrowMode } = useArrowModePref();
