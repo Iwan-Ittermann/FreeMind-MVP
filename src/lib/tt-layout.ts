@@ -591,14 +591,22 @@ export function calculateTTLayout(
   });
 
 
-  // Pin the bot to 6 o'clock at the legacy starter ring
+  // Pin bots around 6 o'clock at the legacy starter ring — several bots are
+  // fanned out deterministically so they never sit on top of each other.
+  const botOrder = allNodes
+    .filter((n) => isBotUser(n.opinion.authorId))
+    .map((n) => n.opinion.authorId ?? n.id)
+    .sort();
   allNodes = allNodes.map(node => {
     if (isBotUser(node.opinion.authorId)) {
       const r = ttLevelToRadius(3, landmarks);
+      const idx = Math.max(0, botOrder.indexOf(node.opinion.authorId ?? node.id));
+      const spread = (idx - (botOrder.length - 1) / 2) * (Math.PI / 7);
+      const angle = Math.PI / 2 + spread;
       return {
         ...node,
-        x: config.centerX,
-        y: config.centerY + r,
+        x: config.centerX + Math.cos(angle) * r,
+        y: config.centerY + Math.sin(angle) * r,
         distanceToCenter: r,
         hasChats: true,
         zone: 'moderate' as const,
