@@ -11,9 +11,16 @@ i18n.use(initReactI18next).init({
     en: { translation: en },
     de: { translation: de },
   },
-  lng: 'de',
-  fallbackLng: 'de',
-  supportedLngs: ['de'],
+  // English-first; German stays available through the language switcher.
+  lng: (() => {
+    try {
+      return localStorage.getItem('freemind_lang') || 'en';
+    } catch {
+      return 'en';
+    }
+  })(),
+  fallbackLng: 'en',
+  supportedLngs: ['en', 'de'],
   interpolation: {
     escapeValue: false,
   },
