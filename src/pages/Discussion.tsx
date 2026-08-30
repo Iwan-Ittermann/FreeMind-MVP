@@ -61,6 +61,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
   // Time phases apply to the real question only — /test stays open at all times.
   const gated = mode === 'real' && phaseGated;
   const isSandbox = mode === 'sandbox';
+  const [sandboxGateClosed, setSandboxGateClosed] = useState(false);
   const isArchive = mode === 'archive';
   const activeTopicId = topic?.id ?? '';
   const activeTopicTitle = topic?.title ?? '...';
@@ -208,7 +209,9 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
   // /test requires a passphrase login first, then the mandatory opinion.
   const gateVariant: 'countdown' | 'submit' | 'waiting' | 'login' | null = (() => {
     if (!ownOpinionKnown || !activeTopicId) return null;
-    if (isSandbox || isArchive) return null;
+    if (isArchive) return null;
+    // Sandbox: ask for the opinion first, but it can be closed with a small cross.
+    if (isSandbox) return !hasOwnOpinion && !sandboxGateClosed ? 'submit' : null;
     if (gated) {
       if (phase === 'prelaunch') return 'countdown';
       if (!isVerified) return null; // unverified users may browse read-only
@@ -389,6 +392,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
               queryClient.invalidateQueries({ queryKey: ['tt-own-opinion', activeTopicId, user?.id] });
               queryClient.invalidateQueries({ queryKey: ['topic', activeTopicId] });
             }}
+            onDismiss={isSandbox ? () => setSandboxGateClosed(true) : undefined}
           />
         )}
 
@@ -418,7 +422,10 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
         <TTSandboxPassphrase enabled={isSandbox} />
 
         {(isSandbox || isArchive) && (
-          <TTModeNotice mode={isSandbox ? 'sandbox' : 'archive'} />
+          <TTModeNotice
+            mode={isSandbox ? 'sandbox' : 'archive'}
+            offsetClass={isSandbox && !hasOwnOpinion ? 'bottom-[196px]' : 'bottom-[150px]'}
+          />
         )}
 
         {/* Impressum footer — matches the header's slim size */}
