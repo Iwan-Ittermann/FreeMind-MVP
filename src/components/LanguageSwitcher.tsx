@@ -20,6 +20,15 @@ interface LanguageSwitcherProps {
 export function LanguageSwitcher({ variant = 'icon' }: LanguageSwitcherProps) {
   const { i18n, t } = useTranslation();
 
+  const change = (code: string) => {
+    i18n.changeLanguage(code);
+    try {
+      localStorage.setItem('freemind_lang', code);
+    } catch {
+      /* ignore */
+    }
+  };
+
   const currentLanguage = languages.find((lang) => lang.code === i18n.language) || languages[0];
 
   if (variant === 'full') {
@@ -30,7 +39,7 @@ export function LanguageSwitcher({ variant = 'icon' }: LanguageSwitcherProps) {
             key={lang.code}
             variant={i18n.language === lang.code ? 'default' : 'outline'}
             size="sm"
-            onClick={() => i18n.changeLanguage(lang.code)}
+            onClick={() => change(lang.code)}
             className="flex-1"
           >
             <span className="mr-2">{lang.flag}</span>
@@ -56,7 +65,7 @@ export function LanguageSwitcher({ variant = 'icon' }: LanguageSwitcherProps) {
         {languages.map((lang) => (
           <DropdownMenuItem
             key={lang.code}
-            onClick={() => i18n.changeLanguage(lang.code)}
+            onClick={() => change(lang.code)}
             className={`cursor-pointer ${
               i18n.language === lang.code ? 'bg-accent text-accent-foreground' : ''
             }`}
