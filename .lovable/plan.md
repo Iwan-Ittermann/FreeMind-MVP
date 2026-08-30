@@ -37,7 +37,7 @@ The August event is over. The site becomes English-first, the old discussion mov
 ## 4. Landing page `/` rewritten in English, no live data
 
 - Removes all references to the running discussion, live stats and the countdown.
-- New structure: what freemind is → what the experiment showed (qualitative, no numbers) → two clear links: **Try the sandbox** (`/go`) and **See the August discussion** (`/aug-test`).
+- Keeps the existing sections and layout; only the copy is translated and de-dated, plus two clear links: **Try the sandbox** (`/go`) and **See the August discussion** (`/aug-test`).
 - The "Jetzt registrieren" section becomes **"Register for future events"**: same email form, copy explains that a future event runs for 4 days and registrants get notified.
 - Footer keeps Impressum / FAQ / contact.
 
