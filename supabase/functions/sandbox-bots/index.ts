@@ -142,8 +142,10 @@ Deno.serve(async (req) => {
         .maybeSingle();
       cutoff = (reopened?.value ?? '').trim() || null;
       if (!cutoff) return json({ error: 'archive not reopened' }, 400);
-      // Postgres text timestamps ("… 13:40:00+00") need the ISO separator.
-      cutoffMs = new Date(cutoff.replace(' ', 'T')).getTime();
+      // Postgres text timestamps ("2026-08-30 13:40:00+00") are not ISO:
+      // they need a "T" separator and a two-part UTC offset.
+      const iso = cutoff.replace(' ', 'T').replace(/([+-]\d{2})$/, '$1:00');
+      cutoffMs = new Date(iso).getTime();
       if (Number.isNaN(cutoffMs)) return json({ error: 'invalid reopen timestamp' }, 400);
     }
 
