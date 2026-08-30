@@ -1457,6 +1457,7 @@ export type Database = {
     }
     Functions: {
       approve_court_case: { Args: { _case_id: string }; Returns: undefined }
+      archive_reopened_at: { Args: never; Returns: string }
       can_view_opinion: {
         Args: { _opinion_id: string; _user_id: string; _visible: boolean }
         Returns: boolean
@@ -1601,6 +1602,12 @@ export type Database = {
       is_archived_topic: { Args: { _topic_id: string }; Returns: boolean }
       is_chat_participant: {
         Args: { chat_id: string; checking_user_id: string }
+        Returns: boolean
+      }
+      is_open_topic: { Args: { _topic_id: string }; Returns: boolean }
+      is_post_reopen_chat: { Args: { _chat_id: string }; Returns: boolean }
+      is_post_reopen_opinion: {
+        Args: { _opinion_id: string }
         Returns: boolean
       }
       is_real_event_topic: { Args: { _topic_id: string }; Returns: boolean }
