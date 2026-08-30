@@ -36,6 +36,7 @@ import { TTFinalCountdown } from '@/components/tt/TTFinalCountdown';
 import { TTEndPanel } from '@/components/tt/TTEndPanel';
 import { TTModeNotice } from '@/components/tt/TTModeNotice';
 import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
+import { setVerificationBypass } from '@/lib/verification';
 import { useSandboxBots } from '@/hooks/useSandboxBots';
 import { useTranslation } from 'react-i18next';
 import { useArrowModePref } from '@/hooks/useArrowModePref';
@@ -147,6 +148,12 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
     const idx = ranked.findIndex((r) => r.id === ownOpinionId);
     return idx >= 0 ? idx + 1 : null;
   }, [discussionEnded, ownOpinionId, activeData]);
+
+  // The sandbox is open to everyone: no email verification nag.
+  useEffect(() => {
+    setVerificationBypass(isSandbox);
+    return () => setVerificationBypass(false);
+  }, [isSandbox]);
 
   // Sandbox bots react to human opinions on page load / after submitting.
   useSandboxBots(isSandbox, activeTopicId, hasOwnOpinion);
