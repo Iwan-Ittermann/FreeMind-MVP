@@ -133,6 +133,7 @@ Deno.serve(async (req) => {
 
     // Freeze line for the reopened archive: bots ignore everything older.
     let cutoff: string | null = null;
+    let cutoffMs = 0;
     if (target === 'archive') {
       const { data: reopened } = await supabase
         .from('app_settings')
@@ -141,6 +142,9 @@ Deno.serve(async (req) => {
         .maybeSingle();
       cutoff = (reopened?.value ?? '').trim() || null;
       if (!cutoff) return json({ error: 'archive not reopened' }, 400);
+      // Postgres text timestamps ("… 13:40:00+00") need the ISO separator.
+      cutoffMs = new Date(cutoff.replace(' ', 'T')).getTime();
+      if (Number.isNaN(cutoffMs)) return json({ error: 'invalid reopen timestamp' }, 400);
     }
 
     const { data: topic } = await supabase
@@ -186,7 +190,7 @@ Deno.serve(async (req) => {
         o.visible !== false &&
         !BOT_IDS.includes(o.user_id as string) &&
         // Archive: only opinions posted after the reopening are playground material.
-        (!cutoff || String(o.created_at ?? '') >= cutoff),
+        (!cutoff || new Date(String(o.created_at ?? 0)).getTime() >= cutoffMs),
     );
     if (humans.length === 0) return json({ ok: true, handled: 0 });
 
