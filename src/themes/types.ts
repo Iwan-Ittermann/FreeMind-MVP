@@ -33,6 +33,7 @@ export type SemanticNodeToken = Readonly<{
   isHidden: boolean;
   opinionText: string;
   isBot: boolean;
+  botLabel?: string;
   isTop5: boolean;
   isInactive: boolean;
   /** 0 = highest score in the graph, 1 = lowest. Drives star brightness. */
