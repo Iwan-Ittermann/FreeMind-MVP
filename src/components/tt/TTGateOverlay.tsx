@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Clock, Send, Lock, KeyRound, LogOut } from 'lucide-react';
+import { Clock, Send, Lock, KeyRound, LogOut, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -21,6 +21,8 @@ interface TTGateOverlayProps {
   onSubmitted?: () => void;
   /** Called after a successful passphrase login. */
   onLoggedIn?: () => void;
+  /** When set, the overlay can be closed with a small cross (sandbox mode). */
+  onDismiss?: () => void;
 }
 
 
@@ -52,6 +54,7 @@ export function TTGateOverlay({
   isVerified = false,
   onSubmitted,
   onLoggedIn,
+  onDismiss,
 }: TTGateOverlayProps) {
   const { t } = useTranslation();
   const [text, setText] = useState('');
@@ -124,6 +127,17 @@ export function TTGateOverlay({
   return (
     <div className="absolute inset-0 z-[38] flex items-center justify-center px-5 pb-16 pt-14 bg-background/80 backdrop-blur-[3px]">
       <div className="relative w-full max-w-[360px] rounded-2xl bg-background/95 border border-border/50 shadow-2xl p-5 text-center">
+        {onDismiss && (
+          <button
+            type="button"
+            onClick={onDismiss}
+            className="absolute top-2 right-2 z-10 p-1.5 rounded-full hover:bg-muted text-muted-foreground"
+            aria-label={t('common.close', 'Close')}
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
+
         {variant === 'login' && (
           <>
             <KeyRound className="w-6 h-6 mx-auto mb-3 text-primary" />
@@ -196,6 +210,7 @@ export function TTGateOverlay({
 
         {variant === 'submit' && (
           <>
+            {!onDismiss && (
             <button
               type="button"
               onClick={handleSignOut}
@@ -205,6 +220,7 @@ export function TTGateOverlay({
               <LogOut className="w-3.5 h-3.5" />
               {t('common.signOut')}
             </button>
+            )}
             <Lock className="w-6 h-6 mx-auto mb-3 text-primary" />
             <h2 className="text-base font-semibold text-foreground mb-1">
               {t('tt.event.submitTitle')}
