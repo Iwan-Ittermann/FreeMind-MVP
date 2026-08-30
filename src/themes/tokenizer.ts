@@ -6,7 +6,7 @@
  */
 
 import { GraphNode, GraphEdge, LayoutConfig } from '@/types/graph';
-import { isBotUser } from '@/lib/constants';
+import { isBotUser, botLabel } from '@/lib/constants';
 import { ActiveChat } from '@/hooks/useTopicData';
 import {
   SemanticNodeToken,
@@ -94,6 +94,7 @@ export function tokenizeNode(
     isHidden: node.opinion.visible === false,
     opinionText: node.opinion.text,
     isBot: isBotUser(node.opinion.authorId),
+    botLabel: botLabel(node.opinion.authorId) ?? undefined,
     isTop5: node.isTop5 ?? false,
     isInactive: node.isInactive ?? false,
     rankRatio: node.rankRatio ?? 1,

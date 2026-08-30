@@ -143,8 +143,11 @@ export const SignalNode = memo(function SignalNode({
   const TTStarShape = () => (
     <TTStar rankRatio={token.rankRatio} isTop5={token.isTop5} isCurrentUser={token.isCurrentUser} />
   );
+  const shortBotLabel = token.botLabel?.startsWith('Bot ')
+    ? token.botLabel.slice(4)
+    : token.botLabel ?? 'AI';
   const Shape = token.isBot
-    ? BotShape
+    ? () => <BotShape label={shortBotLabel} />
     : showInactive
       ? InactiveShapeTT
       : ttMode
