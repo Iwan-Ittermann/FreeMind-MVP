@@ -63,6 +63,11 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
   const isSandbox = mode === 'sandbox';
   const [sandboxGateClosed, setSandboxGateClosed] = useState(false);
   const isArchive = mode === 'archive';
+  // The August archive can be reopened as a second playground: writable for
+  // everyone, while everything created during the event stays frozen server-side.
+  const archiveOpen = isArchive && !!eventConfig?.archiveOpen;
+  const readOnly = isArchive && !archiveOpen;
+  const isPlayground = isSandbox || archiveOpen;
   const activeTopicId = topic?.id ?? '';
   const activeTopicTitle = topic?.title ?? '...';
 
@@ -153,12 +158,12 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
 
   // The sandbox is open to everyone: no email verification nag.
   useEffect(() => {
-    setVerificationBypass(isSandbox);
+    setVerificationBypass(isPlayground);
     return () => setVerificationBypass(false);
-  }, [isSandbox]);
+  }, [isPlayground]);
 
-  // Sandbox bots react to human opinions on page load / after submitting.
-  useSandboxBots(isSandbox, activeTopicId, hasOwnOpinion);
+  // Playground bots react to human opinions on page load / after submitting.
+  useSandboxBots(isPlayground, activeTopicId, hasOwnOpinion, isSandbox ? 'sandbox' : 'archive');
 
   const handleEdgeClick = useCallback((edge: GraphEdge) => {
     if (isMobile) return;
@@ -209,9 +214,9 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
   // /test requires a passphrase login first, then the mandatory opinion.
   const gateVariant: 'countdown' | 'submit' | 'waiting' | 'login' | null = (() => {
     if (!ownOpinionKnown || !activeTopicId) return null;
-    if (isArchive) return null;
-    // Sandbox: ask for the opinion first, but it can be closed with a small cross.
-    if (isSandbox) return !hasOwnOpinion && !sandboxGateClosed ? 'submit' : null;
+    if (readOnly) return null;
+    // Playground: ask for the opinion first, but it can be closed with a small cross.
+    if (isPlayground) return !hasOwnOpinion && !sandboxGateClosed ? 'submit' : null;
     if (gated) {
       if (phase === 'prelaunch') return 'countdown';
       if (!isVerified) return null; // unverified users may browse read-only
@@ -228,7 +233,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
 
 
   return (
-    <ReadOnlyProvider value={isArchive}>
+    <ReadOnlyProvider value={readOnly}>
     <div className="fixed inset-0 bg-black flex items-center justify-center">
       <div data-tt-phone-viewport className="relative h-[100dvh] w-full max-w-[480px] shrink-0 bg-background overflow-hidden">
         <div className="absolute inset-0 overflow-hidden">
@@ -289,8 +294,8 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
             ownOpinionId={ownOpinionId}
           />
         )}
-        {ownOpinionKnown && !hasOwnOpinion && activeTopicId && !gateVariant && !isArchive && (
-          isVerified || isSandbox ? (
+        {ownOpinionKnown && !hasOwnOpinion && activeTopicId && !gateVariant && !readOnly && (
+          isVerified || isPlayground ? (
             <TTCenterCTA
               topicId={activeTopicId}
               topicTitle={activeTopicTitle}
@@ -392,7 +397,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
               queryClient.invalidateQueries({ queryKey: ['tt-own-opinion', activeTopicId, user?.id] });
               queryClient.invalidateQueries({ queryKey: ['topic', activeTopicId] });
             }}
-            onDismiss={isSandbox ? () => setSandboxGateClosed(true) : undefined}
+            onDismiss={isPlayground ? () => setSandboxGateClosed(true) : undefined}
           />
         )}
 
@@ -419,12 +424,12 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
 
 
 
-        <TTSandboxPassphrase enabled={isSandbox} />
+        <TTSandboxPassphrase enabled={isPlayground} />
 
         {(isSandbox || isArchive) && (
           <TTModeNotice
-            mode={isSandbox ? 'sandbox' : 'archive'}
-            offsetClass={isSandbox && !hasOwnOpinion ? 'bottom-[196px]' : 'bottom-[150px]'}
+            mode={isSandbox ? 'sandbox' : archiveOpen ? 'archive-open' : 'archive'}
+            offsetClass={isPlayground && !hasOwnOpinion ? 'bottom-[196px]' : 'bottom-[150px]'}
           />
         )}
 
