@@ -139,7 +139,7 @@ export default function Landing() {
               href="/passphrase-vergessen"
               className="text-sm text-foreground/60 underline underline-offset-4 hover:text-alert transition-colors"
             >
-              Forgot your passphrase?
+              {"\n"}
             </a>
           </div>
         </div>
@@ -188,7 +188,7 @@ export default function Landing() {
             <p>The graph comes alive.</p>
             <p>New conversations appear everywhere.</p>
             <p>Every conversation changes the playing field.</p>
-            <p>Until midnight on the last day shows who built the strongest bridges.</p>
+            <p>The last day shows who built the strongest bridges.</p>
             <p className="font-bold">Without any moderation.</p>
           </div>
         </div>
