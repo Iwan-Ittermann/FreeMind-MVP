@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Opinion, GraphNode } from '@/types/graph';
-import { BOT_USER_ID } from '@/lib/constants';
+import { isBotUser } from '@/lib/constants';
 
 export const TT_TOUR_MAX_RATINGS = 4;
 
@@ -58,7 +58,7 @@ export function useTTPositioningTour({
     const candidates = opinions.filter(
       (op) =>
         op.id !== ownOpinionId &&
-        op.authorId !== BOT_USER_ID &&
+        !isBotUser(op.authorId) &&
         !exclude.has(op.id) &&
         op.visible !== false,
     );
@@ -98,7 +98,7 @@ export function useTTPositioningTour({
     opinions.some(
       (op) =>
         op.id !== ownOpinionId &&
-        op.authorId !== BOT_USER_ID &&
+        !isBotUser(op.authorId) &&
         !seenIds.has(op.id) &&
         op.visible !== false,
     );

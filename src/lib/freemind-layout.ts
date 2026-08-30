@@ -20,7 +20,7 @@
  */
 
 import { GraphNode, GraphEdge, GraphData, ChatRating, Opinion, LayoutConfig, RespectfulZoneSlot } from '@/types/graph';
-import { BOT_USER_ID } from '@/lib/constants';
+import { isBotUser } from '@/lib/constants';
 
 /**
  * Calculate the Bridging Score for a specific opinion in a specific chat
@@ -399,7 +399,7 @@ export function calculateLayout(
 
   // Fix bot node position BEFORE collision resolution so it participates
   allNodes = allNodes.map(node => {
-    if (node.opinion.authorId === BOT_USER_ID) {
+    if (isBotUser(node.opinion.authorId)) {
       const botRadius = (config.respectfulRadius + config.moderateRadius) / 2;
       return {
         ...node,
@@ -416,7 +416,7 @@ export function calculateLayout(
   // Build set of pinned node IDs (bot node stays fixed)
   const pinnedIds = new Set<string>();
   for (const node of allNodes) {
-    if (node.opinion.authorId === BOT_USER_ID) {
+    if (isBotUser(node.opinion.authorId)) {
       pinnedIds.add(node.id);
     }
   }
