@@ -50,10 +50,11 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
-      <Route path="/go" element={<Discussion mode="real" />} />
+      <Route path="/go" element={<Discussion mode="sandbox" />} />
+      <Route path="/aug-test" element={<Discussion mode="archive" />} />
       <Route path="/test" element={<Discussion mode="test" />} />
       <Route path="/secret" element={<Navigate to="/go" replace />} />
-      <Route path="/7mm9" element={<Navigate to="/go" replace />} />
+      <Route path="/7mm9" element={<Navigate to="/aug-test" replace />} />
       <Route path="/confirm" element={<Confirm />} />
       <Route path="/unsubscribe" element={<Unsubscribe />} />
       <Route path="/legal" element={<Legal />} />

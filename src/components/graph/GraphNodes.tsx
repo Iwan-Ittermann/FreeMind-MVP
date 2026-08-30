@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { GraphNode, LayoutConfig } from '@/types/graph';
-import { BOT_USER_ID } from '@/lib/constants';
+import { isBotUser } from '@/lib/constants';
 
 interface GraphNodesProps {
   nodes: GraphNode[];
@@ -54,7 +54,7 @@ export function GraphNodes({
       {nodes.map((node, index) => {
         const isHighlighted = highlightedNode === node.id;
         const isCurrentUser = currentUserId && node.opinion.authorId === currentUserId;
-        const isBot = node.opinion.authorId === BOT_USER_ID;
+        const isBot = isBotUser(node.opinion.authorId);
         const shouldDim = highlightedNode && !isHighlighted;
         const hasIncomingRequest = node.isRequester; // This node sent a request TO current user
         const isInactive = node.hasChats === false; // Node has no chats yet

@@ -34,6 +34,11 @@ import { useNudgeStage } from '@/hooks/useNudgeStage';
 import { TTInstallHint } from '@/components/tt/TTInstallHint';
 import { TTFinalCountdown } from '@/components/tt/TTFinalCountdown';
 import { TTEndPanel } from '@/components/tt/TTEndPanel';
+import { TTModeNotice } from '@/components/tt/TTModeNotice';
+import { TTSandboxPassphrase } from '@/components/tt/TTSandboxPassphrase';
+import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
+import { setVerificationBypass } from '@/lib/verification';
+import { useSandboxBots } from '@/hooks/useSandboxBots';
 import { useTranslation } from 'react-i18next';
 import { useArrowModePref } from '@/hooks/useArrowModePref';
 
@@ -42,7 +47,7 @@ import { useArrowModePref } from '@/hooks/useArrowModePref';
  * Single-topic mobile UI. This build is locked to the Helsinki event topic (7mm9);
  * multi-topic swipe/loop logic has been removed.
  */
-export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
+export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbox' | 'archive' }) {
   useParams<{ topicId?: string }>(); // single-topic routes; params ignored
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -55,6 +60,8 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
   const { arrowMode } = useArrowModePref();
   // Time phases apply to the real question only — /test stays open at all times.
   const gated = mode === 'real' && phaseGated;
+  const isSandbox = mode === 'sandbox';
+  const isArchive = mode === 'archive';
   const activeTopicId = topic?.id ?? '';
   const activeTopicTitle = topic?.title ?? '...';
 
@@ -143,6 +150,15 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
     return idx >= 0 ? idx + 1 : null;
   }, [discussionEnded, ownOpinionId, activeData]);
 
+  // The sandbox is open to everyone: no email verification nag.
+  useEffect(() => {
+    setVerificationBypass(isSandbox);
+    return () => setVerificationBypass(false);
+  }, [isSandbox]);
+
+  // Sandbox bots react to human opinions on page load / after submitting.
+  useSandboxBots(isSandbox, activeTopicId, hasOwnOpinion);
+
   const handleEdgeClick = useCallback((edge: GraphEdge) => {
     if (isMobile) return;
     chatManagerRef.current?.openReadOnlyChat(edge.source, edge.target);
@@ -192,6 +208,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
   // /test requires a passphrase login first, then the mandatory opinion.
   const gateVariant: 'countdown' | 'submit' | 'waiting' | 'login' | null = (() => {
     if (!ownOpinionKnown || !activeTopicId) return null;
+    if (isSandbox || isArchive) return null;
     if (gated) {
       if (phase === 'prelaunch') return 'countdown';
       if (!isVerified) return null; // unverified users may browse read-only
@@ -208,6 +225,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
 
 
   return (
+    <ReadOnlyProvider value={isArchive}>
     <div className="fixed inset-0 bg-black flex items-center justify-center">
       <div data-tt-phone-viewport className="relative h-[100dvh] w-full max-w-[480px] shrink-0 bg-background overflow-hidden">
         <div className="absolute inset-0 overflow-hidden">
@@ -268,8 +286,8 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
             ownOpinionId={ownOpinionId}
           />
         )}
-        {ownOpinionKnown && !hasOwnOpinion && activeTopicId && !gateVariant && (
-          isVerified ? (
+        {ownOpinionKnown && !hasOwnOpinion && activeTopicId && !gateVariant && !isArchive && (
+          isVerified || isSandbox ? (
             <TTCenterCTA
               topicId={activeTopicId}
               topicTitle={activeTopicTitle}
@@ -314,14 +332,14 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
             ownOpinionId={ownOpinionId}
           />
         )}
-        {hasOwnOpinion && !gateVariant && !selectedNode && !discussionEnded && (
+        {hasOwnOpinion && !gateVariant && !selectedNode && !discussionEnded && !isArchive && (
           <TTNudgeHint
             stage={nudgeStage}
             onAction={() => sideTabsRef.current?.openPanel(nudgeStage === 'rate' ? 'opinions' : 'chats')}
             onVisibilityChange={setNudgeVisible}
           />
         )}
-        {hasOwnOpinion && !gateVariant && !selectedNode && !nudgeVisible && !discussionEnded && <TTInstallHint />}
+        {hasOwnOpinion && !gateVariant && !selectedNode && !nudgeVisible && !discussionEnded && !isArchive && <TTInstallHint />}
 
 
         <TTBottomPanel
@@ -397,6 +415,12 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
 
 
 
+        <TTSandboxPassphrase enabled={isSandbox} />
+
+        {(isSandbox || isArchive) && (
+          <TTModeNotice mode={isSandbox ? 'sandbox' : 'archive'} />
+        )}
+
         {/* Impressum footer — matches the header's slim size */}
         <div className="absolute bottom-0 inset-x-0 z-40 h-7 px-3 flex items-center justify-start border-t border-border/30 bg-background/40 backdrop-blur-sm pointer-events-auto">
           <a
@@ -408,5 +432,6 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' }) {
         </div>
       </div>
     </div>
+    </ReadOnlyProvider>
   );
 }

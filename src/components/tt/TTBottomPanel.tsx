@@ -1,3 +1,4 @@
+import { useReadOnlyTopic } from '@/contexts/ReadOnlyContext';
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Flag, Send } from 'lucide-react';
@@ -76,12 +77,14 @@ export function TTBottomPanel({
     saveNow,
     hasSavedRating,
     isSaving,
-    canRate,
+    canRate: canRateRaw,
   } = useDisagreementRating(topicId, ownOpinionId, selected?.id ?? null);
   const [ratingTouched, setRatingTouched] = useState(false);
   const [ratingConfirmed, setRatingConfirmed] = useState(false);
   const [ratingReopened, setRatingReopened] = useState(false);
-  const chatDisabled = !hasOwnOpinion;
+  const topicReadOnly = useReadOnlyTopic();
+  const canRate = canRateRaw && !topicReadOnly;
+  const chatDisabled = !hasOwnOpinion || topicReadOnly;
 
   // Reset the two-step flow whenever another opinion is selected.
   useEffect(() => {
@@ -204,7 +207,7 @@ export function TTBottomPanel({
             </div>
 
             {/* Step 1: rate the opinion difference, confirm with OK */}
-            {!ratingDone && (
+            {!ratingDone && !topicReadOnly && (
               <div className="mt-3">
                 <div className={`min-w-0 flex flex-col gap-1 rounded-xl transition-all duration-300 ${highlightDisagreementScale ? 'relative z-[60] bg-background border border-primary px-2 py-1.5 ring-4 ring-primary/60 shadow-[0_0_30px_hsl(var(--primary)/0.65)] scale-[1.02]' : ''}`}>
                   <TTEmojiRating

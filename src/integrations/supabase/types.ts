@@ -1598,11 +1598,13 @@ export type Database = {
         Args: { _chat_id: string; _content: string }
         Returns: string
       }
+      is_archived_topic: { Args: { _topic_id: string }; Returns: boolean }
       is_chat_participant: {
         Args: { chat_id: string; checking_user_id: string }
         Returns: boolean
       }
       is_real_event_topic: { Args: { _topic_id: string }; Returns: boolean }
+      is_sandbox_topic: { Args: { _topic_id: string }; Returns: boolean }
       is_verified_participant: { Args: { _user_id: string }; Returns: boolean }
       log_audit: {
         Args: {

@@ -5,13 +5,13 @@ import { Button } from '@/components/ui/button';
 import { ChatComposer } from './ChatComposer';
 import { readDraft, writeDraft } from '@/hooks/useChatDrafts';
 import { RespectScale } from './RespectScale';
+import { useReadOnlyTopic } from '@/contexts/ReadOnlyContext';
 
 import { ChatBubble } from './ChatBubble';
 import { TypingIndicator } from './TypingIndicator';
 import { useChatSession } from '@/hooks/useChatSession';
 import { useChatMessages } from '@/hooks/useChatMessages';
 
-import { BOT_USER_ID } from '@/lib/constants';
 import { useTypingIndicator } from '@/hooks/useTypingIndicator';
 import { useUserBlocks } from '@/hooks/useUserBlocks';
 import { useTranslation } from 'react-i18next';
@@ -28,8 +28,10 @@ interface EmbeddedChatViewProps {
   sourceOpinionId?: string;
 }
 
-export function EmbeddedChatView({ theirOpinionId, readOnly = false, sourceOpinionId }: EmbeddedChatViewProps) {
+export function EmbeddedChatView({ theirOpinionId, readOnly: readOnlyProp = false, sourceOpinionId }: EmbeddedChatViewProps) {
   const { t } = useTranslation();
+  const topicReadOnly = useReadOnlyTopic();
+  const readOnly = readOnlyProp || topicReadOnly;
   const {
     chatId, myOpinion, theirOpinion, theirUserId,
     saveRating, isSavingRating, existingRating, myRatingRounds,

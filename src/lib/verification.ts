@@ -1,4 +1,15 @@
 import { supabase } from '@/integrations/supabase/client';
+import { ensureSilentAuth } from '@/lib/silent-auth';
+
+/**
+ * Open topics (the sandbox) accept writes from any silently created account,
+ * so the client-side verification nag is switched off while such a topic is open.
+ * The database still enforces its own rules.
+ */
+let verificationBypass = false;
+export function setVerificationBypass(on: boolean) {
+  verificationBypass = on;
+}
 
 type Listener = (open: boolean) => void;
 let listeners: Listener[] = [];
@@ -33,6 +44,10 @@ export function closeVerificationDialog() {
  * Server-side RLS still enforces the same rule; this only improves UX.
  */
 export async function requireVerified(): Promise<boolean> {
+  if (verificationBypass) {
+    await ensureSilentAuth().catch(() => {});
+    return true;
+  }
   const { data: sess } = await supabase.auth.getSession();
   const uid = sess.session?.user?.id;
   if (!uid) {

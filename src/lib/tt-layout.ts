@@ -24,7 +24,7 @@
  */
 
 import { GraphNode, GraphEdge, GraphData, ChatRating, Opinion, LayoutConfig, RespectfulZoneSlot } from '@/types/graph';
-import { BOT_USER_ID } from '@/lib/constants';
+import { isBotUser } from '@/lib/constants';
 import { calculateFreeMindScore } from '@/lib/freemind-layout';
 
 export interface TTLandmarks {
@@ -508,7 +508,7 @@ export function calculateTTLayout(
   const positives = idSorted
     .filter(op => {
       const t = totals.get(op.id)!;
-      return t.hasChats && t.total > 0 && op.authorId !== BOT_USER_ID;
+      return t.hasChats && t.total > 0 && !isBotUser(op.authorId);
     })
     .sort((a, b) => {
       const ta = totals.get(a.id)!.total;
@@ -551,7 +551,7 @@ export function calculateTTLayout(
     let zone: 'respectful' | 'moderate' | 'extreme';
     let isInactive = false;
 
-    if (total <= 0 && op.authorId !== BOT_USER_ID) {
+    if (total <= 0 && !isBotUser(op.authorId)) {
       // No points yet → outermost visible ring, dimmed.
       r = maxVisibleR;
       level = 1;
@@ -591,14 +591,22 @@ export function calculateTTLayout(
   });
 
 
-  // Pin the bot to 6 o'clock at the legacy starter ring
+  // Pin bots around 6 o'clock at the legacy starter ring — several bots are
+  // fanned out deterministically so they never sit on top of each other.
+  const botOrder = allNodes
+    .filter((n) => isBotUser(n.opinion.authorId))
+    .map((n) => n.opinion.authorId ?? n.id)
+    .sort();
   allNodes = allNodes.map(node => {
-    if (node.opinion.authorId === BOT_USER_ID) {
+    if (isBotUser(node.opinion.authorId)) {
       const r = ttLevelToRadius(3, landmarks);
+      const idx = Math.max(0, botOrder.indexOf(node.opinion.authorId ?? node.id));
+      const spread = (idx - (botOrder.length - 1) / 2) * (Math.PI / 7);
+      const angle = Math.PI / 2 + spread;
       return {
         ...node,
-        x: config.centerX,
-        y: config.centerY + r,
+        x: config.centerX + Math.cos(angle) * r,
+        y: config.centerY + Math.sin(angle) * r,
         distanceToCenter: r,
         hasChats: true,
         zone: 'moderate' as const,
@@ -608,7 +616,7 @@ export function calculateTTLayout(
   });
 
   const pinnedIds = new Set<string>();
-  for (const n of allNodes) if (n.opinion.authorId === BOT_USER_ID) pinnedIds.add(n.id);
+  for (const n of allNodes) if (isBotUser(n.opinion.authorId)) pinnedIds.add(n.id);
 
   allNodes = resolveCollisions(allNodes, config, pinnedIds);
 

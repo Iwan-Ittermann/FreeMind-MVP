@@ -74,12 +74,12 @@ function InactiveShapeTT() {
 
 
 
-function BotShape() {
+function BotShape({ label = 'AI' }: { label?: string }) {
   return (
     <>
       <circle cx="20" cy="20" r="14" stroke="#A855F7" strokeWidth="2" fill="none" />
       <circle cx="20" cy="20" r="8" fill="#A855F7" fillOpacity="0.6" />
-      <text x="20" y="21" textAnchor="middle" dominantBaseline="central" fill="#FFFFFF" fontSize="10" fontWeight="bold" fontFamily="monospace">AI</text>
+      <text x="20" y="21" textAnchor="middle" dominantBaseline="central" fill="#FFFFFF" fontSize="10" fontWeight="bold" fontFamily="monospace">{label}</text>
     </>
   );
 }
@@ -143,8 +143,11 @@ export const SignalNode = memo(function SignalNode({
   const TTStarShape = () => (
     <TTStar rankRatio={token.rankRatio} isTop5={token.isTop5} isCurrentUser={token.isCurrentUser} />
   );
+  const shortBotLabel = token.botLabel?.startsWith('Bot ')
+    ? token.botLabel.slice(4)
+    : token.botLabel ?? 'AI';
   const Shape = token.isBot
-    ? BotShape
+    ? () => <BotShape label={shortBotLabel} />
     : showInactive
       ? InactiveShapeTT
       : ttMode

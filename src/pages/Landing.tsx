@@ -45,29 +45,11 @@ function RainOverlay() {
 export default function Landing() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "already">("idle");
-  const [regClosed, setRegClosed] = useState(false);
 
   useEffect(() => {
-    document.title = "Eine Woche - Eine Frage - Mehr Verständnis - Weniger Spaltung";
+    document.title = "freemind — one question, more understanding, less division";
     const meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute("content", "Können wir eigentlich noch miteinander reden? Hilf mit, es herauszufinden.");
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      const { data } = await supabase
-        .from("app_settings")
-        .select("key, value")
-        .in("key", ["discussion_open_at", "registration_cutoff_at"]);
-      const now = Date.now();
-      const closed = (data ?? []).some((row) => {
-        const raw = String((row as { value?: string }).value ?? "").trim();
-        if (!raw) return false;
-        const d = new Date(raw);
-        return !isNaN(d.getTime()) && d.getTime() <= now;
-      });
-      setRegClosed(closed);
-    })();
+    if (meta) meta.setAttribute("content", "Can we still talk to each other? Try the freemind sandbox and see what a fair discussion looks like.");
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -93,7 +75,7 @@ export default function Landing() {
         toast.success("Du bist bereits dabei.");
         setStatus("already");
       } else {
-        toast.error("Etwas ist schiefgelaufen. Bitte versuch es erneut.");
+        toast.error("Something went wrong. Please try again.");
         setStatus("idle");
       }
     } catch {
@@ -104,7 +86,7 @@ export default function Landing() {
 
   return (
     <main
-      lang="de"
+      lang="en"
       className="landing-theme h-screen overflow-y-auto snap-y snap-proximity bg-background text-foreground font-sans relative"
     >
       <RainOverlay />
@@ -124,44 +106,40 @@ export default function Landing() {
         <div className={`${panelInner} relative flex flex-col items-start gap-10`}>
           <p className={`${eyebrowClass} flex items-center gap-3`}>
             <span className="inline-block h-2 w-2 rounded-full bg-alert animate-pulse" />
-            23. - 29. AUGUST · EINE FRAGE
+            ONE QUESTION · FOUR DAYS
           </p>
           <h1
             className={`${displayClass} text-left`}
             style={{ fontSize: "clamp(2.25rem, 6.5vw, 5rem)" }}
           >
-            DIE WAHRSCHEINLICH FAIRSTE POLITISCHE DISKUSSION IM INTERNET.
+            PROBABLY THE FAIREST POLITICAL DISCUSSION ON THE INTERNET.
           </h1>
           <div className="w-16 h-[3px] bg-alert" />
           <div className="text-xl sm:text-2xl md:text-3xl font-bold leading-tight space-y-2">
-            <p>Nicht, weil Menschen netter sind.</p>
+            <p>Not because people are nicer here.</p>
             <p>
-              Sondern weil <span className="text-alert">die Spielregeln andere sind.</span>
+              But because <span className="text-alert">the rules of the game are different.</span>
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-            {regClosed ? (
-              <a
-                href="/go"
-                className="group inline-flex items-center gap-3 bg-foreground text-background px-7 py-4 text-sm font-bold uppercase tracking-wider hover:bg-alert transition-colors"
-              >
-                Live zuschauen
-                <span className="transition-transform group-hover:translate-x-1">→</span>
-              </a>
-            ) : (
-              <a
-                href="#cta"
-                className="group inline-flex items-center gap-3 bg-foreground text-background px-7 py-4 text-sm font-bold uppercase tracking-wider hover:bg-alert transition-colors"
-              >
-                Jetzt registrieren
-                <span className="transition-transform group-hover:translate-x-1">→</span>
-              </a>
-            )}
+            <a
+              href="/go"
+              className="group inline-flex items-center gap-3 bg-foreground text-background px-7 py-4 text-sm font-bold uppercase tracking-wider hover:bg-alert transition-colors"
+            >
+              Try the sandbox
+              <span className="transition-transform group-hover:translate-x-1">→</span>
+            </a>
+            <a
+              href="/aug-test"
+              className="text-sm font-bold uppercase tracking-wider underline underline-offset-4 hover:text-alert transition-colors"
+            >
+              See the August discussion
+            </a>
             <a
               href="/passphrase-vergessen"
               className="text-sm text-foreground/60 underline underline-offset-4 hover:text-alert transition-colors"
             >
-              Passphrase vergessen?
+              Forgot your passphrase?
             </a>
           </div>
         </div>
@@ -170,29 +148,29 @@ export default function Landing() {
 
       <section className={panelClass}>
         <div className={`${panelInner} flex flex-col gap-8`}>
-          <p className={eyebrowClass}>Das Problem</p>
+          <p className={eyebrowClass}>The problem</p>
           <h2 className={displayClass} style={{ fontSize: "clamp(1.75rem, 5.5vw, 4rem)" }}>
-            ÖFFENTLICHE DEBATTEN SCHEITERN SELTEN AN DEN MENSCHEN.
+            PUBLIC DEBATE RARELY FAILS BECAUSE OF PEOPLE.
           </h2>
           <div className={bodyProseClass}>
-            <p>Sie scheitern an den Plattformen.</p>
-            <p>Heute belohnen soziale Netzwerke <em>Aufmerksamkeit</em>.</p>
-            <p className="text-alert font-bold">freemind belohnt <em>Verständnis</em>.</p>
+            <p>It fails because of the platforms.</p>
+            <p>Social networks reward <em>attention</em>.</p>
+            <p className="text-alert font-bold">freemind rewards <em>understanding</em>.</p>
           </div>
         </div>
       </section>
 
       <section className={panelClass}>
         <div className={`${panelInner} flex flex-col gap-8`}>
-          <p className={eyebrowClass}>Die Idee</p>
+          <p className={eyebrowClass}>The idea</p>
           <h2 className={displayClass} style={{ fontSize: "clamp(2rem, 6vw, 4.5rem)" }}>
-            WIR WOLLEN ETWAS BEWEISEN.<br />
-            NICHT DISKUTIEREN.<br />
-            <span className="text-alert">BEWEISEN.</span>
+            WE WANT TO PROVE SOMETHING.<br />
+            NOT ARGUE ABOUT IT.<br />
+            <span className="text-alert">PROVE IT.</span>
           </h2>
           <div className={bodyProseClass}>
-            <p>Dass öffentliche Debatten keine Moderation brauchen, sondern die richtige Architektur.</p>
-            <p>Wenn das funktioniert, ist diese Diskussion vielleicht mehr als nur eine Diskussion.</p>
+            <p>That public debate does not need moderation, but the right architecture.</p>
+            <p>If that works, a discussion here is more than just a discussion.</p>
           </div>
         </div>
       </section>
@@ -200,18 +178,18 @@ export default function Landing() {
       <section className={panelClass}>
         <div className={`${panelInner} flex flex-col gap-8`}>
           <h2 className={displayClass} style={{ fontSize: "clamp(1.75rem, 5vw, 3.5rem)" }}>
-            Was passiert?
+            What happens?
           </h2>
           <div className={bodyProseClass}>
-            <p>Du beantwortest eine Frage.</p>
-            <p>Du triffst Menschen, denen du wahrscheinlich nie begegnet wärst.</p>
-            <p>Ihr widersprecht euch.</p>
-            <p>Ihr versucht trotzdem, einander zu verstehen.</p>
-            <p>Eine Woche lang wird der Graph lebendig.</p>
-            <p>Überall entstehen neue Gespräche.</p>
-            <p>Jede Unterhaltung verändert das Spielfeld.</p>
-            <p>Bis am letzten Tag um Mitternacht feststeht, wer die stärksten Brücken gebaut hat.</p>
-            <p className="font-bold">Ganz ohne Moderation.</p>
+            <p>You answer one question.</p>
+            <p>You meet people you would probably never have met.</p>
+            <p>You disagree.</p>
+            <p>And you still try to understand each other.</p>
+            <p>The graph comes alive.</p>
+            <p>New conversations appear everywhere.</p>
+            <p>Every conversation changes the playing field.</p>
+            <p>Until midnight on the last day shows who built the strongest bridges.</p>
+            <p className="font-bold">Without any moderation.</p>
           </div>
         </div>
       </section>
@@ -219,11 +197,11 @@ export default function Landing() {
       <section className={panelClass}>
         <div className={`${panelInner} flex flex-col gap-8`}>
           <h2 className={displayClass} style={{ fontSize: "clamp(1.75rem, 5vw, 3.5rem)" }}>
-            Über mich
+            About me
           </h2>
           <div className={bodyProseClass}>
-            <p>Seit Jahren frage ich mich, warum das Internet Millionen Menschen miteinander verbinden kann, aber so selten gute Gespräche entstehen.</p>
-            <p className="font-bold">Diese Diskussion ist mein Versuch, das Gegenteil zu beweisen.</p>
+            <p>For years I have wondered why the internet can connect millions of people, yet good conversations are so rare.</p>
+            <p className="font-bold">freemind is my attempt to prove the opposite.</p>
           </div>
         </div>
       </section>
@@ -231,25 +209,11 @@ export default function Landing() {
       <section id="cta" className={panelClass}>
         <div className={panelInner}>
           <h2 className={`${displayClass} mb-8`} style={{ fontSize: "clamp(1.75rem, 5vw, 3.5rem)" }}>
-            HILF MIT HERAUSZUFINDEN, OB DAS INTERNET AUCH ANDERS FUNKTIONIEREN KANN.
+            HELP FIND OUT WHETHER THE INTERNET CAN WORK DIFFERENTLY.
           </h2>
           <p className="mb-10 text-lg sm:text-xl font-bold uppercase tracking-wide">
-            EINE WOCHE · EINE FRAGE · <span className="text-alert">EIN BEWEIS.</span>
+            FOUR DAYS · ONE QUESTION · <span className="text-alert">ONE PROOF.</span>
           </p>
-          {regClosed ? (
-            <div className="space-y-6">
-              <p className="text-lg sm:text-xl font-bold uppercase tracking-wide text-alert leading-snug">
-                Die Registrierung ist geschlossen — die Diskussion hat begonnen.
-              </p>
-              <a
-                href="/go"
-                className="inline-block bg-foreground text-background px-8 py-4 text-sm font-bold uppercase hover:bg-alert transition-colors"
-              >
-                Jetzt zuschauen
-              </a>
-            </div>
-          ) : (
-          <>
           <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-0 border border-foreground">
             <input
               type="text"
@@ -257,7 +221,7 @@ export default function Landing() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={status !== "idle"}
-              placeholder="E-Mail"
+              placeholder="Email"
               className="flex-grow py-3.5 sm:py-4 outline-none text-sm font-bold uppercase placeholder:text-muted-foreground bg-transparent disabled:opacity-60"
             />
             <button
@@ -266,30 +230,28 @@ export default function Landing() {
               className="bg-foreground text-background px-6 py-3.5 sm:px-8 sm:py-4 text-sm font-bold uppercase hover:bg-alert transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {status === "loading"
-                ? "Sende…"
+                ? "Sending…"
                 : status === "sent"
-                  ? "Mail gesendet ✓"
+                  ? "Mail sent ✓"
                   : status === "already"
-                    ? "Bereits dabei ✓"
-                    : "Jetzt registrieren"}
+                    ? "Already in ✓"
+                    : "Register for future events"}
             </button>
           </form>
           <p className="mt-6 text-xs text-muted-foreground whitespace-pre-line">
-            Die 5 besten Brückenbauer erhalten 50 € als Annerkennung. Alle Infos per E-Mail.{"\u00a0"}{"\n"}
-            Auszahlung per Paypal oder Banküberweisung.{"\u00a0"}{"\n"}
-            Der Rechtsweg ist ausgeschlossen.
+            A future event runs for four days. Register once and we will let you know before it starts.{"\u00a0"}{"\n"}
+            The five best bridge builders receive 50 € each as a thank you.{"\u00a0"}{"\n"}
+            Legal recourse is excluded.
           </p>
           {status === "sent" && (
             <p className="mt-4 text-[13px] sm:text-sm font-bold normal-case sm:uppercase tracking-wide text-alert leading-snug">
-              📬 Bestätigungs-E-Mail unterwegs — klick den Link darin, um deine Anmeldung abzuschließen.
+              📬 Confirmation email on its way — click the link inside to complete your registration.
             </p>
           )}
           {status === "already" && (
             <p className="mt-4 text-[13px] sm:text-sm font-bold normal-case sm:uppercase tracking-wide leading-snug">
-              Du bist bereits bestätigt — danke!
+              You are already confirmed — thank you!
             </p>
-          )}
-          </>
           )}
         </div>
       </section>
@@ -299,11 +261,11 @@ export default function Landing() {
           <div className="flex flex-wrap gap-x-3 gap-y-2 text-[10px] font-bold uppercase tracking-widest items-center">
             <span>freemind</span>
             <span className="text-muted-foreground">/</span>
-            <a href="/legal" className="hover:text-alert">Impressum</a>
+            <a href="/legal" className="hover:text-alert">Imprint</a>
             <span className="text-muted-foreground">/</span>
-            <a href="/fragen" className="hover:text-alert">Fragen</a>
+            <a href="/fragen" className="hover:text-alert">Questions</a>
             <span className="text-muted-foreground">/</span>
-            <a href="mailto:iwan@freemind.chat" className="hover:text-alert">Kontakt</a>
+            <a href="mailto:iwan@freemind.chat" className="hover:text-alert">Contact</a>
           </div>
         </div>
       </footer>
