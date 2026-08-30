@@ -8,10 +8,18 @@ import { useTranslation } from 'react-i18next';
  *  - archive: the August discussion, read-only
  * Sits above the bottom navigation so nothing overlaps.
  */
-export function TTModeNotice({ mode }: { mode: 'sandbox' | 'archive' }) {
+export function TTModeNotice({
+  mode,
+  offsetClass = 'bottom-[150px]',
+}: {
+  mode: 'sandbox' | 'archive';
+  /** Vertical offset so the notice never overlaps the CTA above the nav bar. */
+  offsetClass?: string;
+}) {
   const { t } = useTranslation();
   const [dismissed, setDismissed] = useState(false);
   if (dismissed) return null;
+
 
   const text =
     mode === 'sandbox'
