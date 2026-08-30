@@ -45,29 +45,11 @@ function RainOverlay() {
 export default function Landing() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "already">("idle");
-  const [regClosed, setRegClosed] = useState(false);
 
   useEffect(() => {
-    document.title = "Eine Woche - Eine Frage - Mehr Verständnis - Weniger Spaltung";
+    document.title = "freemind — one question, more understanding, less division";
     const meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute("content", "Können wir eigentlich noch miteinander reden? Hilf mit, es herauszufinden.");
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      const { data } = await supabase
-        .from("app_settings")
-        .select("key, value")
-        .in("key", ["discussion_open_at", "registration_cutoff_at"]);
-      const now = Date.now();
-      const closed = (data ?? []).some((row) => {
-        const raw = String((row as { value?: string }).value ?? "").trim();
-        if (!raw) return false;
-        const d = new Date(raw);
-        return !isNaN(d.getTime()) && d.getTime() <= now;
-      });
-      setRegClosed(closed);
-    })();
+    if (meta) meta.setAttribute("content", "Can we still talk to each other? Try the freemind sandbox and see what a fair discussion looks like.");
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -93,7 +75,7 @@ export default function Landing() {
         toast.success("Du bist bereits dabei.");
         setStatus("already");
       } else {
-        toast.error("Etwas ist schiefgelaufen. Bitte versuch es erneut.");
+        toast.error("Something went wrong. Please try again.");
         setStatus("idle");
       }
     } catch {
@@ -232,20 +214,6 @@ export default function Landing() {
           <p className="mb-10 text-lg sm:text-xl font-bold uppercase tracking-wide">
             FOUR DAYS · ONE QUESTION · <span className="text-alert">ONE PROOF.</span>
           </p>
-          {regClosed ? (
-            <div className="space-y-6">
-              <p className="text-lg sm:text-xl font-bold uppercase tracking-wide text-alert leading-snug">
-                Die Registrierung ist geschlossen — die Diskussion hat begonnen.
-              </p>
-              <a
-                href="/go"
-                className="inline-block bg-foreground text-background px-8 py-4 text-sm font-bold uppercase hover:bg-alert transition-colors"
-              >
-                Jetzt zuschauen
-              </a>
-            </div>
-          ) : (
-          <>
           <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-0 border border-foreground">
             <input
               type="text"
@@ -253,7 +221,7 @@ export default function Landing() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={status !== "idle"}
-              placeholder="E-Mail"
+              placeholder="Email"
               className="flex-grow py-3.5 sm:py-4 outline-none text-sm font-bold uppercase placeholder:text-muted-foreground bg-transparent disabled:opacity-60"
             />
             <button
@@ -262,30 +230,28 @@ export default function Landing() {
               className="bg-foreground text-background px-6 py-3.5 sm:px-8 sm:py-4 text-sm font-bold uppercase hover:bg-alert transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {status === "loading"
-                ? "Sende…"
+                ? "Sending…"
                 : status === "sent"
-                  ? "Mail gesendet ✓"
+                  ? "Mail sent ✓"
                   : status === "already"
-                    ? "Bereits dabei ✓"
-                    : "Jetzt registrieren"}
+                    ? "Already in ✓"
+                    : "Register for future events"}
             </button>
           </form>
           <p className="mt-6 text-xs text-muted-foreground whitespace-pre-line">
-            Die 5 besten Brückenbauer erhalten 50 € als Annerkennung. Alle Infos per E-Mail.{"\u00a0"}{"\n"}
-            Auszahlung per Paypal oder Banküberweisung.{"\u00a0"}{"\n"}
-            Der Rechtsweg ist ausgeschlossen.
+            A future event runs for four days. Register once and we will let you know before it starts.{"\u00a0"}{"\n"}
+            The five best bridge builders receive 50 € each as a thank you.{"\u00a0"}{"\n"}
+            Legal recourse is excluded.
           </p>
           {status === "sent" && (
             <p className="mt-4 text-[13px] sm:text-sm font-bold normal-case sm:uppercase tracking-wide text-alert leading-snug">
-              📬 Bestätigungs-E-Mail unterwegs — klick den Link darin, um deine Anmeldung abzuschließen.
+              📬 Confirmation email on its way — click the link inside to complete your registration.
             </p>
           )}
           {status === "already" && (
             <p className="mt-4 text-[13px] sm:text-sm font-bold normal-case sm:uppercase tracking-wide leading-snug">
-              Du bist bereits bestätigt — danke!
+              You are already confirmed — thank you!
             </p>
-          )}
-          </>
           )}
         </div>
       </section>
@@ -295,11 +261,11 @@ export default function Landing() {
           <div className="flex flex-wrap gap-x-3 gap-y-2 text-[10px] font-bold uppercase tracking-widest items-center">
             <span>freemind</span>
             <span className="text-muted-foreground">/</span>
-            <a href="/legal" className="hover:text-alert">Impressum</a>
+            <a href="/legal" className="hover:text-alert">Imprint</a>
             <span className="text-muted-foreground">/</span>
-            <a href="/fragen" className="hover:text-alert">Fragen</a>
+            <a href="/fragen" className="hover:text-alert">Questions</a>
             <span className="text-muted-foreground">/</span>
-            <a href="mailto:iwan@freemind.chat" className="hover:text-alert">Kontakt</a>
+            <a href="mailto:iwan@freemind.chat" className="hover:text-alert">Contact</a>
           </div>
         </div>
       </footer>
