@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Bell, BellOff, Settings, X, SlidersHorizontal, MessageSquare, MessageCircle, Sparkles, CircleHelp, HelpCircle, LogOut, Mail, MoveUpRight, Orbit, Smartphone } from 'lucide-react';
+import { Bell, BellOff, Settings, X, SlidersHorizontal, MessageSquare, MessageCircle, Sparkles, CircleHelp, HelpCircle, LogOut, Mail, MoveUpRight, Orbit, Smartphone, Trash2 } from 'lucide-react';
 
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
@@ -43,7 +43,10 @@ interface TTHeaderProps {
   onRestartTour?: () => void;
   onOpenHelp?: () => void;
   activeTopicId?: string;
+  /** Show a "delete my opinion" action (playground discussions only). */
+  onDeleteOpinion?: () => Promise<void> | void;
 }
+
 
 const FILTER_ITEMS: {
   key: keyof NotificationFilters;
@@ -64,7 +67,9 @@ const LANGUAGES = [
   { code: 'en', flag: '🇬🇧', labelKey: 'common.english' },
 ];
 
-export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRestartTour, onOpenHelp, activeTopicId }: TTHeaderProps) {
+export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRestartTour, onOpenHelp, activeTopicId, onDeleteOpinion }: TTHeaderProps) {
+  const [deleteBusy, setDeleteBusy] = useState(false);
+
   const { t } = useTranslation();
   const { user } = useAuth();
   const { arrowMode, setArrowMode } = useArrowModePref();
@@ -238,9 +243,13 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
     <>
       <header className="absolute top-0 inset-x-0 z-30 px-3 pointer-events-none bg-background/60 backdrop-blur-sm">
         <div className="flex items-center justify-between pointer-events-auto py-1 border-b border-border/30">
-          <span className="text-foreground/90 font-medium tracking-tight lowercase text-[13px] leading-none">
+          <Link
+            to="/"
+            className="text-foreground/90 font-medium tracking-tight lowercase text-[13px] leading-none hover:text-foreground transition-colors"
+          >
             freemind
-          </span>
+          </Link>
+
           <div className="flex items-center gap-0.5">
             {onOpenHelp && (
               <button
@@ -576,7 +585,32 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
               )}
 
 
+              {onDeleteOpinion && (
+                <button
+                  onClick={async () => {
+                    if (deleteBusy) return;
+                    if (!window.confirm(t('tt.deleteOpinionConfirm', 'Delete your opinion and all its conversations?'))) return;
+                    setDeleteBusy(true);
+                    try {
+                      await onDeleteOpinion();
+                      setAccountOpen(false);
+                      toast.success(t('tt.deleteOpinionDone', 'Your opinion was deleted.'));
+                    } catch {
+                      toast.error(t('tt.deleteOpinionFailed', 'Could not delete your opinion.'));
+                    } finally {
+                      setDeleteBusy(false);
+                    }
+                  }}
+                  disabled={deleteBusy}
+                  className="mt-3 w-full flex items-center justify-center gap-1.5 rounded-md px-2 py-2 text-xs text-destructive hover:bg-destructive/10 transition-colors disabled:opacity-50"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  {t('tt.deleteOpinion', 'Delete my opinion')}
+                </button>
+              )}
+
               {user ? (
+
                 <button
                   onClick={handleSignOut}
                   className="mt-3 w-full flex items-center justify-center gap-1.5 rounded-md px-2 py-2 text-xs text-destructive hover:bg-destructive/10 transition-colors"

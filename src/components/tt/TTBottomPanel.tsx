@@ -1,7 +1,7 @@
 import { useReadOnlyTopic } from '@/contexts/ReadOnlyContext';
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Flag, Send } from 'lucide-react';
+import { Flag, Pencil, Send } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -254,6 +254,24 @@ export function TTBottomPanel({
             {/* Step 2: chat unlocked once the rating is stored */}
             {ratingDone && (
               <div className="mt-3 flex flex-col items-center gap-1.5">
+                {hasSavedRating && (
+                  <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                    <span>{t('tt.yourRating', 'Deine Bewertung')}:</span>
+                    <span className="tabular-nums text-foreground/80">{disagreement}</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRatingReopened(true);
+                        setRatingTouched(true);
+                      }}
+                      className="p-1 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                      aria-label={t('tt.editRating', 'Bewertung ändern')}
+                      title={t('tt.editRating', 'Bewertung ändern')}
+                    >
+                      <Pencil className="w-3 h-3" />
+                    </button>
+                  </div>
+                )}
                 <Button
                   variant="outline"
                   size="sm"
@@ -270,18 +288,20 @@ export function TTBottomPanel({
                 >
                   {t('tt.letsChat')}
                 </Button>
-                <button
-                  onClick={() => {
-                    setRatingReopened(true);
-                    setRatingTouched(true);
-                  }}
-
-                  className="text-[10px] text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {t('tt.editRating', 'Bewertung ändern')}
-                </button>
+                {!hasSavedRating && (
+                  <button
+                    onClick={() => {
+                      setRatingReopened(true);
+                      setRatingTouched(true);
+                    }}
+                    className="text-[10px] text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {t('tt.editRating', 'Bewertung ändern')}
+                  </button>
+                )}
               </div>
             )}
+
           </div>
       </div>
     );

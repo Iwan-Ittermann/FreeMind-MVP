@@ -38,6 +38,50 @@ export type Database = {
         }
         Relationships: []
       }
+      archive_results: {
+        Row: {
+          author_id: string | null
+          captured_at: string
+          created_at: string
+          id: string
+          opinion_id: string
+          opinion_text: string
+          points: number
+          rank: number
+          topic_id: string
+        }
+        Insert: {
+          author_id?: string | null
+          captured_at?: string
+          created_at?: string
+          id?: string
+          opinion_id: string
+          opinion_text: string
+          points?: number
+          rank: number
+          topic_id: string
+        }
+        Update: {
+          author_id?: string | null
+          captured_at?: string
+          created_at?: string
+          id?: string
+          opinion_id?: string
+          opinion_text?: string
+          points?: number
+          rank?: number
+          topic_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "archive_results_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_logs: {
         Row: {
           action: string
@@ -1475,6 +1519,7 @@ export type Database = {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
       }
+      delete_my_opinion: { Args: { _topic_id: string }; Returns: number }
       delete_opinion_cascade: {
         Args: { _opinion_id: string }
         Returns: undefined

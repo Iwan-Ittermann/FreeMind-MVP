@@ -1,13 +1,15 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Info, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+
+const seenKey = (mode: string) => `tt:mode-notice-seen:${mode}`;
 
 /**
  * Slim notice for the two non-event topics:
  *  - sandbox: everything here is a playground, data may be reset
  *  - archive: the August discussion, read-only
  *  - archive-open: the August discussion, reopened as a playground
- * Sits above the bottom navigation so nothing overlaps.
+ * Shown only once per device (per mode) and remembered in local storage.
  */
 export function TTModeNotice({
   mode,
@@ -18,7 +20,24 @@ export function TTModeNotice({
   offsetClass?: string;
 }) {
   const { t } = useTranslation();
-  const [dismissed, setDismissed] = useState(false);
+  const [dismissed, setDismissed] = useState(() => {
+    try {
+      return localStorage.getItem(seenKey(mode)) === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  // Seeing it counts as seen — it never comes back on this device.
+  useEffect(() => {
+    if (dismissed) return;
+    try {
+      localStorage.setItem(seenKey(mode), 'true');
+    } catch {
+      /* ignore */
+    }
+  }, [mode, dismissed]);
+
   if (dismissed) return null;
 
 
@@ -26,7 +45,7 @@ export function TTModeNotice({
     mode === 'archive-open'
       ? t(
           'tt.archiveOpenNotice',
-          'This was the August discussion. It has ended — the results stay as they are, but you can join in now and try freemind with bots A, B and C.',
+          'This was the August discussion. It has ended — but you can join in now and use it like a live discussion.',
         )
       : mode === 'sandbox'
       ? t(
@@ -37,6 +56,7 @@ export function TTModeNotice({
           'tt.archiveNotice',
           'Archive: the August discussion has ended. You can read everything, but not take part.',
         );
+
 
   return (
     <div className={`absolute left-1/2 -translate-x-1/2 ${offsetClass} z-30 w-[calc(100%-1.5rem)] max-w-[420px] pointer-events-auto`}>

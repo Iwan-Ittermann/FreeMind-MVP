@@ -151,8 +151,7 @@ export function EmbeddedChatView({ theirOpinionId, readOnly: readOnlyProp = fals
   const totalMessages = dbMessages.length;
   const ownMessages = dbMessages.filter((m) => m.isOwn).length;
   const partnerMessages = totalMessages - ownMessages;
-  const canRateRespect =
-    !isBotChat && !readOnly && respectUnlocked(ownMessages, partnerMessages);
+  const canRateRespect = !readOnly && respectUnlocked(ownMessages, partnerMessages);
 
   useEffect(() => {
     if (!chatId || !canRateRespect) return;
@@ -277,7 +276,7 @@ export function EmbeddedChatView({ theirOpinionId, readOnly: readOnlyProp = fals
       )}
 
       {/* Understanding rating — open once both sides wrote, adjustable anytime */}
-      {!isBotChat && !readOnly && (
+      {!readOnly && (
         <div className="border-t border-border/60 px-3 pt-2 pb-3 mb-1 shrink-0 bg-muted/60">
           <div className="mb-1 grid grid-cols-[1fr_auto_1fr] items-center gap-2">
             <span />
