@@ -2,17 +2,21 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
 /**
- * Sandbox bots (A / B / C).
+ * Playground bots (A / B / C).
  *
  * Idempotent: for every human opinion in the sandbox topic each bot
  *  - rates it with a strong disagreement, and
  *  - opens a chat and sends three intro messages.
  *
- * The topic is resolved from app_settings, so this function can never be
- * pointed at the real event or the archive.
+ * Works for two targets, both resolved from app_settings:
+ *  - `sandbox` → the open sandbox question (/go)
+ *  - `archive` → the reopened August question (/aug-test); there only opinions
+ *    created after `archive_reopened_at` are touched, so the finished August
+ *    discussion stays frozen.
+ * It can never be pointed at the real event question.
  */
 
-const BOTS = [
+const SANDBOX_BOTS = [
   {
     id: '00000000-0000-0000-0000-0000000000b1',
     label: 'Bot A',
@@ -51,7 +55,46 @@ const BOTS = [
   },
 ];
 
-const BOT_IDS = BOTS.map((b) => b.id);
+const ARCHIVE_BOTS = [
+  {
+    id: '00000000-0000-0000-0000-0000000000b1',
+    label: 'Bot A',
+    opinion:
+      'I am Bot A. This question was settled in August — I still think the old answers were far too polite.',
+    disagreement: 9,
+    messages: [
+      'Hi! I am Bot A — a bot, not a human.',
+      'I strongly disagree with your opinion, on purpose: that is how you can see how the circle reacts.',
+      'Reply if you like, then rate how respectful you found me. That rating is what earns bridge points.',
+    ],
+  },
+  {
+    id: '00000000-0000-0000-0000-0000000000b2',
+    label: 'Bot B',
+    opinion:
+      'I am Bot B. Nothing said here changes anything — people only argue to feel right.',
+    disagreement: 10,
+    messages: [
+      'Hey, Bot B here. Also a bot.',
+      'I rated your opinion as very different from mine — feel free to disagree right back.',
+      'Try the respect slider on this chat and watch your node move in the circle.',
+    ],
+  },
+  {
+    id: '00000000-0000-0000-0000-0000000000b3',
+    label: 'Bot C',
+    opinion:
+      'I am Bot C. Everyone here already agrees with each other and just does not notice it.',
+    disagreement: 10,
+    messages: [
+      'Hello, I am Bot C. Bot A and Bot B are around too.',
+      'We three disagree with everyone here — that keeps this playground lively.',
+      'Send a message, rate the respect, and see what the circle does. Nothing here is permanent.',
+    ],
+  },
+];
+
+const BOT_IDS = SANDBOX_BOTS.map((b) => b.id);
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
@@ -68,26 +111,50 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     );
 
+    let target: 'sandbox' | 'archive' = 'sandbox';
+    try {
+      const body = await req.json();
+      if (body?.target === 'archive') target = 'archive';
+    } catch {
+      /* no body → sandbox */
+    }
+
+    const settingKey =
+      target === 'archive' ? 'archive_topic_short_code' : 'sandbox_topic_short_code';
+    const BOTS = target === 'archive' ? ARCHIVE_BOTS : SANDBOX_BOTS;
+
     const { data: setting } = await supabase
       .from('app_settings')
       .select('value')
-      .eq('key', 'sandbox_topic_short_code')
+      .eq('key', settingKey)
       .maybeSingle();
     const shortCode = (setting?.value ?? '').trim();
-    if (!shortCode) return json({ error: 'sandbox not configured' }, 400);
+    if (!shortCode) return json({ error: `${target} not configured` }, 400);
+
+    // Freeze line for the reopened archive: bots ignore everything older.
+    let cutoff: string | null = null;
+    if (target === 'archive') {
+      const { data: reopened } = await supabase
+        .from('app_settings')
+        .select('value')
+        .eq('key', 'archive_reopened_at')
+        .maybeSingle();
+      cutoff = (reopened?.value ?? '').trim() || null;
+      if (!cutoff) return json({ error: 'archive not reopened' }, 400);
+    }
 
     const { data: topic } = await supabase
       .from('topics')
       .select('id')
       .eq('short_code', shortCode)
       .maybeSingle();
-    if (!topic) return json({ error: 'sandbox topic missing' }, 400);
+    if (!topic) return json({ error: `${target} topic missing` }, 400);
     const topicId = topic.id as string;
 
-    // All opinions in the sandbox
+    // All opinions in the target topic
     const { data: opinions, error: opErr } = await supabase
       .from('opinions')
-      .select('id, user_id, visible')
+      .select('id, user_id, visible, created_at')
       .eq('topic_id', topicId);
     if (opErr) throw opErr;
 
@@ -115,7 +182,11 @@ Deno.serve(async (req) => {
     }
 
     const humans = (opinions ?? []).filter(
-      (o) => o.visible !== false && !BOT_IDS.includes(o.user_id as string),
+      (o) =>
+        o.visible !== false &&
+        !BOT_IDS.includes(o.user_id as string) &&
+        // Archive: only opinions posted after the reopening are playground material.
+        (!cutoff || String(o.created_at ?? '') >= cutoff),
     );
     if (humans.length === 0) return json({ ok: true, handled: 0 });
 
