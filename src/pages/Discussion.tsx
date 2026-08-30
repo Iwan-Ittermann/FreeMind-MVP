@@ -279,6 +279,8 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
           activeTopicId={activeTopicId}
           onOpenHelp={() => setHelpOpen(true)}
           onRestartTour={() => setTourStep(1)}
+          onDeleteOpinion={isPlayground && hasOwnOpinion ? handleDeleteOwnOpinion : undefined}
+
         />
         <TTSideTabs
           ref={sideTabsRef}
