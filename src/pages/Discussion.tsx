@@ -35,6 +35,7 @@ import { TTInstallHint } from '@/components/tt/TTInstallHint';
 import { TTFinalCountdown } from '@/components/tt/TTFinalCountdown';
 import { TTEndPanel } from '@/components/tt/TTEndPanel';
 import { TTModeNotice } from '@/components/tt/TTModeNotice';
+import { TTSandboxPassphrase } from '@/components/tt/TTSandboxPassphrase';
 import { ReadOnlyProvider } from '@/contexts/ReadOnlyContext';
 import { setVerificationBypass } from '@/lib/verification';
 import { useSandboxBots } from '@/hooks/useSandboxBots';
@@ -413,6 +414,8 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
         />
 
 
+
+        <TTSandboxPassphrase enabled={isSandbox} />
 
         {(isSandbox || isArchive) && (
           <TTModeNotice mode={isSandbox ? 'sandbox' : 'archive'} />
