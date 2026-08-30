@@ -162,8 +162,22 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
     return () => setVerificationBypass(false);
   }, [isPlayground]);
 
-  // Playground bots react to human opinions on page load / after submitting.
-  useSandboxBots(isPlayground, activeTopicId, hasOwnOpinion, isSandbox ? 'sandbox' : 'archive');
+  // Sandbox bots react to human opinions on page load / after submitting.
+  // The reopened August question runs without bots.
+  useSandboxBots(isSandbox, activeTopicId, hasOwnOpinion, 'sandbox');
+
+  const handleDeleteOwnOpinion = useCallback(async () => {
+    const { error } = await supabase.rpc('delete_my_opinion', { _topic_id: activeTopicId });
+    if (error) throw error;
+    setSelectedNode(null);
+    setChatNodeId(null);
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['tt-own-opinion', activeTopicId, user?.id] }),
+      queryClient.invalidateQueries({ queryKey: ['topic', activeTopicId] }),
+      queryClient.invalidateQueries({ queryKey: ['tt-chats', activeTopicId] }),
+    ]);
+  }, [activeTopicId, queryClient, user?.id]);
+
 
   const handleEdgeClick = useCallback((edge: GraphEdge) => {
     if (isMobile) return;

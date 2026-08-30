@@ -1,7 +1,7 @@
 import { useReadOnlyTopic } from '@/contexts/ReadOnlyContext';
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Flag, Send } from 'lucide-react';
+import { Flag, Pencil, Send } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
