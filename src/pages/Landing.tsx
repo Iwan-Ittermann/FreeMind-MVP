@@ -104,7 +104,7 @@ export default function Landing() {
 
   return (
     <main
-      lang="de"
+      lang="en"
       className="landing-theme h-screen overflow-y-auto snap-y snap-proximity bg-background text-foreground font-sans relative"
     >
       <RainOverlay />
@@ -124,44 +124,40 @@ export default function Landing() {
         <div className={`${panelInner} relative flex flex-col items-start gap-10`}>
           <p className={`${eyebrowClass} flex items-center gap-3`}>
             <span className="inline-block h-2 w-2 rounded-full bg-alert animate-pulse" />
-            23. - 29. AUGUST · EINE FRAGE
+            ONE QUESTION · FOUR DAYS
           </p>
           <h1
             className={`${displayClass} text-left`}
             style={{ fontSize: "clamp(2.25rem, 6.5vw, 5rem)" }}
           >
-            DIE WAHRSCHEINLICH FAIRSTE POLITISCHE DISKUSSION IM INTERNET.
+            PROBABLY THE FAIREST POLITICAL DISCUSSION ON THE INTERNET.
           </h1>
           <div className="w-16 h-[3px] bg-alert" />
           <div className="text-xl sm:text-2xl md:text-3xl font-bold leading-tight space-y-2">
-            <p>Nicht, weil Menschen netter sind.</p>
+            <p>Not because people are nicer here.</p>
             <p>
-              Sondern weil <span className="text-alert">die Spielregeln andere sind.</span>
+              But because <span className="text-alert">the rules of the game are different.</span>
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-            {regClosed ? (
-              <a
-                href="/go"
-                className="group inline-flex items-center gap-3 bg-foreground text-background px-7 py-4 text-sm font-bold uppercase tracking-wider hover:bg-alert transition-colors"
-              >
-                Live zuschauen
-                <span className="transition-transform group-hover:translate-x-1">→</span>
-              </a>
-            ) : (
-              <a
-                href="#cta"
-                className="group inline-flex items-center gap-3 bg-foreground text-background px-7 py-4 text-sm font-bold uppercase tracking-wider hover:bg-alert transition-colors"
-              >
-                Jetzt registrieren
-                <span className="transition-transform group-hover:translate-x-1">→</span>
-              </a>
-            )}
+            <a
+              href="/go"
+              className="group inline-flex items-center gap-3 bg-foreground text-background px-7 py-4 text-sm font-bold uppercase tracking-wider hover:bg-alert transition-colors"
+            >
+              Try the sandbox
+              <span className="transition-transform group-hover:translate-x-1">→</span>
+            </a>
+            <a
+              href="/aug-test"
+              className="text-sm font-bold uppercase tracking-wider underline underline-offset-4 hover:text-alert transition-colors"
+            >
+              See the August discussion
+            </a>
             <a
               href="/passphrase-vergessen"
               className="text-sm text-foreground/60 underline underline-offset-4 hover:text-alert transition-colors"
             >
-              Passphrase vergessen?
+              Forgot your passphrase?
             </a>
           </div>
         </div>
@@ -170,29 +166,29 @@ export default function Landing() {
 
       <section className={panelClass}>
         <div className={`${panelInner} flex flex-col gap-8`}>
-          <p className={eyebrowClass}>Das Problem</p>
+          <p className={eyebrowClass}>The problem</p>
           <h2 className={displayClass} style={{ fontSize: "clamp(1.75rem, 5.5vw, 4rem)" }}>
-            ÖFFENTLICHE DEBATTEN SCHEITERN SELTEN AN DEN MENSCHEN.
+            PUBLIC DEBATE RARELY FAILS BECAUSE OF PEOPLE.
           </h2>
           <div className={bodyProseClass}>
-            <p>Sie scheitern an den Plattformen.</p>
-            <p>Heute belohnen soziale Netzwerke <em>Aufmerksamkeit</em>.</p>
-            <p className="text-alert font-bold">freemind belohnt <em>Verständnis</em>.</p>
+            <p>It fails because of the platforms.</p>
+            <p>Social networks reward <em>attention</em>.</p>
+            <p className="text-alert font-bold">freemind rewards <em>understanding</em>.</p>
           </div>
         </div>
       </section>
 
       <section className={panelClass}>
         <div className={`${panelInner} flex flex-col gap-8`}>
-          <p className={eyebrowClass}>Die Idee</p>
+          <p className={eyebrowClass}>The idea</p>
           <h2 className={displayClass} style={{ fontSize: "clamp(2rem, 6vw, 4.5rem)" }}>
-            WIR WOLLEN ETWAS BEWEISEN.<br />
-            NICHT DISKUTIEREN.<br />
-            <span className="text-alert">BEWEISEN.</span>
+            WE WANT TO PROVE SOMETHING.<br />
+            NOT ARGUE ABOUT IT.<br />
+            <span className="text-alert">PROVE IT.</span>
           </h2>
           <div className={bodyProseClass}>
-            <p>Dass öffentliche Debatten keine Moderation brauchen, sondern die richtige Architektur.</p>
-            <p>Wenn das funktioniert, ist diese Diskussion vielleicht mehr als nur eine Diskussion.</p>
+            <p>That public debate does not need moderation, but the right architecture.</p>
+            <p>If that works, a discussion here is more than just a discussion.</p>
           </div>
         </div>
       </section>
@@ -200,18 +196,18 @@ export default function Landing() {
       <section className={panelClass}>
         <div className={`${panelInner} flex flex-col gap-8`}>
           <h2 className={displayClass} style={{ fontSize: "clamp(1.75rem, 5vw, 3.5rem)" }}>
-            Was passiert?
+            What happens?
           </h2>
           <div className={bodyProseClass}>
-            <p>Du beantwortest eine Frage.</p>
-            <p>Du triffst Menschen, denen du wahrscheinlich nie begegnet wärst.</p>
-            <p>Ihr widersprecht euch.</p>
-            <p>Ihr versucht trotzdem, einander zu verstehen.</p>
-            <p>Eine Woche lang wird der Graph lebendig.</p>
-            <p>Überall entstehen neue Gespräche.</p>
-            <p>Jede Unterhaltung verändert das Spielfeld.</p>
-            <p>Bis am letzten Tag um Mitternacht feststeht, wer die stärksten Brücken gebaut hat.</p>
-            <p className="font-bold">Ganz ohne Moderation.</p>
+            <p>You answer one question.</p>
+            <p>You meet people you would probably never have met.</p>
+            <p>You disagree.</p>
+            <p>And you still try to understand each other.</p>
+            <p>The graph comes alive.</p>
+            <p>New conversations appear everywhere.</p>
+            <p>Every conversation changes the playing field.</p>
+            <p>Until midnight on the last day shows who built the strongest bridges.</p>
+            <p className="font-bold">Without any moderation.</p>
           </div>
         </div>
       </section>
@@ -219,11 +215,11 @@ export default function Landing() {
       <section className={panelClass}>
         <div className={`${panelInner} flex flex-col gap-8`}>
           <h2 className={displayClass} style={{ fontSize: "clamp(1.75rem, 5vw, 3.5rem)" }}>
-            Über mich
+            About me
           </h2>
           <div className={bodyProseClass}>
-            <p>Seit Jahren frage ich mich, warum das Internet Millionen Menschen miteinander verbinden kann, aber so selten gute Gespräche entstehen.</p>
-            <p className="font-bold">Diese Diskussion ist mein Versuch, das Gegenteil zu beweisen.</p>
+            <p>For years I have wondered why the internet can connect millions of people, yet good conversations are so rare.</p>
+            <p className="font-bold">freemind is my attempt to prove the opposite.</p>
           </div>
         </div>
       </section>
@@ -231,10 +227,10 @@ export default function Landing() {
       <section id="cta" className={panelClass}>
         <div className={panelInner}>
           <h2 className={`${displayClass} mb-8`} style={{ fontSize: "clamp(1.75rem, 5vw, 3.5rem)" }}>
-            HILF MIT HERAUSZUFINDEN, OB DAS INTERNET AUCH ANDERS FUNKTIONIEREN KANN.
+            HELP FIND OUT WHETHER THE INTERNET CAN WORK DIFFERENTLY.
           </h2>
           <p className="mb-10 text-lg sm:text-xl font-bold uppercase tracking-wide">
-            EINE WOCHE · EINE FRAGE · <span className="text-alert">EIN BEWEIS.</span>
+            FOUR DAYS · ONE QUESTION · <span className="text-alert">ONE PROOF.</span>
           </p>
           {regClosed ? (
             <div className="space-y-6">
