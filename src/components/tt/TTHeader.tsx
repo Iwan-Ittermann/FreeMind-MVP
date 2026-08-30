@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Bell, BellOff, Settings, X, SlidersHorizontal, MessageSquare, MessageCircle, Sparkles, CircleHelp, HelpCircle, LogOut, Mail, MoveUpRight, Orbit, Smartphone } from 'lucide-react';
+import { Bell, BellOff, Settings, X, SlidersHorizontal, MessageSquare, MessageCircle, Sparkles, CircleHelp, HelpCircle, LogOut, Mail, MoveUpRight, Orbit, Smartphone, Trash2 } from 'lucide-react';
 
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
@@ -585,7 +585,32 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
               )}
 
 
+              {onDeleteOpinion && (
+                <button
+                  onClick={async () => {
+                    if (deleteBusy) return;
+                    if (!window.confirm(t('tt.deleteOpinionConfirm', 'Delete your opinion and all its conversations?'))) return;
+                    setDeleteBusy(true);
+                    try {
+                      await onDeleteOpinion();
+                      setAccountOpen(false);
+                      toast.success(t('tt.deleteOpinionDone', 'Your opinion was deleted.'));
+                    } catch {
+                      toast.error(t('tt.deleteOpinionFailed', 'Could not delete your opinion.'));
+                    } finally {
+                      setDeleteBusy(false);
+                    }
+                  }}
+                  disabled={deleteBusy}
+                  className="mt-3 w-full flex items-center justify-center gap-1.5 rounded-md px-2 py-2 text-xs text-destructive hover:bg-destructive/10 transition-colors disabled:opacity-50"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  {t('tt.deleteOpinion', 'Delete my opinion')}
+                </button>
+              )}
+
               {user ? (
+
                 <button
                   onClick={handleSignOut}
                   className="mt-3 w-full flex items-center justify-center gap-1.5 rounded-md px-2 py-2 text-xs text-destructive hover:bg-destructive/10 transition-colors"
