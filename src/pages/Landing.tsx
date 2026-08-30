@@ -133,7 +133,7 @@ export default function Landing() {
               href="/aug-test"
               className="text-sm font-bold uppercase tracking-wider underline underline-offset-4 hover:text-alert transition-colors"
             >
-              See the August discussion
+              Try the August question
             </a>
             <a
               href="/passphrase-vergessen"

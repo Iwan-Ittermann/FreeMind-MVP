@@ -656,6 +656,7 @@
     "regenerateHint": "New passphrase copied: {{phrase}}",
     "signOut": "Sign out",
     "opinionPlaceholder": "What is your opinion on this topic?",
+    "archiveOpenNotice": "This was the August discussion. It has ended \u2014 the results stay as they are, but you can join in now and try freemind with bots A, B and C.",
     "registerToParticipate": "Register at",
     "registerToParticipateSuffix": "to participate",
     "post": "Post",
