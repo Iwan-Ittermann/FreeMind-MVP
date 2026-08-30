@@ -74,12 +74,12 @@ function InactiveShapeTT() {
 
 
 
-function BotShape() {
+function BotShape({ label = 'AI' }: { label?: string }) {
   return (
     <>
       <circle cx="20" cy="20" r="14" stroke="#A855F7" strokeWidth="2" fill="none" />
       <circle cx="20" cy="20" r="8" fill="#A855F7" fillOpacity="0.6" />
-      <text x="20" y="21" textAnchor="middle" dominantBaseline="central" fill="#FFFFFF" fontSize="10" fontWeight="bold" fontFamily="monospace">AI</text>
+      <text x="20" y="21" textAnchor="middle" dominantBaseline="central" fill="#FFFFFF" fontSize="10" fontWeight="bold" fontFamily="monospace">{label}</text>
     </>
   );
 }
