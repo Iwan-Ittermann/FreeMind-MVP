@@ -6,13 +6,14 @@ import { useTranslation } from 'react-i18next';
  * Slim notice for the two non-event topics:
  *  - sandbox: everything here is a playground, data may be reset
  *  - archive: the August discussion, read-only
+ *  - archive-open: the August discussion, reopened as a playground
  * Sits above the bottom navigation so nothing overlaps.
  */
 export function TTModeNotice({
   mode,
   offsetClass = 'bottom-[150px]',
 }: {
-  mode: 'sandbox' | 'archive';
+  mode: 'sandbox' | 'archive' | 'archive-open';
   /** Vertical offset so the notice never overlaps the CTA above the nav bar. */
   offsetClass?: string;
 }) {
@@ -22,7 +23,12 @@ export function TTModeNotice({
 
 
   const text =
-    mode === 'sandbox'
+    mode === 'archive-open'
+      ? t(
+          'tt.archiveOpenNotice',
+          'This was the August discussion. It has ended — the results stay as they are, but you can join in now and try freemind with bots A, B and C.',
+        )
+      : mode === 'sandbox'
       ? t(
           'tt.sandboxNotice',
           'Sandbox: a playground to try freemind. Bots A, B and C will disagree with you — rate how respectful they are.',
