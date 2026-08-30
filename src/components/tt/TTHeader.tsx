@@ -43,7 +43,10 @@ interface TTHeaderProps {
   onRestartTour?: () => void;
   onOpenHelp?: () => void;
   activeTopicId?: string;
+  /** Show a "delete my opinion" action (playground discussions only). */
+  onDeleteOpinion?: () => Promise<void> | void;
 }
+
 
 const FILTER_ITEMS: {
   key: keyof NotificationFilters;
@@ -238,9 +241,13 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
     <>
       <header className="absolute top-0 inset-x-0 z-30 px-3 pointer-events-none bg-background/60 backdrop-blur-sm">
         <div className="flex items-center justify-between pointer-events-auto py-1 border-b border-border/30">
-          <span className="text-foreground/90 font-medium tracking-tight lowercase text-[13px] leading-none">
+          <Link
+            to="/"
+            className="text-foreground/90 font-medium tracking-tight lowercase text-[13px] leading-none hover:text-foreground transition-colors"
+          >
             freemind
-          </span>
+          </Link>
+
           <div className="flex items-center gap-0.5">
             {onOpenHelp && (
               <button
