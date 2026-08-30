@@ -5,6 +5,8 @@ import { supabase } from '@/integrations/supabase/client';
 export const EVENT_SETTING_KEYS = [
   'test_topic_short_code',
   'real_topic_short_code',
+  'sandbox_topic_short_code',
+  'archive_topic_short_code',
   'opinions_open_at',
   'discussion_open_at',
   'discussion_end_at',
@@ -15,6 +17,8 @@ export type EventPhase = 'prelaunch' | 'submission' | 'discussion';
 export interface EventConfig {
   testShortCode: string;
   realShortCode: string | null;
+  sandboxShortCode: string | null;
+  archiveShortCode: string | null;
   opinionsOpenAt: Date | null;
   discussionOpenAt: Date | null;
   discussionEndAt: Date | null;
