@@ -1,3 +1,4 @@
+import { useReadOnlyTopic } from '@/contexts/ReadOnlyContext';
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Flag, Send } from 'lucide-react';
@@ -81,7 +82,8 @@ export function TTBottomPanel({
   const [ratingTouched, setRatingTouched] = useState(false);
   const [ratingConfirmed, setRatingConfirmed] = useState(false);
   const [ratingReopened, setRatingReopened] = useState(false);
-  const chatDisabled = !hasOwnOpinion;
+  const topicReadOnly = useReadOnlyTopic();
+  const chatDisabled = !hasOwnOpinion || topicReadOnly;
 
   // Reset the two-step flow whenever another opinion is selected.
   useEffect(() => {

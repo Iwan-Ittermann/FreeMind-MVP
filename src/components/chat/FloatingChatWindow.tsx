@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ChatComposer } from './ChatComposer';
 import { readDraft, writeDraft } from '@/hooks/useChatDrafts';
 import { RespectScale } from './RespectScale';
+import { useReadOnlyTopic } from '@/contexts/ReadOnlyContext';
 
 import { ChatBubble } from './ChatBubble';
 import { TypingIndicator } from './TypingIndicator';
@@ -25,8 +26,10 @@ interface FloatingChatWindowProps {
   readOnlyTargetId?: string;
 }
 
-export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style, readOnly, readOnlySourceId, readOnlyTargetId }: FloatingChatWindowProps) {
+export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style, readOnly: readOnlyProp, readOnlySourceId, readOnlyTargetId }: FloatingChatWindowProps) {
   const { t } = useTranslation();
+  const topicReadOnly = useReadOnlyTopic();
+  const readOnly = readOnlyProp || topicReadOnly;
   const {
     chatId, myOpinion, theirOpinion, theirUserId,
     saveRating, isSavingRating, existingRating, averageBridgingScore,
