@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { getClientIP } from '@/hooks/useClientIP';
 import { loginWithPassphrase } from '@/lib/passphrase-login';
+import { ensureSilentAuth } from '@/lib/silent-auth';
 
 export type GateVariant = 'countdown' | 'submit' | 'waiting' | 'login';
 
@@ -98,6 +99,8 @@ export function TTGateOverlay({
     }
     setSubmitting(true);
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) await ensureSilentAuth();
       const ip = await getClientIP();
       const { error } = await supabase.rpc('submit_opinion', {
         _topic_id: topicId,
