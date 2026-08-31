@@ -7,9 +7,9 @@ const EVENT = 'tt:bg-style-changed';
 
 export function getBackgroundStyle(): TTBackgroundStyle {
   try {
-    return localStorage.getItem(KEY) === 'cosmos' ? 'cosmos' : 'eye';
+    return localStorage.getItem(KEY) === 'eye' ? 'eye' : 'cosmos';
   } catch {
-    return 'eye';
+    return 'cosmos';
   }
 }
 
