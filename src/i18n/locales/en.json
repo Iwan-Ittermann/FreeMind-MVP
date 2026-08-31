@@ -718,6 +718,7 @@
     "respectUnlockHint": "Unlocks after one message from each side",
     "restartTour": "Start guide",
     "backgroundToggle": "Background: Cosmos",
+    "backgroundToggleEye": "Background: Eye view",
     "arrowModeToggle": "Show chats as arrows",
     "onboarding": {
       "chatStep": "Now you can chat with them. Tap \"Discuss\"",
