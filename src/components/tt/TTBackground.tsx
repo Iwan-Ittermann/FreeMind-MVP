@@ -46,7 +46,7 @@ const COSMOS_STARS: { x: number; y: number; r: number; o: number }[] = (() => {
  * mobile shell width, not the browser's global viewport width.
  */
 
-export function TTBackground({ hue = 0, className, viewportWidth, variant = 'eye' }: TTBackgroundProps) {
+export function TTBackground({ hue = 0, className, viewportWidth, variant = 'cosmos' }: TTBackgroundProps) {
 
   const backgroundSize = viewportWidth && viewportWidth > 0
     ? `${viewportWidth / 0.6}px`
