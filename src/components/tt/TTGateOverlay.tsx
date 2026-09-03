@@ -93,6 +93,8 @@ export function TTGateOverlay({
     window.location.reload();
   };
 
+  const queryClient = useQueryClient();
+
   const handleSubmit = async () => {
     if (text.trim().length < 10) {
       toast.error(t('tt.opinionTooShort'));
@@ -109,6 +111,8 @@ export function TTGateOverlay({
         _ip_address: ip,
       });
       if (error) throw error;
+      // The freshly created opinion must be picked up by chat/opinion queries.
+      await queryClient.invalidateQueries({ queryKey: ['myOpinionForTopic'] });
       setText('');
       toast.success(t('tt.opinionPosted'));
       onSubmitted?.();
