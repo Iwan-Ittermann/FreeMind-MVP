@@ -1,5 +1,6 @@
 import { useReadOnlyTopic } from '@/contexts/ReadOnlyContext';
 import { useState, useRef, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Flag, Pencil, Send } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
