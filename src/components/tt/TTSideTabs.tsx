@@ -102,9 +102,11 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
       openPanel(panel: 'opinions' | 'chats') {
         setActiveAllChat(null);
         setActiveChatOpinionId(null);
+        if (panel === 'chats') setChatScope('mine');
         setTab(panel);
         onPanelOpen?.();
       },
+
     }), [hasOwnOpinion, onPanelOpen]);
 
     // Notify parent which chat (= which node) is currently open, for glow effect.
