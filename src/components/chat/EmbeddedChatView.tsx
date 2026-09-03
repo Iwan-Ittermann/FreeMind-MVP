@@ -130,13 +130,18 @@ export function EmbeddedChatView({ theirOpinionId, readOnly: readOnlyProp = fals
   };
 
 
+  // Scroll the messages container itself (never scrollIntoView, which can drag
+  // outer scroll containers around and make the composer jump on every keystroke).
   const scrollToEnd = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const el = messagesContainerRef.current;
+    if (!el) return;
+    el.scrollTop = el.scrollHeight;
   }, []);
 
   useEffect(() => {
     scrollToEnd();
   }, [dbMessages, scrollToEnd]);
+
 
 
   const handleReply = useCallback((msg: { id: string; content: string; isOwn: boolean }) => {
