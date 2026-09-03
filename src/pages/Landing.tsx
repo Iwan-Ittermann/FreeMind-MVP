@@ -59,9 +59,7 @@ const copy = {
     btnSent: "Mail sent ✓",
     btnAlready: "Already in ✓",
     btnIdle: "Register for future events",
-    fine1: "A future event runs for four days. Register once and we will let you know before it starts.",
-    fine2: "The five best bridge builders receive 50 € each as a thank you.",
-    fine3: "Legal recourse is excluded.",
+    fine1: "Register once and we will let you know before the next event starts.",
     sentNote: "📬 Confirmation email on its way — click the link inside to complete your registration.",
     alreadyNote: "You are already confirmed — thank you!",
     imprint: "Imprint",
@@ -391,9 +389,7 @@ export default function Landing() {
             </button>
           </form>
           <p className="mt-6 text-xs text-muted-foreground whitespace-pre-line">
-            {c.fine1}{"\u00a0"}{"\n"}
-            {c.fine2}{"\u00a0"}{"\n"}
-            {c.fine3}
+            {c.fine1}
           </p>
           {status === "sent" && (
             <p className="mt-4 text-[13px] sm:text-sm font-bold normal-case sm:uppercase tracking-wide text-alert leading-snug">
