@@ -1,5 +1,6 @@
 import { useReadOnlyTopic } from '@/contexts/ReadOnlyContext';
 import { useState, useRef, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Flag, Pencil, Send } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -126,6 +127,8 @@ export function TTBottomPanel({
     return () => document.removeEventListener('mousedown', onDown);
   }, [selected, onCloseSelection]);
 
+  const queryClient = useQueryClient();
+
   const handleSubmit = async () => {
     if (text.trim().length < 10) {
       toast.error(t('tt.opinionTooShort'));
@@ -142,6 +145,8 @@ export function TTBottomPanel({
         _ip_address: ip,
       });
       if (error) throw error;
+      // The freshly created opinion must be picked up by chat/opinion queries.
+      await queryClient.invalidateQueries({ queryKey: ['myOpinionForTopic'] });
 
       // Increment opinion-submission counter and prompt for browser
       // notification permission only on the 1st, 4th, and 10th opinion.

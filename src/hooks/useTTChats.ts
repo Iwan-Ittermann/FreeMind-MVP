@@ -45,6 +45,10 @@ export function useTTChats(topicId: string, unreadMap?: Map<string, number>) {
       return data;
     },
     enabled: !!topicId && !!user?.id,
+    // Poll so a freshly posted opinion is picked up without a reload —
+    // otherwise the chat list stays permanently empty for new participants.
+    refetchInterval: 5000,
+    staleTime: 0,
   });
 
   const { data: raw = [] } = useQuery({
