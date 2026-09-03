@@ -59,6 +59,7 @@ export function EmbeddedChatView({ theirOpinionId, readOnly: readOnlyProp = fals
   const [replyingTo, setReplyingTo] = useState<{ id: string; content: string; isOwn: boolean } | null>(null);
   const [showUnlockSpark, setShowUnlockSpark] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Restore the per-chat draft when switching conversations.
@@ -130,13 +131,18 @@ export function EmbeddedChatView({ theirOpinionId, readOnly: readOnlyProp = fals
   };
 
 
+  // Scroll the messages container itself (never scrollIntoView, which can drag
+  // outer scroll containers around and make the composer jump on every keystroke).
   const scrollToEnd = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const el = messagesContainerRef.current;
+    if (!el) return;
+    el.scrollTop = el.scrollHeight;
   }, []);
 
   useEffect(() => {
     scrollToEnd();
   }, [dbMessages, scrollToEnd]);
+
 
 
   const handleReply = useCallback((msg: { id: string; content: string; isOwn: boolean }) => {
@@ -175,7 +181,7 @@ export function EmbeddedChatView({ theirOpinionId, readOnly: readOnlyProp = fals
   return (
     <div className="flex flex-col h-full">
       {/* Messages area */}
-      <div className="flex-1 overflow-y-auto px-2 py-2">
+      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto px-2 py-2">
         {isLoading ? (
           <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
             {t('common.loadingChat')}

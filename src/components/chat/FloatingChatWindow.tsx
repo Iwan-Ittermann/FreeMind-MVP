@@ -110,7 +110,8 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
   };
 
   const scrollToEnd = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const el = messagesEndRef.current?.parentElement?.parentElement;
+    if (el) el.scrollTop = el.scrollHeight;
   }, []);
 
   // Auto-scroll

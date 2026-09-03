@@ -102,9 +102,11 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
       openPanel(panel: 'opinions' | 'chats') {
         setActiveAllChat(null);
         setActiveChatOpinionId(null);
+        if (panel === 'chats') setChatScope('mine');
         setTab(panel);
         onPanelOpen?.();
       },
+
     }), [hasOwnOpinion, onPanelOpen]);
 
     // Notify parent which chat (= which node) is currently open, for glow effect.
@@ -209,9 +211,16 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
         <button
           onClick={() => {
             if (opts?.disabled) return;
+            // Tapping the chats tab (usually triggered by an unread badge) always
+            // lands on "my chats" — never on the read-only all-chats view.
+            if (key === 'chats' && (chatScope === 'all' || activeAllChat)) {
+              setChatScope('mine');
+              setActiveAllChat(null);
+            }
             setTab(key);
             if (key !== 'graph') onPanelOpen?.();
           }}
+
 
           disabled={opts?.disabled}
           data-tt-help={opts?.helpKey}
@@ -418,7 +427,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                               className={cn(
                                 'flex-1 h-7 rounded-full text-[11px] font-semibold transition-colors',
                                 chatScope === scope
-                                  ? 'bg-background text-foreground shadow-sm'
+                                  ? 'bg-primary text-primary-foreground shadow-md ring-1 ring-primary/40'
                                   : 'text-muted-foreground hover:text-foreground',
                               )}
                             >
