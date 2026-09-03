@@ -211,9 +211,16 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
         <button
           onClick={() => {
             if (opts?.disabled) return;
+            // Tapping the chats tab (usually triggered by an unread badge) always
+            // lands on "my chats" — never on the read-only all-chats view.
+            if (key === 'chats' && (chatScope === 'all' || activeAllChat)) {
+              setChatScope('mine');
+              setActiveAllChat(null);
+            }
             setTab(key);
             if (key !== 'graph') onPanelOpen?.();
           }}
+
 
           disabled={opts?.disabled}
           data-tt-help={opts?.helpKey}
