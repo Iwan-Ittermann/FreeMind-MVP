@@ -154,6 +154,17 @@ function RainOverlay() {
   return null;
 }
 
+function EmText({ children }: { children: string }) {
+  const parts = children.split(/_(.+?)_/);
+  return (
+    <>
+      {parts.map((part, i) =>
+        i % 2 === 1 ? <em key={i}>{part}</em> : part
+      )}
+    </>
+  );
+}
+
 export default function Landing() {
   const { i18n } = useTranslation();
   const lang: Lang = i18n.language?.startsWith("de") ? "de" : "en";
@@ -333,7 +344,9 @@ export default function Landing() {
             {c.what.map((line) => (
               <p key={line}>{line}</p>
             ))}
-            <p className="font-bold">{c.whatBold}</p>
+            <p className="font-bold">
+              <EmText>{c.whatBold}</EmText>
+            </p>
           </div>
         </div>
       </section>
