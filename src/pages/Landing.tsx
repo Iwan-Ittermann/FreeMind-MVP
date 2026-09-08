@@ -38,16 +38,13 @@ const copy = {
     idea2: "If that works, a discussion here is more than just a discussion.",
     whatTitle: "What happens?",
     what: [
-      "You answer one question.",
-      "You meet people you would probably never have met.",
-      "You disagree.",
-      "And you still try to understand each other.",
-      "The graph comes alive.",
-      "New conversations appear everywhere.",
-      "Every conversation changes the playing field.",
-      "The last day shows who built the strongest bridges.",
+      "It starts with you answering one question.",
+      "Then you meet people you would probably never have met.",
+      "Can you understand each other, even if you strongly disagree?",
+      "Every conversation appears live on the graph — a living visualisation of the discussion.",
+      "For three days, the graph puts the bridge builders at the centre of attention.",
     ],
-    whatBold: "Without any moderation.",
+    whatBold: "Built to be _moderate_, not moderated.",
     aboutTitle: "About me",
     about1: "For years I have wondered why the internet can connect millions of people, yet good conversations are so rare.",
     about2: "freemind is my attempt to prove the opposite.",
@@ -93,16 +90,13 @@ const copy = {
     idea2: "Wenn das funktioniert, ist eine Diskussion hier mehr als nur eine Diskussion.",
     whatTitle: "Was passiert?",
     what: [
-      "Du beantwortest eine Frage.",
-      "Du triffst Menschen, die du sonst nie getroffen hättest.",
-      "Du bist anderer Meinung.",
-      "Und versuchst trotzdem, einander zu verstehen.",
-      "Der Graph wird lebendig.",
-      "Überall entstehen neue Gespräche.",
-      "Jedes Gespräch verändert das Spielfeld.",
-      "Am letzten Tag zeigt sich, wer die stärksten Brücken gebaut hat.",
+      "Es beginnt damit, dass du eine Frage beantwortest.",
+      "Dann triffst du Menschen, die du sonst nie getroffen hättest.",
+      "Könnt ihr euch verstehen, auch wenn ihr stark anderer Meinung seid?",
+      "Jedes Gespräch erscheint live im Graph — einer lebendigen Visualisierung der Diskussion.",
+      "Drei Tage lang rückt der Graph die Brückenbauer ins Zentrum.",
     ],
-    whatBold: "Ganz ohne Moderation.",
+    whatBold: "Gebaut, um _moderat_ zu sein, nicht moderiert.",
     aboutTitle: "Über mich",
     about1: "Seit Jahren frage ich mich, warum das Internet Millionen Menschen verbinden kann und gute Gespräche trotzdem so selten sind.",
     about2: "freemind ist mein Versuch, das Gegenteil zu beweisen.",
@@ -158,6 +152,17 @@ function HeroFlash() {
 
 function RainOverlay() {
   return null;
+}
+
+function EmText({ children }: { children: string }) {
+  const parts = children.split(/_(.+?)_/);
+  return (
+    <>
+      {parts.map((part, i) =>
+        i % 2 === 1 ? <em key={i}>{part}</em> : part
+      )}
+    </>
+  );
 }
 
 export default function Landing() {
@@ -339,7 +344,9 @@ export default function Landing() {
             {c.what.map((line) => (
               <p key={line}>{line}</p>
             ))}
-            <p className="font-bold">{c.whatBold}</p>
+            <p className="font-bold">
+              <EmText>{c.whatBold}</EmText>
+            </p>
           </div>
         </div>
       </section>
