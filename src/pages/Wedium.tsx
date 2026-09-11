@@ -120,8 +120,9 @@ const copy = {
       "For five days, the graph puts the bridge builders at the centre of attention.",
     ],
     whatBold: "Built to be _moderate_, not moderated.",
-    faqLead:
-      "Wondering how exactly this works, what happens with your data, or why there are no likes? We answered the most common questions.",
+    faqLeadBefore: "Have questions? Feel free to ask them ",
+    faqLinkWord: "here",
+    faqLeadAfter: ".",
     faqLink: "Read the FAQ →",
     creatorsEyebrow: "The creators",
     creatorsTitle: "FIVE VOICES, FIVE COMMUNITIES.",
