@@ -354,12 +354,6 @@ export default function Wedium() {
               </a>
               {c.faqLeadAfter}
             </p>
-            <a
-              href="/fragen"
-              className="inline-block text-base sm:text-lg font-bold uppercase tracking-widest text-alert underline underline-offset-4 hover:no-underline"
-            >
-              {c.faqLink}
-            </a>
           </div>
         </div>
 
