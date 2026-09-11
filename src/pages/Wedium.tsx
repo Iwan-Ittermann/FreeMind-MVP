@@ -365,48 +365,69 @@ export default function Wedium() {
           aria-hidden="true"
           className="wedium-gradient pointer-events-none absolute -right-24 -top-24 h-[28rem] w-[28rem] rounded-full opacity-25 blur-3xl"
         />
-        <div className={`${panelInner} relative flex flex-col gap-8`}>
-          <p className={eyebrowClass}>{c.creatorsEyebrow}</p>
-          <h2 className={displayClass} style={{ fontSize: "clamp(2rem, 7vw, 5rem)" }}>
-            {c.creatorsTitle}
-          </h2>
-          <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-            {c.creatorsNote}
-          </p>
-          <ul className="border-t border-foreground/20">
+        <div className={`${panelInner} relative`}>
+          <div className="mb-12 md:mb-20 text-left">
+            <p className={eyebrowClass}>{c.creatorsEyebrow}</p>
+            <h2 className={displayClass} style={{ fontSize: "clamp(2rem, 7vw, 5rem)" }}>
+              {c.creatorsTitle}
+            </h2>
+            <p className="mt-3 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+              {c.creatorsNote}
+            </p>
+          </div>
+
+          {/* Mobile: stacked */}
+          <div className="flex flex-col gap-16 md:hidden">
             {CREATORS.map((n) => (
-              <li
-                key={n}
-                className="group relative flex items-center gap-5 sm:gap-8 border-b border-foreground/20 py-6 sm:py-8 transition-colors hover:bg-foreground/5"
-              >
-                <span
-                  aria-hidden="true"
-                  className="font-display font-black tabular-nums leading-none text-foreground/15 transition-all duration-300 group-hover:text-alert/70"
-                  style={{ fontSize: "clamp(2.5rem, 8vw, 5.5rem)" }}
-                >
-                  {String(n).padStart(2, "0")}
-                </span>
-                <div
-                  aria-hidden="true"
-                  className="wedium-gradient h-16 w-16 sm:h-24 sm:w-24 shrink-0 rounded-full border border-foreground/20 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6"
-                />
-                <div className="min-w-0 flex-1">
-                  <p
-                    className={`${displayClass} truncate transition-transform duration-300 group-hover:translate-x-1`}
-                    style={{ fontSize: "clamp(1.1rem, 3.2vw, 2rem)" }}
-                  >
+              <div key={n} className="flex flex-col items-center text-center gap-5">
+                <div className="w-36 h-36 rounded-full p-1.5 wedium-gradient shadow-xl">
+                  <div className="w-full h-full rounded-full bg-background" />
+                </div>
+                <div>
+                  <p className={`${displayClass} text-xl`}>
                     {c.creatorName} {n}
                   </p>
                   <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-alert">
                     {c.creatorHandle}
                   </p>
-                  <p className="mt-2 text-sm sm:text-base italic text-muted-foreground">
+                  <p className="mt-2 text-base italic text-foreground/80 leading-snug">
                     {c.creatorQuote}
                   </p>
                 </div>
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
+
+          {/* Desktop: freeform constellation */}
+          <div className="relative hidden md:block h-[760px]">
+            {[
+              { top: "top-[0%]", left: "left-[0%]", align: "items-start", text: "text-left", width: "max-w-[260px]" },
+              { top: "top-[6%]", left: "right-[0%]", align: "items-end", text: "text-right", width: "max-w-[280px]" },
+              { top: "top-[40%]", left: "left-1/2 -translate-x-1/2", align: "items-center", text: "text-center", width: "max-w-[340px]" },
+              { top: "bottom-[6%]", left: "left-[4%]", align: "items-start", text: "text-left", width: "max-w-[280px]" },
+              { top: "bottom-[10%]", left: "right-[6%]", align: "items-end", text: "text-right", width: "max-w-[280px]" },
+            ].map((pos, i) => (
+              <div
+                key={i}
+                className={`absolute ${pos.top} ${pos.left} flex flex-col ${pos.align} ${pos.text} gap-5 ${pos.width} transition-transform duration-500 hover:-translate-y-2`}
+              >
+                <div className="w-40 h-40 rounded-full p-1.5 wedium-gradient shadow-xl">
+                  <div className="w-full h-full rounded-full bg-background" />
+                </div>
+                <div>
+                  <p className={`${displayClass} text-2xl`}>
+                    {c.creatorName} {CREATORS[i]}
+                  </p>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-alert">
+                    {c.creatorHandle}
+                  </p>
+                  <p className="mt-2 text-lg italic text-foreground/80 leading-relaxed">
+                    {c.creatorQuote}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
