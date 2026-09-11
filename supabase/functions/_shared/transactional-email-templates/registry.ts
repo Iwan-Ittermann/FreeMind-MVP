@@ -17,6 +17,10 @@ import {
 
   nudgeChatTemplate,
   notificationDigestTemplate,
+  wediumSogehtsTemplate,
+  wediumStartTemplate,
+  wediumFinalDayTemplate,
+  wediumResultTemplate,
 } from './campaign.tsx'
 
 
@@ -48,5 +52,9 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
 
   'nudge-chat': nudgeChatTemplate,
   'notification-digest': notificationDigestTemplate,
+  'campaign-wedium-sogehts': wediumSogehtsTemplate,
+  'campaign-wedium-start': wediumStartTemplate,
+  'campaign-wedium-final-day': wediumFinalDayTemplate,
+  'campaign-wedium-result': wediumResultTemplate,
 }
 

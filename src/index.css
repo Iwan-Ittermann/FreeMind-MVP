@@ -218,6 +218,30 @@
   --accent-warm: 38 82% 72%;
 }
 
+/* wedium x freemind co-branded event page (`/wedium`).
+   Palette taken from wedium.social: deep indigo type on a
+   peach → violet → periwinkle gradient. */
+.wedium-theme {
+  --background: 24 90% 96%;
+  --foreground: 240 55% 26%;
+  --border: 240 40% 40%;
+  --input: 240 40% 40%;
+  --ring: 240 55% 26%;
+  --muted-foreground: 240 25% 45%;
+  --alert: 8 85% 64%;
+  --accent-warm: 232 70% 70%;
+}
+
+.wedium-gradient {
+  background-image: linear-gradient(
+    135deg,
+    hsl(18 95% 84%) 0%,
+    hsl(350 70% 82%) 28%,
+    hsl(268 60% 80%) 58%,
+    hsl(232 78% 78%) 100%
+  );
+}
+
 /* Nebula (deep-space) theme — applied via body class `.theme-nebula`.
    Palette: violet-black bg, nebula core, magenta star, starlight, cyan accent. */
 .theme-nebula {

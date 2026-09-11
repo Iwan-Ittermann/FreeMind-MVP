@@ -96,6 +96,30 @@ const TEMPLATE_META: Record<string, TemplateMeta> = {
     placeholders: "{{goUrl}}, {{appUrl}}, {{sogehtsUrl}}, {{passphrase}}",
     campaign: true,
   },
+  "campaign-wedium-sogehts": {
+    label: "10. wedium: So geht's",
+    trigger: "08.10.2026, 00:01",
+    placeholders: "{{sogehtsUrl}}, {{goUrl}}, {{appUrl}}, {{faqUrl}}, {{passphrase}}",
+    campaign: true,
+  },
+  "campaign-wedium-start": {
+    label: "11. wedium: Es startet heute (mit Passphrase)",
+    trigger: "10.10.2026, 00:01",
+    placeholders: "{{passphrase}}, {{goUrl}}, {{appUrl}}, {{faqUrl}}",
+    campaign: true,
+  },
+  "campaign-wedium-final-day": {
+    label: "12. wedium: Letzter Tag",
+    trigger: "14.10.2026, 00:01",
+    placeholders: "{{passphrase}}, {{goUrl}}, {{appUrl}}",
+    campaign: true,
+  },
+  "campaign-wedium-result": {
+    label: "13. wedium: Ergebnis & Danke",
+    trigger: "15.10.2026, 09:00",
+    placeholders: "{{goUrl}}, {{appUrl}}, {{berichtUrl}}",
+    campaign: true,
+  },
 
 };
 
@@ -114,6 +138,10 @@ const MAIL_COLUMNS: Array<{ key: string; short: string; title: string }> = [
   { key: "nudge-opinion", short: "N-Mein", title: "Nudge: Meinung posten" },
   { key: "nudge-rate", short: "N-Bew", title: "Nudge: Bewerten" },
   { key: "nudge-chat", short: "N-Disk", title: "Nudge: Diskutieren" },
+  { key: "campaign-wedium-sogehts", short: "W-Geht's", title: "wedium: So geht's, 08.10." },
+  { key: "campaign-wedium-start", short: "W-Start", title: "wedium: Es startet heute, 10.10." },
+  { key: "campaign-wedium-final-day", short: "W-Final", title: "wedium: Letzter Tag, 14.10." },
+  { key: "campaign-wedium-result", short: "W-Erg", title: "wedium: Ergebnis & Danke, 15.10." },
 
   { key: "signup-passphrase", short: "Pass*", title: "Passphrase (alte Einzel-Mail, nur manuell)" },
 ];
@@ -130,6 +158,10 @@ const RESENDABLE = [
   { key: "nudge-rate", label: "Nudge: Bewerten" },
 
   { key: "nudge-chat", label: "Nudge: Diskutieren" },
+  { key: "campaign-wedium-sogehts", label: "wedium: So geht's" },
+  { key: "campaign-wedium-start", label: "wedium: Start" },
+  { key: "campaign-wedium-final-day", label: "wedium: Letzter Tag" },
+  { key: "campaign-wedium-result", label: "wedium: Ergebnis" },
 ];
 
 

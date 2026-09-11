@@ -110,6 +110,28 @@ export const notificationDigestTemplate = makeTemplate(
   'Benachrichtigungen',
 )
 
+// wedium x freemind live event
+export const wediumSogehtsTemplate = makeTemplate(
+  "wedium: So geht's",
+  'So funktioniert freemind',
+  'wedium x freemind',
+)
+export const wediumStartTemplate = makeTemplate(
+  'wedium: Start',
+  'Heute startet es!',
+  'wedium x freemind',
+)
+export const wediumFinalDayTemplate = makeTemplate(
+  'wedium: Letzter Tag',
+  'Letzter Tag',
+  'wedium x freemind',
+)
+export const wediumResultTemplate = makeTemplate(
+  'wedium: Ergebnis',
+  'Das Ergebnis',
+  'wedium x freemind',
+)
+
 const pixel = { display: 'block', width: '1px', height: '1px', border: 0 }
 const hr = { borderColor: '#e5e5e5', margin: '32px 0 16px' }
 const footerStyle = { fontSize: '11px', lineHeight: '18px', color: '#6b7280', margin: 0 }

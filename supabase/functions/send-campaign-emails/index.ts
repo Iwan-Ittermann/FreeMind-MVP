@@ -331,7 +331,8 @@ async function sendCampaign(campaignKey: string, onlySignupId?: string, resend =
     const data = {
       passphrase: r.passphrase ?? "",
       appUrl: SITE_URL,
-      goUrl: `${SITE_URL}/go`,
+      goUrl: `${SITE_URL}/wedium/go`,
+      sandboxUrl: `${SITE_URL}/go`,
       testUrl: `${SITE_URL}/test`,
       faqUrl: `${SITE_URL}/fragen`,
       sogehtsUrl: `${SITE_URL}/sogehts`,
@@ -347,7 +348,7 @@ async function sendCampaign(campaignKey: string, onlySignupId?: string, resend =
     const tpl = await loadTemplate(supabase, campaignKey, data, {
       subject: def.label,
       heading: def.label,
-      body: `[${SITE_URL}/go](${SITE_URL}/go)`,
+      body: `[${SITE_URL}/wedium/go](${SITE_URL}/wedium/go)`,
     });
 
     const res = await fetch(`${SUPABASE_URL}/functions/v1/send-transactional-email`, {

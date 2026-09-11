@@ -40,6 +40,10 @@ const TEMPLATE_KEYS = [
   "nudge-opinion",
   "nudge-rate",
   "nudge-chat",
+  "campaign-wedium-sogehts",
+  "campaign-wedium-start",
+  "campaign-wedium-final-day",
+  "campaign-wedium-result",
 
 ] as const;
 type TemplateKey = typeof TEMPLATE_KEYS[number];
@@ -58,6 +62,10 @@ const TRACKED_TEMPLATES = [
   "nudge-opinion",
   "nudge-rate",
   "nudge-chat",
+  "campaign-wedium-sogehts",
+  "campaign-wedium-start",
+  "campaign-wedium-final-day",
+  "campaign-wedium-result",
 
 ];
 

@@ -419,7 +419,7 @@ async function run(date: string, resend: boolean, onlySignupId?: string) {
     const { body, yourDay } = buildBody(snap, {
       ownOpinionId,
       unread: unreadByUser.get(uid) ?? 0,
-      goUrl: `${SITE_URL}/go`,
+      goUrl: `${SITE_URL}/wedium/go`,
       berichtUrl: `${SITE_URL}/bericht`,
     });
 
@@ -427,7 +427,7 @@ async function run(date: string, resend: boolean, onlySignupId?: string) {
       briefDate: date,
       briefBody: body,
       briefYourDay: yourDay,
-      goUrl: `${SITE_URL}/go`,
+      goUrl: `${SITE_URL}/wedium/go`,
       berichtUrl: `${SITE_URL}/bericht`,
       appUrl: SITE_URL,
     };
@@ -477,7 +477,7 @@ async function preview(date: string, signupId?: string) {
   const { body } = buildBody(snap, {
     ownOpinionId,
     unread: 0,
-    goUrl: `${SITE_URL}/go`,
+    goUrl: `${SITE_URL}/wedium/go`,
     berichtUrl: `${SITE_URL}/bericht`,
   });
   return { date, body };
