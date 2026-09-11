@@ -68,7 +68,7 @@ const copy = {
       { when: "11.–13. Oktober", what: "Bewerten, diskutieren, Brücken bauen. Jeden Abend eine kurze Mail." },
       { when: "14. Oktober", what: "Letzter Tag. Danach: das Ergebnis." },
     ],
-    ctaTitle: "SEI DABEI, WENN WIR ES WIEDER VERSUCHEN.",
+    ctaTitle: "SEI DABEI!",
     ctaLine1: "FÜNF TAGE · EINE FRAGE · ",
     ctaLine2: "EIN BEWEIS.",
     emailPlaceholder: "E-Mail",
