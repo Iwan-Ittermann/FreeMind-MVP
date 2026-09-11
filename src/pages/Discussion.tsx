@@ -327,10 +327,10 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
                 <div className="inline-flex flex-wrap justify-center items-center gap-x-1.5">
                   <span>{t('tt.registerToParticipate')}</span>
                   <a
-                    href="https://freemind.chat"
+                    href="/wedium"
                     className="text-primary hover:underline font-medium"
                   >
-                    freemind.chat
+                    freemind.chat/wedium
                   </a>
                   <span>{t('tt.registerToParticipateSuffix')}</span>
                 </div>

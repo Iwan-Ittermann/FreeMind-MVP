@@ -173,8 +173,8 @@ export function TTGateOverlay({
             )}
             <p className="mt-4 text-xs text-muted-foreground">
               {t('tt.registerToParticipate')}{' '}
-              <a href="https://freemind.chat" className="text-primary hover:underline font-medium">
-                freemind.chat
+              <a href="/wedium" className="text-primary hover:underline font-medium">
+                freemind.chat/wedium
               </a>{' '}
               {t('tt.registerToParticipateSuffix')}
             </p>
@@ -198,8 +198,8 @@ export function TTGateOverlay({
               <>
                 <p className="mt-4 text-xs text-muted-foreground">
                   {t('tt.registerToParticipate')}{' '}
-                  <a href="https://freemind.chat" className="text-primary hover:underline font-medium">
-                    freemind.chat
+                  <a href="/wedium" className="text-primary hover:underline font-medium">
+                    freemind.chat/wedium
                   </a>{' '}
                   {t('tt.registerToParticipateSuffix')}
                 </p>

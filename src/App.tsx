@@ -13,6 +13,7 @@ import Admin2 from "./pages/Admin2";
 import Legal from "./pages/Legal";
 import Discussion from "./pages/Discussion";
 import Landing from "./pages/Landing";
+import Wedium from "./pages/Wedium";
 import Confirm from "./pages/Confirm";
 import Unsubscribe from "./pages/Unsubscribe";
 import Fragen from "./pages/Fragen";
@@ -50,6 +51,8 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
+      <Route path="/wedium" element={<Wedium />} />
+      <Route path="/wedium/go" element={<Discussion mode="real" />} />
       <Route path="/go" element={<Discussion mode="sandbox" />} />
       <Route path="/aug-test" element={<Discussion mode="archive" />} />
       <Route path="/test" element={<Discussion mode="test" />} />

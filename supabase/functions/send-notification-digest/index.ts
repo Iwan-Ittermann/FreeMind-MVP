@@ -125,7 +125,7 @@ async function run(resend: boolean, onlySignupId?: string) {
       digestCount: String(items.length),
       digestSummary: summary,
       digestList: list,
-      goUrl: `${SITE_URL}/go`,
+      goUrl: `${SITE_URL}/wedium/go`,
       notificationsUrl: `${SITE_URL}/benachrichtigungen`,
       appUrl: SITE_URL,
     };
