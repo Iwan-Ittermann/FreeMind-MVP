@@ -53,21 +53,16 @@ const copy = {
       "Fünf Tage lang rückt der Graph die Brückenbauer ins Zentrum.",
     ],
     whatBold: "Gebaut, um _moderat_ zu sein, nicht moderiert.",
+    faqLead:
+      "Du fragst dich, wie das genau funktioniert, was mit deinen Daten passiert oder warum es keine Likes gibt? Wir haben die häufigsten Fragen beantwortet.",
+    faqLink: "Häufige Fragen ansehen →",
     creatorsEyebrow: "Die Creator",
     creatorsTitle: "FÜNF STIMMEN, FÜNF COMMUNITIES.",
     creatorsNote: "Namen, Bilder und Zitate folgen.",
     creatorName: "Creator folgt",
     creatorHandle: "@wedium",
     creatorQuote: "„Zitat folgt.“",
-    timelineEyebrow: "Ablauf",
-    timelineTitle: "SO LÄUFT DAS EVENT.",
-    timeline: [
-      { when: "Jetzt", what: "Anmelden mit deiner E-Mail-Adresse." },
-      { when: "8. Oktober", what: "Du bekommst eine Mail: So funktioniert freemind." },
-      { when: "10. Oktober", what: "Die Frage öffnet. Du postest deine Meinung und startest Gespräche." },
-      { when: "11.–13. Oktober", what: "Bewerten, diskutieren, Brücken bauen. Jeden Abend eine kurze Mail." },
-      { when: "14. Oktober", what: "Letzter Tag. Danach: das Ergebnis." },
-    ],
+
     ctaTitle: "SEI DABEI!",
     ctaLine1: "FÜNF TAGE · EINE FRAGE · ",
     ctaLine2: "EIN BEWEIS.",
@@ -124,21 +119,16 @@ const copy = {
       "For five days, the graph puts the bridge builders at the centre of attention.",
     ],
     whatBold: "Built to be _moderate_, not moderated.",
+    faqLead:
+      "Wondering how exactly this works, what happens with your data, or why there are no likes? We answered the most common questions.",
+    faqLink: "Read the FAQ →",
     creatorsEyebrow: "The creators",
     creatorsTitle: "FIVE VOICES, FIVE COMMUNITIES.",
     creatorsNote: "Names, pictures and quotes to follow.",
     creatorName: "Creator to follow",
     creatorHandle: "@wedium",
     creatorQuote: "“Quote to follow.”",
-    timelineEyebrow: "Timeline",
-    timelineTitle: "HOW THE EVENT RUNS.",
-    timeline: [
-      { when: "Now", what: "Register with your email address." },
-      { when: "8 October", what: "You get a mail: how freemind works." },
-      { when: "10 October", what: "The question opens. You post your opinion and start conversations." },
-      { when: "11–13 October", what: "Rate, discuss, build bridges. A short mail every evening." },
-      { when: "14 October", what: "Final day. Then: the result." },
-    ],
+
     ctaTitle: "BE THERE WHEN WE TRY IT AGAIN.",
     ctaLine1: "FIVE DAYS · ONE QUESTION · ",
     ctaLine2: "ONE PROOF.",
@@ -351,32 +341,63 @@ export default function Wedium() {
               <EmText>{c.whatBold}</EmText>
             </p>
           </div>
+          <div className="max-w-3xl border-t border-foreground/20 pt-6">
+            <p className="text-base sm:text-lg text-muted-foreground">{c.faqLead}</p>
+            <a
+              href="/fragen"
+              className="mt-3 inline-block text-base sm:text-lg font-bold uppercase tracking-widest text-alert underline underline-offset-4 hover:no-underline"
+            >
+              {c.faqLink}
+            </a>
+          </div>
         </div>
+
       </section>
 
       {/* Creators */}
-      <section className={panelClass}>
-        <div className={`${panelInner} flex flex-col gap-8`}>
+      <section className={`${panelClass} relative overflow-hidden`}>
+        <div
+          aria-hidden="true"
+          className="wedium-gradient pointer-events-none absolute -right-24 -top-24 h-[28rem] w-[28rem] rounded-full opacity-25 blur-3xl"
+        />
+        <div className={`${panelInner} relative flex flex-col gap-8`}>
           <p className={eyebrowClass}>{c.creatorsEyebrow}</p>
-          <h2 className={displayClass} style={{ fontSize: "clamp(1.75rem, 5vw, 3.5rem)" }}>
+          <h2 className={displayClass} style={{ fontSize: "clamp(2rem, 7vw, 5rem)" }}>
             {c.creatorsTitle}
           </h2>
           <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
             {c.creatorsNote}
           </p>
-          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <ul className="border-t border-foreground/20">
             {CREATORS.map((n) => (
-              <li key={n} className="flex items-start gap-4 border border-foreground/25 p-4">
+              <li
+                key={n}
+                className="group relative flex items-center gap-5 sm:gap-8 border-b border-foreground/20 py-6 sm:py-8 transition-colors hover:bg-foreground/5"
+              >
+                <span
+                  aria-hidden="true"
+                  className="font-display font-black tabular-nums leading-none text-foreground/15 transition-all duration-300 group-hover:text-alert/70"
+                  style={{ fontSize: "clamp(2.5rem, 8vw, 5.5rem)" }}
+                >
+                  {String(n).padStart(2, "0")}
+                </span>
                 <div
                   aria-hidden="true"
-                  className="wedium-gradient h-14 w-14 shrink-0 rounded-full border border-foreground/20"
+                  className="wedium-gradient h-16 w-16 sm:h-24 sm:w-24 shrink-0 rounded-full border border-foreground/20 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6"
                 />
-                <div className="min-w-0">
-                  <p className="text-sm font-bold uppercase tracking-wide truncate">
+                <div className="min-w-0 flex-1">
+                  <p
+                    className={`${displayClass} truncate transition-transform duration-300 group-hover:translate-x-1`}
+                    style={{ fontSize: "clamp(1.1rem, 3.2vw, 2rem)" }}
+                  >
                     {c.creatorName} {n}
                   </p>
-                  <p className="text-xs text-muted-foreground">{c.creatorHandle}</p>
-                  <p className="mt-2 text-sm italic text-muted-foreground">{c.creatorQuote}</p>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-alert">
+                    {c.creatorHandle}
+                  </p>
+                  <p className="mt-2 text-sm sm:text-base italic text-muted-foreground">
+                    {c.creatorQuote}
+                  </p>
                 </div>
               </li>
             ))}
@@ -384,25 +405,6 @@ export default function Wedium() {
         </div>
       </section>
 
-      {/* Timeline */}
-      <section className={panelClass}>
-        <div className={`${panelInner} flex flex-col gap-8`}>
-          <p className={eyebrowClass}>{c.timelineEyebrow}</p>
-          <h2 className={displayClass} style={{ fontSize: "clamp(1.75rem, 5vw, 3.5rem)" }}>
-            {c.timelineTitle}
-          </h2>
-          <ol className="max-w-3xl divide-y divide-foreground/20 border-y border-foreground/20">
-            {c.timeline.map((row) => (
-              <li key={row.when} className="flex flex-col sm:flex-row gap-1 sm:gap-6 py-4">
-                <span className="sm:w-44 shrink-0 text-xs font-bold uppercase tracking-widest text-alert">
-                  {row.when}
-                </span>
-                <span className="text-base sm:text-lg leading-snug">{row.what}</span>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
 
       {/* Registration */}
       <section id="cta" className={`${panelClass} wedium-gradient`}>
