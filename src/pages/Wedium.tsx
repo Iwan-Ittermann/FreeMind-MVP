@@ -53,8 +53,7 @@ const copy = {
       "Fünf Tage lang rückt der Graph die Brückenbauer ins Zentrum.",
     ],
     whatBold: "Gebaut, um _moderat_ zu sein, nicht moderiert.",
-    faqLead:
-      "Du fragst dich, wie das genau funktioniert, was mit deinen Daten passiert oder warum es keine Likes gibt? Wir haben die häufigsten Fragen beantwortet.",
+    faqLead: "Du hast noch Fragen? Gerne hier stellen! ",
     faqLink: "Häufige Fragen ansehen →",
     creatorsEyebrow: "Die Creator",
     creatorsTitle: "FÜNF STIMMEN, FÜNF COMMUNITIES.",
