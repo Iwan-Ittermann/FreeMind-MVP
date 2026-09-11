@@ -53,7 +53,9 @@ const copy = {
       "Fünf Tage lang rückt der Graph die Brückenbauer ins Zentrum.",
     ],
     whatBold: "Gebaut, um _moderat_ zu sein, nicht moderiert.",
-    faqLead: "Du hast noch Fragen? Gerne hier stellen! ",
+    faqLeadBefore: "Du hast noch Fragen? Gerne ",
+    faqLinkWord: "hier",
+    faqLeadAfter: " stellen!",
     faqLink: "Häufige Fragen ansehen →",
     creatorsEyebrow: "Die Creator",
     creatorsTitle: "FÜNF STIMMEN, FÜNF COMMUNITIES.",
@@ -118,8 +120,9 @@ const copy = {
       "For five days, the graph puts the bridge builders at the centre of attention.",
     ],
     whatBold: "Built to be _moderate_, not moderated.",
-    faqLead:
-      "Wondering how exactly this works, what happens with your data, or why there are no likes? We answered the most common questions.",
+    faqLeadBefore: "Have questions? Feel free to ask them ",
+    faqLinkWord: "here",
+    faqLeadAfter: ".",
     faqLink: "Read the FAQ →",
     creatorsEyebrow: "The creators",
     creatorsTitle: "FIVE VOICES, FIVE COMMUNITIES.",
@@ -341,7 +344,16 @@ export default function Wedium() {
             </p>
           </div>
           <div className="max-w-3xl border-t border-foreground/20 pt-6 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <p className="text-base sm:text-lg text-muted-foreground">{c.faqLead}</p>
+            <p className="text-base sm:text-lg text-muted-foreground">
+              {c.faqLeadBefore}
+              <a
+                href="/fragen"
+                className="font-bold text-alert underline underline-offset-4 hover:no-underline"
+              >
+                {c.faqLinkWord}
+              </a>
+              {c.faqLeadAfter}
+            </p>
             <a
               href="/fragen"
               className="inline-block text-base sm:text-lg font-bold uppercase tracking-widest text-alert underline underline-offset-4 hover:no-underline"
