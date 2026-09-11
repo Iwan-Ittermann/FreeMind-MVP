@@ -44,8 +44,6 @@ const copy = {
     exp2a: "freemind belohnt ",
     exp2b: "Verständnis",
     exp3: "Und wir messen es: vor und nach dem Event fragen wir, wie du über die andere Seite denkst.",
-    resultLabel: "Ergebnis Feldversuch #1 (August 2026)",
-    resultLine: "Affektive Polarisierung um 22 Punkte reduziert (62 → 40, n = 6).",
     whatTitle: "Was passiert?",
     what: [
       "Es beginnt damit, dass du eine Frage beantwortest.",
@@ -117,8 +115,6 @@ const copy = {
     exp2a: "freemind rewards ",
     exp2b: "understanding",
     exp3: "And we measure it: before and after the event we ask how you feel about the other side.",
-    resultLabel: "Result of field test #1 (August 2026)",
-    resultLine: "Affective polarisation reduced by 22 points (62 → 40, n = 6).",
     whatTitle: "What happens?",
     what: [
       "It starts with you answering one question.",
@@ -337,12 +333,6 @@ export default function Wedium() {
               <em>{c.exp2b}</em>.
             </p>
             <p>{c.exp3}</p>
-          </div>
-          <div className="border border-foreground/30 p-5 max-w-2xl">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-              {c.resultLabel}
-            </p>
-            <p className="mt-2 text-base sm:text-lg font-bold">{c.resultLine}</p>
           </div>
         </div>
       </section>
