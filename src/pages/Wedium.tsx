@@ -340,11 +340,11 @@ export default function Wedium() {
               <EmText>{c.whatBold}</EmText>
             </p>
           </div>
-          <div className="max-w-3xl border-t border-foreground/20 pt-6">
+          <div className="max-w-3xl border-t border-foreground/20 pt-6 flex flex-wrap items-baseline gap-x-3 gap-y-1">
             <p className="text-base sm:text-lg text-muted-foreground">{c.faqLead}</p>
             <a
               href="/fragen"
-              className="mt-3 inline-block text-base sm:text-lg font-bold uppercase tracking-widest text-alert underline underline-offset-4 hover:no-underline"
+              className="inline-block text-base sm:text-lg font-bold uppercase tracking-widest text-alert underline underline-offset-4 hover:no-underline"
             >
               {c.faqLink}
             </a>
