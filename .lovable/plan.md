@@ -37,7 +37,7 @@ Ask: if you can get their press kit, the SVG logo replaces the text wordmark in 
 
 ## 4. Polarisation survey
 
-- Drop the "no answer / submit later" escape: both scales must be answered, so the pre-wave is a real gate right after posting the opinion.
+- Keep the "no answer" option on both scales; only the "submit later / dismiss" escape goes, so the pre-wave is answered right after posting the opinion.
 - Pre-wave: shown once, immediately after the opinion is posted.
 - Post-wave: shown on the final day (14.10.).
 - Responses stay in the existing table with the wave marking, so before/after can be compared exactly like August.
