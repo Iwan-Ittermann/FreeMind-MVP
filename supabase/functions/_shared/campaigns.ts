@@ -25,16 +25,9 @@ export const CAMPAIGNS: CampaignDef[] = [
   { key: "campaign-final-day", label: "Final day (August, manuell)" },
   { key: "campaign-sogehts", label: "So geht's (manuell)" },
 
-  // wedium x freemind live event, 10.–14.10.2026 (times = Berlin, CEST = UTC+2).
-  { key: "campaign-wedium-sogehts", label: "wedium: So geht's (08.10.2026, 00:01)", dueAt: "2026-10-07T22:01:00Z" },
-  { key: "campaign-wedium-start", label: "wedium: Es startet heute (10.10.2026, 00:01)", dueAt: "2026-10-09T22:01:00Z" },
-  { key: "campaign-wedium-final-day", label: "wedium: Letzter Tag (14.10.2026, 00:01)", dueAt: "2026-10-13T22:01:00Z" },
-  { key: "campaign-wedium-result", label: "wedium: Ergebnis & Danke (15.10.2026, 09:00)", dueAt: "2026-10-15T07:00:00Z" },
+  // The wedium event mails and nudges live in _shared/wedium-campaigns.ts and are
+  // sent by wedium-campaign-emails to the separate public.wedium_signups list.
 
-  // Activation mail for registered users without an opinion: first send 11.10. 08:30 Berlin.
-  { key: "nudge-opinion", label: "Nudge: Meinung posten", nudge: "opinion", startAt: "2026-10-11T06:30:00Z" },
-  { key: "nudge-rate", label: "Nudge: Bewerten", nudge: "rate" },
-  { key: "nudge-chat", label: "Nudge: Diskutieren", nudge: "chat" },
 
 ];
 
