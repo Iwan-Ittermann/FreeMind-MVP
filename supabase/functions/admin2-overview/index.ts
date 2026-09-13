@@ -37,13 +37,6 @@ const TEMPLATE_KEYS = [
   "campaign-sogehts",
   "daily-report",
   "daily-brief",
-  "nudge-opinion",
-  "nudge-rate",
-  "nudge-chat",
-  "campaign-wedium-sogehts",
-  "campaign-wedium-start",
-  "campaign-wedium-final-day",
-  "campaign-wedium-result",
 
 ] as const;
 type TemplateKey = typeof TEMPLATE_KEYS[number];
@@ -59,13 +52,6 @@ const TRACKED_TEMPLATES = [
   "campaign-sogehts",
   "daily-report",
   "daily-brief",
-  "nudge-opinion",
-  "nudge-rate",
-  "nudge-chat",
-  "campaign-wedium-sogehts",
-  "campaign-wedium-start",
-  "campaign-wedium-final-day",
-  "campaign-wedium-result",
 
 ];
 
