@@ -10,6 +10,8 @@ import { useGlobalPresence } from "@/hooks/useGlobalPresence";
 import { FreeMindThemeProvider } from "@/themes/ThemeContext";
 import Admin from "./pages/Admin";
 import Admin2 from "./pages/Admin2";
+import Admin3 from "./pages/Admin3";
+
 import Legal from "./pages/Legal";
 import Discussion from "./pages/Discussion";
 import Landing from "./pages/Landing";
@@ -53,12 +55,14 @@ function AppRoutes() {
       <Route path="/" element={<Landing />} />
       <Route path="/wedium" element={<Wedium />} />
       <Route path="/wedium/go" element={<Discussion mode="real" />} />
+      <Route path="/wedium/confirm" element={<Confirm wedium />} />
       <Route path="/go" element={<Discussion mode="sandbox" />} />
       <Route path="/aug-test" element={<Discussion mode="archive" />} />
       <Route path="/test" element={<Discussion mode="test" />} />
       <Route path="/secret" element={<Navigate to="/go" replace />} />
       <Route path="/7mm9" element={<Navigate to="/aug-test" replace />} />
       <Route path="/confirm" element={<Confirm />} />
+
       <Route path="/unsubscribe" element={<Unsubscribe />} />
       <Route path="/legal" element={<Legal />} />
       <Route path="/passphrase-vergessen" element={<PassphraseRecall />} />
@@ -70,7 +74,9 @@ function AppRoutes() {
 
 
       <Route path="/admin2" element={<Admin2 />} />
+      <Route path="/admin3" element={<Admin3 />} />
       <Route path="/admin" element={<Admin />} />
+
       <Route path="/auth" element={<Navigate to="/" replace />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
