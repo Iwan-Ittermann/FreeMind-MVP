@@ -280,12 +280,6 @@ export default function Wedium() {
               {c.ctaPrimary}
               <span className="transition-transform group-hover:translate-x-1">→</span>
             </a>
-            <a
-              href="/go"
-              className="text-sm font-bold uppercase tracking-wider underline underline-offset-4 hover:text-alert transition-colors"
-            >
-              {c.ctaSecondary}
-            </a>
           </div>
         </div>
       </section>
