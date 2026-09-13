@@ -205,10 +205,10 @@ export function TTGateOverlay({
                 </p>
                 <button
                   type="button"
-                  onClick={() => window.dispatchEvent(new CustomEvent('tt:open-login'))}
+                  onClick={openDemoAccess}
                   className="mt-2 text-xs text-primary hover:underline font-medium"
                 >
-                  {t('tt.alreadyHavePassphrase')}
+                  {t('tt.demo.openLink')}
                 </button>
               </>
             )}
