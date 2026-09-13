@@ -682,6 +682,18 @@
     "subscribedTopics": "Abonnierte Themen",
     "noSubscribedTopics": "Tippe auf die Glocke eines Themas zum Abonnieren.",
     "alreadyHavePassphrase": "Du hast bereits eine Passphrase?",
+    "demo": {
+      "openLink": "Öffnen",
+      "title": "Geschützter Zugang",
+      "body": "Bitte gib das Passwort ein, um die Testansicht zu öffnen.",
+      "passwordPlaceholder": "Passwort",
+      "unlock": "Öffnen",
+      "wrongPassword": "Passwort stimmt nicht.",
+      "chooseTitle": "Testkonto wählen",
+      "chooseBody": "Wähle eine Person aus, um mit ihrer Meinung auszuprobieren.",
+      "loggedInAs": "Du bist jetzt als {{name}} unterwegs.",
+      "failed": "Das hat nicht funktioniert. Bitte versuche es erneut."
+    },
     "switchAccountHint": "Melde dich mit einer anderen Passphrase an, um das Konto zu wechseln.",
     "notifyOn": "In-App-Benachrichtigungen aktiviert",
     "notifyOff": "In-App-Benachrichtigungen deaktiviert",
