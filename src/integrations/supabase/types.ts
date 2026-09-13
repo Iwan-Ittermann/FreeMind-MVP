@@ -1441,6 +1441,115 @@ export type Database = {
           },
         ]
       }
+      wedium_campaign_sends: {
+        Row: {
+          campaign_key: string
+          id: string
+          open_count: number
+          opened_at: string | null
+          recipient_email: string
+          sent_at: string
+          signup_id: string
+        }
+        Insert: {
+          campaign_key: string
+          id?: string
+          open_count?: number
+          opened_at?: string | null
+          recipient_email: string
+          sent_at?: string
+          signup_id: string
+        }
+        Update: {
+          campaign_key?: string
+          id?: string
+          open_count?: number
+          opened_at?: string | null
+          recipient_email?: string
+          sent_at?: string
+          signup_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wedium_campaign_sends_signup_id_fkey"
+            columns: ["signup_id"]
+            isOneToOne: false
+            referencedRelation: "wedium_signups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wedium_signups: {
+        Row: {
+          auth_user_id: string | null
+          confirm_token: string | null
+          confirm_token_expires_at: string | null
+          confirmed_at: string | null
+          created_at: string
+          email: string
+          id: string
+          last_passphrase_sent_at: string | null
+          passphrase: string | null
+          passphrase_issued_at: string | null
+          signup_ip: unknown
+          updated_at: string
+        }
+        Insert: {
+          auth_user_id?: string | null
+          confirm_token?: string | null
+          confirm_token_expires_at?: string | null
+          confirmed_at?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          last_passphrase_sent_at?: string | null
+          passphrase?: string | null
+          passphrase_issued_at?: string | null
+          signup_ip?: unknown
+          updated_at?: string
+        }
+        Update: {
+          auth_user_id?: string | null
+          confirm_token?: string | null
+          confirm_token_expires_at?: string | null
+          confirmed_at?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          last_passphrase_sent_at?: string | null
+          passphrase?: string | null
+          passphrase_issued_at?: string | null
+          signup_ip?: unknown
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      wedium_verified_participants: {
+        Row: {
+          signup_id: string
+          user_id: string
+          verified_at: string
+        }
+        Insert: {
+          signup_id: string
+          user_id: string
+          verified_at?: string
+        }
+        Update: {
+          signup_id?: string
+          user_id?: string
+          verified_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wedium_verified_participants_signup_id_fkey"
+            columns: ["signup_id"]
+            isOneToOne: false
+            referencedRelation: "wedium_signups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       contents: {
