@@ -17,3 +17,11 @@ project_id = "jmkbkwhiucnksdygbomc"
     verify_jwt = true
   [functions.verify-admin-password]
     verify_jwt = false
+  [functions.wedium-signup-request]
+    verify_jwt = false
+  [functions.wedium-signup-confirm]
+    verify_jwt = false
+  [functions.admin3-overview]
+    verify_jwt = false
+  [functions.wedium-campaign-emails]
+    verify_jwt = true

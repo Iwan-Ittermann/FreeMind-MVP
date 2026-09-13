@@ -101,7 +101,7 @@ Deno.serve(async (req) => {
       .maybeSingle();
     if (!topic) return json({ error: 'no-event-topic' }, 500);
 
-    const email = passphraseToEmail(account.passphrase);
+    const email = passphraseToEmail(account.passphrase, 'wedium');
     const authPassword = passphraseToPassword(account.passphrase);
 
     // 1. Ensure the auth user exists (idempotent).
@@ -110,7 +110,7 @@ Deno.serve(async (req) => {
       email,
       password: authPassword,
       email_confirm: true,
-      user_metadata: { wedium_demo: true, demo_name: account.name },
+      user_metadata: { wedium_demo: true, demo_name: account.name, scope: 'wedium' },
     });
     if (created?.user) {
       userId = created.user.id;
@@ -121,37 +121,36 @@ Deno.serve(async (req) => {
     }
     if (!userId) return json({ error: 'account-setup-failed' }, 500);
 
-    // 2. Ensure a confirmed signup row (needed for verified participation).
+    // 2. Ensure a wedium signup row (needed for verified participation).
     const { data: signup } = await admin
-      .from('signups')
+      .from('wedium_signups')
       .select('id')
       .eq('email', email)
       .maybeSingle();
     let signupId = signup?.id ?? null;
     if (!signupId) {
       const { data: inserted, error: signupErr } = await admin
-        .from('signups')
+        .from('wedium_signups')
         .insert({
           email,
           confirmed_at: new Date().toISOString(),
           passphrase: account.passphrase,
           passphrase_issued_at: new Date().toISOString(),
           auth_user_id: userId,
-          daily_report_opt_in: false,
-          notification_digest_opt_in: false,
         })
         .select('id')
         .single();
       if (signupErr || !inserted) return json({ error: 'account-setup-failed' }, 500);
       signupId = inserted.id;
     } else {
-      await admin.from('signups').update({ auth_user_id: userId }).eq('id', signupId);
+      await admin.from('wedium_signups').update({ auth_user_id: userId }).eq('id', signupId);
     }
 
     // 3. Ensure verified participation.
     await admin
-      .from('verified_participants')
+      .from('wedium_verified_participants')
       .upsert({ user_id: userId, signup_id: signupId }, { onConflict: 'user_id' });
+
 
     // 4. Ensure the prepared opinion on the event topic.
     const { data: existingOpinion } = await admin
