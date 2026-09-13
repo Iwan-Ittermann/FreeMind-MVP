@@ -368,6 +368,8 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
         )}
         {hasOwnOpinion && !gateVariant && !selectedNode && !nudgeVisible && !discussionEnded && !isArchive && <TTInstallHint />}
 
+        <TTDemoAccessPanel />
+
 
         <TTBottomPanel
           topicId={activeTopicId}
