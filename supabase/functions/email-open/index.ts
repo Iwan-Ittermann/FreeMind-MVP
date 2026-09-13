@@ -17,7 +17,8 @@ const PIXEL = Uint8Array.from([
 ]);
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const KEY_RE = /^campaign-[a-z-]{1,40}$/;
+const KEY_RE = /^(campaign|wedium)-[a-z-]{1,40}$/;
+
 
 function pixelResponse() {
   return new Response(PIXEL, {
@@ -35,10 +36,12 @@ Deno.serve(async (req) => {
     const url = new URL(req.url);
     const campaignKey = url.searchParams.get("c") ?? "";
     const signupId = url.searchParams.get("s") ?? "";
+    // ?w=1 marks the separate wedium participant list.
+    const table = url.searchParams.get("w") === "1" ? "wedium_campaign_sends" : "campaign_sends";
 
     if (KEY_RE.test(campaignKey) && UUID_RE.test(signupId)) {
       const { data: row } = await supabase
-        .from("campaign_sends")
+        .from(table)
         .select("id, opened_at, open_count")
         .eq("campaign_key", campaignKey)
         .eq("signup_id", signupId)
@@ -46,7 +49,7 @@ Deno.serve(async (req) => {
 
       if (row) {
         await supabase
-          .from("campaign_sends")
+          .from(table)
           .update({
             opened_at: row.opened_at ?? new Date().toISOString(),
             open_count: (row.open_count ?? 0) + 1,
@@ -54,6 +57,7 @@ Deno.serve(async (req) => {
           .eq("id", row.id);
       }
     }
+
   } catch (err) {
     console.error("email-open error:", err);
   }
