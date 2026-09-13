@@ -53,13 +53,38 @@ export function isValidPassphrase(passphrase: string): boolean {
 }
 
 /**
+ * Access scopes. Each event keeps its own, strictly separated account space:
+ * a passphrase issued for one scope can never sign in on the other.
+ */
+export type PassphraseScope = 'freemind' | 'wedium';
+
+const SCOPE_DOMAINS: Record<PassphraseScope, string> = {
+  freemind: 'freemind.local',
+  wedium: 'wedium.local',
+};
+
+/** The scope of the page the visitor is currently on. */
+export function currentPassphraseScope(): PassphraseScope {
+  try {
+    return window.location.pathname.toLowerCase().startsWith('/wedium')
+      ? 'wedium'
+      : 'freemind';
+  } catch {
+    return 'freemind';
+  }
+}
+
+/**
  * Converts passphrase to a deterministic email for Supabase auth
  * This allows using passphrase as the sole credential
  */
-export function passphraseToEmail(passphrase: string): string {
+export function passphraseToEmail(
+  passphrase: string,
+  scope: PassphraseScope = currentPassphraseScope(),
+): string {
   const normalized = passphrase.toLowerCase().trim();
   // Create a pseudo-email from the passphrase
-  return `${normalized.replace(/-/g, '.')}@freemind.local`;
+  return `${normalized.replace(/-/g, '.')}@${SCOPE_DOMAINS[scope]}`;
 }
 
 /**
@@ -67,19 +92,19 @@ export function passphraseToEmail(passphrase: string): string {
  * Reverse of passphraseToEmail
  */
 export function emailToPassphrase(email: string): string | null {
-  if (!email || !email.endsWith('@freemind.local')) {
-    return null;
-  }
-  
-  const localPart = email.replace('@freemind.local', '');
+  const domain = Object.values(SCOPE_DOMAINS).find((d) => email?.endsWith(`@${d}`));
+  if (!domain) return null;
+
+  const localPart = email.replace(`@${domain}`, '');
   const passphrase = localPart.replace(/\./g, '-');
-  
+
   if (isValidPassphrase(passphrase)) {
     return passphrase;
   }
-  
+
   return null;
 }
+
 
 /**
  * Generates a deterministic password from passphrase
