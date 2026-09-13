@@ -61,6 +61,14 @@ export async function requireVerified(): Promise<boolean> {
     .maybeSingle();
   if (data) return true;
 
+  const { data: wedium } = await supabase
+    .from('wedium_verified_participants')
+    .select('user_id')
+    .eq('user_id', uid)
+    .maybeSingle();
+  if (wedium) return true;
+
+
   // Admins are also allowed server-side; check role so we don't nag admins.
   const { data: roleRow } = await supabase
     .from('user_roles')

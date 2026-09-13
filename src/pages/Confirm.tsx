@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 type Status = "loading" | "ok" | "already_confirmed" | "expired" | "invalid" | "error";
 
-export default function Confirm() {
+export default function Confirm({ wedium = false }: { wedium?: boolean }) {
   const [params] = useSearchParams();
   const token = params.get("token") ?? "";
   const [status, setStatus] = useState<Status>("loading");
@@ -14,9 +14,14 @@ export default function Confirm() {
   const [resendEmail, setResendEmail] = useState("");
   const [resendBusy, setResendBusy] = useState(false);
 
+  const confirmFn = wedium ? "wedium-signup-confirm" : "signup-confirm";
+  const requestFn = wedium ? "wedium-signup-request" : "signup-request";
+
   useEffect(() => {
-    document.title = "Anmeldung bestätigen — freemind";
-  }, []);
+    document.title = wedium
+      ? "Anmeldung bestätigen — wedium x freemind"
+      : "Anmeldung bestätigen — freemind";
+  }, [wedium]);
 
   useEffect(() => {
     if (!token) {
@@ -24,7 +29,7 @@ export default function Confirm() {
       return;
     }
     let cancelled = false;
-    supabase.functions.invoke("signup-confirm", { body: { token } })
+    supabase.functions.invoke(confirmFn, { body: { token } })
       .then(({ data, error }) => {
         if (cancelled) return;
         if (error || !data) { setStatus("error"); return; }
@@ -33,7 +38,7 @@ export default function Confirm() {
       })
       .catch(() => !cancelled && setStatus("error"));
     return () => { cancelled = true; };
-  }, [token]);
+  }, [token, confirmFn]);
 
   const handleResend = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +48,7 @@ export default function Confirm() {
       return;
     }
     setResendBusy(true);
-    const { data, error } = await supabase.functions.invoke("signup-request", {
+    const { data, error } = await supabase.functions.invoke(requestFn, {
       body: { email: parsed.data },
     });
     setResendBusy(false);
@@ -52,6 +57,7 @@ export default function Confirm() {
     else if (data.status === "already_confirmed") toast.success("Du bist bereits bestätigt.");
     else toast.error("Etwas ist schiefgelaufen.");
   };
+
 
   return (
     <div lang="de" className="min-h-screen bg-background text-foreground font-sans p-4 md:p-8 flex flex-col items-center">

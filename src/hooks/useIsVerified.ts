@@ -25,6 +25,13 @@ export function useIsVerified() {
         .eq('user_id', uid)
         .maybeSingle();
       if (vp) return true;
+      const { data: wvp } = await supabase
+        .from('wedium_verified_participants')
+        .select('user_id')
+        .eq('user_id', uid)
+        .maybeSingle();
+      if (wvp) return true;
+
       const { data: role } = await supabase
         .from('user_roles')
         .select('role')

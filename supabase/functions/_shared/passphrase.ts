@@ -25,12 +25,20 @@ function pick<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+/** Strictly separated account spaces per event. */
+export type PassphraseScope = 'freemind' | 'wedium';
+
+const SCOPE_DOMAINS: Record<PassphraseScope, string> = {
+  freemind: 'freemind.local',
+  wedium: 'wedium.local',
+};
+
 export function generatePassphrase(): string {
   return `${pick(adjectives)}-${pick(nouns)}-${pick(verbs)}-${Math.floor(Math.random() * 100)}`;
 }
 
-export function passphraseToEmail(p: string): string {
-  return `${p.toLowerCase().trim().replace(/-/g, '.')}@freemind.local`;
+export function passphraseToEmail(p: string, scope: PassphraseScope = 'freemind'): string {
+  return `${p.toLowerCase().trim().replace(/-/g, '.')}@${SCOPE_DOMAINS[scope]}`;
 }
 
 export function passphraseToPassword(p: string): string {
