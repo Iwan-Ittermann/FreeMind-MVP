@@ -38,6 +38,7 @@ export function TTDemoAccessPanel() {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [password, setPassword] = useState('');
+  const [unlocked, setUnlocked] = useState('');
   const [accounts, setAccounts] = useState<DemoAccount[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -70,6 +71,7 @@ export function TTDemoAccessPanel() {
       return;
     }
     setAccounts(list);
+    setUnlocked(password);
     setPassword('');
   };
 
@@ -78,7 +80,7 @@ export function TTDemoAccessPanel() {
     setBusy(true);
     try {
       const { data, error: fnErr } = await supabase.functions.invoke('wedium-demo-access', {
-        body: { password, accountKey: account.key },
+        body: { password: unlocked, accountKey: account.key },
       });
       const phrase = (data as { passphrase?: string } | null)?.passphrase;
       if (fnErr || !phrase) {
