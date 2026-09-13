@@ -682,6 +682,18 @@
     "subscribedTopics": "Subscribed topics",
     "noSubscribedTopics": "Tap the bell on a topic to subscribe.",
     "alreadyHavePassphrase": "Already have a passphrase?",
+    "demo": {
+      "openLink": "Open",
+      "title": "Protected access",
+      "body": "Enter the password to open the test view.",
+      "passwordPlaceholder": "Password",
+      "unlock": "Open",
+      "wrongPassword": "That password is not right.",
+      "chooseTitle": "Choose a test account",
+      "chooseBody": "Pick a person to explore with their opinion.",
+      "loggedInAs": "You are now exploring as {{name}}.",
+      "failed": "That did not work. Please try again."
+    },
     "switchAccountHint": "Sign in with another passphrase to switch account.",
     "notifyOn": "In-app notifications enabled",
     "notifyOff": "In-app notifications disabled",

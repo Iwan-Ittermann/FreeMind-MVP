@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { getClientIP } from '@/hooks/useClientIP';
 import { loginWithPassphrase } from '@/lib/passphrase-login';
 import { ensureSilentAuth } from '@/lib/silent-auth';
+import { openDemoAccess } from '@/components/tt/TTDemoAccessPanel';
 
 export type GateVariant = 'countdown' | 'submit' | 'waiting' | 'login';
 
@@ -205,10 +206,10 @@ export function TTGateOverlay({
                 </p>
                 <button
                   type="button"
-                  onClick={() => window.dispatchEvent(new CustomEvent('tt:open-login'))}
+                  onClick={openDemoAccess}
                   className="mt-2 text-xs text-primary hover:underline font-medium"
                 >
-                  {t('tt.alreadyHavePassphrase')}
+                  {t('tt.demo.openLink')}
                 </button>
               </>
             )}
