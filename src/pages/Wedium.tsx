@@ -201,9 +201,10 @@ export default function Wedium() {
     }
     setStatus("loading");
     try {
-      const { data, error } = await supabase.functions.invoke("signup-request", {
+      const { data, error } = await supabase.functions.invoke("wedium-signup-request", {
         body: { email: raw },
       });
+
       if (error) throw error;
       if (data?.status === "sent") {
         toast.success(c.okSent);
