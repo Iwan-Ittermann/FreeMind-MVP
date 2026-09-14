@@ -117,13 +117,12 @@ export default function Sogehts() {
         <div className={`${panelInner} flex flex-col gap-8`}>
           <p className={eyebrowClass}>Am Ende</p>
           <h2 className={displayClass} style={{ fontSize: "clamp(1.75rem, 5vw, 3.5rem)" }}>
-            DIE FÜNF MENSCHEN MIT DEN MEISTEN PUNKTEN ERHALTEN EIN LOSUNGSWORT.
+            JE MEHR PUNKTE DU ERHÄLST, UMSO ZENTRALER STEHT DEINE MEINUNG.
           </h2>
           <div className={bodyProseClass}>
-            <p>Damit können sie mir ihre PayPal-Adresse oder Kontoverbindung schicken.</p>
+            <p>Deine Meinung bekommt  Aufmerksamkeit. Aber ebenso deine produktiven Dialoge, mit denen, die dir widersprechen!</p>
             <p>
-              Auf freemind können sie anschließend öffentlich bestätigen, dass sie ihr Preisgeld
-              erhalten haben.
+              So trägst du dazu bei, die gesellschaftliche Spaltung zu überwinden und hilfst anderen, es dir gleichzutun!
             </p>
           </div>
           <a
