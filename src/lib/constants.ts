@@ -27,3 +27,9 @@ export function botLabel(userId?: string | null): string | null {
 
 /** Helsinki MVP event topic (now the /aug-test archive). */
 export const HELSINKI_TOPIC_SHORT_CODE = '7mm9';
+
+/**
+ * Passphrase login is switched off for the wedium phase: partners use the
+ * password-gated demo accounts instead, so no passphrase UI is shown.
+ */
+export const PASSPHRASE_LOGIN_ENABLED = false;

@@ -692,7 +692,9 @@
       "chooseTitle": "Choose a test account",
       "chooseBody": "Pick a person to explore with their opinion.",
       "loggedInAs": "You are now exploring as {{name}}.",
-      "failed": "That did not work. Please try again."
+      "failed": "That did not work. Please try again.",
+      "setupFailed": "The test account could not be prepared. Please try again.",
+      "loginFailed": "Signing in as this test person failed. Please tap again."
     },
     "switchAccountHint": "Sign in with another passphrase to switch account.",
     "notifyOn": "In-app notifications enabled",
