@@ -1,7 +1,8 @@
 // Password-protected demo access for Wedium partners.
 // Verifies a shared password (WEDIUM_DEMO_PASSWORD) and hands out one of four
 // prepared test accounts (auth user + confirmed signup + opinion on the real
-// event topic). Accounts are created idempotently on first use.
+// event topic). Accounts are created idempotently, and all of them are prepared
+// as soon as the password is accepted so picking one is instant and reliable.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { passphraseToEmail, passphraseToPassword } from '../_shared/passphrase.ts';
 
@@ -57,6 +58,105 @@ const ACCOUNTS: DemoAccount[] = [
 
 const publicAccount = (a: DemoAccount) => ({ key: a.key, name: a.name, opinion: a.opinion });
 
+type Admin = ReturnType<typeof createClient>;
+
+async function resolveTopicId(admin: Admin): Promise<string | null> {
+  const { data: setting } = await admin
+    .from('app_settings')
+    .select('value')
+    .eq('key', 'real_topic_short_code')
+    .maybeSingle();
+  const shortCode = (setting?.value ?? '').trim();
+  if (!shortCode) return null;
+  const { data: topic } = await admin
+    .from('topics')
+    .select('id')
+    .eq('short_code', shortCode)
+    .maybeSingle();
+  return topic?.id ?? null;
+}
+
+/** Idempotently makes sure the demo account can sign in and has its opinion. */
+async function ensureAccount(
+  admin: Admin,
+  topicId: string,
+  account: DemoAccount,
+): Promise<boolean> {
+  const email = passphraseToEmail(account.passphrase, 'wedium');
+  const authPassword = passphraseToPassword(account.passphrase);
+
+  // 1. Auth user.
+  let userId: string | null = null;
+  const { data: created } = await admin.auth.admin.createUser({
+    email,
+    password: authPassword,
+    email_confirm: true,
+    user_metadata: { wedium_demo: true, demo_name: account.name, scope: 'wedium' },
+  });
+  if (created?.user) {
+    userId = created.user.id;
+  } else {
+    const { data: list } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
+    userId = list?.users.find((u) => u.email?.toLowerCase() === email)?.id ?? null;
+    if (userId) {
+      // Repair the credentials in case the account was created differently before.
+      await admin.auth.admin.updateUserById(userId, {
+        password: authPassword,
+        email_confirm: true,
+      });
+    }
+  }
+  if (!userId) return false;
+
+  // 2. Wedium signup row (needed for verified participation).
+  const { data: signup } = await admin
+    .from('wedium_signups')
+    .select('id')
+    .eq('email', email)
+    .maybeSingle();
+  let signupId = signup?.id ?? null;
+  if (!signupId) {
+    const { data: inserted } = await admin
+      .from('wedium_signups')
+      .insert({
+        email,
+        confirmed_at: new Date().toISOString(),
+        passphrase: account.passphrase,
+        passphrase_issued_at: new Date().toISOString(),
+        auth_user_id: userId,
+      })
+      .select('id')
+      .single();
+    signupId = inserted?.id ?? null;
+  } else {
+    await admin.from('wedium_signups').update({ auth_user_id: userId }).eq('id', signupId);
+  }
+  if (!signupId) return false;
+
+  // 3. Verified participation.
+  await admin
+    .from('wedium_verified_participants')
+    .upsert({ user_id: userId, signup_id: signupId }, { onConflict: 'user_id' });
+
+  // 4. Prepared opinion on the event topic.
+  const { data: existingOpinion } = await admin
+    .from('opinions')
+    .select('id')
+    .eq('topic_id', topicId)
+    .eq('user_id', userId)
+    .maybeSingle();
+  if (!existingOpinion) {
+    await admin.from('opinions').insert({
+      topic_id: topicId,
+      user_id: userId,
+      text: account.opinion,
+      visible: true,
+    });
+  }
+
+  return true;
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
@@ -73,102 +173,30 @@ Deno.serve(async (req) => {
       return json({ error: 'invalid-password' }, 401);
     }
 
+    const admin = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+    );
+
+    const topicId = await resolveTopicId(admin);
+    if (!topicId) return json({ error: 'no-event-topic' }, 500);
+
     if (body.accountKey === undefined || body.accountKey === null) {
+      // Prepare every account up front so any pick works on the first try.
+      for (const a of ACCOUNTS) {
+        const ok = await ensureAccount(admin, topicId, a);
+        if (!ok) console.error('wedium demo account setup failed', a.key);
+      }
       return json({ accounts: ACCOUNTS.map(publicAccount) });
     }
 
     const account = ACCOUNTS.find((a) => a.key === body.accountKey);
     if (!account) return json({ error: 'unknown-account' }, 400);
 
-    const admin = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
-    );
+    const ok = await ensureAccount(admin, topicId, account);
+    if (!ok) return json({ error: 'account-setup-failed' }, 500);
 
-    // Resolve the real event topic.
-    const { data: setting } = await admin
-      .from('app_settings')
-      .select('value')
-      .eq('key', 'real_topic_short_code')
-      .maybeSingle();
-    const shortCode = (setting?.value ?? '').trim();
-    if (!shortCode) return json({ error: 'no-event-topic' }, 500);
-
-    const { data: topic } = await admin
-      .from('topics')
-      .select('id')
-      .eq('short_code', shortCode)
-      .maybeSingle();
-    if (!topic) return json({ error: 'no-event-topic' }, 500);
-
-    const email = passphraseToEmail(account.passphrase, 'wedium');
-    const authPassword = passphraseToPassword(account.passphrase);
-
-    // 1. Ensure the auth user exists (idempotent).
-    let userId: string | null = null;
-    const { data: created, error: createErr } = await admin.auth.admin.createUser({
-      email,
-      password: authPassword,
-      email_confirm: true,
-      user_metadata: { wedium_demo: true, demo_name: account.name, scope: 'wedium' },
-    });
-    if (created?.user) {
-      userId = created.user.id;
-    } else if (createErr) {
-      // Already registered → find the existing user by email.
-      const { data: list } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
-      userId = list?.users.find((u) => u.email?.toLowerCase() === email)?.id ?? null;
-    }
-    if (!userId) return json({ error: 'account-setup-failed' }, 500);
-
-    // 2. Ensure a wedium signup row (needed for verified participation).
-    const { data: signup } = await admin
-      .from('wedium_signups')
-      .select('id')
-      .eq('email', email)
-      .maybeSingle();
-    let signupId = signup?.id ?? null;
-    if (!signupId) {
-      const { data: inserted, error: signupErr } = await admin
-        .from('wedium_signups')
-        .insert({
-          email,
-          confirmed_at: new Date().toISOString(),
-          passphrase: account.passphrase,
-          passphrase_issued_at: new Date().toISOString(),
-          auth_user_id: userId,
-        })
-        .select('id')
-        .single();
-      if (signupErr || !inserted) return json({ error: 'account-setup-failed' }, 500);
-      signupId = inserted.id;
-    } else {
-      await admin.from('wedium_signups').update({ auth_user_id: userId }).eq('id', signupId);
-    }
-
-    // 3. Ensure verified participation.
-    await admin
-      .from('wedium_verified_participants')
-      .upsert({ user_id: userId, signup_id: signupId }, { onConflict: 'user_id' });
-
-
-    // 4. Ensure the prepared opinion on the event topic.
-    const { data: existingOpinion } = await admin
-      .from('opinions')
-      .select('id')
-      .eq('topic_id', topic.id)
-      .eq('user_id', userId)
-      .maybeSingle();
-    if (!existingOpinion) {
-      await admin.from('opinions').insert({
-        topic_id: topic.id,
-        user_id: userId,
-        text: account.opinion,
-        visible: true,
-      });
-    }
-
-    console.log('wedium demo account handed out', account.key, userId);
+    console.log('wedium demo account handed out', account.key);
 
     return json({ passphrase: account.passphrase, name: account.name });
   } catch (e) {
