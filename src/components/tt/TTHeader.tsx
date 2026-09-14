@@ -18,6 +18,8 @@ import {
   getPrefs,
   setPrefs,
 } from '@/lib/tt-notification-prefs';
+import { PASSPHRASE_LOGIN_ENABLED } from '@/lib/constants';
+import { clearDemoAccess } from '@/components/tt/TTDemoAccessPanel';
 import {
   getPushStatus,
   subscribeToPush,
@@ -647,7 +649,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                     )}
                   </AnimatePresence>
                 </>
-              )}
+              ) : null}
 
             </div>
           </motion.div>
