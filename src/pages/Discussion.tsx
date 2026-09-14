@@ -242,7 +242,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
       if (phase === 'submission') return 'waiting';
       return null;
     }
-    if (mode === 'test' && !isVerified) return 'login';
+    if (mode === 'test' && !isVerified) return PASSPHRASE_LOGIN_ENABLED ? 'login' : null;
     if (!isVerified) return null;
     if (!hasOwnOpinion) return 'submit';
     return null;
@@ -338,12 +338,21 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
                   </a>
                   <span>{t('tt.registerToParticipateSuffix')}</span>
                 </div>
+                {PASSPHRASE_LOGIN_ENABLED && (
+                  <button
+                    type="button"
+                    onClick={() => window.dispatchEvent(new CustomEvent('tt:open-login'))}
+                    className="text-xs text-primary hover:underline font-medium"
+                  >
+                    {t('tt.alreadyHavePassphrase')}
+                  </button>
+                )}
                 <button
                   type="button"
-                  onClick={() => window.dispatchEvent(new CustomEvent('tt:open-login'))}
+                  onClick={openDemoAccess}
                   className="text-xs text-primary hover:underline font-medium"
                 >
-                  {t('tt.alreadyHavePassphrase')}
+                  {t('tt.demo.openLink')}
                 </button>
               </div>
             </div>
