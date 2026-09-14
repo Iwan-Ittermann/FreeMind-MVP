@@ -74,7 +74,7 @@ function AppRoutes() {
 
 
       <Route path="/admin2" element={<Admin2 />} />
-      <Route path="/admin3" element={<Admin3 />} />
+      <Route path="/wedium/admin" element={<Admin3 />} />
       <Route path="/admin" element={<Admin />} />
 
       <Route path="/auth" element={<Navigate to="/" replace />} />
