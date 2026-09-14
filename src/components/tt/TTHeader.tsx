@@ -18,6 +18,8 @@ import {
   getPrefs,
   setPrefs,
 } from '@/lib/tt-notification-prefs';
+import { PASSPHRASE_LOGIN_ENABLED } from '@/lib/constants';
+import { clearDemoAccess } from '@/components/tt/TTDemoAccessPanel';
 import {
   getPushStatus,
   subscribeToPush,
@@ -144,10 +146,13 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
   };
 
   const handleSignOut = async () => {
+    clearDemoAccess();
     await supabase.auth.signOut({ scope: 'local' });
     setAccountOpen(false);
     setShowLogin(false);
     toast.success(t('config.signedOut', 'Signed out'));
+    // Demo/test sessions must fall back to the lock screen.
+    window.location.reload();
   };
 
   // Single-topic build: flat notification list (no per-topic grouping).
@@ -618,7 +623,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                   <LogOut className="w-3.5 h-3.5" />
                   {t('common.signOut', 'Logout')}
                 </button>
-              ) : (
+              ) : PASSPHRASE_LOGIN_ENABLED ? (
                 <>
                   <button
                     onClick={() => setShowLogin((s) => !s)}
@@ -644,7 +649,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                     )}
                   </AnimatePresence>
                 </>
-              )}
+              ) : null}
 
             </div>
           </motion.div>

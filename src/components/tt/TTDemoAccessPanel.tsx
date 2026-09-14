@@ -10,17 +10,82 @@ import { loginWithPassphrase } from '@/lib/passphrase-login';
 
 export const DEMO_MODE_KEY = 'freemind_wedium_demo';
 const OPEN_EVENT = 'tt:open-demo';
+const CHANGED_EVENT = 'tt:demo-changed';
 
 export function openDemoAccess() {
   window.dispatchEvent(new CustomEvent(OPEN_EVENT));
 }
 
-export function hasDemoAccess(): boolean {
+function readFlag(): boolean {
   try {
     return localStorage.getItem(DEMO_MODE_KEY) === '1';
   } catch {
     return false;
   }
+}
+
+export function hasDemoAccess(): boolean {
+  return readFlag();
+}
+
+/** Called on logout so the lock screen comes back. */
+export function clearDemoAccess() {
+  try {
+    localStorage.removeItem(DEMO_MODE_KEY);
+  } catch {
+    /* ignore */
+  }
+  window.dispatchEvent(new CustomEvent(CHANGED_EVENT));
+}
+
+function setDemoAccess() {
+  try {
+    localStorage.setItem(DEMO_MODE_KEY, '1');
+  } catch {
+    /* ignore */
+  }
+  window.dispatchEvent(new CustomEvent(CHANGED_EVENT));
+}
+
+/**
+ * Demo access is only active while a session exists — signing out sends the
+ * visitor back to the lock screen.
+ */
+export function useDemoAccess(): boolean {
+  const [active, setActive] = useState(readFlag());
+
+  useEffect(() => {
+    const sync = async () => {
+      if (!readFlag()) {
+        setActive(false);
+        return;
+      }
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) {
+        clearDemoAccess();
+        setActive(false);
+        return;
+      }
+      setActive(true);
+    };
+    sync();
+    const onChanged = () => { sync(); };
+    window.addEventListener(CHANGED_EVENT, onChanged);
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT') {
+        clearDemoAccess();
+        setActive(false);
+        return;
+      }
+      sync();
+    });
+    return () => {
+      window.removeEventListener(CHANGED_EVENT, onChanged);
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+
+  return active;
 }
 
 interface DemoAccount {
@@ -29,8 +94,10 @@ interface DemoAccount {
   opinion: string;
 }
 
+const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 /**
- * Password-gated test access for partners: unlocks a list of four prepared
+ * Password-gated test access for partners: unlocks a list of prepared
  * demo accounts and signs in as the chosen one.
  */
 export function TTDemoAccessPanel() {
@@ -84,19 +151,32 @@ export function TTDemoAccessPanel() {
       });
       const phrase = (data as { passphrase?: string } | null)?.passphrase;
       if (fnErr || !phrase) {
-        setError(t('tt.demo.failed'));
+        setError(t('tt.demo.setupFailed'));
         return;
       }
-      const res = await loginWithPassphrase(phrase);
-      if (!res.ok) {
-        setError(t('tt.demo.failed'));
+
+      // A freshly created account may not be signable-in on the very first
+      // attempt — retry a couple of times before giving up.
+      let reason: string | undefined;
+      let signedIn = false;
+      for (let attempt = 0; attempt < 3 && !signedIn; attempt++) {
+        if (attempt > 0) await wait(attempt === 1 ? 250 : 750);
+        const res = await loginWithPassphrase(phrase, 'wedium');
+        reason = res.reason;
+        if (!res.ok) continue;
+        const { data: userData } = await supabase.auth.getUser();
+        signedIn = !!userData.user;
+      }
+      if (!signedIn) {
+        setError(
+          reason === 'invalid-format'
+            ? t('tt.demo.failed')
+            : t('tt.demo.loginFailed'),
+        );
         return;
       }
-      try {
-        localStorage.setItem(DEMO_MODE_KEY, '1');
-      } catch {
-        /* ignore */
-      }
+
+      setDemoAccess();
       await queryClient.invalidateQueries();
       toast.success(t('tt.demo.loggedInAs', { name: account.name }));
       close();
@@ -161,6 +241,11 @@ export function TTDemoAccessPanel() {
                 </button>
               ))}
             </div>
+            {busy && (
+              <div className="mt-3 flex justify-center">
+                <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+              </div>
+            )}
           </>
         )}
 

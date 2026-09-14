@@ -692,7 +692,9 @@
       "chooseTitle": "Testkonto wählen",
       "chooseBody": "Wähle eine Person aus, um mit ihrer Meinung auszuprobieren.",
       "loggedInAs": "Du bist jetzt als {{name}} unterwegs.",
-      "failed": "Das hat nicht funktioniert. Bitte versuche es erneut."
+      "failed": "Das hat nicht funktioniert. Bitte versuche es erneut.",
+      "setupFailed": "Das Testkonto konnte nicht vorbereitet werden. Bitte versuche es erneut.",
+      "loginFailed": "Anmeldung als Testperson fehlgeschlagen. Bitte noch einmal antippen."
     },
     "switchAccountHint": "Melde dich mit einer anderen Passphrase an, um das Konto zu wechseln.",
     "notifyOn": "In-App-Benachrichtigungen aktiviert",
