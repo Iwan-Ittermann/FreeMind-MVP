@@ -41,7 +41,8 @@ import { setVerificationBypass } from '@/lib/verification';
 import { useSandboxBots } from '@/hooks/useSandboxBots';
 import { useTranslation } from 'react-i18next';
 import { useArrowModePref } from '@/hooks/useArrowModePref';
-import { TTDemoAccessPanel, openDemoAccess, hasDemoAccess } from '@/components/tt/TTDemoAccessPanel';
+import { TTDemoAccessPanel, openDemoAccess, useDemoAccess } from '@/components/tt/TTDemoAccessPanel';
+import { PASSPHRASE_LOGIN_ENABLED } from '@/lib/constants';
 
 
 /**
@@ -61,7 +62,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
   const { arrowMode } = useArrowModePref();
   // Time phases apply to the real question only — /test stays open at all times.
   // Partner demo accounts (password-gated) may use the event topic before it opens.
-  const demoAccess = hasDemoAccess();
+  const demoAccess = useDemoAccess();
   const gated = mode === 'real' && phaseGated && !demoAccess;
   const isSandbox = mode === 'sandbox';
   const [sandboxGateClosed, setSandboxGateClosed] = useState(false);
