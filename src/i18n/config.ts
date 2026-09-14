@@ -11,12 +11,14 @@ i18n.use(initReactI18next).init({
     en: { translation: en },
     de: { translation: de },
   },
-  // English-first; German stays available through the language switcher.
+  // English-first globally; wedium starts in German unless a language was chosen before.
   lng: (() => {
     try {
-      return localStorage.getItem('freemind_lang') || 'en';
+      const storedLanguage = localStorage.getItem('freemind_lang');
+      if (storedLanguage) return storedLanguage;
+      return window.location.pathname.startsWith('/wedium') ? 'de' : 'en';
     } catch {
-      return 'en';
+      return window.location.pathname.startsWith('/wedium') ? 'de' : 'en';
     }
   })(),
   fallbackLng: 'en',
