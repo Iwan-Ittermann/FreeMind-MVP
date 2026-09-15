@@ -242,6 +242,30 @@
   );
 }
 
+/* freemind x Gutefrage.net event page (`/gutefrage`).
+   Palette: Gutefrage green on a warm off-white. */
+.gutefrage-theme {
+  --background: 90 30% 97%;
+  --foreground: 150 35% 15%;
+  --border: 150 20% 35%;
+  --input: 150 20% 35%;
+  --ring: 96 60% 38%;
+  --muted-foreground: 150 12% 38%;
+  --alert: 96 62% 36%;
+  --accent-warm: 84 60% 60%;
+}
+
+.gutefrage-gradient {
+  background-image: linear-gradient(
+    135deg,
+    hsl(84 70% 88%) 0%,
+    hsl(96 55% 80%) 40%,
+    hsl(160 45% 78%) 100%
+  );
+}
+
+
+
 /* Nebula (deep-space) theme — applied via body class `.theme-nebula`.
    Palette: violet-black bg, nebula core, magenta star, starlight, cyan accent. */
 .theme-nebula {
