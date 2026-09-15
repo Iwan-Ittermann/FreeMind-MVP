@@ -6,7 +6,10 @@ import { supabase } from "@/integrations/supabase/client";
 
 type Status = "loading" | "ok" | "already_confirmed" | "expired" | "invalid" | "error";
 
-export default function Confirm({ wedium = false }: { wedium?: boolean }) {
+export default function Confirm({
+  wedium = false,
+  gutefrage = false,
+}: { wedium?: boolean; gutefrage?: boolean }) {
   const [params] = useSearchParams();
   const token = params.get("token") ?? "";
   const [status, setStatus] = useState<Status>("loading");
@@ -14,14 +17,28 @@ export default function Confirm({ wedium = false }: { wedium?: boolean }) {
   const [resendEmail, setResendEmail] = useState("");
   const [resendBusy, setResendBusy] = useState(false);
 
-  const confirmFn = wedium ? "wedium-signup-confirm" : "signup-confirm";
-  const requestFn = wedium ? "wedium-signup-request" : "signup-request";
+  const scope = gutefrage ? "gutefrage" : wedium ? "wedium" : "freemind";
+  const confirmFn =
+    scope === "gutefrage"
+      ? "gutefrage-signup-confirm"
+      : scope === "wedium"
+        ? "wedium-signup-confirm"
+        : "signup-confirm";
+  const requestFn =
+    scope === "gutefrage"
+      ? "gutefrage-signup-request"
+      : scope === "wedium"
+        ? "wedium-signup-request"
+        : "signup-request";
 
   useEffect(() => {
-    document.title = wedium
-      ? "Anmeldung bestätigen — wedium x freemind"
-      : "Anmeldung bestätigen — freemind";
-  }, [wedium]);
+    document.title =
+      scope === "gutefrage"
+        ? "Vorregistrierung bestätigen — freemind x Gutefrage.net"
+        : scope === "wedium"
+          ? "Anmeldung bestätigen — wedium x freemind"
+          : "Anmeldung bestätigen — freemind";
+  }, [scope]);
 
   useEffect(() => {
     if (!token) {
