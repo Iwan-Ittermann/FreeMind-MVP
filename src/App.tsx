@@ -16,6 +16,8 @@ import Legal from "./pages/Legal";
 import Discussion from "./pages/Discussion";
 import Landing from "./pages/Landing";
 import Wedium from "./pages/Wedium";
+import Gutefrage from "./pages/Gutefrage";
+import GutefrageAdmin from "./pages/GutefrageAdmin";
 import Confirm from "./pages/Confirm";
 import Unsubscribe from "./pages/Unsubscribe";
 import Fragen from "./pages/Fragen";
