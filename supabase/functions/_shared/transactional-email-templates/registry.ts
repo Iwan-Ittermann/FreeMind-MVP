@@ -36,6 +36,7 @@ export interface TemplateEntry {
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'signup-confirm': signupConfirm,
+  'gutefrage-signup-confirm': signupConfirm,
   'signup-admin-notify': signupAdminNotify,
   'signup-passphrase': signupPassphrase,
   'signup-welcome': welcomeTemplate,

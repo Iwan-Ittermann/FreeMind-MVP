@@ -687,6 +687,39 @@ export type Database = {
         }
         Relationships: []
       }
+      gutefrage_signups: {
+        Row: {
+          confirm_token: string | null
+          confirm_token_expires_at: string | null
+          confirmed_at: string | null
+          created_at: string
+          email: string
+          id: string
+          signup_ip: unknown
+          updated_at: string
+        }
+        Insert: {
+          confirm_token?: string | null
+          confirm_token_expires_at?: string | null
+          confirmed_at?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          signup_ip?: unknown
+          updated_at?: string
+        }
+        Update: {
+          confirm_token?: string | null
+          confirm_token_expires_at?: string | null
+          confirmed_at?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          signup_ip?: unknown
+          updated_at?: string
+        }
+        Relationships: []
+      }
       laws: {
         Row: {
           created_at: string | null

@@ -16,6 +16,8 @@ import Legal from "./pages/Legal";
 import Discussion from "./pages/Discussion";
 import Landing from "./pages/Landing";
 import Wedium from "./pages/Wedium";
+import Gutefrage from "./pages/Gutefrage";
+import GutefrageAdmin from "./pages/GutefrageAdmin";
 import Confirm from "./pages/Confirm";
 import Unsubscribe from "./pages/Unsubscribe";
 import Fragen from "./pages/Fragen";
@@ -56,6 +58,9 @@ function AppRoutes() {
       <Route path="/wedium" element={<Wedium />} />
       <Route path="/wedium/go" element={<Discussion mode="real" />} />
       <Route path="/wedium/confirm" element={<Confirm wedium />} />
+      <Route path="/gutefrage" element={<Gutefrage />} />
+      <Route path="/gutefrage/confirm" element={<Confirm gutefrage />} />
+      <Route path="/gutefrage/admin" element={<GutefrageAdmin />} />
       <Route path="/go" element={<Discussion mode="sandbox" />} />
       <Route path="/aug-test" element={<Discussion mode="archive" />} />
       <Route path="/test" element={<Discussion mode="test" />} />
