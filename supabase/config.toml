@@ -25,3 +25,11 @@ project_id = "jmkbkwhiucnksdygbomc"
     verify_jwt = false
   [functions.wedium-campaign-emails]
     verify_jwt = true
+  [functions.gutefrage-signup-request]
+    verify_jwt = false
+  [functions.gutefrage-signup-confirm]
+    verify_jwt = false
+  [functions.gutefrage-stats]
+    verify_jwt = false
+  [functions.gutefrage-admin]
+    verify_jwt = false
