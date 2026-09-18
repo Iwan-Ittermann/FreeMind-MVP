@@ -10,8 +10,31 @@ const corsHeaders = {
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const ADMIN_NOTIFY_EMAIL = Deno.env.get("ADMIN_NOTIFY_EMAIL") ?? "iwan@freemind.chat";
 
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
+
+async function notifyAdmin(signupEmail: string, confirmedAt: string) {
+  try {
+    const { count } = await supabase
+      .from("gutefrage_signups")
+      .select("id", { count: "exact", head: true })
+      .not("confirmed_at", "is", null);
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/send-transactional-email`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_ROLE}` },
+      body: JSON.stringify({
+        templateName: "gutefrage-admin-notify",
+        recipientEmail: ADMIN_NOTIFY_EMAIL,
+        idempotencyKey: `gutefrage-admin-${signupEmail}-${confirmedAt}`,
+        templateData: { email: signupEmail, confirmedAt, confirmedTotal: count ?? undefined },
+      }),
+    });
+    if (!res.ok) console.error("gutefrage admin notify failed:", res.status, await res.text());
+  } catch (err) {
+    console.error("gutefrage admin notify error:", err);
+  }
+}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
