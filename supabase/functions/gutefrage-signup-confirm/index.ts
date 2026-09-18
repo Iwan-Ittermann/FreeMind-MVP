@@ -60,12 +60,15 @@ Deno.serve(async (req) => {
       return Response.json({ status: "expired", email: row.email }, { headers: corsHeaders });
     }
 
+    const confirmedAt = new Date().toISOString();
     const { error } = await supabase.from("gutefrage_signups").update({
-      confirmed_at: new Date().toISOString(),
+      confirmed_at: confirmedAt,
       confirm_token: null,
       confirm_token_expires_at: null,
     }).eq("id", row.id);
     if (error) throw error;
+
+    await notifyAdmin(row.email, confirmedAt);
 
     return Response.json({ status: "ok", email: row.email }, { headers: corsHeaders });
   } catch (err) {
