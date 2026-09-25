@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import { trackEvent } from "@/lib/analytics";
 
 const panelClass =
   "snap-start min-h-screen w-full flex items-center justify-center px-5 sm:px-8 md:px-12 py-16 sm:py-20 md:py-24 border-b border-foreground/15";
@@ -197,6 +198,7 @@ export default function Wedium() {
     const parsed = z.string().trim().email().max(255).safeParse(cleaned);
     if (!parsed.success) {
       toast.error(c.errInvalidMail);
+      trackEvent("signup_form_submitted", { page: "wedium", result: "invalid_email" });
       return;
     }
     setStatus("loading");
@@ -209,16 +211,20 @@ export default function Wedium() {
       if (data?.status === "sent") {
         toast.success(c.okSent);
         setStatus("sent");
+        trackEvent("signup_form_submitted", { page: "wedium", result: "sent" });
       } else if (data?.status === "already_confirmed") {
         toast.success(c.okAlready);
         setStatus("already");
+        trackEvent("signup_form_submitted", { page: "wedium", result: "already_confirmed" });
       } else {
         toast.error(c.errGeneric);
         setStatus("idle");
+        trackEvent("signup_form_submitted", { page: "wedium", result: "error" });
       }
     } catch {
       toast.error(c.errGeneric);
       setStatus("idle");
+      trackEvent("signup_form_submitted", { page: "wedium", result: "error" });
     }
   };
 

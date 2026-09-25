@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import { trackEvent } from "@/lib/analytics";
 
 const panelClass =
   "snap-start min-h-screen w-full flex items-center justify-center px-5 sm:px-8 md:px-12 py-16 sm:py-20 md:py-24 border-b border-foreground/15";
@@ -60,6 +61,7 @@ export default function Gutefrage() {
     const parsed = z.string().trim().email().max(255).safeParse(email.replace(/^#\s+/, ""));
     if (!parsed.success) {
       toast.error("Bitte gib eine gültige E-Mail-Adresse ein.");
+      trackEvent("signup_form_submitted", { page: "gutefrage", result: "invalid_email" });
       return;
     }
     setStatus("loading");
@@ -71,16 +73,20 @@ export default function Gutefrage() {
       if (data?.status === "sent") {
         toast.success("Bestätigungs-E-Mail unterwegs.");
         setStatus("sent");
+        trackEvent("signup_form_submitted", { page: "gutefrage", result: "sent" });
       } else if (data?.status === "already_confirmed") {
         toast.success("Du bist bereits dabei.");
         setStatus("already");
+        trackEvent("signup_form_submitted", { page: "gutefrage", result: "already_confirmed" });
       } else {
         toast.error("Etwas ist schiefgelaufen. Bitte versuch es erneut.");
         setStatus("idle");
+        trackEvent("signup_form_submitted", { page: "gutefrage", result: "error" });
       }
     } catch {
       toast.error("Etwas ist schiefgelaufen. Bitte versuch es erneut.");
       setStatus("idle");
+      trackEvent("signup_form_submitted", { page: "gutefrage", result: "error" });
     }
   };
 
