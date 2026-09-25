@@ -197,6 +197,7 @@ export default function Wedium() {
     const parsed = z.string().trim().email().max(255).safeParse(cleaned);
     if (!parsed.success) {
       toast.error(c.errInvalidMail);
+      trackEvent("signup_form_submitted", { page: "wedium", result: "invalid_email" });
       return;
     }
     setStatus("loading");
@@ -209,16 +210,20 @@ export default function Wedium() {
       if (data?.status === "sent") {
         toast.success(c.okSent);
         setStatus("sent");
+        trackEvent("signup_form_submitted", { page: "wedium", result: "sent" });
       } else if (data?.status === "already_confirmed") {
         toast.success(c.okAlready);
         setStatus("already");
+        trackEvent("signup_form_submitted", { page: "wedium", result: "already_confirmed" });
       } else {
         toast.error(c.errGeneric);
         setStatus("idle");
+        trackEvent("signup_form_submitted", { page: "wedium", result: "error" });
       }
     } catch {
       toast.error(c.errGeneric);
       setStatus("idle");
+      trackEvent("signup_form_submitted", { page: "wedium", result: "error" });
     }
   };
 

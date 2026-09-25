@@ -203,6 +203,7 @@ export default function Landing() {
     const parsed = z.string().trim().email().max(255).safeParse(cleaned);
     if (!parsed.success) {
       toast.error(c.errInvalidMail);
+      trackEvent("signup_form_submitted", { page: "landing", result: "invalid_email" });
       return;
     }
     setStatus("loading");
@@ -214,16 +215,20 @@ export default function Landing() {
       if (data?.status === "sent") {
         toast.success(c.okSent);
         setStatus("sent");
+        trackEvent("signup_form_submitted", { page: "landing", result: "sent" });
       } else if (data?.status === "already_confirmed") {
         toast.success(c.okAlready);
         setStatus("already");
+        trackEvent("signup_form_submitted", { page: "landing", result: "already_confirmed" });
       } else {
         toast.error(c.errGeneric);
         setStatus("idle");
+        trackEvent("signup_form_submitted", { page: "landing", result: "error" });
       }
     } catch {
       toast.error(c.errGeneric);
       setStatus("idle");
+      trackEvent("signup_form_submitted", { page: "landing", result: "error" });
     }
   };
 

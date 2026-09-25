@@ -60,6 +60,7 @@ export default function Gutefrage() {
     const parsed = z.string().trim().email().max(255).safeParse(email.replace(/^#\s+/, ""));
     if (!parsed.success) {
       toast.error("Bitte gib eine gültige E-Mail-Adresse ein.");
+      trackEvent("signup_form_submitted", { page: "gutefrage", result: "invalid_email" });
       return;
     }
     setStatus("loading");
@@ -71,16 +72,20 @@ export default function Gutefrage() {
       if (data?.status === "sent") {
         toast.success("Bestätigungs-E-Mail unterwegs.");
         setStatus("sent");
+        trackEvent("signup_form_submitted", { page: "gutefrage", result: "sent" });
       } else if (data?.status === "already_confirmed") {
         toast.success("Du bist bereits dabei.");
         setStatus("already");
+        trackEvent("signup_form_submitted", { page: "gutefrage", result: "already_confirmed" });
       } else {
         toast.error("Etwas ist schiefgelaufen. Bitte versuch es erneut.");
         setStatus("idle");
+        trackEvent("signup_form_submitted", { page: "gutefrage", result: "error" });
       }
     } catch {
       toast.error("Etwas ist schiefgelaufen. Bitte versuch es erneut.");
       setStatus("idle");
+      trackEvent("signup_form_submitted", { page: "gutefrage", result: "error" });
     }
   };
 
