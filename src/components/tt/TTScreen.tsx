@@ -8,6 +8,8 @@ import { useTranslation } from 'react-i18next';
 import { GraphEdge, GraphNode } from '@/types/graph';
 import { useChatArrows } from '@/hooks/useChatArrows';
 import { useBackgroundPref } from '@/hooks/useBackgroundPref';
+import { useStreamFocus } from '@/hooks/useStreamFocus';
+import { useStreamSpiralPref } from '@/hooks/useStreamSpiralPref';
 
 interface TTScreenInnerProps {
   topicId: string;
@@ -43,6 +45,20 @@ function TTScreenInnerImpl({
   const { data, activeChats, messageAnimations } = useTopicData(topicId);
   const { data: chatArrows } = useChatArrows(topicId, arrowMode);
   const { bgStyle } = useBackgroundPref();
+  const stream = useStreamFocus(topicId);
+  const { showStreamSpiral } = useStreamSpiralPref();
+
+  const streamSpiral = useMemo(() => {
+    if (!showStreamSpiral || stream.n === 0) return undefined;
+    const focusPos = stream.current
+      ? stream.candidatePositions.get(stream.current.nodeId) ?? null
+      : null;
+    return {
+      points: stream.points,
+      currentIndex: stream.currentIndex,
+      focus: focusPos,
+    };
+  }, [showStreamSpiral, stream.n, stream.points, stream.current, stream.currentIndex, stream.candidatePositions]);
 
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const [size, setSize] = useState<number>(0);
@@ -154,6 +170,7 @@ function TTScreenInnerImpl({
                 ttLandmarks={ttLandmarks}
                 nodePoints={data?.nodePoints}
                 chatArrows={arrowMode ? chatArrows ?? [] : undefined}
+                streamSpiral={streamSpiral}
               />
 
             </div>
