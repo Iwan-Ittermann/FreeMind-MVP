@@ -12,12 +12,14 @@ import {
   Pencil,
   ArrowUpDown,
   ChevronLeft,
+  Waves,
 } from 'lucide-react';
 import type { Opinion } from '@/types/graph';
 import type { TTChatItem } from '@/hooks/useTTChats';
 import { useMyOpinionRatings } from '@/hooks/useTTChats';
 import { useEnsureChatTitles } from '@/hooks/useEnsureChatTitles';
 import { useAllTopicChats, type AllTopicChatItem } from '@/hooks/useAllTopicChats';
+import { useStreamFocus } from '@/hooks/useStreamFocus';
 import { EmbeddedChatView } from '@/components/chat/EmbeddedChatView';
 import { TTRatingDialog } from './TTRatingDialog';
 import { Input } from '@/components/ui/input';
@@ -30,7 +32,7 @@ export interface TTSideTabsHandle {
 }
 
 
-type TTTab = 'opinions' | 'graph' | 'chats';
+type TTTab = 'opinions' | 'graph' | 'stream' | 'chats';
 type ChatScope = 'mine' | 'all';
 type OpinionSort = 'difference' | 'new' | 'score';
 
@@ -90,6 +92,23 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
 
     const { data: myRatings } = useMyOpinionRatings(topicId, myOpinionId);
     const { data: allChats = [] } = useAllTopicChats(topicId, tab === 'chats' && chatScope === 'all');
+    const stream = useStreamFocus(topicId);
+    const [activeStreamChat, setActiveStreamChat] = useState<AllTopicChatItem | null>(null);
+
+    const opinionTextById = useMemo(
+      () => new Map(opinions.map((o) => [o.id, o.text])),
+      [opinions],
+    );
+
+    const formatCountdown = (ms: number) => {
+      const totalSec = Math.max(0, Math.ceil(ms / 1000));
+      const h = Math.floor(totalSec / 3600);
+      const m = Math.floor((totalSec % 3600) / 60);
+      const s = totalSec % 60;
+      return h > 0
+        ? `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+        : `${m}:${String(s).padStart(2, '0')}`;
+    };
 
     useImperativeHandle(ref, () => ({
       openChat(opinionId: string) {
