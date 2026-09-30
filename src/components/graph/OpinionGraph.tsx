@@ -10,7 +10,7 @@ import { ActiveChat, MessageAnimationData } from '@/hooks/useTopicData';
 import { useFreeMindTheme } from '@/themes/ThemeContext';
 import { CityRenderer } from '@/themes/city/CityRenderer';
 import { ArcaneRenderer } from '@/themes/arcane/ArcaneRenderer';
-import { SignalRenderer } from '@/themes/signal/SignalRenderer';
+import { SignalRenderer, type StreamSpiralOverlay } from '@/themes/signal/SignalRenderer';
 import type { ChatArrow } from '@/hooks/useChatArrows';
 
 interface OpinionGraphProps {
@@ -41,6 +41,8 @@ interface OpinionGraphProps {
   nodePoints?: Map<string, number>;
   /** When provided, chats render as short directional arrows instead of edges. */
   chatArrows?: readonly ChatArrow[];
+  /** Stream-Spirale (nur Signal-Renderer/TT). */
+  streamSpiral?: StreamSpiralOverlay;
 
 }
 
@@ -67,6 +69,7 @@ export function OpinionGraph({
   ttLandmarks,
   nodePoints,
   chatArrows,
+  streamSpiral,
 }: OpinionGraphProps) {
 
   const [highlightedNode, setHighlightedNode] = useState<string | null>(null);
@@ -185,7 +188,7 @@ export function OpinionGraph({
           onNodeClick={handleNodeClick}
           onNodeHover={handleNodeHover}
           onEdgeClick={onEdgeClick}
-          {...(useSignalLike ? { showLabels, highlightAllNodes, showZones: chrome !== 'naked', ttMode, ttLandmarks, chatArrows } : {})}
+          {...(useSignalLike ? { showLabels, highlightAllNodes, showZones: chrome !== 'naked', ttMode, ttLandmarks, chatArrows, streamSpiral } : {})}
         />
       </div>
     );
