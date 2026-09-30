@@ -12,6 +12,16 @@ import { TTLandmarks, getTTLevelRadii } from '@/lib/tt-layout';
 import { SignalChatArrows } from './SignalChatArrows';
 import type { ChatArrow } from '@/hooks/useChatArrows';
 import { useBackgroundPref } from '@/hooks/useBackgroundPref';
+import type { SpiralPoint } from '@/lib/stream-spiral';
+import { SPIRAL_MAX_R } from '@/lib/stream-spiral';
+
+/** Daten für die Stream-Spirale (Einheitsraum, Zentrum 0/0, blauer Ring = 300). */
+export interface StreamSpiralOverlay {
+  points: SpiralPoint[];
+  currentIndex: number;
+  /** Einheitsraum-Position des gefeaturten Nodes. */
+  focus: { x: number; y: number } | null;
+}
 
 
 
@@ -40,6 +50,8 @@ interface SignalRendererProps {
   ttLandmarks?: TTLandmarks;
   /** When provided, chats render as short directional arrows instead of edges. */
   chatArrows?: readonly ChatArrow[];
+  /** Stream-Spirale: gepunktete Linie, leuchtender aktueller Punkt, Linie zum Node. */
+  streamSpiral?: StreamSpiralOverlay;
 }
 
 export function SignalRenderer({
@@ -53,6 +65,7 @@ export function SignalRenderer({
   ttMode = false,
   ttLandmarks,
   chatArrows,
+  streamSpiral,
 }: SignalRendererProps) {
   const nodeMap = useMemo(() => new Map(nodes.map(n => [n.id, n])), [nodes]);
   const { bgStyle } = useBackgroundPref();
@@ -167,6 +180,67 @@ export function SignalRenderer({
         </g>
       )}
 
+
+      {/* Stream-Spirale: gepunktete Linie über den Ringen, unter den Edges. */}
+      {streamSpiral && ttLandmarks && streamSpiral.points.length > 0 && (
+        <g className="stream-spiral" pointerEvents="none">
+          {(() => {
+            const scale = ttLandmarks.blueR / SPIRAL_MAX_R;
+            const toPx = (u: { x: number; y: number }) => ({
+              x: config.centerX + u.x * scale,
+              y: config.centerY + u.y * scale,
+            });
+            const pts = streamSpiral.points.map(toPx);
+            const path = pts
+              .map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`)
+              .join(' ');
+            const current = pts[streamSpiral.currentIndex] ?? null;
+            const focus = streamSpiral.focus ? toPx(streamSpiral.focus) : null;
+            return (
+              <>
+                <path
+                  d={path}
+                  fill="none"
+                  stroke="white"
+                  strokeOpacity={0.35}
+                  strokeWidth={1}
+                  strokeDasharray="1 6"
+                  strokeLinecap="round"
+                />
+                {current && focus && (
+                  <line
+                    x1={current.x}
+                    y1={current.y}
+                    x2={focus.x}
+                    y2={focus.y}
+                    stroke="hsl(var(--primary))"
+                    strokeOpacity={0.6}
+                    strokeWidth={1}
+                    strokeDasharray="3 4"
+                  />
+                )}
+                {current && (
+                  <>
+                    <circle
+                      cx={current.x}
+                      cy={current.y}
+                      r={7}
+                      fill="hsl(var(--primary))"
+                      opacity={0.25}
+                    />
+                    <circle
+                      cx={current.x}
+                      cy={current.y}
+                      r={3}
+                      fill="hsl(var(--primary))"
+                    />
+                  </>
+                )}
+              </>
+            );
+          })()}
+        </g>
+      )}
 
       {/* Edges always render (hidden until hover); arrows layer on top of them. */}
       <g className="signal-edges">

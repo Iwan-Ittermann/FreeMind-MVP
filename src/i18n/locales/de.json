@@ -819,7 +819,13 @@
     "deleteOpinionConfirm": "Deine Meinung und alle zugehörigen Gespräche löschen?",
     "deleteOpinionDone": "Deine Meinung wurde gelöscht.",
     "deleteOpinionFailed": "Meinung konnte nicht gelöscht werden.",
-    "yourRating": "Deine Bewertung"
+    "yourRating": "Deine Bewertung",
+    "streamTab": "Stream",
+    "streamNextIn": "Nächster in",
+    "streamNow": "Jetzt im Stream",
+    "streamEarlier": "In diesem Umlauf bisher",
+    "streamEmpty": "Noch keine Gespräche für den Stream. Sobald zwei Seiten gechattet und bewertet haben, startet die Spirale.",
+    "streamSpiralToggle": "Stream-Spirale zeigen"
   },
   "secret": {
     "title": "Geschützter Bereich",

@@ -11,6 +11,7 @@ import { AuthForm } from '@/components/AuthForm';
 import { TopicTitleWithLinks } from '@/components/TopicTitleWithLinks';
 import { useArrowModePref } from '@/hooks/useArrowModePref';
 import { useBackgroundPref } from '@/hooks/useBackgroundPref';
+import { useStreamSpiralPref } from '@/hooks/useStreamSpiralPref';
 import {
   NotificationFilters,
   getGlobalFilters,
@@ -76,6 +77,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
   const { user } = useAuth();
   const { arrowMode, setArrowMode } = useArrowModePref();
   const { bgStyle, setBgStyle } = useBackgroundPref();
+  const { showStreamSpiral, toggleStreamSpiral } = useStreamSpiralPref();
   const [accountOpen, setAccountOpen] = useState(false);
   const [bellOpen, setBellOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -567,6 +569,27 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                   bgStyle === 'eye' ? 'bg-primary border-primary text-primary-foreground' : 'border-border'
                 }`}>
                   {bgStyle === 'eye' && (
+                    <svg className="w-2.5 h-2.5" viewBox="0 0 12 12" fill="none">
+                      <path d="M2 6l3 3 5-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </div>
+              </button>
+
+              <button
+                onClick={toggleStreamSpiral}
+                className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left text-xs transition-colors ${
+                  showStreamSpiral ? 'bg-primary/10 text-foreground' : 'text-muted-foreground hover:bg-muted/50'
+                }`}
+              >
+                <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${showStreamSpiral ? 'text-primary' : 'text-muted-foreground'}`}>
+                  <Sparkles className="w-3.5 h-3.5" />
+                </div>
+                <span className="flex-1">{t('tt.streamSpiralToggle', 'Stream-Spirale zeigen')}</span>
+                <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
+                  showStreamSpiral ? 'bg-primary border-primary text-primary-foreground' : 'border-border'
+                }`}>
+                  {showStreamSpiral && (
                     <svg className="w-2.5 h-2.5" viewBox="0 0 12 12" fill="none">
                       <path d="M2 6l3 3 5-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>

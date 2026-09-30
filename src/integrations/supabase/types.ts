@@ -1819,6 +1819,15 @@ export type Database = {
         }
         Returns: number
       }
+      pin_stream_entry: {
+        Args: {
+          _cycle: number
+          _node_id: string
+          _point_index: number
+          _topic_id: string
+        }
+        Returns: boolean
+      }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
         Returns: {

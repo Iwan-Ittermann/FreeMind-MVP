@@ -12,12 +12,14 @@ import {
   Pencil,
   ArrowUpDown,
   ChevronLeft,
+  Waves,
 } from 'lucide-react';
 import type { Opinion } from '@/types/graph';
 import type { TTChatItem } from '@/hooks/useTTChats';
 import { useMyOpinionRatings } from '@/hooks/useTTChats';
 import { useEnsureChatTitles } from '@/hooks/useEnsureChatTitles';
 import { useAllTopicChats, type AllTopicChatItem } from '@/hooks/useAllTopicChats';
+import { useStreamFocus } from '@/hooks/useStreamFocus';
 import { EmbeddedChatView } from '@/components/chat/EmbeddedChatView';
 import { TTRatingDialog } from './TTRatingDialog';
 import { Input } from '@/components/ui/input';
@@ -30,7 +32,7 @@ export interface TTSideTabsHandle {
 }
 
 
-type TTTab = 'opinions' | 'graph' | 'chats';
+type TTTab = 'opinions' | 'graph' | 'stream' | 'chats';
 type ChatScope = 'mine' | 'all';
 type OpinionSort = 'difference' | 'new' | 'score';
 
@@ -90,6 +92,23 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
 
     const { data: myRatings } = useMyOpinionRatings(topicId, myOpinionId);
     const { data: allChats = [] } = useAllTopicChats(topicId, tab === 'chats' && chatScope === 'all');
+    const stream = useStreamFocus(topicId);
+    const [activeStreamChat, setActiveStreamChat] = useState<AllTopicChatItem | null>(null);
+
+    const opinionTextById = useMemo(
+      () => new Map(opinions.map((o) => [o.id, o.text])),
+      [opinions],
+    );
+
+    const formatCountdown = (ms: number) => {
+      const totalSec = Math.max(0, Math.ceil(ms / 1000));
+      const h = Math.floor(totalSec / 3600);
+      const m = Math.floor((totalSec % 3600) / 60);
+      const s = totalSec % 60;
+      return h > 0
+        ? `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+        : `${m}:${String(s).padStart(2, '0')}`;
+    };
 
     useImperativeHandle(ref, () => ({
       openChat(opinionId: string) {
@@ -383,6 +402,108 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                 </>
               )}
 
+              {tab === 'stream' && (
+                <>
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-border/30">
+                    <h2 className="text-sm font-semibold tracking-wide uppercase text-foreground/80">
+                      {t('tt.streamTab', 'Stream')}
+                    </h2>
+                    {stream.n > 0 && (
+                      <span className="text-[11px] text-muted-foreground tabular-nums">
+                        {t('tt.streamNextIn', 'Nächster in')} {formatCountdown(stream.countdownMs)}
+                      </span>
+                    )}
+                  </div>
+
+                  {activeStreamChat ? (
+                    <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+                      <div className="px-4 py-2 border-b border-border/30">
+                        <button
+                          onClick={() => setActiveStreamChat(null)}
+                          className="flex items-center gap-1.5 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
+                          aria-label={t('common.back', 'Back')}
+                        >
+                          <ArrowLeft className="w-4 h-4" />
+                          <span>{t('tt.streamTab', 'Stream')}</span>
+                        </button>
+                      </div>
+                      <div className="flex-1 min-h-0 overflow-hidden">
+                        <EmbeddedChatView
+                          theirOpinionId={activeStreamChat.opinionBId}
+                          readOnly
+                          sourceOpinionId={activeStreamChat.opinionAId}
+                        />
+                      </div>
+                    </div>
+                  ) : stream.n === 0 ? (
+                    <p className="text-sm text-muted-foreground p-4">
+                      {t('tt.streamEmpty', 'Noch keine Gespräche für den Stream.')}
+                    </p>
+                  ) : (
+                    <div className="flex-1 overflow-auto">
+                      {/* Aktuell gefeaturter Node */}
+                      {stream.current && (
+                        <div className="px-4 py-3 border-b border-border/30">
+                          <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-primary mb-1.5">
+                            {t('tt.streamNow', 'Jetzt im Stream')}
+                          </div>
+                          <p className="text-sm text-foreground leading-snug">
+                            {opinionTextById.get(stream.current.nodeId) ?? ''}
+                          </p>
+                          {(() => {
+                            const chat = stream.bestChatFor(stream.current.nodeId);
+                            if (!chat) return null;
+                            return (
+                              <button
+                                onClick={() => setActiveStreamChat(chat)}
+                                className="mt-2 w-full text-left rounded-xl border border-border/40 px-3 py-2 hover:bg-muted/40 transition-colors"
+                              >
+                                <p className="text-xs text-muted-foreground line-clamp-1">
+                                  {chat.opinionAText} ↔ {chat.opinionBText}
+                                </p>
+                                {chat.lastMessage && (
+                                  <p className="text-xs text-foreground/80 mt-1 line-clamp-2">
+                                    {chat.lastMessage}
+                                  </p>
+                                )}
+                              </button>
+                            );
+                          })()}
+                        </div>
+                      )}
+
+                      {/* Bisherige Einträge dieses Umlaufs */}
+                      {stream.entries.filter((e) => e.index < stream.currentIndex).length > 0 && (
+                        <div className="px-4 py-3">
+                          <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-foreground/60 mb-2">
+                            {t('tt.streamEarlier', 'Heute bisher')}
+                          </div>
+                          <ul className="space-y-1.5">
+                            {stream.entries
+                              .filter((e) => e.index < stream.currentIndex)
+                              .map((e) => {
+                                const chat = stream.bestChatFor(e.nodeId);
+                                return (
+                                  <li key={e.index}>
+                                    <button
+                                      onClick={() => chat && setActiveStreamChat(chat)}
+                                      className="w-full text-left rounded-lg px-2 py-1.5 hover:bg-muted/40 transition-colors"
+                                    >
+                                      <p className="text-xs text-foreground/85 line-clamp-1">
+                                        {opinionTextById.get(e.nodeId) ?? ''}
+                                      </p>
+                                    </button>
+                                  </li>
+                                );
+                              })}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </>
+              )}
+
               {tab === 'chats' && (
                 <>
                   <div className="flex items-center justify-between px-4 py-3 border-b border-border/30">
@@ -551,6 +672,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
         >
           {tabButton('opinions', t('tt.opinions'), List, { helpKey: 'opinions-tab' })}
           {tabButton('graph', t('tt.graphTab', 'Kreis'), CircleDot)}
+          {tabButton('stream', t('tt.streamTab', 'Stream'), Waves)}
           {tabButton('chats', t('tt.chats'), MessagesSquare, {
             disabled: !hasOwnOpinion,
             badge: unreadCount,

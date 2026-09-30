@@ -819,7 +819,13 @@
     "deleteOpinionConfirm": "Delete your opinion and all its conversations?",
     "deleteOpinionDone": "Your opinion was deleted.",
     "deleteOpinionFailed": "Could not delete your opinion.",
-    "yourRating": "Your rating"
+    "yourRating": "Your rating",
+    "streamTab": "Stream",
+    "streamNextIn": "Next in",
+    "streamNow": "Now in the stream",
+    "streamEarlier": "Earlier this cycle",
+    "streamEmpty": "No conversations for the stream yet. Once two sides have chatted and rated each other, the spiral starts.",
+    "streamSpiralToggle": "Show stream spiral"
   },
   "secret": {
     "title": "Protected area",
