@@ -213,9 +213,9 @@ export default function Admin() {
                     <GraduationCap className="w-4 h-4 mr-1" />
                     Tutorials
                   </TabsTrigger>
-                  <TabsTrigger value="pending" className="relative flex-shrink-0">
+                  <TabsTrigger value="reporting" className="relative flex-shrink-0">
                     <AlertTriangle className="w-4 h-4 mr-1" />
-                    Offen
+                    Reporting
                     {pendingReports.length > 0 && (
                       <Badge 
                         variant="destructive" 
@@ -225,21 +225,9 @@ export default function Admin() {
                       </Badge>
                     )}
                   </TabsTrigger>
-                  <TabsTrigger value="reviewed" className="flex-shrink-0">
-                    <FileText className="w-4 h-4 mr-1" />
-                    Geprüft
-                  </TabsTrigger>
-                  <TabsTrigger value="audit" className="flex-shrink-0">
-                    <History className="w-4 h-4 mr-1" />
-                    Audit
-                  </TabsTrigger>
                   <TabsTrigger value="ai-bot" className="flex-shrink-0">
                     <Bot className="w-4 h-4 mr-1" />
                     AI Bot
-                  </TabsTrigger>
-                  <TabsTrigger value="survey" className="flex-shrink-0">
-                    <FileText className="w-4 h-4 mr-1" />
-                    Umfrage
                   </TabsTrigger>
                   <TabsTrigger value="danger" className="text-destructive flex-shrink-0">
                     <Trash2 className="w-4 h-4 mr-1" />
@@ -274,87 +262,72 @@ export default function Admin() {
                   </div>
                 </TabsContent>
 
-                <TabsContent value="pending">
-                  {reportsLoading ? (
-                    <div className="flex items-center justify-center py-12">
-                      <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
-                    </div>
-                  ) : pendingReports.length === 0 ? (
-                    <div className="text-center py-12 text-muted-foreground">
-                      <AlertTriangle className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                      <p>Keine offenen Meldungen</p>
-                    </div>
-                  ) : (
-                    <div className="grid gap-4 max-w-2xl">
-                      {pendingReports.map((report) => (
-                        <ReportCard key={report.id} report={report} />
-                      ))}
-                    </div>
-                  )}
-                </TabsContent>
+                <TabsContent value="reporting">
+                  <Tabs defaultValue="pending" className="w-full">
+                    <TabsList className="mb-4">
+                      <TabsTrigger value="pending" className="relative">
+                        <AlertTriangle className="w-4 h-4 mr-1" />
+                        Offen
+                        {pendingReports.length > 0 && (
+                          <Badge variant="destructive" className="ml-1 h-5 min-w-5 px-1 text-xs">
+                            {pendingReports.length}
+                          </Badge>
+                        )}
+                      </TabsTrigger>
+                      <TabsTrigger value="reviewed">
+                        <FileText className="w-4 h-4 mr-1" />
+                        Geprüft
+                      </TabsTrigger>
+                      <TabsTrigger value="audit">
+                        <History className="w-4 h-4 mr-1" />
+                        Audit
+                      </TabsTrigger>
+                    </TabsList>
 
-                <TabsContent value="reviewed">
-                  {reviewedReports.length === 0 ? (
-                    <div className="text-center py-12 text-muted-foreground">
-                      <FileText className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                      <p>Keine geprüften Meldungen</p>
-                    </div>
-                  ) : (
-                    <div className="grid gap-4 max-w-2xl">
-                      {reviewedReports.map((report) => (
-                        <ReportCard key={report.id} report={report} />
-                      ))}
-                    </div>
-                  )}
-                </TabsContent>
+                    <TabsContent value="pending">
+                      {reportsLoading ? (
+                        <div className="flex items-center justify-center py-12">
+                          <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                        </div>
+                      ) : pendingReports.length === 0 ? (
+                        <div className="text-center py-12 text-muted-foreground">
+                          <AlertTriangle className="w-12 h-12 mx-auto mb-4 opacity-20" />
+                          <p>Keine offenen Meldungen</p>
+                        </div>
+                      ) : (
+                        <div className="grid gap-4 max-w-2xl">
+                          {pendingReports.map((report) => (
+                            <ReportCard key={report.id} report={report} />
+                          ))}
+                        </div>
+                      )}
+                    </TabsContent>
 
-                <TabsContent value="audit">
-                  <div className="bg-card border border-border rounded-lg p-4">
-                    <AuditLogTable enabled={isUnlocked} />
-                  </div>
+                    <TabsContent value="reviewed">
+                      {reviewedReports.length === 0 ? (
+                        <div className="text-center py-12 text-muted-foreground">
+                          <FileText className="w-12 h-12 mx-auto mb-4 opacity-20" />
+                          <p>Keine geprüften Meldungen</p>
+                        </div>
+                      ) : (
+                        <div className="grid gap-4 max-w-2xl">
+                          {reviewedReports.map((report) => (
+                            <ReportCard key={report.id} report={report} />
+                          ))}
+                        </div>
+                      )}
+                    </TabsContent>
+
+                    <TabsContent value="audit">
+                      <div className="bg-card border border-border rounded-lg p-4">
+                        <AuditLogTable enabled={isUnlocked} />
+                      </div>
+                    </TabsContent>
+                  </Tabs>
                 </TabsContent>
 
                 <TabsContent value="ai-bot">
                   <AIBotPanel />
-                </TabsContent>
-
-                <TabsContent value="survey">
-                  <div className="max-w-md space-y-4">
-                    <h3 className="text-lg font-semibold">Test-Diskussion Umfrage</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Alle eingegangenen Antworten der Umfrage als CSV-Datei herunterladen.
-                    </p>
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      onClick={async () => {
-                        const { data, error } = await supabase
-                          .from('test_diskussion_replies')
-                          .select('*')
-                          .order('created_at', { ascending: true });
-                        if (error || !data) return;
-                        const headers = ['id', 'created_at', 'email', 'warmth', 'understanding', 'sincerity'];
-                        const csvRows = [
-                          headers.join(','),
-                          ...data.map(row =>
-                            headers.map(h => `"${String((row as any)[h] ?? '').replace(/"/g, '""')}"`).join(',')
-                          ),
-                        ];
-                        const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = `test-diskussion-replies-${Date.now()}.csv`;
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                        URL.revokeObjectURL(url);
-                      }}
-                    >
-                      <Download className="w-4 h-4 mr-2" />
-                      Antworten als CSV herunterladen
-                    </Button>
-                  </div>
                 </TabsContent>
 
                 <TabsContent value="danger">
