@@ -31,7 +31,7 @@ export function StreamCosmicView({ entry, opinions, chats, bestChat }: StreamCos
 
   if (!opinion) return null;
 
-  const nodeCount = Math.min(chats.length, 8);
+  const nodeCount = chats.length;
   const radius = 39;
 
   return (
@@ -63,7 +63,7 @@ export function StreamCosmicView({ entry, opinions, chats, bestChat }: StreamCos
             <>
               <div className="relative mx-auto h-[220px] w-full max-w-[420px] shrink-0" aria-label={t('tt.streamConversations')}>
                 <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" aria-hidden="true">
-                  {chats.slice(0, nodeCount).map((chat, index) => {
+                  {chats.map((chat, index) => {
                     const angle = -Math.PI / 2 + (index / nodeCount) * Math.PI * 2;
                     const x = 50 + Math.cos(angle) * radius;
                     const y = 50 + Math.sin(angle) * radius;
@@ -73,7 +73,7 @@ export function StreamCosmicView({ entry, opinions, chats, bestChat }: StreamCos
                 <div className="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-primary/70 bg-primary/15 shadow-[0_0_34px_hsl(var(--stream-line)/0.35)]">
                   <span className="h-3 w-3 rounded-full bg-primary" />
                 </div>
-                {chats.slice(0, nodeCount).map((chat, index) => {
+                {chats.map((chat, index) => {
                   const angle = -Math.PI / 2 + (index / nodeCount) * Math.PI * 2;
                   const x = 50 + Math.cos(angle) * radius;
                   const y = 50 + Math.sin(angle) * radius;
@@ -84,10 +84,10 @@ export function StreamCosmicView({ entry, opinions, chats, bestChat }: StreamCos
                       type="button"
                       onClick={() => setActiveChatId(chat.id)}
                       className={cn(
-                        'absolute flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border bg-card text-muted-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                        'absolute flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border bg-card text-muted-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
                         activeChat?.id === chat.id ? 'border-secondary text-secondary shadow-[0_0_20px_hsl(var(--stream-warm)/0.26)]' : 'border-primary/40 hover:border-primary hover:text-primary',
                       )}
-                      style={{ left: `${x}%`, top: `${y}%` }}
+                      style={{ left: `${x}%`, top: `${y}%`, width: nodeCount > 12 ? 30 : 40, height: nodeCount > 12 ? 30 : 40 }}
                       aria-label={`${t('tt.streamOpenConversation')}: ${otherText}`}
                       title={otherText}
                     >

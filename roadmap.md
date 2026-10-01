@@ -3,7 +3,7 @@
 ## Stream-Design (aktuell)
 - [x] Cosmic Post-Ansicht mit Live-Mini-Graph umsetzen
 - [x] Eigenständige kompakte Read-only-Chats direkt an den Edges umsetzen
-- [ ] Desktop und Mobil ohne Überlappungen prüfen
+- [x] Desktop und Mobil ohne Überlappungen prüfen
 
 ## Stream-Spirale (aktuell)
 - [x] Sechs archimedische Arme und armweise Innen-außen-Reihenfolge umsetzen
