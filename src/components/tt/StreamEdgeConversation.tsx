@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Radio } from 'lucide-react';
 import { Conversation, ConversationContent, ConversationEmptyState } from '@/components/ai-elements/conversation';
 import { Message, MessageContent, MessageResponse } from '@/components/ai-elements/message';
 import { useChatMessages } from '@/hooks/useChatMessages';
@@ -25,13 +24,6 @@ export function StreamEdgeConversation({ chat, sourceOpinionId, sourceUserId, co
 
   return (
     <div className="relative flex min-h-0 flex-col">
-      <div className="mb-2 flex items-center justify-between gap-3 text-[10px] font-semibold uppercase text-primary">
-        <span>{t('tt.streamConversations')}</span>
-        <span className="inline-flex items-center gap-1 text-muted-foreground">
-          <Radio className="h-3 w-3 text-primary" />
-          {t('tt.streamLive')}
-        </span>
-      </div>
       <Conversation className="h-[220px] min-h-0 rounded-md border border-primary/25 bg-card/45 shadow-[0_0_32px_hsl(var(--stream-line)/0.08)]">
         <ConversationContent className="gap-3 p-3">
           {!isLoading && visibleMessages.length === 0 ? (
