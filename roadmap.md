@@ -1,15 +1,15 @@
 # Roadmap
 
-## Erledigt
-- Stream-Tab (4. Tab): Spiral-Auswahl über dem Graphen — Plan freigegeben, umgesetzt und verifiziert
-  - stream-spiral.ts + 8 Unit-Tests (grün)
-  - RPC pin_stream_entry (vergangene Einträge unveränderlich)
-  - useStreamFocus (Live-Auswertung alle 4 s)
-  - Stream-Tab in TTSideTabs (Countdown, „Jetzt im Stream", „In diesem Umlauf bisher", ReadOnly-Chat)
-  - Spirale im Signal-Renderer + Zahnrad-Umschalter
-  - DE/EN-Texte; Build OK; Browser-Verifikation OK
+## Simulation /sim (aktuell)
+- [ ] Bestehende Mechanismen prüfen (Demo-Accounts/is_demo, Topic-Routing, Ratings)
+- [ ] Migration: sim_state, sim_personas, RPCs (Limits serverseitig)
+- [ ] Edge Function sim-seed (40 Personas + Accounts + Meinungen)
+- [ ] Edge Function sim-control (start/stop, Tageslimit 4, Einzellauf-Sperre)
+- [ ] Edge Function sim-tick (90 s, 10-s-Takte, gebündelter KI-Aufruf, Self-Invocation mit Budget)
+- [ ] Frontend: /sim Route, Play-Button + Countdown, Banner, DE/EN
+- [ ] Build + Verifikation (Testlauf, Kosten aus Abrechnungsdaten)
 
-## Offen
-- PostHog-Events nach Publish verifizieren (blockiert: Publish)
-- /gutefrage: genaues Datum erst ab 100 bestätigten Anmeldungen (blockiert: wartet auf Signups)
-- Tägliche Zusammenfassungen bleiben deaktiviert bis zum nächsten Event
+## Offen (alt)
+- [ ] PostHog-Events nach Publish verifizieren
+- [ ] /gutefrage-Datum nach 100 Signups festlegen
+- [ ] Tägliche Zusammenfassungen bleiben aus
