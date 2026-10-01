@@ -15,7 +15,7 @@ Empfehlung: gebündelte Takte statt einer Anfrage pro Teilnehmer — wirkt genau
 
 ## Was gebaut wird
 
-1. **Eigenes Simulations-Thema** unter /sim, getrennt von echten Diskussionen; alle 40 Teilnehmer als Demo-Accounts markiert und aus Statistiken ausgeschlossen.
+1. **Eigenes Simulations-Thema** unter /sim, getrennt von echten Diskussionen; ein sichtbarer Hinweis/Banner kennzeichnet die Seite als Simulation mit KI-Teilnehmern.
 2. **40 Personas** einmalig erzeugt: Name, Haltung, Ton, Streitlust, Offenheit — verteilt über alle Lager, damit der Graph realistisch aussieht.
 3. **Öffentlicher Play-Button**: jeder Besucher darf starten. Ein Lauf dauert genau 90 Sekunden mit sichtbarem Countdown, danach stoppt alles automatisch.
 4. **Tageslimit 4 Läufe** (gesamt, nicht pro Besucher): bei Erreichen zeigt der Button "Heute ausgeschöpft — morgen wieder" und ist deaktiviert. Zähler wird serverseitig geführt, Manipulation im Browser ändert nichts.
