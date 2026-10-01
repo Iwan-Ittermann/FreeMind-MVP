@@ -7,6 +7,7 @@ export const EVENT_SETTING_KEYS = [
   'real_topic_short_code',
   'sandbox_topic_short_code',
   'archive_topic_short_code',
+  'sim_topic_short_code',
   'archive_open',
   'opinions_open_at',
   'discussion_open_at',
