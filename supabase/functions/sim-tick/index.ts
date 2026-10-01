@@ -127,7 +127,7 @@ async function ensureSeeded(admin: Admin): Promise<string | null> {
   if (!topicId) {
     const { data: topic } = await admin
       .from('topics')
-      .insert({ title: SIM_TOPIC_TITLE, is_active: true, status: 'Active' })
+      .insert({ title: SIM_TOPIC_TITLE, is_active: true, status: 'Active', url_slug: 'sim' })
       .select('id, short_code')
       .single();
     if (!topic) return null;
