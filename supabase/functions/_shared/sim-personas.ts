@@ -7,7 +7,7 @@ export interface SimPersona {
   opinion: string;
 }
 
-export const SIM_TOPIC_TITLE = 'Sollten Social-Media-Plattformen stärker reguliert werden?';
+export const SIM_TOPIC_TITLE = 'Wie könnte Social Media wieder positiver werden?';
 
 export const SIM_PERSONAS: SimPersona[] = [
   { slot: 0, name: 'Marta', persona: 'erfahrene Medienanwältin, sachlich, zitiert gern Urteile', opinion: 'Plattformen müssen für Verstöße haften, die ihre Algorithmen bewusst verstärken — wie ein Verlag für seine Titelseite.' },

@@ -13,3 +13,4 @@
 - [ ] PostHog-Events nach Publish verifizieren
 - [ ] /gutefrage-Datum nach 100 Signups festlegen
 - [ ] Tägliche Zusammenfassungen bleiben aus
+- [x] Sim-Frage geändert: „Wie könnte Social Media wieder positiver werden?" (Topic-Titel in DB + SIM_TOPIC_TITLE)
