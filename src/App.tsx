@@ -64,6 +64,7 @@ function AppRoutes() {
       <Route path="/go" element={<Discussion mode="sandbox" />} />
       <Route path="/aug-test" element={<Discussion mode="archive" />} />
       <Route path="/test" element={<Discussion mode="test" />} />
+      <Route path="/sim" element={<Discussion mode="sim" />} />
       <Route path="/secret" element={<Navigate to="/go" replace />} />
       <Route path="/7mm9" element={<Navigate to="/aug-test" replace />} />
       <Route path="/confirm" element={<Confirm />} />

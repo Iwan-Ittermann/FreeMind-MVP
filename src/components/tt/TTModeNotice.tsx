@@ -15,7 +15,7 @@ export function TTModeNotice({
   mode,
   offsetClass = 'bottom-[150px]',
 }: {
-  mode: 'sandbox' | 'archive' | 'archive-open';
+  mode: 'sandbox' | 'archive' | 'archive-open' | 'sim';
   /** Vertical offset so the notice never overlaps the CTA above the nav bar. */
   offsetClass?: string;
 }) {
@@ -42,7 +42,12 @@ export function TTModeNotice({
 
 
   const text =
-    mode === 'archive-open'
+    mode === 'sim'
+      ? t(
+          'tt.simNotice',
+          'Simulation: All participants here are AI personas. Press play and watch them discuss, chat and rate each other.',
+        )
+      : mode === 'archive-open'
       ? t(
           'tt.archiveOpenNotice',
           'This was the August discussion. It has ended — but you can join in now and use it like a live discussion.',

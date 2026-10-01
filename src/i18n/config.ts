@@ -11,14 +11,16 @@ i18n.use(initReactI18next).init({
     en: { translation: en },
     de: { translation: de },
   },
-  // English-first globally; wedium starts in German unless a language was chosen before.
+  // English-first globally; wedium and sim start in German unless a language was chosen before.
   lng: (() => {
+    const germanFirst = () =>
+      window.location.pathname.startsWith('/wedium') || window.location.pathname.startsWith('/sim');
     try {
       const storedLanguage = localStorage.getItem('freemind_lang');
       if (storedLanguage) return storedLanguage;
-      return window.location.pathname.startsWith('/wedium') ? 'de' : 'en';
+      return germanFirst() ? 'de' : 'en';
     } catch {
-      return window.location.pathname.startsWith('/wedium') ? 'de' : 'en';
+      return germanFirst() ? 'de' : 'en';
     }
   })(),
   fallbackLng: 'en',

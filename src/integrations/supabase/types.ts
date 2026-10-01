@@ -1233,6 +1233,75 @@ export type Database = {
         }
         Relationships: []
       }
+      sim_personas: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          name: string
+          opinion_id: string | null
+          opinion_text: string
+          persona: string
+          slot: number
+          user_id: string | null
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name: string
+          opinion_id?: string | null
+          opinion_text: string
+          persona: string
+          slot: number
+          user_id?: string | null
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name?: string
+          opinion_id?: string | null
+          opinion_text?: string
+          persona?: string
+          slot?: number
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      sim_state: {
+        Row: {
+          created_at: string
+          id: number
+          lease_expires_at: string | null
+          paused_reason: string | null
+          running_until: string | null
+          runs_date: string
+          runs_today: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          lease_expires_at?: string | null
+          paused_reason?: string | null
+          running_until?: string | null
+          runs_date?: string
+          runs_today?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          lease_expires_at?: string | null
+          paused_reason?: string | null
+          running_until?: string | null
+          runs_date?: string
+          runs_today?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       suppressed_emails: {
         Row: {
           created_at: string

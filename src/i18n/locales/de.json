@@ -825,7 +825,13 @@
     "streamNow": "Jetzt im Stream",
     "streamEarlier": "In diesem Umlauf bisher",
     "streamEmpty": "Noch keine Gespräche für den Stream. Sobald zwei Seiten gechattet und bewertet haben, startet die Spirale.",
-    "streamSpiralToggle": "Stream-Spirale zeigen"
+    "streamSpiralToggle": "Stream-Spirale zeigen",
+    "simNotice": "Simulation: Alle Teilnehmer hier sind KI-Personas. Drücke auf Play und sieh zu, wie sie diskutieren, chatten und sich bewerten.",
+    "simPlay": "Simulation starten",
+    "simRunning": "Simulation läuft",
+    "simStop": "Stoppen",
+    "simRunsLeft": "{{count}} von 4 Läufen heute übrig",
+    "simDailyLimit": "Tageslimit erreicht — morgen geht es weiter"
   },
   "secret": {
     "title": "Geschützter Bereich",
