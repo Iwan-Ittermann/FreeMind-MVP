@@ -44,6 +44,7 @@ import { useArrowModePref } from '@/hooks/useArrowModePref';
 import { TTDemoAccessPanel, openDemoAccess, useDemoAccess } from '@/components/tt/TTDemoAccessPanel';
 import { PASSPHRASE_LOGIN_ENABLED } from '@/lib/constants';
 import { TTSimControl } from '@/components/tt/TTSimControl';
+import { cn } from '@/lib/utils';
 
 
 /**
@@ -89,6 +90,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [chatNodeId, setChatNodeId] = useState<string | null>(null);
   const [nudgeVisible, setNudgeVisible] = useState(false);
+  const [streamActive, setStreamActive] = useState(false);
 
 
   const { data: activeData, isLoading: activeDataLoading } = useTopicData(activeTopicId);
@@ -257,7 +259,13 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
   return (
     <ReadOnlyProvider value={readOnly}>
     <div className="fixed inset-0 bg-black flex items-center justify-center">
-      <div data-tt-phone-viewport className="relative h-[100dvh] w-full max-w-[480px] shrink-0 bg-background overflow-hidden">
+      <div
+        data-tt-phone-viewport
+        className={cn(
+          'relative h-[100dvh] w-full shrink-0 bg-background overflow-hidden transition-[max-width] duration-300',
+          streamActive ? 'max-w-[1120px]' : 'max-w-[480px]',
+        )}
+      >
         <div className="absolute inset-0 overflow-hidden">
           {activeTopicId && (
             <TTScreenInner
@@ -303,6 +311,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
           unreadCount={totalUnread}
           onActiveChatChange={setChatNodeId}
           onPanelOpen={() => setTourStep(0)}
+          onStreamActiveChange={setStreamActive}
 
 
           onOpinionTap={(opinionId) => {
@@ -320,7 +329,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
             ownOpinionId={ownOpinionId}
           />
         )}
-        {ownOpinionKnown && !hasOwnOpinion && activeTopicId && !gateVariant && !readOnly && (
+        {ownOpinionKnown && !hasOwnOpinion && activeTopicId && !gateVariant && !readOnly && !streamActive && (
           isVerified || isPlayground ? (
             <TTCenterCTA
               topicId={activeTopicId}
@@ -375,14 +384,14 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
             ownOpinionId={ownOpinionId}
           />
         )}
-        {hasOwnOpinion && !gateVariant && !selectedNode && !discussionEnded && !isArchive && (
+        {hasOwnOpinion && !gateVariant && !selectedNode && !discussionEnded && !isArchive && !streamActive && (
           <TTNudgeHint
             stage={nudgeStage}
             onAction={() => sideTabsRef.current?.openPanel(nudgeStage === 'rate' ? 'opinions' : 'chats')}
             onVisibilityChange={setNudgeVisible}
           />
         )}
-        {hasOwnOpinion && !gateVariant && !selectedNode && !nudgeVisible && !discussionEnded && !isArchive && <TTInstallHint />}
+        {hasOwnOpinion && !gateVariant && !selectedNode && !nudgeVisible && !discussionEnded && !isArchive && !streamActive && <TTInstallHint />}
 
         <TTDemoAccessPanel />
 
@@ -463,13 +472,13 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
 
         <TTSandboxPassphrase enabled={isPlayground} />
 
-        {(isSandbox || isArchive || isSim) && (
+        {(isSandbox || isArchive || isSim) && !streamActive && (
           <TTModeNotice
             mode={isSim ? 'sim' : isSandbox ? 'sandbox' : archiveOpen ? 'archive-open' : 'archive'}
             offsetClass={isPlayground && !hasOwnOpinion ? 'bottom-[196px]' : 'bottom-[150px]'}
           />
         )}
-        {isSim && <TTSimControl />}
+        {isSim && !streamActive && <TTSimControl />}
 
         {/* Impressum footer — matches the header's slim size */}
         <div className="absolute bottom-0 inset-x-0 z-40 h-7 px-3 flex items-center justify-start border-t border-border/30 bg-background/40 backdrop-blur-sm pointer-events-auto">

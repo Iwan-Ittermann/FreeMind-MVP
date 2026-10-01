@@ -123,6 +123,7 @@ export function useChatMessages(
       }));
     },
     enabled: !!readOnlyPair || (!!chatId && !!user?.id),
+    refetchInterval: readOnlyPair ? 4000 : false,
   });
 
   // Mark other user's messages as read when chat is open

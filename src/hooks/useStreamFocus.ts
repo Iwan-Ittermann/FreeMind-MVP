@@ -44,6 +44,8 @@ export interface StreamFocus {
   current: StreamEntry | null;
   /** Bester Chat pro Node (höchstes gegenseitiges Respekt × Differenz). */
   bestChatFor: (nodeId: string) => AllTopicChatItem | null;
+  /** Alle gestarteten Chats des Nodes, stärkste Verbindung zuerst. */
+  chatsFor: (nodeId: string) => AllTopicChatItem[];
   /** Positionen der Kandidaten im Einheitsraum. */
   candidatePositions: Map<string, { x: number; y: number }>;
   loading: boolean;
@@ -245,6 +247,21 @@ export function useStreamFocus(topicId: string): StreamFocus {
     return (nodeId: string) => best.get(nodeId)?.chat ?? null;
   }, [directedPairs, allChats]);
 
+  const chatsFor = useMemo(() => {
+    const pairScore = new Map<string, number>();
+    for (const p of directedPairs) {
+      const key = [p.rater, p.target].sort().join('|');
+      pairScore.set(key, (pairScore.get(key) ?? 0) + p.empathy * p.disagreement);
+    }
+    return (nodeId: string) => allChats
+      .filter((chat) => chat.opinionAId === nodeId || chat.opinionBId === nodeId)
+      .sort((a, b) => {
+        const scoreA = pairScore.get([a.opinionAId, a.opinionBId].sort().join('|')) ?? 0;
+        const scoreB = pairScore.get([b.opinionAId, b.opinionBId].sort().join('|')) ?? 0;
+        return scoreB - scoreA || b.messageCount - a.messageCount || a.id.localeCompare(b.id);
+      });
+  }, [directedPairs, allChats]);
+
   return {
     n,
     cycle: clock.cycle,
@@ -255,6 +272,7 @@ export function useStreamFocus(topicId: string): StreamFocus {
     entries,
     current,
     bestChatFor,
+    chatsFor,
     candidatePositions,
     loading: !data,
   };
