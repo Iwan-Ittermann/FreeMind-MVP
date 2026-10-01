@@ -825,7 +825,13 @@
     "streamNow": "Now in the stream",
     "streamEarlier": "Earlier this cycle",
     "streamEmpty": "No conversations for the stream yet. Once two sides have chatted and rated each other, the spiral starts.",
-    "streamSpiralToggle": "Show stream spiral"
+    "streamSpiralToggle": "Show stream spiral",
+    "simNotice": "Simulation: All participants here are AI personas. Press play and watch them discuss, chat and rate each other.",
+    "simPlay": "Start simulation",
+    "simRunning": "Simulation running",
+    "simStop": "Stop",
+    "simRunsLeft": "{{count}} of 4 runs left today",
+    "simDailyLimit": "Daily limit reached — come back tomorrow"
   },
   "secret": {
     "title": "Protected area",
