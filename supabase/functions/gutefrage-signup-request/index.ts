@@ -2,6 +2,7 @@
 // Writes to public.gutefrage_signups and sends the confirmation mail.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { loadTemplate } from "../_shared/email-template-store.ts";
+import { parseAttribution, cleanAnalyticsId, captureServer, eventProps } from "../_shared/gutefrage-attribution.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -57,7 +58,9 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return new Response("Method not allowed", { status: 405, headers: corsHeaders });
 
   try {
-    const { email: rawInput } = await req.json();
+    const { email: rawInput, attribution: rawAttr, analytics_id } = await req.json();
+    const attr = parseAttribution(rawAttr);
+    const analyticsId = cleanAnalyticsId(analytics_id);
     const cleaned = String(rawInput ?? "").replace(/^#\s+/, "").trim().toLowerCase();
     if (!isValidEmail(cleaned)) {
       return Response.json({ status: "error", reason: "invalid_email" }, { status: 400, headers: corsHeaders });
@@ -82,15 +85,29 @@ Deno.serve(async (req) => {
     const token = generateToken();
     const expires = new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString();
 
+    let created = false;
+    let row: any = null;
     if (existing) {
-      const { error } = await supabase.from("gutefrage_signups")
-        .update({ confirm_token: token, confirm_token_expires_at: expires, signup_ip: clientIp })
-        .eq("id", existing.id);
+      // Keep existing attribution; only fill it if the row was unattributed.
+      const patch: Record<string, unknown> = { confirm_token: token, confirm_token_expires_at: expires, signup_ip: clientIp };
+      const { data: cur } = await supabase.from("gutefrage_signups").select("post_id").eq("id", existing.id).single();
+      if (cur?.post_id === "unattributed" && attr.post_id !== "unattributed") Object.assign(patch, attr);
+      const { error } = await supabase.from("gutefrage_signups").update(patch).eq("id", existing.id);
       if (error) throw error;
     } else {
-      const { error } = await supabase.from("gutefrage_signups")
-        .insert({ email: cleaned, confirm_token: token, confirm_token_expires_at: expires, signup_ip: clientIp });
-      if (error) throw error;
+      const { data, error } = await supabase.from("gutefrage_signups")
+        .insert({ email: cleaned, confirm_token: token, confirm_token_expires_at: expires, signup_ip: clientIp, ...attr, analytics_id: analyticsId })
+        .select("id, post_id, utm_source, utm_medium, utm_campaign, utm_content, is_test, analytics_id").single();
+      if (error) {
+        // Concurrent retry hit the unique email index: treat as resend, not a new signup.
+        if ((error as any).code !== "23505") throw error;
+        const { data: dup } = await supabase.from("gutefrage_signups").select("id").ilike("email", cleaned).single();
+        await supabase.from("gutefrage_signups").update({ confirm_token: token, confirm_token_expires_at: expires }).eq("id", dup!.id);
+      } else { created = true; row = data; }
+    }
+
+    if (created && row) {
+      await captureServer("gf_signup_submitted", row.analytics_id ?? `gf_signup_${row.id}`, eventProps(row), crypto.randomUUID());
     }
 
     await sendGutefrageConfirmEmail(
@@ -98,7 +115,7 @@ Deno.serve(async (req) => {
       `${SITE_URL}/gutefrage/confirm?token=${token}`,
       `gutefrage-signup-confirm-${token}`,
     );
-    return Response.json({ status: "sent" }, { headers: corsHeaders });
+    return Response.json({ status: "sent", created }, { headers: corsHeaders });
   } catch (err) {
     console.error("gutefrage-signup-request error:", err);
     return Response.json({ status: "error" }, { status: 500, headers: corsHeaders });
