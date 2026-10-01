@@ -13,7 +13,7 @@ import { SignalChatArrows } from './SignalChatArrows';
 import type { ChatArrow } from '@/hooks/useChatArrows';
 import { useBackgroundPref } from '@/hooks/useBackgroundPref';
 import type { SpiralPoint } from '@/lib/stream-spiral';
-import { SPIRAL_MAX_R, computeTurns, GOLDEN_ANGLE } from '@/lib/stream-spiral';
+import { SPIRAL_MAX_R, computeTurns } from '@/lib/stream-spiral';
 
 /** Daten für die Stream-Spirale (Einheitsraum, Zentrum 0/0, blauer Ring = 300). */
 export interface StreamSpiralOverlay {
