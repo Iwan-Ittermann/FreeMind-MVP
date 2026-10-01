@@ -43,13 +43,14 @@ import { useTranslation } from 'react-i18next';
 import { useArrowModePref } from '@/hooks/useArrowModePref';
 import { TTDemoAccessPanel, openDemoAccess, useDemoAccess } from '@/components/tt/TTDemoAccessPanel';
 import { PASSPHRASE_LOGIN_ENABLED } from '@/lib/constants';
+import { TTSimControl } from '@/components/tt/TTSimControl';
 
 
 /**
  * Single-topic mobile UI. This build is locked to the Helsinki event topic (7mm9);
  * multi-topic swipe/loop logic has been removed.
  */
-export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbox' | 'archive' }) {
+export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbox' | 'archive' | 'sim' }) {
   useParams<{ topicId?: string }>(); // single-topic routes; params ignored
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -67,11 +68,12 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
   const isSandbox = mode === 'sandbox';
   const [sandboxGateClosed, setSandboxGateClosed] = useState(false);
   const isArchive = mode === 'archive';
+  const isSim = mode === 'sim';
   // The August archive can be reopened as a second playground: writable for
   // everyone, while everything created during the event stays frozen server-side.
   const archiveOpen = isArchive && !!eventConfig?.archiveOpen;
   const readOnly = isArchive && !archiveOpen;
-  const isPlayground = isSandbox || archiveOpen;
+  const isPlayground = isSandbox || archiveOpen || isSim;
   const activeTopicId = topic?.id ?? '';
   const activeTopicTitle = topic?.title ?? '...';
 
@@ -457,12 +459,13 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
 
         <TTSandboxPassphrase enabled={isPlayground} />
 
-        {(isSandbox || isArchive) && (
+        {(isSandbox || isArchive || isSim) && (
           <TTModeNotice
-            mode={isSandbox ? 'sandbox' : archiveOpen ? 'archive-open' : 'archive'}
+            mode={isSim ? 'sim' : isSandbox ? 'sandbox' : archiveOpen ? 'archive-open' : 'archive'}
             offsetClass={isPlayground && !hasOwnOpinion ? 'bottom-[196px]' : 'bottom-[150px]'}
           />
         )}
+        {isSim && <TTSimControl />}
 
         {/* Impressum footer — matches the header's slim size */}
         <div className="absolute bottom-0 inset-x-0 z-40 h-7 px-3 flex items-center justify-start border-t border-border/30 bg-background/40 backdrop-blur-sm pointer-events-auto">
