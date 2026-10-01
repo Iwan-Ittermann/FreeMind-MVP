@@ -48,6 +48,8 @@ interface TTHeaderProps {
   activeTopicId?: string;
   /** Show a "delete my opinion" action (playground discussions only). */
   onDeleteOpinion?: () => Promise<void> | void;
+  /** Show the silent passphrase and allow switching account via passphrase. */
+  passphraseSwitch?: boolean;
 }
 
 
@@ -70,7 +72,7 @@ const LANGUAGES = [
   { code: 'en', flag: '🇬🇧', labelKey: 'common.english' },
 ];
 
-export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRestartTour, onOpenHelp, activeTopicId, onDeleteOpinion }: TTHeaderProps) {
+export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRestartTour, onOpenHelp, activeTopicId, onDeleteOpinion, passphraseSwitch = false }: TTHeaderProps) {
   const [deleteBusy, setDeleteBusy] = useState(false);
 
   const { t } = useTranslation();
@@ -637,8 +639,18 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                 </button>
               )}
 
-              {user ? (
+              {passphraseSwitch && user && (() => {
+                let phrase: string | null = null;
+                try { phrase = localStorage.getItem('freemind_silent_phrase'); } catch { /* ignore */ }
+                return phrase ? (
+                  <div className="mt-3 rounded-md border border-border/40 px-2 py-2 text-[11px]">
+                    <p className="text-muted-foreground">{t('tt.yourPassphrase', 'Deine Passphrase')}</p>
+                    <p className="font-mono text-foreground select-all break-all">{phrase}</p>
+                  </div>
+                ) : null;
+              })()}
 
+              {user && (
                 <button
                   onClick={handleSignOut}
                   className="mt-3 w-full flex items-center justify-center gap-1.5 rounded-md px-2 py-2 text-xs text-destructive hover:bg-destructive/10 transition-colors"
@@ -646,7 +658,8 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                   <LogOut className="w-3.5 h-3.5" />
                   {t('common.signOut', 'Logout')}
                 </button>
-              ) : PASSPHRASE_LOGIN_ENABLED ? (
+              )}
+              {(passphraseSwitch || (!user && PASSPHRASE_LOGIN_ENABLED)) && (
                 <>
                   <button
                     onClick={() => setShowLogin((s) => !s)}
@@ -672,7 +685,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                     )}
                   </AnimatePresence>
                 </>
-              ) : null}
+              )}
 
             </div>
           </motion.div>

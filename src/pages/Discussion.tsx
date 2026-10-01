@@ -236,6 +236,8 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
     if (!ownOpinionKnown || !activeTopicId) return null;
     if (readOnly) return null;
     // Playground: ask for the opinion first, but it can be closed with a small cross.
+    // /sim: the simulation provides activity, so no opinion-first gate.
+    if (isSim) return null;
     if (isPlayground) return !hasOwnOpinion && !sandboxGateClosed ? 'submit' : null;
     if (gated) {
       if (phase === 'prelaunch') return 'countdown';
@@ -266,6 +268,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
               onNodeSelect={setSelectedNode}
               onEdgeClick={handleEdgeClick}
               arrowMode={arrowMode}
+              hideLegend={isSim}
             />
           )}
         </div>
@@ -286,6 +289,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
           onOpenHelp={() => setHelpOpen(true)}
           onRestartTour={() => setTourStep(1)}
           onDeleteOpinion={isPlayground && hasOwnOpinion ? handleDeleteOwnOpinion : undefined}
+          passphraseSwitch={isSim}
 
         />
         <TTSideTabs
