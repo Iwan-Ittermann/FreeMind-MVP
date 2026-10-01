@@ -14,4 +14,4 @@ Die gewählte Richtung „Cosmic node stream“ wird als echte Stream-Ansicht um
 
 - Die vorhandene Stream-Auswahl und festgeschriebene Historie bleiben unverändert; die Ansicht nutzt die bereits geladenen Meinungen und Gespräche. Keine Datenbankänderung.
 - Die Stream-Darstellung erhält eigene semantische Farbtokens und lokal eingebundene Instrument Serif / Work Sans; bestehende App-Farben außerhalb des Streams bleiben unverändert.
-- Der derzeitige Stream zeigt nur den besten Chat; für den Mini-Graphen werden alle gestarteten Chats des aktiven Nodes aus der bestehenden Gesprächsliste verwendet. Die bestehende schreibgeschützte Gesprächsansicht bleibt das Klickziel.
+- Der derzeitige Stream zeigt nur den besten Chat; für den Mini-Graphen werden alle gestarteten Chats des aktiven Nodes aus der bestehenden Gesprächsliste verwendet. Jeder Edge erhält eine eigenständige, kompakte Read-only-Chatansicht direkt an der Verbindung, die zur spannendsten Passage oder mindestens zum Gesprächsende springt; die Gegenmeinung sitzt als Pille außerhalb beziehungsweise unterhalb des Chats, während die zentrale Meinung im Chat nicht wiederholt wird.
