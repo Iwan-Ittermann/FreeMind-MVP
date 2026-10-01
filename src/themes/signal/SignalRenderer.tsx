@@ -232,8 +232,8 @@ export function SignalRenderer({
             const focus = streamSpiral.focus ? toPx(streamSpiral.focus) : null;
             return (
               <>
-                <path d={path} fill="none" stroke="hsl(var(--foreground))" strokeOpacity={0.8}
-                  strokeWidth={1.6} strokeDasharray="1 5" strokeLinecap="round" />
+                <path d={path} fill="none" stroke="hsl(var(--foreground))" strokeOpacity={0.95}
+                  strokeWidth={2.2} strokeDasharray="1 4" strokeLinecap="round" />
                 {current && focus && (
                   <line x1={current.x} y1={current.y} x2={focus.x} y2={focus.y}
                     stroke="hsl(var(--primary))" strokeOpacity={0.8} strokeWidth={1.3}
