@@ -13,7 +13,7 @@ import { SignalChatArrows } from './SignalChatArrows';
 import type { ChatArrow } from '@/hooks/useChatArrows';
 import { useBackgroundPref } from '@/hooks/useBackgroundPref';
 import type { SpiralPoint } from '@/lib/stream-spiral';
-import { GOLDEN_ANGLE, SPIRAL_MAX_R, STREAM_ARM_COUNT, spiralArmPosition } from '@/lib/stream-spiral';
+import { SPIRAL_MAX_R, STREAM_ARM_COUNT, STREAM_ARM_TURNS, spiralArmPosition } from '@/lib/stream-spiral';
 
 /** Daten für die Stream-Spirale (Einheitsraum, Zentrum 0/0, blauer Ring = 300). */
 export interface StreamSpiralOverlay {
@@ -216,7 +216,7 @@ export function SignalRenderer({
             const rotation = first
               ? Math.atan2(first.y, first.x)
                 - (2 * Math.PI * first.arm) / STREAM_ARM_COUNT
-                - 2 * Math.PI * 0.72 * (Math.hypot(first.x, first.y) / SPIRAL_MAX_R)
+                - 2 * Math.PI * STREAM_ARM_TURNS * (Math.hypot(first.x, first.y) / SPIRAL_MAX_R)
               : 0;
             const armPaths = Array.from({ length: STREAM_ARM_COUNT }, (_, arm) =>
               Array.from({ length: 81 }, (_, i) => {
