@@ -46,8 +46,8 @@ export const STREAM_ARM_COUNT = 6;
 export const STREAM_ARM_TURNS = 0.72;
 
 /** Windungen eines einzelnen Arms (unabhängig von der Kandidatenanzahl). */
-export function computeTurns(n: number): number {
-  return n > 0 ? STREAM_ARM_TURNS : STREAM_ARM_TURNS;
+export function computeTurns(_n: number): number {
+  return STREAM_ARM_TURNS;
 }
 
 /** Taktlänge in ms: Umlaufdauer / N, geklemmt auf 5–120 Minuten. */
