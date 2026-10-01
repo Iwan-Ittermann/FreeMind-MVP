@@ -1,8 +1,8 @@
 # Roadmap
 
 ## Stream-Design (aktuell)
-- [ ] Cosmic Post-Ansicht mit Live-Mini-Graph umsetzen
-- [ ] Eigenständige kompakte Read-only-Chats direkt an den Edges umsetzen
+- [x] Cosmic Post-Ansicht mit Live-Mini-Graph umsetzen
+- [x] Eigenständige kompakte Read-only-Chats direkt an den Edges umsetzen
 - [ ] Desktop und Mobil ohne Überlappungen prüfen
 
 ## Stream-Spirale (aktuell)

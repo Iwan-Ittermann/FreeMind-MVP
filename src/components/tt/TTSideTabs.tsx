@@ -145,7 +145,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
     const selectedStreamEntry = useMemo(() => {
       if (selectedStreamIndex == null) return stream.current;
       return stream.entries.find((entry) => entry.index === selectedStreamIndex) ?? stream.current;
-    }, [selectedStreamIndex, stream.current, stream.entries]);
+    }, [selectedStreamIndex, stream]);
 
 
     const filteredChats = useMemo(() => {

@@ -44,6 +44,7 @@ import { useArrowModePref } from '@/hooks/useArrowModePref';
 import { TTDemoAccessPanel, openDemoAccess, useDemoAccess } from '@/components/tt/TTDemoAccessPanel';
 import { PASSPHRASE_LOGIN_ENABLED } from '@/lib/constants';
 import { TTSimControl } from '@/components/tt/TTSimControl';
+import { cn } from '@/lib/utils';
 
 
 /**
