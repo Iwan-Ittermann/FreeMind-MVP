@@ -7,18 +7,18 @@ import {
   spiralPoints,
   streamClock,
   SPIRAL_MAX_R,
+  STREAM_ARM_COUNT,
+  STREAM_ARM_TURNS,
 } from './stream-spiral';
 
 const candidates = (ids: string[]) =>
   ids.map((id, i) => ({ id, x: Math.cos(i) * 100, y: Math.sin(i) * 100 }));
 
 describe('stream-spiral', () => {
-  it('computeTurns skaliert mit sqrt(N)/2, mindestens 1', () => {
-    expect(computeTurns(0)).toBe(1);
-    expect(computeTurns(1)).toBe(1);
-    expect(computeTurns(4)).toBe(1);
-    expect(computeTurns(9)).toBe(2);
-    expect(computeTurns(100)).toBe(5);
+  it('verwendet sechs feste archimedische Arme', () => {
+    expect(STREAM_ARM_COUNT).toBe(6);
+    expect(computeTurns(1)).toBe(STREAM_ARM_TURNS);
+    expect(computeTurns(100)).toBe(STREAM_ARM_TURNS);
   });
 
   it('computeTickMs klemmt auf 5–120 Minuten', () => {
@@ -28,17 +28,21 @@ describe('stream-spiral', () => {
     expect(computeTickMs(day, 24)).toBe(3600 * 1000);
   });
 
-  it('Spiralpunkte laufen von innen nach außen, letzter am 0-Punkte-Ring', () => {
-    const pts = spiralPoints(10, 0);
-    expect(pts).toHaveLength(10);
-    const r0 = Math.hypot(pts[0].x, pts[0].y);
-    const r9 = Math.hypot(pts[9].x, pts[9].y);
-    expect(r0).toBeCloseTo(0.05 * SPIRAL_MAX_R);
-    expect(r9).toBeCloseTo(0.95 * SPIRAL_MAX_R);
+  it('verteilt Punkte gleichmäßig und läuft innerhalb jedes Arms nach außen', () => {
+    const pts = spiralPoints(14, 0);
+    expect(pts).toHaveLength(14);
+    expect(new Set(pts.map((p) => p.arm))).toEqual(new Set([0, 1, 2, 3, 4, 5]));
+    for (let arm = 0; arm < STREAM_ARM_COUNT; arm += 1) {
+      const radii = pts.filter((p) => p.arm === arm).map((p) => Math.hypot(p.x, p.y));
+      expect(radii).toEqual([...radii].sort((a, b) => a - b));
+    }
+    expect(pts[0].arm).toBe(0);
+    expect(pts[3].arm).toBe(1);
+    expect(Math.hypot(pts[0].x, pts[0].y)).toBeCloseTo(SPIRAL_MAX_R / 6);
   });
 
   it('Rotation pro Umlauf dreht den Startwinkel (Goldener Winkel)', () => {
-    const a = spiralPoint(0, 8, 1, 0);
+    const a = spiralPoint(0, 8, STREAM_ARM_TURNS, 0);
     const b = spiralPoints(8, 1)[0];
     expect(a.x).not.toBeCloseTo(b.x);
   });

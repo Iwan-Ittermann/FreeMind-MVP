@@ -1,7 +1,7 @@
 # Roadmap
 
 ## Stream-Spirale (aktuell)
-- [ ] Sechs archimedische Arme und armweise Innen-außen-Reihenfolge umsetzen
+- [x] Sechs archimedische Arme und armweise Innen-außen-Reihenfolge umsetzen
 - [ ] Darstellung, Tests und Live-Graph prüfen
 
 ## Simulation /sim

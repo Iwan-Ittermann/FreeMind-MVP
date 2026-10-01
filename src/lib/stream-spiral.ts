@@ -1,9 +1,10 @@
 /**
  * Stream-Spirale — deterministische Auswahlmechanik für den Stream-Tab.
  *
- * Eine archimedische Spirale liegt über dem Graphen (Einheitsraum: Zentrum 0,0,
- * blauer Ring = 300). Pro Umlauf gibt es genau einen Spiralpunkt pro
- * Kandidaten-Node. Alle X Minuten (Takt) springt der „heiße" Punkt weiter.
+ * Sechs archimedische Spiralarme liegen über dem Graphen (Einheitsraum:
+ * Zentrum 0,0, blauer Ring = 300). Pro Umlauf gibt es genau einen Spiralpunkt
+ * pro Kandidaten-Node. Der „heiße" Punkt läuft auf jedem Arm von innen nach
+ * außen und springt danach an den Anfang des nächsten Arms.
  * Welcher Punkt dran ist, ergibt sich rein aus Uhrzeit + Startzeitpunkt;
  * welcher Node ihm am nächsten liegt, wird live aus den aktuellen Positionen
  * ausgewertet — ohne Wiederholung pro Umlauf. Vergangene Einträge werden
@@ -20,6 +21,8 @@ export interface SpiralPoint {
   index: number;
   x: number;
   y: number;
+  arm: number;
+  radialIndex: number;
 }
 
 export interface StreamEntry {
@@ -36,10 +39,15 @@ export const GOLDEN_ANGLE = 2.399963229728653;
 /** Äußerster Radius der Spirale im Einheitsraum (Ring „0 Punkte"). */
 export const SPIRAL_MAX_R = 300;
 
-/** Windungen in Abhängigkeit von der Kandidatenanzahl. */
+/** Anzahl der gleichmäßig verteilten archimedischen Arme. */
+export const STREAM_ARM_COUNT = 6;
+
+/** Krümmung eines Arms vom Zentrum bis zum äußeren Ring. */
+export const STREAM_ARM_TURNS = 0.72;
+
+/** Windungen eines einzelnen Arms (unabhängig von der Kandidatenanzahl). */
 export function computeTurns(n: number): number {
-  if (n <= 1) return 1;
-  return Math.max(1, Math.ceil(Math.sqrt(n) / 2));
+  return n > 0 ? STREAM_ARM_TURNS : STREAM_ARM_TURNS;
 }
 
 /** Taktlänge in ms: Umlaufdauer / N, geklemmt auf 5–120 Minuten. */
@@ -50,15 +58,43 @@ export function computeTickMs(cycleMs: number, n: number): number {
   return Math.min(MAX, Math.max(MIN, cycleMs / n));
 }
 
-/** Position des Spiralpunkts i (0..N-1) im Einheitsraum. */
-export function spiralPoint(index: number, n: number, turns: number, rotation: number): SpiralPoint {
-  const frac = (index + 0.5) / Math.max(n, 1);
-  const r = frac * SPIRAL_MAX_R;
-  const angle = rotation + 2 * Math.PI * turns * frac;
-  return { index, x: Math.cos(angle) * r, y: Math.sin(angle) * r };
+function pointsOnArm(n: number, arm: number): number {
+  const base = Math.floor(n / STREAM_ARM_COUNT);
+  return base + (arm < n % STREAM_ARM_COUNT ? 1 : 0);
 }
 
-/** Alle Spiralpunkte eines Umlaufs. */
+function pointSlot(index: number, n: number): { arm: number; radialIndex: number; count: number } {
+  let offset = 0;
+  for (let arm = 0; arm < STREAM_ARM_COUNT; arm += 1) {
+    const count = pointsOnArm(n, arm);
+    if (index < offset + count) return { arm, radialIndex: index - offset, count };
+    offset += count;
+  }
+  return { arm: STREAM_ARM_COUNT - 1, radialIndex: 0, count: 1 };
+}
+
+/** Position eines Punktes auf einem bestimmten Arm bei radialem Fortschritt 0..1. */
+export function spiralArmPosition(
+  arm: number,
+  fraction: number,
+  rotation: number,
+  turns = STREAM_ARM_TURNS,
+): { x: number; y: number } {
+  const boundedFraction = Math.min(1, Math.max(0, fraction));
+  const radius = boundedFraction * SPIRAL_MAX_R;
+  const angle = rotation + (2 * Math.PI * arm) / STREAM_ARM_COUNT + 2 * Math.PI * turns * boundedFraction;
+  return { x: Math.cos(angle) * radius, y: Math.sin(angle) * radius };
+}
+
+/** Position des Stream-Punkts i; Indizes laufen Arm für Arm von innen nach außen. */
+export function spiralPoint(index: number, n: number, turns: number, rotation: number): SpiralPoint {
+  const { arm, radialIndex, count } = pointSlot(index, Math.max(n, 1));
+  const fraction = (radialIndex + 0.5) / count;
+  const position = spiralArmPosition(arm, fraction, rotation, turns);
+  return { index, ...position, arm, radialIndex };
+}
+
+/** Alle Punkte eines Umlaufs, gruppiert nach Arm und dort von innen nach außen. */
 export function spiralPoints(n: number, cycle: number): SpiralPoint[] {
   const turns = computeTurns(n);
   const rotation = cycle * GOLDEN_ANGLE;
