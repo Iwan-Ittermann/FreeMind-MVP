@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import { trackEvent } from "@/lib/analytics";
 
 type Status = "loading" | "ok" | "already_confirmed" | "expired" | "invalid" | "error";
 
@@ -49,13 +50,20 @@ export default function Confirm({
     supabase.functions.invoke(confirmFn, { body: { token } })
       .then(({ data, error }) => {
         if (cancelled) return;
-        if (error || !data) { setStatus("error"); return; }
-        setStatus((data.status as Status) ?? "error");
+        if (error || !data) { setStatus("error"); trackEvent("signup_confirmed", { page: scope, result: "error" }); return; }
+        const s = (data.status as Status) ?? "error";
+        setStatus(s);
+        trackEvent("signup_confirmed", { page: scope, result: s });
         if (data.email) setEmail(data.email);
       })
-      .catch(() => !cancelled && setStatus("error"));
+      .catch(() => {
+        if (!cancelled) {
+          setStatus("error");
+          trackEvent("signup_confirmed", { page: scope, result: "error" });
+        }
+      });
     return () => { cancelled = true; };
-  }, [token, confirmFn]);
+  }, [token, confirmFn, scope]);
 
   const handleResend = async (e: React.FormEvent) => {
     e.preventDefault();
