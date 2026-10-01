@@ -1,13 +1,17 @@
 # Roadmap
 
-## Simulation /sim (aktuell)
-- [ ] Bestehende Mechanismen prüfen (Demo-Accounts/is_demo, Topic-Routing, Ratings)
-- [ ] Migration: sim_state, sim_personas, RPCs (Limits serverseitig)
-- [ ] Edge Function sim-seed (40 Personas + Accounts + Meinungen)
-- [ ] Edge Function sim-control (start/stop, Tageslimit 4, Einzellauf-Sperre)
-- [ ] Edge Function sim-tick (90 s, 10-s-Takte, gebündelter KI-Aufruf, Self-Invocation mit Budget)
-- [ ] Frontend: /sim Route, Play-Button + Countdown, Banner, DE/EN
-- [ ] Build + Verifikation (Testlauf, Kosten aus Abrechnungsdaten)
+## Stream-Spirale (aktuell)
+- [x] Sechs archimedische Arme und armweise Innen-außen-Reihenfolge umsetzen
+- [x] Darstellung, Tests und Live-Graph prüfen
+
+## Simulation /sim
+- [x] Bestehende Mechanismen prüfen (Demo-Accounts/is_demo, Topic-Routing, Ratings)
+- [x] Migration: sim_state, sim_personas, RPCs (Limits serverseitig)
+- [x] Edge Function sim-seed (40 Personas + Accounts + Meinungen)
+- [x] Edge Function sim-control (start/stop, Tageslimit 4, Einzellauf-Sperre)
+- [x] Edge Function sim-tick (90 s, 10-s-Takte, gebündelter KI-Aufruf, Self-Invocation mit Budget)
+- [x] Frontend: /sim Route, Play-Button + Countdown, Banner, DE/EN
+- [ ] Kosten aus Abrechnungsdaten verifizieren
 
 ## Offen (alt)
 - [ ] PostHog-Events nach Publish verifizieren
