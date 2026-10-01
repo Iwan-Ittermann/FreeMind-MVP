@@ -8,13 +8,14 @@ export interface EventTopic {
   short_code: string;
 }
 
-export type EventTopicRole = 'test' | 'real' | 'sandbox' | 'archive';
+export type EventTopicRole = 'test' | 'real' | 'sandbox' | 'archive' | 'sim';
 
 /**
  * Resolves the topic for a route role.
  *  - `test`    → the playground question (always open)
  *  - `sandbox` → the open sandbox question (/go)
  *  - `archive` → the finished August event (/aug-test), read-only
+ *  - `sim`     → the AI simulation question (/sim)
  *  - `real`    → the configured event question; falls back to the test topic
  *    while no real question is configured yet.
  */
@@ -27,7 +28,9 @@ export function useEventTopic(role: EventTopicRole) {
         ? config?.sandboxShortCode ?? null
         : role === 'archive'
           ? config?.archiveShortCode || config?.realShortCode || null
-          : config?.realShortCode || config?.testShortCode || null;
+          : role === 'sim'
+            ? config?.simShortCode ?? null
+            : config?.realShortCode || config?.testShortCode || null;
 
   const query = useQuery({
     queryKey: ['event-topic', shortCode],
