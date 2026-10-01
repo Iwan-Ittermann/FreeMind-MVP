@@ -24,6 +24,8 @@ interface TTScreenInnerProps {
   highlightAllNodes?: boolean;
   /** Experimental: render all chats as short directional arrows. */
   arrowMode?: boolean;
+  /** Hide the node-state legend (e.g. on /sim). */
+  hideLegend?: boolean;
   /** Called from parent so it can read opinions for the side panel. */
   onDataReady?: (data: ReturnType<typeof useTopicData>['data']) => void;
 }
@@ -39,6 +41,7 @@ function TTScreenInnerImpl({
   onEdgeClick,
   highlightAllNodes = false,
   arrowMode = false,
+  hideLegend = false,
 }: TTScreenInnerProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -179,7 +182,7 @@ function TTScreenInnerImpl({
       </div>
       {/* Legend: how to read node states — must sit above the bottom bar
           (bar: bottom 33px + 48px height) and never be covered. */}
-      {!selectedNodeId && (
+      {!selectedNodeId && !hideLegend && (
       <div className="absolute inset-x-0 bottom-[86px] z-20 flex justify-center px-4 pointer-events-none">
         <div className="flex max-w-full flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-2xl bg-background/50 px-3 py-1 text-[9px] text-foreground/60 backdrop-blur-sm">
           <span className="flex items-center gap-1">
