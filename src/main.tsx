@@ -13,6 +13,18 @@ if (phKey && isLive) {
     api_host: phRegion === "us" ? "https://us.i.posthog.com" : "https://eu.i.posthog.com",
     capture_pageview: "history_change",
     person_profiles: "identified_only",
+    disable_session_recording: true,
+    // Strip confirmation tokens from any auto-captured URL.
+    before_send: (ev) => {
+      if (!ev) return ev;
+      const scrub = (v: unknown) =>
+        typeof v === "string" ? v.replace(/([?&])token=[^&#]*/gi, "$1token=redacted") : v;
+      for (const k of ["$current_url", "$pathname", "$referrer", "$initial_referrer", "$initial_current_url"]) {
+        if (ev.properties?.[k]) ev.properties[k] = scrub(ev.properties[k]);
+        if (ev.$set_once?.[k]) ev.$set_once[k] = scrub(ev.$set_once[k]);
+      }
+      return ev;
+    },
   });
 }
 

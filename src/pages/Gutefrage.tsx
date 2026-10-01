@@ -3,6 +3,8 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { trackEvent } from "@/lib/analytics";
+import { useLocation } from "react-router-dom";
+import { readGfAttribution, getAnalyticsId, trackGfLandingView } from "@/lib/gutefrageAttribution";
 
 const panelClass =
   "snap-start min-h-screen w-full flex items-center justify-center px-5 sm:px-8 md:px-12 py-16 sm:py-20 md:py-24 border-b border-foreground/15";
@@ -30,6 +32,11 @@ export default function Gutefrage() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "already">("idle");
   const [stats, setStats] = useState<Stats | null>(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    trackGfLandingView(location.key);
+  }, [location.key]);
 
   useEffect(() => {
     document.title = "freemind x Gutefrage.net — Live-Event im November 2026";
@@ -67,7 +74,7 @@ export default function Gutefrage() {
     setStatus("loading");
     try {
       const { data, error } = await supabase.functions.invoke("gutefrage-signup-request", {
-        body: { email },
+        body: { email, attribution: readGfAttribution(), analytics_id: getAnalyticsId() },
       });
       if (error) throw error;
       if (data?.status === "sent") {
