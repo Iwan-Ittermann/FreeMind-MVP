@@ -1,5 +1,10 @@
 # Roadmap
 
+## Stream-Design (aktuell)
+- [ ] Cosmic Post-Ansicht mit Live-Mini-Graph umsetzen
+- [ ] Eigenständige kompakte Read-only-Chats direkt an den Edges umsetzen
+- [ ] Desktop und Mobil ohne Überlappungen prüfen
+
 ## Stream-Spirale (aktuell)
 - [x] Sechs archimedische Arme und armweise Innen-außen-Reihenfolge umsetzen
 - [x] Darstellung, Tests und Live-Graph prüfen
