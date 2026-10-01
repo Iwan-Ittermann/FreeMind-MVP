@@ -257,7 +257,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
   return (
     <ReadOnlyProvider value={readOnly}>
     <div className="fixed inset-0 bg-black flex items-center justify-center">
-      <div data-tt-phone-viewport className="relative h-[100dvh] w-full max-w-[480px] shrink-0 bg-background overflow-hidden">
+      <div data-tt-phone-viewport className="relative h-[100dvh] w-full max-w-[1120px] shrink-0 bg-background overflow-hidden">
         <div className="absolute inset-0 overflow-hidden">
           {activeTopicId && (
             <TTScreenInner

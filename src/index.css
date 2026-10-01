@@ -1,4 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@font-face {
+  font-family: 'Instrument Serif';
+  src: url('./assets/fonts/instrument-serif.ttf') format('truetype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Work Sans';
+  src: url('./assets/fonts/work-sans.ttf') format('truetype');
+  font-display: swap;
+}
 
 @tailwind base;
 @tailwind components;
@@ -88,6 +98,11 @@
     /* Landing page tokens (ported from Open Discourse) */
     --alert: 14 100% 56%;
     --accent-warm: 42 85% 66%;
+    --stream-surface: 222 49% 7%;
+    --stream-surface-raised: 215 56% 18%;
+    --stream-ink: 190 100% 95%;
+    --stream-warm: 34 87% 61%;
+    --stream-line: 196 84% 67%;
   }
 
 
@@ -134,6 +149,25 @@
     --sidebar-ring: 160 90% 17%;
     --tt-spotlight-overlay: 0 0% 0%;
   }
+}
+
+.stream-cosmic {
+  --background: var(--stream-surface);
+  --foreground: var(--stream-ink);
+  --card: var(--stream-surface-raised);
+  --card-foreground: var(--stream-ink);
+  --muted: 216 39% 15%;
+  --muted-foreground: 198 24% 69%;
+  --border: 201 45% 32%;
+  --primary: var(--stream-line);
+  --primary-foreground: 222 49% 7%;
+  --secondary: var(--stream-warm);
+  --secondary-foreground: 222 49% 7%;
+  font-family: 'Work Sans', sans-serif;
+}
+
+.font-stream-editorial {
+  font-family: 'Instrument Serif', serif;
 }
 
 @layer base {

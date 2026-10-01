@@ -18,7 +18,7 @@ export function useAllTopicChats(topicId: string, enabled = true) {
   return useQuery({
     queryKey: ['allTopicChats', topicId],
     enabled: !!topicId && enabled,
-    refetchInterval: 8000,
+    refetchInterval: 4000,
     queryFn: async (): Promise<AllTopicChatItem[]> => {
       const { data, error } = await supabase.rpc('get_topic_chats', { _topic_id: topicId });
       if (error) throw error;
