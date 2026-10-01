@@ -147,6 +147,11 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
       return stream.entries.find((entry) => entry.index === selectedStreamIndex) ?? stream.current;
     }, [selectedStreamIndex, stream]);
 
+    const upcomingStreamEntries = useMemo(
+      () => stream.entries.filter((entry) => entry.index > stream.currentIndex).slice(0, 3),
+      [stream.currentIndex, stream.entries],
+    );
+
 
     const filteredChats = useMemo(() => {
       const q = chatSearch.trim().toLowerCase();
@@ -444,6 +449,37 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                           chats={stream.chatsFor(selectedStreamEntry.nodeId)}
                           bestChat={stream.bestChatFor(selectedStreamEntry.nodeId)}
                         />
+                      )}
+
+                      {upcomingStreamEntries.length > 0 && (
+                        <div className="border-t border-border/40 px-4 py-4 lg:px-6">
+                          <div className="mb-2 text-[10px] font-semibold uppercase text-primary">
+                            {t('tt.streamPreview', 'Als Nächstes')}
+                          </div>
+                          <ul className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                            {upcomingStreamEntries.map((entry, index) => (
+                              <li key={entry.index}>
+                                <Button
+                                  variant="outline"
+                                  onClick={() => setSelectedStreamIndex(entry.index)}
+                                  className={cn(
+                                    'h-full min-h-20 w-full items-start justify-start rounded-md px-3 py-2 text-left',
+                                    selectedStreamEntry?.index === entry.index && 'border-secondary bg-secondary/10',
+                                  )}
+                                >
+                                  <span className="min-w-0 whitespace-normal">
+                                    <span className="mb-1 block text-[9px] font-semibold uppercase text-muted-foreground">
+                                      {t('tt.streamPreviewItem', 'Danach {{number}}', { number: index + 1 })}
+                                    </span>
+                                    <span className="font-stream-editorial line-clamp-3 text-base leading-tight text-foreground">
+                                      {opinionTextById.get(entry.nodeId) ?? ''}
+                                    </span>
+                                  </span>
+                                </Button>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
                       )}
 
                       {stream.entries.filter((e) => e.index < stream.currentIndex).length > 0 && (

@@ -26,6 +26,6 @@
 - [x] Simulation /sim umgesetzt: sim_state/sim_personas, sim-control + sim-tick, Route, Play-Button, Banner, DE-Default; 3 Testläufe ok (Chats, Nachrichten, Bewertungen, neue Personas)
 
 ## Stream-Folding und Vorschau (aktuell)
-- [ ] Node-Graph und Chat unabhängig einklappbar machen
-- [ ] Drei kommende Stream-Ergebnisse als Vorschau ergänzen
+- [x] Node-Graph und Chat unabhängig einklappbar machen
+- [x] Drei kommende Stream-Ergebnisse als Vorschau ergänzen
 - [ ] Mobil und Desktop prüfen
