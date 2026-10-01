@@ -28,4 +28,4 @@
 ## Stream-Folding und Vorschau (aktuell)
 - [x] Node-Graph und Chat unabhängig einklappbar machen
 - [x] Drei kommende Stream-Ergebnisse als Vorschau ergänzen
-- [ ] Mobil und Desktop prüfen
+- [x] Mobil und Desktop prüfen

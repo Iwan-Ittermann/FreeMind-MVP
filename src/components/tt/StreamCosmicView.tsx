@@ -25,9 +25,12 @@ export function StreamCosmicView({ entry, opinions, chats, bestChat }: StreamCos
 
   useEffect(() => {
     setActiveChatId(bestChat?.id ?? chats[0]?.id ?? null);
+  }, [entry.nodeId, bestChat?.id, chats]);
+
+  useEffect(() => {
     setNodeOpen(true);
     setChatOpen(true);
-  }, [entry.nodeId, bestChat?.id, chats]);
+  }, [entry.nodeId]);
 
   const activeChat = chats.find((chat) => chat.id === activeChatId) ?? chats[0] ?? null;
   const counterpartText = useMemo(() => {
