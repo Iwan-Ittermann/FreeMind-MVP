@@ -13,7 +13,7 @@ import { SignalChatArrows } from './SignalChatArrows';
 import type { ChatArrow } from '@/hooks/useChatArrows';
 import { useBackgroundPref } from '@/hooks/useBackgroundPref';
 import type { SpiralPoint } from '@/lib/stream-spiral';
-import { SPIRAL_MAX_R } from '@/lib/stream-spiral';
+import { SPIRAL_MAX_R, computeTurns, GOLDEN_ANGLE } from '@/lib/stream-spiral';
 
 /** Daten für die Stream-Spirale (Einheitsraum, Zentrum 0/0, blauer Ring = 300). */
 export interface StreamSpiralOverlay {
@@ -181,67 +181,6 @@ export function SignalRenderer({
       )}
 
 
-      {/* Stream-Spirale: gepunktete Linie über den Ringen, unter den Edges. */}
-      {streamSpiral && ttLandmarks && streamSpiral.points.length > 0 && (
-        <g className="stream-spiral" pointerEvents="none">
-          {(() => {
-            const scale = ttLandmarks.blueR / SPIRAL_MAX_R;
-            const toPx = (u: { x: number; y: number }) => ({
-              x: config.centerX + u.x * scale,
-              y: config.centerY + u.y * scale,
-            });
-            const pts = streamSpiral.points.map(toPx);
-            const path = pts
-              .map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`)
-              .join(' ');
-            const current = pts[streamSpiral.currentIndex] ?? null;
-            const focus = streamSpiral.focus ? toPx(streamSpiral.focus) : null;
-            return (
-              <>
-                <path
-                  d={path}
-                  fill="none"
-                  stroke="white"
-                  strokeOpacity={0.35}
-                  strokeWidth={1}
-                  strokeDasharray="1 6"
-                  strokeLinecap="round"
-                />
-                {current && focus && (
-                  <line
-                    x1={current.x}
-                    y1={current.y}
-                    x2={focus.x}
-                    y2={focus.y}
-                    stroke="hsl(var(--primary))"
-                    strokeOpacity={0.6}
-                    strokeWidth={1}
-                    strokeDasharray="3 4"
-                  />
-                )}
-                {current && (
-                  <>
-                    <circle
-                      cx={current.x}
-                      cy={current.y}
-                      r={7}
-                      fill="hsl(var(--primary))"
-                      opacity={0.25}
-                    />
-                    <circle
-                      cx={current.x}
-                      cy={current.y}
-                      r={3}
-                      fill="hsl(var(--primary))"
-                    />
-                  </>
-                )}
-              </>
-            );
-          })()}
-        </g>
-      )}
-
       {/* Edges always render (hidden until hover); arrows layer on top of them. */}
       <g className="signal-edges">
         {edgeTokens.map((et, i) => (
@@ -262,6 +201,54 @@ export function SignalRenderer({
           highlightedNode={highlightedNode}
           onArrowClick={handleEdgeClick}
         />
+      )}
+
+      {/* Draw a continuous spiral even with only one or two candidates. The
+          selection dots remain at their deterministic positions on the curve. */}
+      {streamSpiral && ttLandmarks && streamSpiral.points.length > 0 && (
+        <g className="stream-spiral" pointerEvents="none">
+          {(() => {
+            const scale = ttLandmarks.blueR / SPIRAL_MAX_R;
+            const toPx = (u: { x: number; y: number }) => ({
+              x: config.centerX + u.x * scale,
+              y: config.centerY + u.y * scale,
+            });
+            const n = streamSpiral.points.length;
+            const turns = computeTurns(n);
+            const first = streamSpiral.points[0];
+            const firstFraction = 0.5 / n;
+            const rotation = first
+              ? Math.atan2(first.y, first.x) - 2 * Math.PI * turns * firstFraction
+              : 0;
+            const path = Array.from({ length: 121 }, (_, i) => {
+              const fraction = i / 120;
+              const radius = fraction * SPIRAL_MAX_R;
+              const angle = rotation + 2 * Math.PI * turns * fraction;
+              const p = toPx({ x: Math.cos(angle) * radius, y: Math.sin(angle) * radius });
+              return `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`;
+            }).join(' ');
+            const currentPoint = streamSpiral.points[streamSpiral.currentIndex];
+            const current = currentPoint ? toPx(currentPoint) : null;
+            const focus = streamSpiral.focus ? toPx(streamSpiral.focus) : null;
+            return (
+              <>
+                <path d={path} fill="none" stroke="hsl(var(--foreground))" strokeOpacity={0.8}
+                  strokeWidth={1.6} strokeDasharray="1 5" strokeLinecap="round" />
+                {current && focus && (
+                  <line x1={current.x} y1={current.y} x2={focus.x} y2={focus.y}
+                    stroke="hsl(var(--primary))" strokeOpacity={0.8} strokeWidth={1.3}
+                    strokeDasharray="3 4" />
+                )}
+                {current && (
+                  <>
+                    <circle cx={current.x} cy={current.y} r={8} fill="hsl(var(--primary))" opacity={0.4} />
+                    <circle cx={current.x} cy={current.y} r={3.5} fill="hsl(var(--foreground))" />
+                  </>
+                )}
+              </>
+            );
+          })()}
+        </g>
       )}
 
       <g className="signal-nodes">
