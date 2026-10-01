@@ -89,6 +89,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [chatNodeId, setChatNodeId] = useState<string | null>(null);
   const [nudgeVisible, setNudgeVisible] = useState(false);
+  const [streamActive, setStreamActive] = useState(false);
 
 
   const { data: activeData, isLoading: activeDataLoading } = useTopicData(activeTopicId);
@@ -257,7 +258,13 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
   return (
     <ReadOnlyProvider value={readOnly}>
     <div className="fixed inset-0 bg-black flex items-center justify-center">
-      <div data-tt-phone-viewport className="relative h-[100dvh] w-full max-w-[1120px] shrink-0 bg-background overflow-hidden">
+      <div
+        data-tt-phone-viewport
+        className={cn(
+          'relative h-[100dvh] w-full shrink-0 bg-background overflow-hidden transition-[max-width] duration-300',
+          streamActive ? 'max-w-[1120px]' : 'max-w-[480px]',
+        )}
+      >
         <div className="absolute inset-0 overflow-hidden">
           {activeTopicId && (
             <TTScreenInner
@@ -303,6 +310,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
           unreadCount={totalUnread}
           onActiveChatChange={setChatNodeId}
           onPanelOpen={() => setTourStep(0)}
+          onStreamActiveChange={setStreamActive}
 
 
           onOpinionTap={(opinionId) => {

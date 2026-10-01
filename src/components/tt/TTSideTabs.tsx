@@ -21,6 +21,7 @@ import { useEnsureChatTitles } from '@/hooks/useEnsureChatTitles';
 import { useAllTopicChats, type AllTopicChatItem } from '@/hooks/useAllTopicChats';
 import { useStreamFocus } from '@/hooks/useStreamFocus';
 import { EmbeddedChatView } from '@/components/chat/EmbeddedChatView';
+import { StreamCosmicView } from './StreamCosmicView';
 import { TTRatingDialog } from './TTRatingDialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -54,6 +55,7 @@ interface TTSideTabsProps {
   onActiveChatChange?: (theirOpinionId: string | null) => void;
   /** Fired when the user opens the opinion or chat list (used to close the tour). */
   onPanelOpen?: () => void;
+  onStreamActiveChange?: (active: boolean) => void;
 }
 
 const SPRING = { type: 'spring' as const, stiffness: 320, damping: 30 };
@@ -76,6 +78,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
       unreadCount = 0,
       onActiveChatChange,
       onPanelOpen,
+      onStreamActiveChange,
     },
     ref,
   ) {
@@ -93,7 +96,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
     const { data: myRatings } = useMyOpinionRatings(topicId, myOpinionId);
     const { data: allChats = [] } = useAllTopicChats(topicId, tab === 'chats' && chatScope === 'all');
     const stream = useStreamFocus(topicId);
-    const [activeStreamChat, setActiveStreamChat] = useState<AllTopicChatItem | null>(null);
+    const [selectedStreamIndex, setSelectedStreamIndex] = useState<number | null>(null);
 
     const opinionTextById = useMemo(
       () => new Map(opinions.map((o) => [o.id, o.text])),
@@ -133,6 +136,16 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
       const id = tab === 'chats' && chatScope === 'mine' ? activeChatOpinionId : null;
       onActiveChatChange?.(id);
     }, [tab, chatScope, activeChatOpinionId, onActiveChatChange]);
+
+    useEffect(() => {
+      onStreamActiveChange?.(tab === 'stream');
+      return () => onStreamActiveChange?.(false);
+    }, [tab, onStreamActiveChange]);
+
+    const selectedStreamEntry = useMemo(() => {
+      if (selectedStreamIndex == null) return stream.current;
+      return stream.entries.find((entry) => entry.index === selectedStreamIndex) ?? stream.current;
+    }, [selectedStreamIndex, stream.current, stream.entries]);
 
 
     const filteredChats = useMemo(() => {
@@ -280,7 +293,10 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 16 }}
               transition={SPRING}
-              className="absolute top-7 bottom-[81px] inset-x-0 z-30 bg-background/95 backdrop-blur-xl border-y border-border/30 overflow-hidden flex flex-col"
+              className={cn(
+                'absolute top-7 bottom-[81px] inset-x-0 z-30 border-y border-border/30 overflow-hidden flex flex-col',
+                tab === 'stream' ? 'stream-cosmic bg-background' : 'bg-background/95 backdrop-blur-xl',
+              )}
             >
               {tab === 'opinions' && (
                 <>
@@ -415,81 +431,42 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                     )}
                   </div>
 
-                  {activeStreamChat ? (
-                    <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
-                      <div className="px-4 py-2 border-b border-border/30">
-                        <button
-                          onClick={() => setActiveStreamChat(null)}
-                          className="flex items-center gap-1.5 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
-                          aria-label={t('common.back', 'Back')}
-                        >
-                          <ArrowLeft className="w-4 h-4" />
-                          <span>{t('tt.streamTab', 'Stream')}</span>
-                        </button>
-                      </div>
-                      <div className="flex-1 min-h-0 overflow-hidden">
-                        <EmbeddedChatView
-                          theirOpinionId={activeStreamChat.opinionBId}
-                          readOnly
-                          sourceOpinionId={activeStreamChat.opinionAId}
-                        />
-                      </div>
-                    </div>
-                  ) : stream.n === 0 ? (
+                  {stream.n === 0 ? (
                     <p className="text-sm text-muted-foreground p-4">
                       {t('tt.streamEmpty', 'Noch keine Gespräche für den Stream.')}
                     </p>
                   ) : (
-                    <div className="flex-1 overflow-auto">
-                      {/* Aktuell gefeaturter Node */}
-                      {stream.current && (
-                        <div className="px-4 py-3 border-b border-border/30">
-                          <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-primary mb-1.5">
-                            {t('tt.streamNow', 'Jetzt im Stream')}
-                          </div>
-                          <p className="text-sm text-foreground leading-snug">
-                            {opinionTextById.get(stream.current.nodeId) ?? ''}
-                          </p>
-                          {(() => {
-                            const chat = stream.bestChatFor(stream.current.nodeId);
-                            if (!chat) return null;
-                            return (
-                              <button
-                                onClick={() => setActiveStreamChat(chat)}
-                                className="mt-2 w-full text-left rounded-xl border border-border/40 px-3 py-2 hover:bg-muted/40 transition-colors"
-                              >
-                                <p className="text-xs text-muted-foreground line-clamp-1">
-                                  {chat.opinionAText} ↔ {chat.opinionBText}
-                                </p>
-                                {chat.lastMessage && (
-                                  <p className="text-xs text-foreground/80 mt-1 line-clamp-2">
-                                    {chat.lastMessage}
-                                  </p>
-                                )}
-                              </button>
-                            );
-                          })()}
-                        </div>
+                    <div className="flex-1 min-h-0 overflow-auto">
+                      {selectedStreamEntry && (
+                        <StreamCosmicView
+                          entry={selectedStreamEntry}
+                          opinions={opinions}
+                          chats={stream.chatsFor(selectedStreamEntry.nodeId)}
+                          bestChat={stream.bestChatFor(selectedStreamEntry.nodeId)}
+                        />
                       )}
 
-                      {/* Bisherige Einträge dieses Umlaufs */}
                       {stream.entries.filter((e) => e.index < stream.currentIndex).length > 0 && (
-                        <div className="px-4 py-3">
-                          <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-foreground/60 mb-2">
-                            {t('tt.streamEarlier', 'Heute bisher')}
+                        <div className="border-t border-border/40 px-4 py-4 lg:px-6">
+                          <div className="mb-2 text-[10px] font-semibold uppercase text-muted-foreground">
+                            {t('tt.streamHistory', 'Verlauf')}
                           </div>
-                          <ul className="space-y-1.5">
+                          <ul className="flex gap-2 overflow-x-auto pb-1">
                             {stream.entries
                               .filter((e) => e.index < stream.currentIndex)
                               .map((e) => {
-                                const chat = stream.bestChatFor(e.nodeId);
                                 return (
-                                  <li key={e.index}>
+                                  <li key={e.index} className="shrink-0">
                                     <button
-                                      onClick={() => chat && setActiveStreamChat(chat)}
-                                      className="w-full text-left rounded-lg px-2 py-1.5 hover:bg-muted/40 transition-colors"
+                                      onClick={() => setSelectedStreamIndex(e.index)}
+                                      className={cn(
+                                        'w-48 rounded-md border px-3 py-2 text-left transition-colors',
+                                        selectedStreamEntry?.index === e.index
+                                          ? 'border-secondary bg-secondary/10'
+                                          : 'border-border/60 hover:border-primary/60',
+                                      )}
                                     >
-                                      <p className="text-xs text-foreground/85 line-clamp-1">
+                                      <p className="font-stream-editorial line-clamp-2 text-base leading-tight text-foreground">
                                         {opinionTextById.get(e.nodeId) ?? ''}
                                       </p>
                                     </button>
