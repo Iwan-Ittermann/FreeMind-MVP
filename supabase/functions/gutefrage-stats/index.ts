@@ -23,7 +23,8 @@ Deno.serve(async (req) => {
       supabase
         .from("gutefrage_signups")
         .select("id", { count: "exact", head: true })
-        .not("confirmed_at", "is", null),
+        .not("confirmed_at", "is", null)
+        .eq("is_test", false),
       supabase.from("app_settings").select("value").eq("key", "gutefrage_event_date").maybeSingle(),
     ]);
 

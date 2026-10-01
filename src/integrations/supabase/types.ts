@@ -689,34 +689,55 @@ export type Database = {
       }
       gutefrage_signups: {
         Row: {
+          analytics_id: string | null
           confirm_token: string | null
           confirm_token_expires_at: string | null
           confirmed_at: string | null
           created_at: string
           email: string
           id: string
+          is_test: boolean
+          post_id: string
           signup_ip: unknown
           updated_at: string
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
         }
         Insert: {
+          analytics_id?: string | null
           confirm_token?: string | null
           confirm_token_expires_at?: string | null
           confirmed_at?: string | null
           created_at?: string
           email: string
           id?: string
+          is_test?: boolean
+          post_id?: string
           signup_ip?: unknown
           updated_at?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
         }
         Update: {
+          analytics_id?: string | null
           confirm_token?: string | null
           confirm_token_expires_at?: string | null
           confirmed_at?: string | null
           created_at?: string
           email?: string
           id?: string
+          is_test?: boolean
+          post_id?: string
           signup_ip?: unknown
           updated_at?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
         }
         Relationships: []
       }

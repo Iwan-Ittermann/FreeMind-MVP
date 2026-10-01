@@ -12,6 +12,8 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const ADMIN_NOTIFY_EMAIL = Deno.env.get("ADMIN_NOTIFY_EMAIL") ?? "iwan@freemind.chat";
 
+import { captureServer, eventProps } from "../_shared/gutefrage-attribution.ts";
+
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
 
 async function notifyAdmin(signupEmail: string, confirmedAt: string) {
@@ -19,7 +21,8 @@ async function notifyAdmin(signupEmail: string, confirmedAt: string) {
     const { count } = await supabase
       .from("gutefrage_signups")
       .select("id", { count: "exact", head: true })
-      .not("confirmed_at", "is", null);
+      .not("confirmed_at", "is", null)
+      .eq("is_test", false);
     const res = await fetch(`${SUPABASE_URL}/functions/v1/send-transactional-email`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_ROLE}` },
@@ -61,12 +64,17 @@ Deno.serve(async (req) => {
     }
 
     const confirmedAt = new Date().toISOString();
-    const { error } = await supabase.from("gutefrage_signups").update({
+    // Atomic first-time transition: only one request can flip confirmed_at.
+    const { data: flipped, error } = await supabase.from("gutefrage_signups").update({
       confirmed_at: confirmedAt,
       confirm_token: null,
       confirm_token_expires_at: null,
-    }).eq("id", row.id);
+    }).eq("id", row.id).is("confirmed_at", null)
+      .select("id, post_id, utm_source, utm_medium, utm_campaign, utm_content, is_test, analytics_id");
     if (error) throw error;
+    if (!flipped?.length) return Response.json({ status: "already_confirmed", email: row.email }, { headers: corsHeaders });
+    const f = flipped[0];
+    await captureServer("gf_signup_confirmed", f.analytics_id ?? `gf_signup_${f.id}`, eventProps(f), crypto.randomUUID());
 
     await notifyAdmin(row.email, confirmedAt);
 
