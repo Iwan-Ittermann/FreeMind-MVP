@@ -453,19 +453,17 @@ ${pairContexts.join('\n\n')}`;
         ];
         for (const { rater, target, r } of ratings) {
           if (!r) continue;
-          const empathy = clamp10(r.empathy);
+          // chat_ratings.empathy uses a 0-100 scale, disagreement 0-10.
+          const empathy = clamp10(r.empathy) * 10;
           const disagreement = clamp10(r.disagreement);
-          await admin.from('chat_ratings').upsert(
-            {
-              chat_id: chatId,
-              rater_id: rater.user_id!,
-              empathy,
-              disagreement,
-              message_count: msgCount,
-              updated_at: new Date().toISOString(),
-            },
-            { onConflict: 'chat_id,rater_id' },
-          );
+          await admin.from('chat_ratings').insert({
+            chat_id: chatId,
+            rater_id: rater.user_id!,
+            empathy,
+            disagreement,
+            message_count: msgCount,
+            updated_at: new Date().toISOString(),
+          });
           await admin.from('rating_events').insert([
             {
               topic_id: topicId,
