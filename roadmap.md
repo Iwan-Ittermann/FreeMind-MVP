@@ -2,7 +2,7 @@
 
 ## Stream-Spirale (aktuell)
 - [x] Sechs archimedische Arme und armweise Innen-außen-Reihenfolge umsetzen
-- [ ] Darstellung, Tests und Live-Graph prüfen
+- [x] Darstellung, Tests und Live-Graph prüfen
 
 ## Simulation /sim
 - [x] Bestehende Mechanismen prüfen (Demo-Accounts/is_demo, Topic-Routing, Ratings)
