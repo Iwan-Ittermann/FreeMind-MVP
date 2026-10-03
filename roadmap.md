@@ -32,6 +32,7 @@
 
 ## /sim 72h-Replay (Hybrid)
 - [x] Timeline-Generator + Artefakt (src/data/sim-timeline.json)
-- [ ] Replay-Engine im Client (Weltzeituhr, Einstieg beim richtigen Frame)
+- [x] Replay-Engine (Weltzeituhr, fester Loop-Start, Nachholen bei Seitenaufruf)
+- [x] Landingpage-Button auf /sim
 - [ ] Nachrichten-Punkte länger/auffälliger, bleibende Bewertungs-Pfeile
 - [ ] Live-KI-Antwort, wenn echte Besucher chatten

@@ -296,7 +296,7 @@ export default function Landing() {
               <span className="transition-transform group-hover:translate-x-1">→</span>
             </a>
             <a
-              href="/aug-test"
+              href="/sim"
               className="text-sm font-bold uppercase tracking-wider underline underline-offset-4 hover:text-alert transition-colors"
             >
               {c.ctaAugust}

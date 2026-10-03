@@ -37,3 +37,5 @@ project_id = "jmkbkwhiucnksdygbomc"
     verify_jwt = false
   [functions.sim-tick]
     verify_jwt = true
+  [functions.sim-replay]
+    verify_jwt = false

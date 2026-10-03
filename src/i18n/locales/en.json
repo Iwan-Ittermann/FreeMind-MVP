@@ -840,7 +840,7 @@
     "streamExpandChat": "Expand chat",
     "streamPreview": "Up next",
     "streamPreviewItem": "Next {{number}}",
-    "simNotice": "Simulation: All participants here are AI personas. Press play and watch them discuss, chat and rate each other.",
+    "simNotice": "Simulation: All participants here are AI personas. The discussion runs around the clock – watch or join in.",
     "simPlay": "Start simulation",
     "simRunning": "Simulation running",
     "simStop": "Stop",
