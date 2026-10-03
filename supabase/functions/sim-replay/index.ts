@@ -71,7 +71,28 @@ async function wipe(admin: Admin, tid: string, personas: Map<number, any>) {
   const userIds = [...personas.values()].map((p) => p.user_id).filter(Boolean);
   if (userIds.length) {
     const { data: ops } = await admin.from('opinions').select('id').eq('topic_id', tid).in('user_id', userIds);
-    for (const o of ops ?? []) await admin.rpc('delete_opinion_cascade', { _opinion_id: o.id });
+    const ids = (ops ?? []).map((o: any) => o.id);
+    if (ids.length) {
+      const list = ids.join(',');
+      const { data: chats } = await admin.from('chats').select('id')
+        .or(`opinion_a_id.in.(${list}),opinion_b_id.in.(${list})`);
+      const cids = (chats ?? []).map((c: any) => c.id);
+      if (cids.length) {
+        await admin.from('chat_message_reactions').delete().in('message_id',
+          ((await admin.from('chat_messages').select('id').in('chat_id', cids)).data ?? []).map((m: any) => m.id));
+        await admin.from('chat_messages').delete().in('chat_id', cids);
+        await admin.from('chat_ratings').delete().in('chat_id', cids);
+        await admin.from('rating_events').delete().in('chat_id', cids);
+        await admin.from('user_blocks').delete().in('chat_id', cids);
+      }
+      await admin.from('rating_events').delete().in('target_opinion_id', ids);
+      await admin.from('opinion_ratings').delete().or(`rater_opinion_id.in.(${list}),target_opinion_id.in.(${list})`);
+      await admin.from('chat_requests').delete().or(`requester_opinion_id.in.(${list}),target_opinion_id.in.(${list})`);
+      if (cids.length) await admin.from('chats').delete().in('id', cids);
+      await admin.from('opinion_ips').delete().in('opinion_id', ids);
+      const { error } = await admin.from('opinions').delete().in('id', ids);
+      if (error) console.error('wipe opinions', error.message);
+    }
   }
   await admin.from('sim_personas').update({ opinion_id: null, active: false }).gte('slot', 0);
   for (const p of personas.values()) { p.opinion_id = null; p.active = false; }
