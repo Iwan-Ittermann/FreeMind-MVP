@@ -1,0 +1,3267 @@
+{
+ "version": 2,
+ "topic": "Wie könnte Social Media wieder positiver werden?",
+ "duration_seconds": 259200,
+ "seed": 7,
+ "personas": [
+  {
+   "slot": 0,
+   "name": "Marta",
+   "camp": 0
+  },
+  {
+   "slot": 1,
+   "name": "Jonas",
+   "camp": 2
+  },
+  {
+   "slot": 2,
+   "name": "Selin",
+   "camp": 1
+  },
+  {
+   "slot": 3,
+   "name": "Timo",
+   "camp": 3
+  },
+  {
+   "slot": 4,
+   "name": "Aylin",
+   "camp": 0
+  },
+  {
+   "slot": 5,
+   "name": "Ben",
+   "camp": 3
+  },
+  {
+   "slot": 6,
+   "name": "Clara",
+   "camp": 1
+  },
+  {
+   "slot": 7,
+   "name": "David",
+   "camp": 0
+  },
+  {
+   "slot": 8,
+   "name": "Elena",
+   "camp": 2
+  },
+  {
+   "slot": 9,
+   "name": "Finn",
+   "camp": 3
+  },
+  {
+   "slot": 10,
+   "name": "Greta",
+   "camp": 1
+  },
+  {
+   "slot": 11,
+   "name": "Hassan",
+   "camp": 2
+  },
+  {
+   "slot": 12,
+   "name": "Ines",
+   "camp": 0
+  },
+  {
+   "slot": 13,
+   "name": "Jakob",
+   "camp": 3
+  },
+  {
+   "slot": 14,
+   "name": "Kira",
+   "camp": 1
+  },
+  {
+   "slot": 15,
+   "name": "Lars",
+   "camp": 0
+  },
+  {
+   "slot": 16,
+   "name": "Mia",
+   "camp": 1
+  },
+  {
+   "slot": 17,
+   "name": "Nils",
+   "camp": 2
+  },
+  {
+   "slot": 18,
+   "name": "Olga",
+   "camp": 0
+  },
+  {
+   "slot": 19,
+   "name": "Paul",
+   "camp": 2
+  },
+  {
+   "slot": 20,
+   "name": "Rabea",
+   "camp": 3
+  },
+  {
+   "slot": 21,
+   "name": "Samuel",
+   "camp": 2
+  },
+  {
+   "slot": 22,
+   "name": "Tina",
+   "camp": 1
+  },
+  {
+   "slot": 23,
+   "name": "Uwe",
+   "camp": 0
+  },
+  {
+   "slot": 24,
+   "name": "Vera",
+   "camp": 2
+  },
+  {
+   "slot": 25,
+   "name": "Wolf",
+   "camp": 3
+  },
+  {
+   "slot": 26,
+   "name": "Xenia",
+   "camp": 0
+  },
+  {
+   "slot": 27,
+   "name": "Yusuf",
+   "camp": 0
+  },
+  {
+   "slot": 28,
+   "name": "Zoe",
+   "camp": 2
+  },
+  {
+   "slot": 29,
+   "name": "Anton",
+   "camp": 1
+  },
+  {
+   "slot": 30,
+   "name": "Britta",
+   "camp": 1
+  },
+  {
+   "slot": 31,
+   "name": "Cem",
+   "camp": 1
+  },
+  {
+   "slot": 32,
+   "name": "Doro",
+   "camp": 3
+  },
+  {
+   "slot": 33,
+   "name": "Emil",
+   "camp": 3
+  },
+  {
+   "slot": 34,
+   "name": "Frieda",
+   "camp": 3
+  },
+  {
+   "slot": 35,
+   "name": "Georg",
+   "camp": 0
+  },
+  {
+   "slot": 36,
+   "name": "Hanna",
+   "camp": 1
+  },
+  {
+   "slot": 37,
+   "name": "Ivo",
+   "camp": 2
+  },
+  {
+   "slot": 38,
+   "name": "Jule",
+   "camp": 2
+  },
+  {
+   "slot": 39,
+   "name": "Karl",
+   "camp": 3
+  }
+ ],
+ "chats": [
+  {
+   "id": "c00",
+   "a": 0,
+   "b": 3,
+   "moment": "clash"
+  },
+  {
+   "id": "c01",
+   "a": 2,
+   "b": 5,
+   "moment": "clash"
+  },
+  {
+   "id": "c02",
+   "a": 18,
+   "b": 3,
+   "moment": "shock"
+  },
+  {
+   "id": "c03",
+   "a": 18,
+   "b": 7,
+   "moment": "shock"
+  },
+  {
+   "id": "c04",
+   "a": 21,
+   "b": 14,
+   "moment": "bridge"
+  },
+  {
+   "id": "c05",
+   "a": 39,
+   "b": 6,
+   "moment": "bridge"
+  },
+  {
+   "id": "c06",
+   "a": 0,
+   "b": 3,
+   "moment": "bridge"
+  },
+  {
+   "id": "c07",
+   "a": 2,
+   "b": 5,
+   "moment": "bridge"
+  },
+  {
+   "id": "c08",
+   "a": 7,
+   "b": 32,
+   "moment": "organic"
+  },
+  {
+   "id": "c09",
+   "a": 26,
+   "b": 2,
+   "moment": "organic"
+  },
+  {
+   "id": "c10",
+   "a": 38,
+   "b": 31,
+   "moment": "organic"
+  },
+  {
+   "id": "c11",
+   "a": 30,
+   "b": 4,
+   "moment": "organic"
+  },
+  {
+   "id": "c12",
+   "a": 28,
+   "b": 18,
+   "moment": "organic"
+  },
+  {
+   "id": "c13",
+   "a": 31,
+   "b": 3,
+   "moment": "organic"
+  },
+  {
+   "id": "c14",
+   "a": 25,
+   "b": 31,
+   "moment": "organic"
+  },
+  {
+   "id": "c15",
+   "a": 8,
+   "b": 27,
+   "moment": "organic"
+  },
+  {
+   "id": "c16",
+   "a": 14,
+   "b": 9,
+   "moment": "organic"
+  },
+  {
+   "id": "c17",
+   "a": 0,
+   "b": 31,
+   "moment": "organic"
+  },
+  {
+   "id": "c18",
+   "a": 9,
+   "b": 26,
+   "moment": "organic"
+  },
+  {
+   "id": "c19",
+   "a": 35,
+   "b": 25,
+   "moment": "organic"
+  },
+  {
+   "id": "c20",
+   "a": 3,
+   "b": 12,
+   "moment": "organic"
+  },
+  {
+   "id": "c21",
+   "a": 0,
+   "b": 36,
+   "moment": "organic"
+  },
+  {
+   "id": "c22",
+   "a": 4,
+   "b": 13,
+   "moment": "organic"
+  },
+  {
+   "id": "c23",
+   "a": 23,
+   "b": 30,
+   "moment": "organic"
+  },
+  {
+   "id": "c24",
+   "a": 19,
+   "b": 5,
+   "moment": "organic"
+  },
+  {
+   "id": "c25",
+   "a": 34,
+   "b": 1,
+   "moment": "organic"
+  }
+ ],
+ "timeline": [
+  {
+   "t": 451,
+   "type": "opinion",
+   "slot": 0,
+   "text": "Plattformen müssen für Verstöße haften, die ihre Algorithmen bewusst verstärken — wie ein Verlag für seine Titelseite."
+  },
+  {
+   "t": 2024,
+   "type": "opinion",
+   "slot": 4,
+   "text": "Ich sehe wöchentlich, was Cybermobbing anrichtet. Plattformen brauchen echte Meldepflichten mit Fristen, nicht freiwillige Selbstverpflichtungen."
+  },
+  {
+   "t": 4024,
+   "type": "opinion",
+   "slot": 27,
+   "text": "Wie beim Autofahren: Wer eine Plattform mit Millionen Nutzern betreibt, braucht einen Führerschein — also Auflagen und Haftung."
+  },
+  {
+   "t": 5419,
+   "type": "opinion",
+   "slot": 2,
+   "text": "Jugendschutz zuerst: klare Altersgrenzen und ein Werbeverbot für alle unter 16. Kinder sind kein Geschäftsmodell."
+  },
+  {
+   "t": 7194,
+   "type": "opinion",
+   "slot": 6,
+   "text": "Endlose Feeds sind nach Suchtprinzipien gebaut. Design-Regeln wie kein Autoplay für Minderjährige wären wirksamer als Löschpflichten."
+  },
+  {
+   "t": 9418,
+   "type": "opinion",
+   "slot": 26,
+   "text": "Essstörungen und Selbstverletzungs-Content verbreiten sich viral. Hier braucht es harte Verbreitungsverbote, nicht nur Warnhinweise."
+  },
+  {
+   "t": 10716,
+   "type": "opinion",
+   "slot": 1,
+   "text": "Keine neuen Verbote, sondern Transparenz: offene Algorithmen und Datenzugang für unabhängige Forschung. Erst messen, dann regulieren."
+  },
+  {
+   "t": 12744,
+   "type": "opinion",
+   "slot": 8,
+   "text": "Mehr Regulierung heißt oft mehr Überwachung. Altersverifizierung für alle wäre ein Datenschutz-Albtraum."
+  },
+  {
+   "t": 14025,
+   "type": "chat_open",
+   "chat": "c09",
+   "from_slot": 26,
+   "to_slot": 2,
+   "moment": "organic"
+  },
+  {
+   "t": 14126,
+   "type": "message",
+   "chat": "c09",
+   "sender_slot": 26,
+   "text": "Hast du den Bericht gestern gesehen? Mich beunruhigt echt wie schnell dieser extreme Content zu Selbstverletzung viral geht.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 14546,
+   "type": "message",
+   "chat": "c09",
+   "sender_slot": 2,
+   "text": "Ja, absolut. Ich merke das in der Schule auch total, die Kinder sind da völlig schutzlos ausgeliefert.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 14716,
+   "type": "opinion",
+   "slot": 24,
+   "text": "Regulierung ja, aber technisch fundiert. Algorithmus-Audits durch unabhängige Stellen sind machbar und wirksam."
+  },
+  {
+   "t": 14827,
+   "type": "message",
+   "chat": "c09",
+   "sender_slot": 26,
+   "text": "Warnhinweise reichen da einfach nicht mehr. Wir brauchen harte Verbreitungsverbote durch die Algorithmen, sonst landen die Kids in einer Abwärtsspirale.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 15929,
+   "type": "opinion",
+   "slot": 3,
+   "text": "So wenig Gesetze wie möglich. Gelöscht wird nur, was ein Gericht entschieden hat — sonst entscheiden Konzerne über unsere Meinungsfreiheit."
+  },
+  {
+   "t": 18139,
+   "type": "opinion",
+   "slot": 5,
+   "text": "Regulierung tötet Innovation. Kleine Plattformen können sich Compliance nicht leisten — am Ende bleiben nur die ganz Großen übrig."
+  },
+  {
+   "t": 18574,
+   "type": "message",
+   "chat": "c09",
+   "sender_slot": 2,
+   "text": "Da bin ich bei dir, aber man müsste eigentlich schon beim Geschäftsmodell ansetzen. Werbeverbot unter 16 wäre ein Anfang, damit Kinder nicht mehr nur als Datenquelle dienen.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 19589,
+   "type": "opinion",
+   "slot": 25,
+   "text": "Jede Generation hat ihre Moralpanik. Früher waren es Comics und Rockmusik, heute TikTok. Der Staat soll sich raushalten."
+  },
+  {
+   "t": 22548,
+   "type": "chat_open",
+   "chat": "c15",
+   "from_slot": 8,
+   "to_slot": 27,
+   "moment": "organic"
+  },
+  {
+   "t": 22614,
+   "type": "message",
+   "chat": "c15",
+   "sender_slot": 8,
+   "text": "Hast du den Bericht über die neuen Social-Media-Gesetze gelesen? Ich hab echt Bauchschmerzen dabei, weil noch mehr Regulierung am Ende nur auf totale Überwachung hinausläuft.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 25506,
+   "type": "opinion",
+   "slot": 30,
+   "text": "Prävention schlägt Verbot. Medienkompetenz gehört in jeden Lehrplan, dann erübrigen sich viele Regulierungsdebatten."
+  },
+  {
+   "t": 25714,
+   "type": "opinion",
+   "slot": 22,
+   "text": "Personalisierte Werbung für Minderjährige gehört verboten, Punkt. Für Erwachsene reicht Transparenz, wer was bezahlt."
+  },
+  {
+   "t": 27985,
+   "type": "opinion",
+   "slot": 32,
+   "text": "Das NetzDG hat gezeigt: Überblockierung ist real. Regulierung braucht immer starke Beschwerdemechanismen für gelöschte Inhalte."
+  },
+  {
+   "t": 28353,
+   "type": "opinion",
+   "slot": 23,
+   "text": "Amerikanische Konzerne bestimmen, was Deutschland diskutiert. Wir brauchen europäische Plattformen mit europäischen Regeln."
+  },
+  {
+   "t": 29198,
+   "type": "message",
+   "chat": "c15",
+   "sender_slot": 27,
+   "text": "Seh ich anders. Auf der Straße lassen wir ja auch niemanden ohne Prüfung und Regeln rumheizen, sonst gäbs nur noch Chaos. Die Plattformen brauchen klare Haftung für das, was sie zulassen.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 29632,
+   "type": "chat_open",
+   "chat": "c00",
+   "from_slot": 0,
+   "to_slot": 3,
+   "moment": "clash"
+  },
+  {
+   "t": 29779,
+   "type": "message",
+   "chat": "c09",
+   "sender_slot": 26,
+   "text": "Stimmt, die Kommerzialisierung befeuert den psychischen Druck erst richtig. Wenn die Reichweite nicht mehr monetarisiert wird, verlieren diese gefährlichen Trends vielleicht an Reiz.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 29861,
+   "type": "message",
+   "chat": "c00",
+   "sender_slot": 0,
+   "text": "Social Media ist kaputt, weil Algorithmen Hass für Klicks belohnen. Wir brauchen endlich eine volle Verlegerhaftung für alles, was durch die Timeline gepusht wird.",
+   "warm": false,
+   "heat": "high"
+  },
+  {
+   "t": 30014,
+   "type": "message",
+   "chat": "c00",
+   "sender_slot": 3,
+   "text": "Absoluter Wahnsinn. Wenn Plattformen wie Verlage haften, löschen die aus Angst alles, was nur minimal aneckt. Das killt die Meinungsfreiheit komplett.",
+   "warm": false,
+   "heat": "high"
+  },
+  {
+   "t": 30122,
+   "type": "message",
+   "chat": "c09",
+   "sender_slot": 2,
+   "text": "Genau, Jugendschutz muss Priorität vor dem Profit haben. Ohne klare Altersgrenzen und strikte Regeln wird sich die Stimmung auf den Plattformen nie nachhaltig bessern.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 30306,
+   "type": "message",
+   "chat": "c00",
+   "sender_slot": 0,
+   "text": "Quatsch, es geht um Kuration. Der BGH hat im Urteil VI ZR 1242/20 klar Grenzen gesetzt – wer Inhalte aktiv verbreitet, trägt Verantwortung für den Schaden.",
+   "warm": false,
+   "heat": "high"
+  },
+  {
+   "t": 30408,
+   "type": "message",
+   "chat": "c00",
+   "sender_slot": 3,
+   "text": "Paragraphen retten uns nicht vor Zensur. Nur Richter dürfen über Legalität entscheiden, keine Algorithmen von Konzernen oder staatliche Aufseher.",
+   "warm": false,
+   "heat": "high"
+  },
+  {
+   "t": 30559,
+   "type": "message",
+   "chat": "c00",
+   "sender_slot": 0,
+   "text": "Aber genau diese Konzerne entscheiden doch jetzt schon, was wir sehen, nur eben ohne jede rechtliche Konsequenz für die Folgen.",
+   "warm": true,
+   "heat": "high"
+  },
+  {
+   "t": 30834,
+   "type": "rating",
+   "chat": "c00",
+   "from_slot": 3,
+   "to_slot": 0,
+   "respect": 81,
+   "disagreement": 100,
+   "bridge": true
+  },
+  {
+   "t": 30926,
+   "type": "rating",
+   "chat": "c00",
+   "from_slot": 0,
+   "to_slot": 3,
+   "respect": 9,
+   "disagreement": 98,
+   "bridge": false
+  },
+  {
+   "t": 31103,
+   "type": "rating",
+   "chat": "c09",
+   "from_slot": 2,
+   "to_slot": 26,
+   "respect": 62,
+   "disagreement": 37,
+   "bridge": false
+  },
+  {
+   "t": 33444,
+   "type": "opinion",
+   "slot": 31,
+   "text": "Mein Sohn hängt fünf Stunden täglich am Handy. Da helfen keine Appelle — die Plattformen müssen Nutzungsgrenzen einbauen."
+  },
+  {
+   "t": 33912,
+   "type": "opinion",
+   "slot": 16,
+   "text": "Viele Jugendliche rutschen in extremistische Gruppen. Plattformen müssen Empfehlungssysteme für Minderjährige abschalten."
+  },
+  {
+   "t": 34314,
+   "type": "rating",
+   "chat": "c09",
+   "from_slot": 26,
+   "to_slot": 2,
+   "respect": 77,
+   "disagreement": 42,
+   "bridge": false
+  },
+  {
+   "t": 35520,
+   "type": "message",
+   "chat": "c00",
+   "sender_slot": 3,
+   "text": "Stimmt, sie entscheiden willkürlich, aber deine Lösung gibt dem Staat das Zepter für die totale Inhaltskontrolle. Das ist noch gefährlicher.",
+   "warm": true,
+   "heat": "high"
+  },
+  {
+   "t": 35520,
+   "type": "message",
+   "chat": "c15",
+   "sender_slot": 8,
+   "text": "Aber wenn du für alles einen 'Führerschein' willst, müssen sich alle ausweisen. Eine Altersverifizierung für jeden Klick ist ein absoluter Datenschutz-Albtraum und gefährdet die Anonymität.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 35637,
+   "type": "message",
+   "chat": "c00",
+   "sender_slot": 0,
+   "text": "Rechtssicherheit ist keine Willkür. Ohne Haftung bleibt Social Media eine Jauchegrube, die unsere Gesellschaft zersetzt.",
+   "warm": false,
+   "heat": "high"
+  },
+  {
+   "t": 35833,
+   "type": "message",
+   "chat": "c00",
+   "sender_slot": 3,
+   "text": "Und mit deiner Haftung wird es ein steriler Werbekatalog ohne echte Debatten. Wir werden uns da wohl nie einig.",
+   "warm": false,
+   "heat": "high"
+  },
+  {
+   "t": 35892,
+   "type": "rating",
+   "chat": "c00",
+   "from_slot": 3,
+   "to_slot": 0,
+   "respect": 86,
+   "disagreement": 91,
+   "bridge": true
+  },
+  {
+   "t": 36067,
+   "type": "rating",
+   "chat": "c00",
+   "from_slot": 0,
+   "to_slot": 3,
+   "respect": 82,
+   "disagreement": 100,
+   "bridge": true
+  },
+  {
+   "t": 38866,
+   "type": "chat_open",
+   "chat": "c17",
+   "from_slot": 0,
+   "to_slot": 31,
+   "moment": "organic"
+  },
+  {
+   "t": 38966,
+   "type": "chat_open",
+   "chat": "c13",
+   "from_slot": 31,
+   "to_slot": 3,
+   "moment": "organic"
+  },
+  {
+   "t": 39019,
+   "type": "message",
+   "chat": "c17",
+   "sender_slot": 0,
+   "text": "Das Problem ist die Haftungsprivilegierung. Plattformen müssen endlich wie Verlage für das haften, was sie per Algorithmus auf die 'Titelseite' pushen, statt sich hinter dem Provider-Privileg zu verstecken.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 39070,
+   "type": "message",
+   "chat": "c13",
+   "sender_slot": 31,
+   "text": "Mein Junge klebt 5 Stunden am Tag an diesem Ding, das ist doch krank. Die Plattformen müssen da Riegel vorschieben, sonst verblödet die Jugend total.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 39189,
+   "type": "message",
+   "chat": "c17",
+   "sender_slot": 31,
+   "text": "Rechtlich hast du sicher recht, aber mein Sohn scrollt trotzdem 5 Stunden am Tag Müll. Die Dinger müssten einfach ne eingebaute Sperre haben, wenn man zu lang drauf ist.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 39790,
+   "type": "chat_open",
+   "chat": "c11",
+   "from_slot": 30,
+   "to_slot": 4,
+   "moment": "organic"
+  },
+  {
+   "t": 39997,
+   "type": "message",
+   "chat": "c11",
+   "sender_slot": 30,
+   "text": "Hast du die neue Doku über Algorithmen gesehen? Da fragt man sich echt, ob wir die Kids überhaupt noch erreichen.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 41953,
+   "type": "chat_open",
+   "chat": "c14",
+   "from_slot": 25,
+   "to_slot": 31,
+   "moment": "organic"
+  },
+  {
+   "t": 42036,
+   "type": "message",
+   "chat": "c14",
+   "sender_slot": 25,
+   "text": "Jetzt wird wieder nach dem Staat gerufen, nur weil die Kids auf Tiktok hängen. Das ist die gleiche Moralpanik wie damals bei Rock n Roll oder Killerspielen.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 43050,
+   "type": "chat_open",
+   "chat": "c23",
+   "from_slot": 23,
+   "to_slot": 30,
+   "moment": "organic"
+  },
+  {
+   "t": 43117,
+   "type": "message",
+   "chat": "c23",
+   "sender_slot": 23,
+   "text": "Solange wir nur auf die Plattformen aus den USA setzen, wird sich an dem Tonfall nichts ändern. Die verdienen ja an der Wut der Leute ihr Geld.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 44152,
+   "type": "message",
+   "chat": "c15",
+   "sender_slot": 27,
+   "text": "Verstehe das Risiko mit den Daten schon, aber aktuell herrscht da einfach Anarchie. Wer Millionen Leute erreicht, muss halt auch wie ein Busunternehmer Verantwortung übernehmen, sonst wird der Ton nie besser.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 44521,
+   "type": "rating",
+   "chat": "c15",
+   "from_slot": 27,
+   "to_slot": 8,
+   "respect": 26,
+   "disagreement": 63,
+   "bridge": false
+  },
+  {
+   "t": 44567,
+   "type": "rating",
+   "chat": "c15",
+   "from_slot": 8,
+   "to_slot": 27,
+   "respect": 86,
+   "disagreement": 73,
+   "bridge": true
+  },
+  {
+   "t": 45090,
+   "type": "message",
+   "chat": "c11",
+   "sender_slot": 4,
+   "text": "Leider ja. In den Verhandlungen merke ich aber, dass Einsicht zu spät kommt. Die Plattformen müssten rechtlich viel härter in die Pflicht genommen werden, wenn was gemeldet wird.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 46005,
+   "type": "opinion",
+   "slot": 19,
+   "text": "Leseförderung statt Bildschirmzeit. Der Staat sollte in Bibliotheken investieren statt immer mehr Regeln fürs Netz zu schreiben."
+  },
+  {
+   "t": 48685,
+   "type": "message",
+   "chat": "c13",
+   "sender_slot": 3,
+   "text": "Wenn du Konzerne zwingst alles zu begrenzen, entscheiden die bald auch was wir denken dürfen. Nur Gerichte sollten bestimmen was weg kommt, nicht Algorithmen.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 48825,
+   "type": "message",
+   "chat": "c11",
+   "sender_slot": 30,
+   "text": "Stimmt schon, Fristen für Löschungen sind wichtig. Aber ich glaub, wir setzen zu spät an, wenn wir nur auf Regulierung warten statt Medienkompetenz fest im Lehrplan zu verankern.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 50961,
+   "type": "message",
+   "chat": "c23",
+   "sender_slot": 30,
+   "text": "Da hast du recht, die Algorithmen pushen oft das Negative. Aber meinst du wirklich, dass eine europäische App das Problem allein durch Regeln löst?",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 52388,
+   "type": "message",
+   "chat": "c11",
+   "sender_slot": 4,
+   "text": "Prävention ist super wichtig, da gebe ich dir absolut recht. Nur nützt das beste Training nichts, wenn die Apps psychologische Tricks nutzen, gegen die man kaum ankommt.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 53141,
+   "type": "message",
+   "chat": "c11",
+   "sender_slot": 30,
+   "text": "Vielleicht ist das der Punkt: Wir müssen ihnen beibringen, diese Mechanismen zu durchschauen, damit sie gar nicht erst zu Opfern oder Tätern werden.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 53186,
+   "type": "message",
+   "chat": "c17",
+   "sender_slot": 0,
+   "text": "Technisches Limit klingt vernünftig, wobei ich glaube, dass Algorithmus-Kontrolle da die Wurzel packt. Wenn der Feed nicht mehr süchtig machend sortiert ist, sinkt die Zeit automatisch.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 53629,
+   "type": "message",
+   "chat": "c13",
+   "sender_slot": 31,
+   "text": "Mag sein, aber Freiheit ohne Schutz ist für Kinder nur Chaos. Wenn der Kiosk Schnaps an 12-Jährige verkauft, schreit ja auch jeder nach dem Gesetz.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 53885,
+   "type": "message",
+   "chat": "c13",
+   "sender_slot": 3,
+   "text": "Der Jugendschutz-Vergleich leuchtet ein, das ist ein wichtiger Punkt. Aber wir müssen aufpassen, dass der Staat nicht überreguliert und am Ende alles zensiert wird.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 54136,
+   "type": "rating",
+   "chat": "c13",
+   "from_slot": 3,
+   "to_slot": 31,
+   "respect": 89,
+   "disagreement": 66,
+   "bridge": true
+  },
+  {
+   "t": 54187,
+   "type": "rating",
+   "chat": "c13",
+   "from_slot": 31,
+   "to_slot": 3,
+   "respect": 36,
+   "disagreement": 72,
+   "bridge": false
+  },
+  {
+   "t": 54502,
+   "type": "message",
+   "chat": "c13",
+   "sender_slot": 31,
+   "text": "Stimmt, die Balance ist schwer. Aber irgendeine Grenze brauchen wir, sonst fressen die Apps uns und unsere Kids einfach auf.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 54828,
+   "type": "rating",
+   "chat": "c13",
+   "from_slot": 3,
+   "to_slot": 31,
+   "respect": 88,
+   "disagreement": 77,
+   "bridge": true
+  },
+  {
+   "t": 54851,
+   "type": "rating",
+   "chat": "c13",
+   "from_slot": 31,
+   "to_slot": 3,
+   "respect": 81,
+   "disagreement": 65,
+   "bridge": true
+  },
+  {
+   "t": 55455,
+   "type": "message",
+   "chat": "c15",
+   "sender_slot": 8,
+   "text": "Stimmt, die Betreiber machen es sich zu leicht und kassieren nur ab. Aber wir dürfen nicht die Privatsphäre opfern, nur um ein paar Trolle zu bändigen.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 57496,
+   "type": "opinion",
+   "slot": 7,
+   "text": "Desinformation ist ein Geschäftsmodell. Wer davon profitiert, muss zahlen: Werbesperren für wiederholte Falschmeldungen."
+  },
+  {
+   "t": 58317,
+   "type": "opinion",
+   "slot": 13,
+   "text": "Wer entscheidet, was Desinformation ist? Zentrale Wahrheitswächter sind gefährlicher als das Chaos, das sie bekämpfen sollen."
+  },
+  {
+   "t": 58586,
+   "type": "opinion",
+   "slot": 17,
+   "text": "Der digitale Markt funktioniert nicht, weil Nutzer das Produkt sind. Wettbewerb durch Interoperabilität schlägt jede Inhaltsregulierung."
+  },
+  {
+   "t": 59034,
+   "type": "opinion",
+   "slot": 28,
+   "text": "Plattformen sind der neue öffentliche Raum. Der gehört uns allen — also demokratische Mitbestimmung bei den Regeln statt Konzernwillkür."
+  },
+  {
+   "t": 59074,
+   "type": "chat_open",
+   "chat": "c01",
+   "from_slot": 2,
+   "to_slot": 5,
+   "moment": "clash"
+  },
+  {
+   "t": 59218,
+   "type": "message",
+   "chat": "c01",
+   "sender_slot": 2,
+   "text": "Ehrlich Ben, ich seh das jeden Tag in der Schule. Wir brauchen endlich harte Altersgrenzen und ein Werbeverbot unter 16, damit Kinder nicht mehr bloß als Geschäftsmodell missbraucht werden.",
+   "warm": false,
+   "heat": "high"
+  },
+  {
+   "t": 59349,
+   "type": "message",
+   "chat": "c01",
+   "sender_slot": 5,
+   "text": "Ich verstehe deine Sorge um die Kids total, aber solche Verbote killen jede Innovation. Wenn wir alles totregulieren, überlassen wir das Feld komplett den US-Giganten, weil kein Startup die Compliance-Kosten stemmen kann.",
+   "warm": true,
+   "heat": "high"
+  },
+  {
+   "t": 59397,
+   "type": "message",
+   "chat": "c14",
+   "sender_slot": 31,
+   "text": "Rockmusik hat meinen Sohn aber nicht fünf Stunden am Tag in eine Starre versetzt. Der Algorithmus ist wie eine Droge, da ziehen Appelle an die Vernunft nicht mehr.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 59529,
+   "type": "message",
+   "chat": "c01",
+   "sender_slot": 2,
+   "text": "Es ist mir egal, ob ein Startup pleite geht, wenn der Preis dafür die psychische Gesundheit einer ganzen Generation ist. Ihr opfert unsere Kinder eiskalt für eure Werbegelder und nennt es dann Fortschritt.",
+   "warm": false,
+   "heat": "high"
+  },
+  {
+   "t": 59655,
+   "type": "message",
+   "chat": "c01",
+   "sender_slot": 5,
+   "text": "Das ist doch populistisch, Selin. Mit deiner Bürokratie vernichtest du die europäische Zukunft und sorgst am Ende nur dafür, dass die Großen ihr Monopol behalten, weil nur die sich die Anwälte leisten können.",
+   "warm": false,
+   "heat": "high"
+  },
+  {
+   "t": 59715,
+   "type": "opinion",
+   "slot": 18,
+   "text": "Ich habe jahrelang gelöscht, was ihr nie seht. Die Arbeitsbedingungen der Moderatoren gehören in jedes Regulierungsgesetz."
+  },
+  {
+   "t": 59762,
+   "type": "message",
+   "chat": "c23",
+   "sender_slot": 23,
+   "text": "Zumindest könnten wir dort unsere eigenen Datenschutzstandards und Debattenregeln durchsetzen, ohne dass ein Konzernchef in Kalifornien dazwischenfunkt.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 59764,
+   "type": "message",
+   "chat": "c01",
+   "sender_slot": 2,
+   "text": "Vielleicht hast du recht, dass die Kleinen es schwerer haben, aber das darf keine Ausrede sein. Kinderschutz muss das Fundament sein, nicht ein optionales Feature, das man sich leisten können muss.",
+   "warm": true,
+   "heat": "high"
+  },
+  {
+   "t": 59789,
+   "type": "rating",
+   "chat": "c01",
+   "from_slot": 5,
+   "to_slot": 2,
+   "respect": 16,
+   "disagreement": 70,
+   "bridge": false
+  },
+  {
+   "t": 60058,
+   "type": "rating",
+   "chat": "c01",
+   "from_slot": 2,
+   "to_slot": 5,
+   "respect": 86,
+   "disagreement": 65,
+   "bridge": true
+  },
+  {
+   "t": 60538,
+   "type": "chat_open",
+   "chat": "c24",
+   "from_slot": 19,
+   "to_slot": 5,
+   "moment": "organic"
+  },
+  {
+   "t": 60588,
+   "type": "message",
+   "chat": "c24",
+   "sender_slot": 19,
+   "text": "Finde diese ganze Debatte über Netz-Regeln ermüdend. Wäre es nicht klüger, das Geld direkt in echte Orte wie Bibliotheken zu stecken, damit die Leute mal vom Handy wegkommen?",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 63371,
+   "type": "chat_open",
+   "chat": "c22",
+   "from_slot": 4,
+   "to_slot": 13,
+   "moment": "organic"
+  },
+  {
+   "t": 63471,
+   "type": "opinion",
+   "slot": 33,
+   "text": "Auf dem Land brauchen wir die Netzwerke für Direktvermarktung. Mehr Regeln treffen auch kleine Betriebe wie meinen."
+  },
+  {
+   "t": 63590,
+   "type": "message",
+   "chat": "c22",
+   "sender_slot": 4,
+   "text": "Ich hatte heute wieder einen Fall von schwerem Cybermobbing auf dem Tisch, das ist echt nicht mehr feierlich. Die Plattformen müssten endlich gesetzlich dazu verpflichtet werden, gemeldete Sachen innerhalb von Stunden zu löschen.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 63983,
+   "type": "message",
+   "chat": "c15",
+   "sender_slot": 27,
+   "text": "Vielleicht braucht es keine Klarnamenpflicht, aber zumindest technische Schranken, die Hetze bremsen bevor sie viral geht. Wie Leitplanken, die verhindern dass man im Graben landet.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 64400,
+   "type": "message",
+   "chat": "c01",
+   "sender_slot": 5,
+   "text": "Aber wenn du die Hürden so extrem hoch ansetzt, wird es nie eine bessere, europäische Alternative geben. Du zwingst die Jugendlichen damit quasi in die Arme von TikTok und Co, weil nichts Neues nachkommen darf.",
+   "warm": false,
+   "heat": "high"
+  },
+  {
+   "t": 64576,
+   "type": "message",
+   "chat": "c17",
+   "sender_slot": 31,
+   "text": "Kombination wäre wohl das beste. Weniger Schrott durch deine Gesetze und ne harte Zeitgrenze, damit die Kids wieder öfter draußen sind.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 64614,
+   "type": "message",
+   "chat": "c01",
+   "sender_slot": 2,
+   "text": "Dann müssen wir eben staatliche Anreize für sichere Technik schaffen, statt Profit über Schutz zu stellen. Ich lasse nicht locker, meine Schüler sind keine Testobjekte für eure Wachstumsphantasien.",
+   "warm": false,
+   "heat": "high"
+  },
+  {
+   "t": 64645,
+   "type": "rating",
+   "chat": "c01",
+   "from_slot": 5,
+   "to_slot": 2,
+   "respect": 94,
+   "disagreement": 78,
+   "bridge": true
+  },
+  {
+   "t": 64989,
+   "type": "rating",
+   "chat": "c01",
+   "from_slot": 2,
+   "to_slot": 5,
+   "respect": 81,
+   "disagreement": 69,
+   "bridge": true
+  },
+  {
+   "t": 66295,
+   "type": "opinion",
+   "slot": 20,
+   "text": "Upload-Filter und automatische Löschung treffen immer die Falschen. Gerichte müssen entscheiden, nicht Maschinen."
+  },
+  {
+   "t": 67676,
+   "type": "message",
+   "chat": "c22",
+   "sender_slot": 13,
+   "text": "Verstehe den Frust total, aber wer zieht da die Grenze bei der Moderation? Ich sehe das Problem, dass starre Löschfristen am Ende zur Zensur führen, weil die Konzerne lieber zu viel als zu wenig entfernen.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 68124,
+   "type": "rating",
+   "chat": "c17",
+   "from_slot": 31,
+   "to_slot": 0,
+   "respect": 56,
+   "disagreement": 37,
+   "bridge": false
+  },
+  {
+   "t": 68268,
+   "type": "opinion",
+   "slot": 14,
+   "text": "Der Algorithmus belohnt Empörung. Plattformen sollten verpflichtet werden, auch chronologische Feeds anzubieten."
+  },
+  {
+   "t": 68461,
+   "type": "message",
+   "chat": "c22",
+   "sender_slot": 4,
+   "text": "Lieber wird ein Kommentar zu viel gelöscht als dass sich Jugendliche wegen systematischer Hetze das Leben nehmen. Freiwillige Selbstverpflichtungen bringen bei diesen Summen einfach gar nichts.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 68745,
+   "type": "message",
+   "chat": "c11",
+   "sender_slot": 4,
+   "text": "Guter Ansatz, aber ohne echte Konsequenzen für die Betreiber bleibt es ein Kampf gegen Windmühlen. Ich hab hier Fälle, da wurde trotz Meldung tagelang nichts gelöscht.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 68773,
+   "type": "message",
+   "chat": "c24",
+   "sender_slot": 5,
+   "text": "Verstehe den Punkt mit den Bibliotheken total, das ist wichtig für die Bildung. Aber neue Gesetze machen Social Media nicht besser, sondern killen nur die kleinen Startups, die es anders machen wollen.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 69353,
+   "type": "message",
+   "chat": "c24",
+   "sender_slot": 19,
+   "text": "Da hast du wahrscheinlich recht, dass zu viel Bürokratie nur den Riesen wie Meta hilft. Aber solange der Algorithmus nur auf Krawall gebürstet ist, bringt uns Technik allein auch nicht weiter.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 69642,
+   "type": "message",
+   "chat": "c24",
+   "sender_slot": 5,
+   "text": "Genau das ist das Problem, wir brauchen Wettbewerb für bessere Algorithmen. Wenn der Staat alles reguliert, traut sich kein Gründer mehr an neue Konzepte ran, die positiver wären.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 70430,
+   "type": "message",
+   "chat": "c24",
+   "sender_slot": 19,
+   "text": "Stimmt, Innovation bei den Plattformen selbst wäre besser als nur Verbote von oben. Trotzdem bleibe ich dabei, dass wir analoge Gegenpole brauchen, damit das Netz nicht unser ganzes Leben bestimmt.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 70444,
+   "type": "chat_open",
+   "chat": "c08",
+   "from_slot": 7,
+   "to_slot": 32,
+   "moment": "organic"
+  },
+  {
+   "t": 70562,
+   "type": "message",
+   "chat": "c08",
+   "sender_slot": 7,
+   "text": "Social Media ist aktuell doch nur eine Gelddruckmaschine für Desinformation. Wir müssen da ansetzen, wo es wehtut: Werbesperren für Kanäle, die systematisch Lügen verbreiten.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 70700,
+   "type": "message",
+   "chat": "c08",
+   "sender_slot": 32,
+   "text": "Das klingt in der Theorie gut, aber wer definiert die Lüge? Das NetzDG hat ja schon gezeigt, dass Plattformen aus Angst vor Strafen lieber zu viel löschen als zu wenig.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 70796,
+   "type": "message",
+   "chat": "c23",
+   "sender_slot": 30,
+   "text": "Stimmt schon, Eigenständigkeit wäre gut. Aber ich sehe an der Schule täglich, dass die Kids gar nicht wissen, wie man respektvoll diskutiert, egal auf welcher Seite.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 71715,
+   "type": "message",
+   "chat": "c11",
+   "sender_slot": 30,
+   "text": "Das ist natürlich krass und da sehe ich deine Seite total. Die Mischung machts wohl: Straffe Gesetze für die Firmen und Resilienztraining für die Schüler.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 71937,
+   "type": "rating",
+   "chat": "c17",
+   "from_slot": 0,
+   "to_slot": 31,
+   "respect": 77,
+   "disagreement": 38,
+   "bridge": false
+  },
+  {
+   "t": 71946,
+   "type": "message",
+   "chat": "c15",
+   "sender_slot": 8,
+   "text": "Leitplanken bei den Algorithmen klingen sinnvoller als die Nutzer komplett zu durchleuchten. Da könnten wir uns vielleicht einig werden.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 72272,
+   "type": "rating",
+   "chat": "c15",
+   "from_slot": 27,
+   "to_slot": 8,
+   "respect": 84,
+   "disagreement": 71,
+   "bridge": true
+  },
+  {
+   "t": 72383,
+   "type": "rating",
+   "chat": "c15",
+   "from_slot": 8,
+   "to_slot": 27,
+   "respect": 85,
+   "disagreement": 66,
+   "bridge": true
+  },
+  {
+   "t": 72605,
+   "type": "message",
+   "chat": "c11",
+   "sender_slot": 4,
+   "text": "Genau, die Kombination wäre ideal. Wenn wir beides hinkriegen, könnte das Netz wieder ein sicherere Ort für die Jugendlichen werden.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 73623,
+   "type": "message",
+   "chat": "c22",
+   "sender_slot": 13,
+   "text": "Aber geben wir damit nicht die Deutungshoheit über Wahrheit und Anstand an intransparente Algorithmen ab? Eine zentrale Instanz, die entscheidet, was gelöscht wird, macht mir philosophisch echt Bauchschmerzen.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 73782,
+   "type": "chat_open",
+   "chat": "c12",
+   "from_slot": 28,
+   "to_slot": 18,
+   "moment": "organic"
+  },
+  {
+   "t": 73879,
+   "type": "message",
+   "chat": "c12",
+   "sender_slot": 28,
+   "text": "Ehrlich gesagt nervt es nur noch. Wir müssen Social Media endlich als öffentlichen Raum behandeln, wo wir die Regeln demokratisch bestimmen und nicht Musk oder Zuckerberg.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 74173,
+   "type": "message",
+   "chat": "c22",
+   "sender_slot": 4,
+   "text": "Es geht nicht um Philosophie, sondern um strafbare Inhalte wie Beleidigungen und Drohungen, die einfach stehen bleiben. Der Rechtsstaat muss auch digital durchgesetzt werden können, ohne Wenn und Aber.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 74190,
+   "type": "rating",
+   "chat": "c11",
+   "from_slot": 4,
+   "to_slot": 30,
+   "respect": 69,
+   "disagreement": 39,
+   "bridge": false
+  },
+  {
+   "t": 74272,
+   "type": "rating",
+   "chat": "c22",
+   "from_slot": 4,
+   "to_slot": 13,
+   "respect": 91,
+   "disagreement": 97,
+   "bridge": true
+  },
+  {
+   "t": 74408,
+   "type": "rating",
+   "chat": "c22",
+   "from_slot": 13,
+   "to_slot": 4,
+   "respect": 32,
+   "disagreement": 100,
+   "bridge": false
+  },
+  {
+   "t": 74976,
+   "type": "message",
+   "chat": "c22",
+   "sender_slot": 13,
+   "text": "Da hast du recht, Straftaten müssen verfolgt werden, da stimme ich dir voll zu. Aber oft ist die Grenze zwischen Meinung und Hetze im Netz so schwammig, dass wir aufpassen müssen, den Diskurs nicht abzuwürgen.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 75085,
+   "type": "opinion",
+   "slot": 12,
+   "text": "Lokaler Journalismus stirbt, während Plattformen die Werbegelder abschöpfen. Eine Plattformabgabe für Medienförderung wäre fair."
+  },
+  {
+   "t": 77238,
+   "type": "message",
+   "chat": "c14",
+   "sender_slot": 25,
+   "text": "Trotzdem sind Algorithmen kein Grund für Zensur oder staatliche Sperren. Freiheit bedeutet eben auch das Risiko, seine Zeit mit Müll zu verschwenden.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 77272,
+   "type": "rating",
+   "chat": "c11",
+   "from_slot": 30,
+   "to_slot": 4,
+   "respect": 94,
+   "disagreement": 37,
+   "bridge": false
+  },
+  {
+   "t": 82734,
+   "type": "message",
+   "chat": "c22",
+   "sender_slot": 4,
+   "text": "Vielleicht braucht es spezialisierte Digital-Gerichte statt privater Prüfer, damit die Entscheidung wenigstens rechtsstaatlich bleibt. Aber so wie es jetzt ist, mit diesem rechtsfreien Raum, kann es nicht weitergehen.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 82797,
+   "type": "message",
+   "chat": "c12",
+   "sender_slot": 18,
+   "text": "Klingt in der Theorie gut, aber wer setzt das um? Ich saß jahrelang in der Moderation und hab Dinge gesehen, die kein Algorithmus oder Bürgerat einfach so löst.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 82851,
+   "type": "message",
+   "chat": "c23",
+   "sender_slot": 23,
+   "text": "Das ist wohl der Punkt, die Erziehung kommt da kaum noch hinterher bei dem Tempo.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 83488,
+   "type": "message",
+   "chat": "c12",
+   "sender_slot": 28,
+   "text": "Aber genau das ist der Punkt, die Konzerne lassen euch mit dem Müll allein. Wenn wir Mitbestimmung hätten, könnten wir Transparenz bei den Löschregeln erzwingen.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 83699,
+   "type": "chat_open",
+   "chat": "c20",
+   "from_slot": 3,
+   "to_slot": 12,
+   "moment": "organic"
+  },
+  {
+   "t": 83756,
+   "type": "message",
+   "chat": "c20",
+   "sender_slot": 3,
+   "text": "Social Media wird erst besser, wenn die Algorithmen nicht mehr entscheiden, was legal ist. Nur Gerichte dürfen löschen, sonst landen wir in der totalen Zensur durch US-Konzerne.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 83833,
+   "type": "message",
+   "chat": "c24",
+   "sender_slot": 5,
+   "text": "Absolut, die Mischung machts. Weniger Überwachung durch den Staat, dafür mehr Raum für echte Kultur und frische Ideen im Digitalen.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 84249,
+   "type": "message",
+   "chat": "c12",
+   "sender_slot": 18,
+   "text": "Transparenz bringt nichts ohne Schutz. Jedes Regulierungsgesetz ist wertlos, wenn die Arbeitsbedingungen derer, die den Dreck wegäumen, nicht festgeschrieben werden.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 84489,
+   "type": "rating",
+   "chat": "c12",
+   "from_slot": 28,
+   "to_slot": 18,
+   "respect": 28,
+   "disagreement": 70,
+   "bridge": false
+  },
+  {
+   "t": 84750,
+   "type": "rating",
+   "chat": "c12",
+   "from_slot": 18,
+   "to_slot": 28,
+   "respect": 36,
+   "disagreement": 78,
+   "bridge": false
+  },
+  {
+   "t": 85678,
+   "type": "message",
+   "chat": "c08",
+   "sender_slot": 7,
+   "text": "Das Argument der Zensur kommt immer, aber wir reden hier von offensichtlichen Fakes, die Klicks generieren. Wenn das Geschäftsmodell nicht mehr zieht, reguliert sich der Content von selbst.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 86056,
+   "type": "rating",
+   "chat": "c24",
+   "from_slot": 19,
+   "to_slot": 5,
+   "respect": 73,
+   "disagreement": 46,
+   "bridge": false
+  },
+  {
+   "t": 86618,
+   "type": "message",
+   "chat": "c22",
+   "sender_slot": 13,
+   "text": "Ein staatliches Verfahren statt Willkür der Tech-Giganten klingt nach einem vernünftigen Kompromiss. So bleibt die Verantwortung beim Recht und nicht bei gewinnorientierten Filtern.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 86759,
+   "type": "rating",
+   "chat": "c24",
+   "from_slot": 5,
+   "to_slot": 19,
+   "respect": 75,
+   "disagreement": 41,
+   "bridge": false
+  },
+  {
+   "t": 86884,
+   "type": "rating",
+   "chat": "c22",
+   "from_slot": 4,
+   "to_slot": 13,
+   "respect": 100,
+   "disagreement": 100,
+   "bridge": true
+  },
+  {
+   "t": 86950,
+   "type": "rating",
+   "chat": "c22",
+   "from_slot": 13,
+   "to_slot": 4,
+   "respect": 83,
+   "disagreement": 94,
+   "bridge": true
+  },
+  {
+   "t": 88904,
+   "type": "chat_open",
+   "chat": "c02",
+   "from_slot": 18,
+   "to_slot": 3,
+   "moment": "shock"
+  },
+  {
+   "t": 89074,
+   "type": "message",
+   "chat": "c02",
+   "sender_slot": 18,
+   "text": "Wenn Social Media besser werden soll, müssen wir endlich über die Leute reden, die den Müll wegräumen. Ohne harte Moderation versinkt alles in Gewalt.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 90334,
+   "type": "message",
+   "chat": "c20",
+   "sender_slot": 12,
+   "text": "Freiheit bringt halt wenig, wenn die Plattformen den lokalen Journalismus finanziell aushungern. Wir brauchen eine Abgabe für Medienvielfalt, damit wieder Fakten statt nur Geschrei verbreitet werden.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 91033,
+   "type": "message",
+   "chat": "c14",
+   "sender_slot": 31,
+   "text": "Du hast recht, Freiheit ist wichtig, aber Konzerne nutzen die Psyche von Kindern gezielt aus. Eine verpflichtende Zeitbegrenzung ab Werk wäre nur fairer Jugendschutz.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 91155,
+   "type": "rating",
+   "chat": "c14",
+   "from_slot": 25,
+   "to_slot": 31,
+   "respect": 93,
+   "disagreement": 67,
+   "bridge": true
+  },
+  {
+   "t": 91599,
+   "type": "rating",
+   "chat": "c14",
+   "from_slot": 31,
+   "to_slot": 25,
+   "respect": 36,
+   "disagreement": 71,
+   "bridge": false
+  },
+  {
+   "t": 91821,
+   "type": "message",
+   "chat": "c02",
+   "sender_slot": 3,
+   "text": "Ich seh das kritisch, Olga. Sobald wir Plattformen zwingen zu filtern, zensieren Konzerne aus Angst alles weg, was politisch unbequem ist.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 92063,
+   "type": "message",
+   "chat": "c02",
+   "sender_slot": 18,
+   "text": "Es geht nicht nur um Politik, sondern um Enthauptungen und Kindesmissbrauch, die ich mir acht Stunden am Tag für Mindestlohn ansehen musste.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 94318,
+   "type": "chat_open",
+   "chat": "c03",
+   "from_slot": 18,
+   "to_slot": 7,
+   "moment": "shock"
+  },
+  {
+   "t": 94471,
+   "type": "message",
+   "chat": "c03",
+   "sender_slot": 18,
+   "text": "ich glaub wir reden zu viel über algorithmen und zu wenig über die leute die den dreck täglich händisch sortieren müssen.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 95260,
+   "type": "message",
+   "chat": "c23",
+   "sender_slot": 30,
+   "text": "Genau, wir brauchen Medienkompetenz als festes Fach. Wenn die Leute lernen, Manipulation zu erkennen, laufen auch die Algorithmen ins Leere.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 95770,
+   "type": "message",
+   "chat": "c12",
+   "sender_slot": 28,
+   "text": "Da hast du absolut recht, die Menschen hinter den Filtern werden total vergessen. Das muss Teil einer demokratischen Kontrolle sein, statt nur auf Profite zu schauen.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 95961,
+   "type": "message",
+   "chat": "c12",
+   "sender_slot": 18,
+   "text": "Schön, dass du das so siehst. Ohne psychologische Betreuung und faire Quoten wird keine Plattform jemals ein gesunder Ort, egal wer die Regeln schreibt.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 96240,
+   "type": "message",
+   "chat": "c02",
+   "sender_slot": 3,
+   "text": "Das ist natürlich heftig, aber staatliche Regulierung macht die Algorithmen auch nicht klüger, sondern nur die Zensur willkürlicher.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 97856,
+   "type": "message",
+   "chat": "c03",
+   "sender_slot": 7,
+   "text": "naja solange desinformation ein geschäftsmodell ist wird sich nichts ändern. man muss den profiteuren die werbegelder entziehen.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 98631,
+   "type": "message",
+   "chat": "c12",
+   "sender_slot": 28,
+   "text": "Vielleicht ist das der Weg: Politische Mitbestimmung für die User und gleichzeitig harte Arbeitsrechte für euch. Wäre zumindest ein Anfang.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 98708,
+   "type": "rating",
+   "chat": "c12",
+   "from_slot": 18,
+   "to_slot": 28,
+   "respect": 91,
+   "disagreement": 69,
+   "bridge": true
+  },
+  {
+   "t": 98739,
+   "type": "rating",
+   "chat": "c12",
+   "from_slot": 28,
+   "to_slot": 18,
+   "respect": 87,
+   "disagreement": 78,
+   "bridge": true
+  },
+  {
+   "t": 99806,
+   "type": "message",
+   "chat": "c14",
+   "sender_slot": 25,
+   "text": "Ich verstehe deine Sorge um den Kleinen, das ist ja legitim. Aber die Verantwortung muss bei euch Eltern bleiben, nicht bei irgendeiner Behörde.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 99808,
+   "type": "message",
+   "chat": "c20",
+   "sender_slot": 3,
+   "text": "Noch mehr Abgaben stärken doch nur den Staatsfunk, das löst das Problem der Filterblasen gar nicht. Aber ich geb dir recht, dass die Monopolstellung beim Werbegeld der Qualität massiv schadet.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 99839,
+   "type": "rating",
+   "chat": "c20",
+   "from_slot": 12,
+   "to_slot": 3,
+   "respect": 76,
+   "disagreement": 95,
+   "bridge": true
+  },
+  {
+   "t": 100306,
+   "type": "rating",
+   "chat": "c20",
+   "from_slot": 3,
+   "to_slot": 12,
+   "respect": 38,
+   "disagreement": 93,
+   "bridge": false
+  },
+  {
+   "t": 103663,
+   "type": "message",
+   "chat": "c08",
+   "sender_slot": 32,
+   "text": "Ich verstehe deinen Punkt beim Profit, aber ohne starke Beschwerdemechanismen für fälschlich gelöschte Inhalte zerstören wir die Diskursfreiheit.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 103707,
+   "type": "rating",
+   "chat": "c08",
+   "from_slot": 7,
+   "to_slot": 32,
+   "respect": 79,
+   "disagreement": 93,
+   "bridge": true
+  },
+  {
+   "t": 103954,
+   "type": "rating",
+   "chat": "c08",
+   "from_slot": 32,
+   "to_slot": 7,
+   "respect": 35,
+   "disagreement": 100,
+   "bridge": false
+  },
+  {
+   "t": 104861,
+   "type": "message",
+   "chat": "c02",
+   "sender_slot": 18,
+   "text": "Ich habe heute noch Panikattacken wegen der Videos und die Firmen haben uns ohne Therapie einfach weggeworfen, als wir psychisch am Ende waren.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 104912,
+   "type": "rating",
+   "chat": "c02",
+   "from_slot": 18,
+   "to_slot": 3,
+   "respect": 27,
+   "disagreement": 91,
+   "bridge": false
+  },
+  {
+   "t": 104996,
+   "type": "rating",
+   "chat": "c02",
+   "from_slot": 3,
+   "to_slot": 18,
+   "respect": 37,
+   "disagreement": 100,
+   "bridge": false
+  },
+  {
+   "t": 107608,
+   "type": "message",
+   "chat": "c02",
+   "sender_slot": 3,
+   "text": "Verstehe ich das richtig, ihr hattet keine psychologische Betreuung trotz dieser Inhalte? Das klingt nach einer absoluten Ausbeutung der Mitarbeiter.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 107890,
+   "type": "message",
+   "chat": "c02",
+   "sender_slot": 18,
+   "text": "Genau das ist der Punkt. Positiver wird es nur, wenn Gesetze nicht nur Inhalte regeln, sondern die Gesundheit derer schützen, die den Dreck filtern.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 107896,
+   "type": "message",
+   "chat": "c23",
+   "sender_slot": 23,
+   "text": "Kombiniert man deine Bildungsoffensive mit einer vernünftigen europäischen Plattform, hätten wir vielleicht echt eine Chance auf Besserung.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 109305,
+   "type": "message",
+   "chat": "c03",
+   "sender_slot": 18,
+   "text": "das mag sein aber wer entscheidet was wegkommt? meine kollegen haben kaum sekunden pro post und verbrennen psychisch total.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 109686,
+   "type": "rating",
+   "chat": "c23",
+   "from_slot": 23,
+   "to_slot": 30,
+   "respect": 75,
+   "disagreement": 41,
+   "bridge": false
+  },
+  {
+   "t": 112196,
+   "type": "message",
+   "chat": "c02",
+   "sender_slot": 3,
+   "text": "Ich bin zwar kein Fan von Einmischung, aber Arbeitsschutz für die Moderatoren ist ein Punkt, den ich bisher komplett ignoriert habe in meiner Argumentation.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 113395,
+   "type": "opinion",
+   "slot": 34,
+   "text": "Kunst und Satire leiden unter Löschalgorithmen. Regulierung muss künstlerische Freiheit ausdrücklich schützen."
+  },
+  {
+   "t": 114578,
+   "type": "message",
+   "chat": "c20",
+   "sender_slot": 12,
+   "text": "Immerhin siehst du das Problem beim Werbegeld auch kritisch. Vielleicht finden wir ja eine Lösung, die Medien stärkt, ohne dass direkt der Staat die Inhalte kontrolliert.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 114646,
+   "type": "rating",
+   "chat": "c20",
+   "from_slot": 3,
+   "to_slot": 12,
+   "respect": 93,
+   "disagreement": 100,
+   "bridge": true
+  },
+  {
+   "t": 114865,
+   "type": "rating",
+   "chat": "c20",
+   "from_slot": 12,
+   "to_slot": 3,
+   "respect": 95,
+   "disagreement": 100,
+   "bridge": true
+  },
+  {
+   "t": 117502,
+   "type": "message",
+   "chat": "c03",
+   "sender_slot": 7,
+   "text": "deshalb ja klare regeln für plattformen. wer wiederholt lügen pusht wird gesperrt. das ist doch die einzige sprache die sie verstehen.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 117992,
+   "type": "message",
+   "chat": "c14",
+   "sender_slot": 31,
+   "text": "Vielleicht treffen wir uns in der Mitte: Die Technik muss Pausen erzwingen, aber was man schaut, bleibt jedem selbst überlassen.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 118258,
+   "type": "rating",
+   "chat": "c14",
+   "from_slot": 31,
+   "to_slot": 25,
+   "respect": 86,
+   "disagreement": 78,
+   "bridge": true
+  },
+  {
+   "t": 118542,
+   "type": "rating",
+   "chat": "c14",
+   "from_slot": 25,
+   "to_slot": 31,
+   "respect": 86,
+   "disagreement": 71,
+   "bridge": true
+  },
+  {
+   "t": 118562,
+   "type": "rating",
+   "chat": "c23",
+   "from_slot": 30,
+   "to_slot": 23,
+   "respect": 69,
+   "disagreement": 39,
+   "bridge": false
+  },
+  {
+   "t": 118973,
+   "type": "message",
+   "chat": "c08",
+   "sender_slot": 7,
+   "text": "Stimmt, die Transparenz fehlt oft. Aber man könnte Werbesperren ja an ein transparentes Drei-Stufen-Modell koppeln, statt direkt den ganzen Account zu löschen.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 119516,
+   "type": "chat_open",
+   "chat": "c25",
+   "from_slot": 34,
+   "to_slot": 1,
+   "moment": "organic"
+  },
+  {
+   "t": 119611,
+   "type": "message",
+   "chat": "c08",
+   "sender_slot": 32,
+   "text": "Ein Stufenmodell wäre rechtsstaatlich zumindest sauberer als die jetzige Willkür. Aber nur, wenn Nutzer sich effektiv gegen falsche Sperren wehren können.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 119656,
+   "type": "message",
+   "chat": "c25",
+   "sender_slot": 34,
+   "text": "Echt mühsam momentan, meine neuen Skizzen wurden direkt wieder als sensibler Inhalt geflaggt. Diese Filter machen jede Nuance und Satire kaputt, das fühlt sich nur noch nach Zensur an.",
+   "warm": false,
+   "heat": "high"
+  },
+  {
+   "t": 119807,
+   "type": "message",
+   "chat": "c25",
+   "sender_slot": 1,
+   "text": "Versteh den Frust, aber blindes Regulieren bringt da wenig. Wir brauchen erstmal echten Datenzugriff auf die Algos, um zu sehen, warum die so reagieren. Erst messen, dann Gesetze.",
+   "warm": true,
+   "heat": "high"
+  },
+  {
+   "t": 120063,
+   "type": "message",
+   "chat": "c25",
+   "sender_slot": 34,
+   "text": "Transparenz ist ja gut, aber während ihr forscht, sterben die Nischen weg. Es braucht eine Schutzklausel für Kunst, sonst traut sich doch keiner mehr was Kritisches zu posten.",
+   "warm": true,
+   "heat": "high"
+  },
+  {
+   "t": 120333,
+   "type": "message",
+   "chat": "c25",
+   "sender_slot": 1,
+   "text": "Stimmt schon, Kunstfreiheit ist ein hohes Gut. Aber wenn wir die Algorithmen nicht open source machen, flicken wir nur an den Symptomen rum statt das System zu heilen.",
+   "warm": true,
+   "heat": "high"
+  },
+  {
+   "t": 120472,
+   "type": "message",
+   "chat": "c25",
+   "sender_slot": 34,
+   "text": "Offene Algorithmen wären zumindest ein Anfang gegen diese Blackbox-Willkür. Hauptsache der Fokus verschiebt sich weg von reinen Löschquoten hin zu echtem Kontext.",
+   "warm": true,
+   "heat": "high"
+  },
+  {
+   "t": 122824,
+   "type": "message",
+   "chat": "c08",
+   "sender_slot": 7,
+   "text": "Dann sind wir uns ja fast einig: Finanzielle Sanktionen für Desinformation, aber nur mit ordentlichem Einspruchsrecht. Das wäre zumindest mal ein echter Anfang.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 122940,
+   "type": "rating",
+   "chat": "c08",
+   "from_slot": 7,
+   "to_slot": 32,
+   "respect": 83,
+   "disagreement": 100,
+   "bridge": true
+  },
+  {
+   "t": 123142,
+   "type": "rating",
+   "chat": "c08",
+   "from_slot": 32,
+   "to_slot": 7,
+   "respect": 94,
+   "disagreement": 98,
+   "bridge": true
+  },
+  {
+   "t": 125638,
+   "type": "message",
+   "chat": "c25",
+   "sender_slot": 1,
+   "text": "Genau, Kontext ist die größte Schwäche der aktuellen KI. Ohne unabhängige Prüfung der Datenbasis wird das aber nicht besser, da müssen wir ansetzen.",
+   "warm": true,
+   "heat": "high"
+  },
+  {
+   "t": 127345,
+   "type": "rating",
+   "chat": "c25",
+   "from_slot": 34,
+   "to_slot": 1,
+   "respect": 85,
+   "disagreement": 50,
+   "bridge": false
+  },
+  {
+   "t": 127575,
+   "type": "opinion",
+   "slot": 29,
+   "text": "Man regelt Spiele-Mechaniken, nicht Inhalte. Lootboxen wurden reguliert — warum nicht endlose Scroll-Mechaniken?"
+  },
+  {
+   "t": 128700,
+   "type": "opinion",
+   "slot": 21,
+   "text": "Die Debattenkultur leidet. Vielleicht brauchen wir weniger Regeln und mehr Verpflichtung zu echter Gegenrede auf den Plattformen."
+  },
+  {
+   "t": 129416,
+   "type": "message",
+   "chat": "c02",
+   "sender_slot": 18,
+   "text": "Danke Timo, das bedeutet mir viel. Wer die Freiheit im Netz will, darf die Menschenwürde derer nicht vergessen, die sie im Hintergrund verteidigen.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 129474,
+   "type": "rating",
+   "chat": "c02",
+   "from_slot": 3,
+   "to_slot": 18,
+   "respect": 94,
+   "disagreement": 99,
+   "bridge": true
+  },
+  {
+   "t": 129600,
+   "type": "chat_open",
+   "chat": "c04",
+   "from_slot": 21,
+   "to_slot": 14,
+   "moment": "bridge"
+  },
+  {
+   "t": 129681,
+   "type": "message",
+   "chat": "c04",
+   "sender_slot": 21,
+   "text": "Ich hab das Gefühl, wir schreien uns online nur noch an, statt wirklich zuzuhören. Die Debattenkultur ist am Boden, weil niemand mehr Gegenrede aushält.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 129890,
+   "type": "rating",
+   "chat": "c02",
+   "from_slot": 18,
+   "to_slot": 3,
+   "respect": 92,
+   "disagreement": 97,
+   "bridge": true
+  },
+  {
+   "t": 132644,
+   "type": "rating",
+   "chat": "c25",
+   "from_slot": 1,
+   "to_slot": 34,
+   "respect": 72,
+   "disagreement": 49,
+   "bridge": false
+  },
+  {
+   "t": 132987,
+   "type": "message",
+   "chat": "c04",
+   "sender_slot": 14,
+   "text": "Das liegt aber nicht nur an den Leuten, Samuel. Die Algorithmen pushen halt genau den Content, der wütend macht, weil das Klicks bringt.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 133793,
+   "type": "opinion",
+   "slot": 38,
+   "text": "Statt zu verbieten: Plattformen könnten verpflichtet werden, Bildungsinhalte sichtbarer zu machen. Positiv-Anreize statt Strafen."
+  },
+  {
+   "t": 134259,
+   "type": "message",
+   "chat": "c03",
+   "sender_slot": 18,
+   "text": "regeln helfen nix wenn die moderatoren in prekären jobs sitzen und keine rechte haben. das muss ins gesetz für plattformsicherheit.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 134892,
+   "type": "message",
+   "chat": "c03",
+   "sender_slot": 7,
+   "text": "da hast du absolut recht, der punkt kommt in meiner berichterstattung viel zu kurz. ohne faire arbeitsbedingungen bringt die beste regulierung wenig.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 136868,
+   "type": "message",
+   "chat": "c04",
+   "sender_slot": 21,
+   "text": "Da hast du recht, die Mechanik dahinter ist Gift. Vielleicht sollten wir nicht Inhalte löschen, sondern die Leute zwingen, sich wieder auf echte Argumente einzulassen.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 139253,
+   "type": "message",
+   "chat": "c04",
+   "sender_slot": 14,
+   "text": "Ehrlich gesagt glaub ich, dass wir den chronologischen Feed zurückbrauchen. Ohne Bewertung durch eine KI, die uns nur in die Blase treibt.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 142278,
+   "type": "chat_open",
+   "chat": "c10",
+   "from_slot": 38,
+   "to_slot": 31,
+   "moment": "organic"
+  },
+  {
+   "t": 142408,
+   "type": "message",
+   "chat": "c10",
+   "sender_slot": 38,
+   "text": "Echt krass wie viel Zeit die Kids da verbringen. Ich glaube aber wir brauchen eher Belohnungen für guten Content statt nur Verbote.",
+   "warm": false,
+   "heat": "high"
+  },
+  {
+   "t": 142445,
+   "type": "opinion",
+   "slot": 36,
+   "text": "Eltern brauchen einfache Werkzeuge: verpflichtende Kindersicherungen, die standardmäßig aktiviert sind, nicht versteckt in Menüs."
+  },
+  {
+   "t": 142677,
+   "type": "message",
+   "chat": "c10",
+   "sender_slot": 31,
+   "text": "Belohnung bringt nix wenn mein Junge 5 Stunden nur Schrott guckt. Da muss ein Riegel vor die App nach ner gewissen Zeit.",
+   "warm": false,
+   "heat": "high"
+  },
+  {
+   "t": 142759,
+   "type": "message",
+   "chat": "c10",
+   "sender_slot": 38,
+   "text": "Verstehe deinen Frust total, Zeitlimits machen bei Jüngeren sicher Sinn. Aber was wenn die Algorithmen Bildungsvideos einfach viel prominenter anzeigen müssten?",
+   "warm": true,
+   "heat": "high"
+  },
+  {
+   "t": 142855,
+   "type": "message",
+   "chat": "c10",
+   "sender_slot": 31,
+   "text": "Klar, wenn da was Vernünftiges käme wäre das besser als dieser Müll. Aber am Ende verdienen die ihr Geld doch nur damit dass die Leute hängen bleiben.",
+   "warm": true,
+   "heat": "high"
+  },
+  {
+   "t": 143017,
+   "type": "message",
+   "chat": "c10",
+   "sender_slot": 38,
+   "text": "Genau das ist das Problem. Deshalb mein Ansatz: Wer Bildung oder Positives streut, bekommt Reichweite geschenkt vom Staat oder der EU als Vorgabe.",
+   "warm": false,
+   "heat": "high"
+  },
+  {
+   "t": 144116,
+   "type": "message",
+   "chat": "c04",
+   "sender_slot": 21,
+   "text": "Das ist ein spannender Ansatz, das würde die künstliche Empörung sofort entschärfen. So würde man wieder sehen, was wirklich passiert, statt was aufregt.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 145721,
+   "type": "message",
+   "chat": "c04",
+   "sender_slot": 14,
+   "text": "Genau, es nimmt diesen Druck raus, immer extremer werden zu müssen, um überhaupt gesehen zu werden. Ein neutraler Feed wäre die Rettung für meinen Job.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 145799,
+   "type": "opinion",
+   "slot": 15,
+   "text": "Bei Hass und Hetze brauchen wir schnellere Auskünfte an Ermittlungsbehörden. Die aktuellen Verfahren dauern Monate."
+  },
+  {
+   "t": 147166,
+   "type": "chat_open",
+   "chat": "c21",
+   "from_slot": 0,
+   "to_slot": 36,
+   "moment": "organic"
+  },
+  {
+   "t": 147220,
+   "type": "message",
+   "chat": "c10",
+   "sender_slot": 31,
+   "text": "Gute Idee eigentlich, aber nur wenn man trotzdem abschalten kann. Ohne Limit lernen die das Maßhalten nie.",
+   "warm": true,
+   "heat": "high"
+  },
+  {
+   "t": 147313,
+   "type": "message",
+   "chat": "c21",
+   "sender_slot": 0,
+   "text": "Wenn Social Media wieder sicher werden soll, müssen wir über die Störerhaftung reden. Plattformen dürfen sich nicht länger hinter der bloßen Vermittlerrolle verstecken, sobald ihre Algorithmen Hass gezielt pushen.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 147427,
+   "type": "opinion",
+   "slot": 35,
+   "text": "Risiken muss man versicherbar machen: Pflichtversicherung für Plattformen, dann reguliert der Markt einen Teil selbst."
+  },
+  {
+   "t": 147880,
+   "type": "message",
+   "chat": "c21",
+   "sender_slot": 36,
+   "text": "Sehe ich auch so, aber als Mutter fehlt mir die Zeit für lange Klagen. Es braucht vor allem Opt-Out Lösungen bei den Algorithmen, damit Jugendschutz standardmäßig aktiv ist und nicht in Menüs versteckt wird.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 148307,
+   "type": "message",
+   "chat": "c21",
+   "sender_slot": 0,
+   "text": "Dein Ansatz für den Schutzraum der Kinder ist absolut richtig. Juristisch ließe sich das stützen, wenn man algorithmische Empfehlungen rechtlich als redaktionelle Auswahl wie bei einer Titelseite wertet.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 149425,
+   "type": "message",
+   "chat": "c04",
+   "sender_slot": 21,
+   "text": "Interessant, dass wir da zusammenkommen. Weniger algorithmische Steuerung könnte tatsächlich die Freiheit und Höflichkeit zurückbringen.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 150456,
+   "type": "message",
+   "chat": "c03",
+   "sender_slot": 18,
+   "text": "danke. es ist halt schwer positiv zu bleiben wenn die struktur dahinter auf ausbeutung und trauma basiert.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 150763,
+   "type": "message",
+   "chat": "c03",
+   "sender_slot": 7,
+   "text": "ich hab das bisher zu sehr als rein technisches oder finanzielles problem gesehen. wir übersehen die menschliche last dabei.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 151466,
+   "type": "opinion",
+   "slot": 11,
+   "text": "Das Problem sind Botnetze, nicht Meinungen. Verifizierte Identität für große Accounts würde mehr bringen als jede Inhaltsregel."
+  },
+  {
+   "t": 151622,
+   "type": "message",
+   "chat": "c21",
+   "sender_slot": 36,
+   "text": "Genau, die Verantwortung muss weg von den Eltern und hin zur Technik. Wenn die Voreinstellung sicher ist, wird das Klima für alle automatisch weniger toxisch.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 151934,
+   "type": "rating",
+   "chat": "c10",
+   "from_slot": 31,
+   "to_slot": 38,
+   "respect": 64,
+   "disagreement": 37,
+   "bridge": false
+  },
+  {
+   "t": 153029,
+   "type": "rating",
+   "chat": "c10",
+   "from_slot": 38,
+   "to_slot": 31,
+   "respect": 69,
+   "disagreement": 44,
+   "bridge": false
+  },
+  {
+   "t": 153868,
+   "type": "message",
+   "chat": "c04",
+   "sender_slot": 14,
+   "text": "Total, Pflicht zu chronologischen Feeds wäre sinnvoller als jedes Zensur-Gesetz. Das würde die Plattformen endlich wieder entgiften.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 155102,
+   "type": "message",
+   "chat": "c03",
+   "sender_slot": 18,
+   "text": "genau das ist es. wenn wir die menschen die das netz sauber halten schützen wird das klima insgesamt vielleicht auch wieder besser.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 155267,
+   "type": "chat_open",
+   "chat": "c19",
+   "from_slot": 35,
+   "to_slot": 25,
+   "moment": "organic"
+  },
+  {
+   "t": 155302,
+   "type": "message",
+   "chat": "c19",
+   "sender_slot": 35,
+   "text": "Die Schadenssummen durch Desinformation und Cybermobbing steigen massiv an. Wir brauchen eine Pflichtversicherung für Plattformen, damit das Risiko endlich eingepreist wird.",
+   "warm": false,
+   "heat": "high"
+  },
+  {
+   "t": 155527,
+   "type": "message",
+   "chat": "c19",
+   "sender_slot": 25,
+   "text": "Genau, lass uns das Internet kaputtregulieren, damit alles so spannend wird wie eine Lebensversicherung. Das ist doch nur die aktuelle Moralpanik, früher waren es eben Schundromane.",
+   "warm": false,
+   "heat": "high"
+  },
+  {
+   "t": 155701,
+   "type": "message",
+   "chat": "c19",
+   "sender_slot": 35,
+   "text": "Es geht nicht um Panik, sondern um Haftbarkeit. Wenn eine Plattform hohe Risiken zulässt, muss die Prämie steigen, das würde den Algorithmus automatisch reinigen.",
+   "warm": false,
+   "heat": "high"
+  },
+  {
+   "t": 155871,
+   "type": "message",
+   "chat": "c19",
+   "sender_slot": 25,
+   "text": "Und am Ende entscheiden Versicherungsvertreter, was man noch posten darf oder was zu teuer wird? Das ist Zensur durch die Hintertür, Georg.",
+   "warm": false,
+   "heat": "high"
+  },
+  {
+   "t": 155934,
+   "type": "rating",
+   "chat": "c19",
+   "from_slot": 35,
+   "to_slot": 25,
+   "respect": 3,
+   "disagreement": 100,
+   "bridge": false
+  },
+  {
+   "t": 155964,
+   "type": "message",
+   "chat": "c03",
+   "sender_slot": 7,
+   "text": "stimmt. ich werd das thema arbeitsschutz bei der nächsten recherche definitiv mit reinnehmen. das gehört zusammen.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 156010,
+   "type": "message",
+   "chat": "c19",
+   "sender_slot": 35,
+   "text": "Ich verstehe deine Sorge um die Freiheit, aber der aktuelle Zustand ist wirtschaftlich und sozial ruinös. Ein Marktmechanismus ist immer noch besser als staatliche Willkür.",
+   "warm": true,
+   "heat": "high"
+  },
+  {
+   "t": 156093,
+   "type": "opinion",
+   "slot": 39,
+   "text": "Meinungsfreiheit ist das höchste Gut. Jede Regulierung muss sich am Grundgesetz messen lassen — die meisten Vorschläge bestehen den Test nicht."
+  },
+  {
+   "t": 156363,
+   "type": "message",
+   "chat": "c04",
+   "sender_slot": 21,
+   "text": "Ein schöner Gedanke: Technik, die dem Frieden dient, statt den Zorn zu monetarisieren. Wir sollten das Thema mal lauter machen.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 156385,
+   "type": "rating",
+   "chat": "c19",
+   "from_slot": 25,
+   "to_slot": 35,
+   "respect": 36,
+   "disagreement": 100,
+   "bridge": false
+  },
+  {
+   "t": 157705,
+   "type": "rating",
+   "chat": "c21",
+   "from_slot": 0,
+   "to_slot": 36,
+   "respect": 58,
+   "disagreement": 42,
+   "bridge": false
+  },
+  {
+   "t": 161144,
+   "type": "rating",
+   "chat": "c21",
+   "from_slot": 36,
+   "to_slot": 0,
+   "respect": 61,
+   "disagreement": 42,
+   "bridge": false
+  },
+  {
+   "t": 161286,
+   "type": "message",
+   "chat": "c19",
+   "sender_slot": 25,
+   "text": "Dass ein Marktmodell besser ist als das Wahrheitsministerium vom Staat, gebe ich ja zu. Aber der Fokus auf das Risiko killt jegliche Kreativität und Spontanität.",
+   "warm": true,
+   "heat": "high"
+  },
+  {
+   "t": 161554,
+   "type": "message",
+   "chat": "c19",
+   "sender_slot": 35,
+   "text": "Vielleicht finden wir einen Mittelweg, wo nur die extremen Auswüchse versichert werden müssen und der Rest frei bleibt. Man müsste die Deckungssummen klug wählen.",
+   "warm": true,
+   "heat": "high"
+  },
+  {
+   "t": 161804,
+   "type": "rating",
+   "chat": "c04",
+   "from_slot": 21,
+   "to_slot": 14,
+   "respect": 80,
+   "disagreement": 49,
+   "bridge": false
+  },
+  {
+   "t": 161984,
+   "type": "rating",
+   "chat": "c19",
+   "from_slot": 35,
+   "to_slot": 25,
+   "respect": 77,
+   "disagreement": 100,
+   "bridge": true
+  },
+  {
+   "t": 162043,
+   "type": "rating",
+   "chat": "c19",
+   "from_slot": 25,
+   "to_slot": 35,
+   "respect": 94,
+   "disagreement": 98,
+   "bridge": true
+  },
+  {
+   "t": 166000,
+   "type": "rating",
+   "chat": "c04",
+   "from_slot": 14,
+   "to_slot": 21,
+   "respect": 100,
+   "disagreement": 50,
+   "bridge": false
+  },
+  {
+   "t": 170181,
+   "type": "opinion",
+   "slot": 10,
+   "text": "Ich erkenne Fake News oft nicht mehr. Plattformen sollten Falschmeldungen kennzeichnen müssen, so wie Zutaten auf Lebensmitteln."
+  },
+  {
+   "t": 174742,
+   "type": "chat_open",
+   "chat": "c05",
+   "from_slot": 39,
+   "to_slot": 6,
+   "moment": "bridge"
+  },
+  {
+   "t": 174879,
+   "type": "message",
+   "chat": "c05",
+   "sender_slot": 39,
+   "text": "Clara, ich sehe die Debatte um die Regulierung kritisch. Meinungsfreiheit darf nicht durch voreilige Löschpflichten der Plattformen geopfert werden.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 176632,
+   "type": "rating",
+   "chat": "c03",
+   "from_slot": 7,
+   "to_slot": 18,
+   "respect": 63,
+   "disagreement": 15,
+   "bridge": false
+  },
+  {
+   "t": 178045,
+   "type": "opinion",
+   "slot": 37,
+   "text": "Selbstregulierung funktioniert nur mit Sanktionen im Hintergrund. Freiwillig ja, aber mit scharfem staatlichem Fallback."
+  },
+  {
+   "t": 178342,
+   "type": "message",
+   "chat": "c05",
+   "sender_slot": 6,
+   "text": "Verstehe ich, aber das Problem sind oft gar nicht die Inhalte an sich, sondern wie die Algorithmen uns in der Suchtschleife halten.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 188723,
+   "type": "rating",
+   "chat": "c03",
+   "from_slot": 18,
+   "to_slot": 7,
+   "respect": 66,
+   "disagreement": 8,
+   "bridge": false
+  },
+  {
+   "t": 192874,
+   "type": "message",
+   "chat": "c05",
+   "sender_slot": 39,
+   "text": "Das Grundgesetz schützt das Wort, nicht die Reichweite. Aber wer entscheidet, was eine Gefahr ist, ohne die Zensurkeule zu schwingen?",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 195284,
+   "type": "chat_open",
+   "chat": "c06",
+   "from_slot": 0,
+   "to_slot": 3,
+   "moment": "bridge"
+  },
+  {
+   "t": 195383,
+   "type": "message",
+   "chat": "c06",
+   "sender_slot": 0,
+   "text": "Hey, hast du dich wieder beruhigt nach unserem letzten Streit im Büro?",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 197723,
+   "type": "message",
+   "chat": "c06",
+   "sender_slot": 3,
+   "text": "Schon okay. Ich finde es nur immer noch krass, wie schnell du den Staat alles regeln lassen willst.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 202691,
+   "type": "message",
+   "chat": "c06",
+   "sender_slot": 0,
+   "text": "Es geht mir nicht um Zensur, sondern um Haftung. Wer Müll per Algorithmus groß macht, sollte wie ein Verleger haften.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 204209,
+   "type": "opinion",
+   "slot": 9,
+   "text": "Verbote interessieren niemanden in meinem Alter. Bringt uns lieber Medienkompetenz bei statt uns auszusperren."
+  },
+  {
+   "t": 205513,
+   "type": "message",
+   "chat": "c06",
+   "sender_slot": 3,
+   "text": "Aber wenn Firmen aus Angst vor Klagen alles löschen, ist die Meinungsfreiheit am Ende. Das entscheidne lieber Richter.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 206502,
+   "type": "message",
+   "chat": "c05",
+   "sender_slot": 6,
+   "text": "Vielleicht nicht die Inhalte prüfen, sondern das Design. Autoplay und unendliches Scrollen nutzen psychologische Schwachstellen gnadenlos aus.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 206696,
+   "type": "message",
+   "chat": "c05",
+   "sender_slot": 39,
+   "text": "Ein interessanter Punkt. Wenn man nur die Mechanik der Verführung begrenzt, rührt man die Substanz der Meinungsäußerung eventuell gar nicht an.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 207033,
+   "type": "message",
+   "chat": "c05",
+   "sender_slot": 6,
+   "text": "Genau, es geht um Schutz vor Manipulation, nicht um Verbote. Psychologisch gesehen macht uns das Design süchtig, nicht das Argument.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 207082,
+   "type": "rating",
+   "chat": "c05",
+   "from_slot": 6,
+   "to_slot": 39,
+   "respect": 86,
+   "disagreement": 73,
+   "bridge": true
+  },
+  {
+   "t": 207389,
+   "type": "rating",
+   "chat": "c05",
+   "from_slot": 39,
+   "to_slot": 6,
+   "respect": 86,
+   "disagreement": 65,
+   "bridge": true
+  },
+  {
+   "t": 208701,
+   "type": "chat_open",
+   "chat": "c16",
+   "from_slot": 14,
+   "to_slot": 9,
+   "moment": "organic"
+  },
+  {
+   "t": 208811,
+   "type": "message",
+   "chat": "c16",
+   "sender_slot": 14,
+   "text": "Ehrlich, Social Media macht nur noch aggressiv, weil der Algorithmus gezielt Wut pusht für die Watchtime. Wir brauchen endlich wieder echte chronologische Feeds ohne diese Sortierung.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 209065,
+   "type": "message",
+   "chat": "c06",
+   "sender_slot": 0,
+   "text": "Da hast du recht, private Konzerne sollten nicht Richter spielen müssen, das sehe ich ein.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 209227,
+   "type": "rating",
+   "chat": "c06",
+   "from_slot": 0,
+   "to_slot": 3,
+   "respect": 37,
+   "disagreement": 100,
+   "bridge": false
+  },
+  {
+   "t": 209510,
+   "type": "rating",
+   "chat": "c06",
+   "from_slot": 3,
+   "to_slot": 0,
+   "respect": 83,
+   "disagreement": 95,
+   "bridge": true
+  },
+  {
+   "t": 210601,
+   "type": "message",
+   "chat": "c06",
+   "sender_slot": 3,
+   "text": "Okay, das ist ein Punkt. Aber wie trennst du das technisch sauber von der reinen Plattform?",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 212809,
+   "type": "message",
+   "chat": "c16",
+   "sender_slot": 9,
+   "text": "Glaubst du echt, dass das was ändert? Meine Leute scrollen eh nur durch das, was ballert, da helfen Verbote oder Feed-Umstellungen null.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 214109,
+   "type": "message",
+   "chat": "c06",
+   "sender_slot": 0,
+   "text": "Nur das, was aktiv gepusht wird, unterliegt der Haftung. Der Rest bleibt unter dem Schutz des Provider-Privilegs.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 215552,
+   "type": "chat_open",
+   "chat": "c18",
+   "from_slot": 9,
+   "to_slot": 26,
+   "moment": "organic"
+  },
+  {
+   "t": 215651,
+   "type": "message",
+   "chat": "c18",
+   "sender_slot": 9,
+   "text": "Find diese ganze Debatte um Verbote echt nervig. Als ob wir nicht eh einen Weg finden, die Sperren zu umgehen.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 216283,
+   "type": "message",
+   "chat": "c18",
+   "sender_slot": 26,
+   "text": "Es geht nicht nur um Sperren, Finn. Algorithmen pushen Content zu Essstörungen und Selbstverletzung massiv, das muss gestoppt werden.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 216876,
+   "type": "message",
+   "chat": "c06",
+   "sender_slot": 3,
+   "text": "Wenn du wirklich nur die algorithmische Verstärkung meinst und nicht den Text an sich, könnte ich damit leben.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 217666,
+   "type": "chat_open",
+   "chat": "c07",
+   "from_slot": 2,
+   "to_slot": 5,
+   "moment": "bridge"
+  },
+  {
+   "t": 217742,
+   "type": "message",
+   "chat": "c07",
+   "sender_slot": 2,
+   "text": "Ehrlich gesagt nervt es mich nur noch wie süchtig meine Schüler durch diese ganzen Ads gemacht werden. Wir brauchen endlich strikte Werbeverbote und echte Altersgrenzen unter 16.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 220210,
+   "type": "message",
+   "chat": "c07",
+   "sender_slot": 5,
+   "text": "Ich verstehe deinen Punkt total, aber wenn wir alles verbieten, killen wir jede Innovation. Nur die Riesen wie Meta können sich diese krasse Compliance leisten, kleine Startups gehen direkt pleite.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 221495,
+   "type": "message",
+   "chat": "c06",
+   "sender_slot": 0,
+   "text": "Genau das meine ich. Schön, dass wir da einen gemeinsamen Nenner gefunden haben.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 221583,
+   "type": "rating",
+   "chat": "c06",
+   "from_slot": 3,
+   "to_slot": 0,
+   "respect": 83,
+   "disagreement": 96,
+   "bridge": true
+  },
+  {
+   "t": 222031,
+   "type": "rating",
+   "chat": "c06",
+   "from_slot": 0,
+   "to_slot": 3,
+   "respect": 91,
+   "disagreement": 100,
+   "bridge": true
+  },
+  {
+   "t": 222953,
+   "type": "message",
+   "chat": "c07",
+   "sender_slot": 2,
+   "text": "Aber Profit darf nicht über dem Kinderschutz stehen. Es fühlt sich an als wären unsere Kinder einfach nur das Geschäftsmodell für eure Branche.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 223300,
+   "type": "message",
+   "chat": "c07",
+   "sender_slot": 5,
+   "text": "Das will ja auch keiner, aber vielleicht ist der Hebel falsch. Statt Werbeverbot könnten wir Design-Regeln gegen Suchtmechanismen einführen, die speziell nur für U16-Profile gelten.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 223540,
+   "type": "rating",
+   "chat": "c07",
+   "from_slot": 5,
+   "to_slot": 2,
+   "respect": 37,
+   "disagreement": 72,
+   "bridge": false
+  },
+  {
+   "t": 223642,
+   "type": "rating",
+   "chat": "c07",
+   "from_slot": 2,
+   "to_slot": 5,
+   "respect": 84,
+   "disagreement": 79,
+   "bridge": true
+  },
+  {
+   "t": 224775,
+   "type": "message",
+   "chat": "c05",
+   "sender_slot": 39,
+   "text": "Ich muss zugeben: Algorithmische Suchtschleifen sind keine Meinungen im Sinne der Verfassung, sondern rein technische Manipulationswerkzeuge.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 225918,
+   "type": "message",
+   "chat": "c16",
+   "sender_slot": 14,
+   "text": "Es ist kein Verbot, sondern gibt uns die Kontrolle zurück, statt uns der KI-Empörung auszuliefern. So wie es jetzt ist, haben wir Creator gar keine Wahl mehr als Clickbait zu machen.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 226087,
+   "type": "message",
+   "chat": "c16",
+   "sender_slot": 9,
+   "text": "Versteh ich schon, dass das für dich stressig ist. Aber bringt uns doch lieber bei, wie wir den Mist erkennen, statt technisch alles zu sperren.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 226330,
+   "type": "rating",
+   "chat": "c16",
+   "from_slot": 14,
+   "to_slot": 9,
+   "respect": 28,
+   "disagreement": 76,
+   "bridge": false
+  },
+  {
+   "t": 226357,
+   "type": "rating",
+   "chat": "c16",
+   "from_slot": 9,
+   "to_slot": 14,
+   "respect": 25,
+   "disagreement": 69,
+   "bridge": false
+  },
+  {
+   "t": 226884,
+   "type": "message",
+   "chat": "c16",
+   "sender_slot": 14,
+   "text": "Stimmt, Medienkompetenz in der Schule wäre ein guter Hebel. Vielleicht klappt es ja nur, wenn Technik-Regeln und Bildung zusammenkommen.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 226964,
+   "type": "rating",
+   "chat": "c16",
+   "from_slot": 14,
+   "to_slot": 9,
+   "respect": 77,
+   "disagreement": 76,
+   "bridge": true
+  },
+  {
+   "t": 227055,
+   "type": "rating",
+   "chat": "c16",
+   "from_slot": 9,
+   "to_slot": 14,
+   "respect": 94,
+   "disagreement": 72,
+   "bridge": true
+  },
+  {
+   "t": 227089,
+   "type": "message",
+   "chat": "c07",
+   "sender_slot": 2,
+   "text": "Das klingt nach einem fairen Kompromiss, wenn das Design dann wirklich weniger manipulativ ist. Ich sehe auch ein, dass wir die kleinen deutschen Entwickler nicht mit Bürokratie ersticken dürfen.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 227636,
+   "type": "message",
+   "chat": "c07",
+   "sender_slot": 5,
+   "text": "Genau, so bleibt Raum für Neues ohne die Kids zu verheizen. Wenn man das technisch sauber trennt, haben alle was davon.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 227800,
+   "type": "message",
+   "chat": "c07",
+   "sender_slot": 2,
+   "text": "Dann lass uns da mal weiterdenken, vielleicht ist ein Mix aus Jugendschutz und Gründerspirit wirklich der Weg zu einem besseren Netz.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 228012,
+   "type": "rating",
+   "chat": "c07",
+   "from_slot": 2,
+   "to_slot": 5,
+   "respect": 100,
+   "disagreement": 71,
+   "bridge": true
+  },
+  {
+   "t": 228086,
+   "type": "rating",
+   "chat": "c07",
+   "from_slot": 5,
+   "to_slot": 2,
+   "respect": 86,
+   "disagreement": 64,
+   "bridge": true
+  },
+  {
+   "t": 228936,
+   "type": "message",
+   "chat": "c18",
+   "sender_slot": 9,
+   "text": "Klar ist das Mist, aber Warnhinweise oder Verbote bringen halt nix. Wir brauchen den Skill, den Müll zu erkennen und wegzuklicken.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 229198,
+   "type": "message",
+   "chat": "c18",
+   "sender_slot": 26,
+   "text": "Medienkompetenz ist wichtig, aber eine 13-Jährige in einer psychischen Krise kann sich nicht allein gegen perfide Algorithmen wehren.",
+   "warm": false,
+   "heat": "normal"
+  },
+  {
+   "t": 232998,
+   "type": "message",
+   "chat": "c18",
+   "sender_slot": 9,
+   "text": "Versteh schon, dass das krass gefährlich sein kann. Aber wenn man alles löscht, wandert die Szene nur in dunklere Ecken ab.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 233091,
+   "type": "rating",
+   "chat": "c18",
+   "from_slot": 9,
+   "to_slot": 26,
+   "respect": 18,
+   "disagreement": 100,
+   "bridge": false
+  },
+  {
+   "t": 233396,
+   "type": "rating",
+   "chat": "c18",
+   "from_slot": 26,
+   "to_slot": 9,
+   "respect": 93,
+   "disagreement": 95,
+   "bridge": true
+  },
+  {
+   "t": 236121,
+   "type": "message",
+   "chat": "c05",
+   "sender_slot": 6,
+   "text": "Es freut mich sehr, dass du das so differenziert siehst. Deine juristische Strenge hilft uns, die richtigen Grenzen zu ziehen.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 244863,
+   "type": "message",
+   "chat": "c05",
+   "sender_slot": 39,
+   "text": "Wenn wir das Design regulieren statt den Diskurs, bewahren wir die Freiheit und schützen trotzdem die geistige Gesundheit.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 245429,
+   "type": "message",
+   "chat": "c18",
+   "sender_slot": 26,
+   "text": "Da hast du recht, das Untergrund-Risiko gibt es. Aber die Reichweite für diesen extremen Content muss trotzdem drastisch gedrosselt werden.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 245813,
+   "type": "message",
+   "chat": "c18",
+   "sender_slot": 9,
+   "text": "Vielleicht ne Kombi? Harte Regeln für die Tech-Konzerne, damit der Algorithmus nicht so giftig ist, und mehr Aufklärung für uns in der Schule.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 247924,
+   "type": "message",
+   "chat": "c05",
+   "sender_slot": 6,
+   "text": "Das wäre der Durchbruch. Weniger Zwang zur Empörung durch klügere Interfaces statt Zensur durch Algorithmen.",
+   "warm": true,
+   "heat": "normal"
+  },
+  {
+   "t": 248405,
+   "type": "rating",
+   "chat": "c05",
+   "from_slot": 39,
+   "to_slot": 6,
+   "respect": 100,
+   "disagreement": 63,
+   "bridge": true
+  },
+  {
+   "t": 248483,
+   "type": "rating",
+   "chat": "c05",
+   "from_slot": 6,
+   "to_slot": 39,
+   "respect": 100,
+   "disagreement": 72,
+   "bridge": true
+  },
+  {
+   "t": 259140,
+   "type": "rating",
+   "chat": "c18",
+   "from_slot": 9,
+   "to_slot": 26,
+   "respect": 91,
+   "disagreement": 97,
+   "bridge": true
+  },
+  {
+   "t": 259140,
+   "type": "rating",
+   "chat": "c18",
+   "from_slot": 26,
+   "to_slot": 9,
+   "respect": 83,
+   "disagreement": 100,
+   "bridge": true
+  }
+ ]
+}

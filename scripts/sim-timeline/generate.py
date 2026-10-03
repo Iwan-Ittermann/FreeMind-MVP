@@ -92,7 +92,7 @@ Jede Nachricht 1–3 Sätze, max. 280 Zeichen. Markiere pro Nachricht mit "warm"
 Antworte als JSON: {{"messages":[{{"sender":"{a['name']}","text":"...","warm":false,"tone":"neutral"}}]}}"""
     for _ in range(3):
         try:
-            msgs = json.loads(call_ai_json(prompt))["messages"]
+            r = call_ai_json(prompt); msgs = (json.loads(r) if isinstance(r, str) else r)["messages"]
             if len(msgs) >= chat["n"] - 2:
                 return msgs[: chat["n"]]
         except Exception as e:  # retry on malformed output
