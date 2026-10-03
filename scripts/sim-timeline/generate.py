@@ -106,8 +106,8 @@ def rate(rng, rater, target, msgs_until, t):
     warm_from_target = sum(1 for m in msgs_until if m["slot"] == target and m["warm"])
     hostile = sum(1 for m in msgs_until if m["slot"] == target and m["tone"] == "hostile")
     if dist >= 2:
-        respect = 30 + 28 * warm_from_target - 12 * hostile + rng.randint(-5, 8)
-        if warm_from_target:
+        respect = 25 + 18 * warm_from_target - 12 * hostile + rng.randint(-5, 8)
+        if warm_from_target >= 2:
             respect = max(respect, 75 + rng.randint(0, 20))
         delay = rng.randint(30, 600)
     elif dist == 1:
@@ -162,7 +162,7 @@ def main():
         timeline_msgs = []
         for i, (m, t) in enumerate(zip(texts[c["id"]], ts)):
             slot = c["a"] if i % 2 == 0 else c["b"]
-            mm = dict(slot=slot, warm=bool(m.get("warm")), tone=m.get("tone", "neutral"))
+            mm = dict(slot=slot, warm=bool(m.get("warm")) and c["moment"] != "clash", tone=m.get("tone", "neutral"))
             timeline_msgs.append(mm)
             events.append(dict(t=t, type="message", chat=c["id"], sender_slot=slot, text=str(m["text"])[:400],
                                warm=mm["warm"], heat="high" if c["pattern"] == "hot" else "normal"))
