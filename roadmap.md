@@ -29,3 +29,9 @@
 - [x] Node-Graph und Chat unabhängig einklappbar machen
 - [x] Drei kommende Stream-Ergebnisse als Vorschau ergänzen
 - [x] Mobil und Desktop prüfen
+
+## /sim 72h-Replay (Hybrid)
+- [x] Timeline-Generator + Artefakt (src/data/sim-timeline.json)
+- [ ] Replay-Engine im Client (Weltzeituhr, Einstieg beim richtigen Frame)
+- [ ] Nachrichten-Punkte länger/auffälliger, bleibende Bewertungs-Pfeile
+- [ ] Live-KI-Antwort, wenn echte Besucher chatten
