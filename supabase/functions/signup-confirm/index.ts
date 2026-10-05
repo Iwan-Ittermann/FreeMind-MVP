@@ -35,7 +35,7 @@ async function notifyAdmin(signupEmail: string, confirmedAt: string) {
 
 // The standalone passphrase mail is no longer sent automatically.
 // The passphrase is delivered with the "Prepare" campaign mail (19.08.).
-// Manual resend stays available in /admin2.
+// Manual resend stays available in /aug-test/admin.
 
 async function sendWelcomeEmail(to: string, passphrase: string, confirmedAt: string) {
   const data = {

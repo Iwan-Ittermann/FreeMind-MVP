@@ -348,7 +348,7 @@ export default function Wedium() {
             <p className="text-base sm:text-lg text-muted-foreground">
               {c.faqLeadBefore}
               <a
-                href="/fragen"
+                href="/faq"
                 className="font-bold text-alert underline underline-offset-4 hover:no-underline"
               >
                 {c.faqLinkWord}
@@ -490,7 +490,7 @@ export default function Wedium() {
               {c.imprint}
             </a>
             <span className="text-muted-foreground">/</span>
-            <a href="/fragen" className="hover:text-alert">
+            <a href="/faq" className="hover:text-alert">
               {c.questions}
             </a>
             <span className="text-muted-foreground">/</span>

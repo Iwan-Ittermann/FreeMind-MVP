@@ -232,7 +232,7 @@ export default function Gutefrage() {
             <p className="text-base sm:text-lg text-muted-foreground">
               Du hast noch Fragen? Gerne{" "}
               <a
-                href="/fragen"
+                href="/faq"
                 className="font-bold text-alert underline underline-offset-4 hover:no-underline"
               >
                 hier
@@ -318,7 +318,7 @@ export default function Gutefrage() {
               Impressum
             </a>
             <span className="text-muted-foreground">/</span>
-            <a href="/fragen" className="hover:text-alert">
+            <a href="/faq" className="hover:text-alert">
               Fragen
             </a>
             <span className="text-muted-foreground">/</span>

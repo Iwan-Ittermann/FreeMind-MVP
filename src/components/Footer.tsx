@@ -7,7 +7,7 @@ export function Footer() {
         Impressum
       </Link>
       <div className="flex items-center gap-3">
-        <Link to="/fragen" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+        <Link to="/faq" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
           FAQ
         </Link>
         <Link to="/bericht" className="text-xs text-muted-foreground hover:text-foreground transition-colors">

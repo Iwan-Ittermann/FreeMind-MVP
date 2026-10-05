@@ -65,7 +65,7 @@ async function sendConfirmEmail(to: string, confirmUrl: string, token: string) {
 
 // The standalone passphrase mail is no longer sent from here.
 // The passphrase is delivered with the "Prepare" campaign mail (19.08.).
-// Manual resend stays available in /admin2.
+// Manual resend stays available in /aug-test/admin.
 
 
 Deno.serve(async (req) => {

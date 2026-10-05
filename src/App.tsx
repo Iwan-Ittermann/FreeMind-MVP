@@ -65,25 +65,21 @@ function AppRoutes() {
       <Route path="/aug-test" element={<Discussion mode="archive" />} />
       <Route path="/test" element={<Discussion mode="test" />} />
       <Route path="/sim" element={<Discussion mode="sim" />} />
-      <Route path="/secret" element={<Navigate to="/go" replace />} />
-      <Route path="/7mm9" element={<Navigate to="/aug-test" replace />} />
       <Route path="/confirm" element={<Confirm />} />
 
       <Route path="/unsubscribe" element={<Unsubscribe />} />
       <Route path="/legal" element={<Legal />} />
       <Route path="/passphrase-vergessen" element={<PassphraseRecall />} />
-      <Route path="/fragen" element={<Fragen />} />
-      <Route path="/faq" element={<Navigate to="/fragen" replace />} />
+      <Route path="/faq" element={<Fragen />} />
       <Route path="/sogehts" element={<Sogehts />} />
       <Route path="/bericht" element={<Bericht />} />
       <Route path="/benachrichtigungen" element={<NotificationsPage />} />
 
 
-      <Route path="/admin2" element={<Admin2 />} />
+      <Route path="/aug-test/admin" element={<Admin2 />} />
       <Route path="/wedium/admin" element={<Admin3 />} />
       <Route path="/admin" element={<Admin />} />
 
-      <Route path="/auth" element={<Navigate to="/" replace />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
