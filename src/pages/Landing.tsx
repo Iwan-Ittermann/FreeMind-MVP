@@ -424,7 +424,7 @@ export default function Landing() {
             <span className="text-muted-foreground">/</span>
             <a href="/legal" className="hover:text-alert">{c.imprint}</a>
             <span className="text-muted-foreground">/</span>
-            <a href="/fragen" className="hover:text-alert">{c.questions}</a>
+            <a href="/faq" className="hover:text-alert">{c.questions}</a>
             <span className="text-muted-foreground">/</span>
             <a href="mailto:iwan@freemind.chat" className="hover:text-alert">{c.contact}</a>
           </div>
