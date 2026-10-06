@@ -2,6 +2,8 @@ import { memo, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { SemanticNodeToken, SemanticZone } from '../types';
+import { useWediumPresentation } from '@/contexts/WediumPresentationContext';
+import wediumNode from '@/assets/wedium-node.png.asset.json';
 
 const NODE_SIZE = 40;
 const HALF = NODE_SIZE / 2;
@@ -137,6 +139,7 @@ export const SignalNode = memo(function SignalNode({
   onClick, onPointerDown, onMouseEnter, onMouseLeave,
 }: SignalNodeProps) {
   const { t } = useTranslation();
+  const wedium = useWediumPresentation();
   const shapeSet = ZONE_SHAPE;
   const showInactive = ttMode && token.isInactive && !token.isCurrentUser && !token.isBot;
   // TT mode: every opinion is a star, brightness by highscore rank.
@@ -162,7 +165,7 @@ export const SignalNode = memo(function SignalNode({
     : '';
 
   // All TT nodes render at the same size, regardless of ring
-  const effectiveScale = scale;
+  const effectiveScale = wedium ? Math.min(scale, 1) : scale;
   const scaledHalf = HALF * effectiveScale;
 
   // Detect "freshly added" own opinion: TTCenterCTA writes the opinion id +
@@ -229,16 +232,19 @@ export const SignalNode = memo(function SignalNode({
         <circle cx="20" cy="20" r="22" fill="transparent" />
 
         {/* Active (already discussing) — soft halo so it reads brighter than inactive nodes */}
-        {ttMode && !showInactive && !token.isBot && !isDimmed && (
+        {!wedium && ttMode && !showInactive && !token.isBot && !isDimmed && (
           <circle cx="20" cy="20" r="13" fill="none" stroke="#FFFFFF" strokeOpacity={0.22} strokeWidth={1} />
         )}
         {/* Selection highlight — gold to match warm earth palette */}
         {(highlightForTour || (isHighlighted && !isDimmed)) && (
           <circle cx="20" cy="20" r="18" fill="none" stroke="#00e5ff" strokeWidth={2} filter="url(#signal-select-glow)" />
         )}
-        <Shape />
+        {wedium ? <>
+          <circle cx="20" cy="20" r="18" fill="hsl(var(--card))" stroke={token.isCurrentUser || isHighlighted ? 'hsl(var(--primary))' : 'hsl(var(--foreground))'} strokeOpacity={showInactive ? 0.3 : 0.65} strokeWidth="1" />
+          <image href={wediumNode.url} x="12" y="6" width="16" height="25" opacity={showInactive ? 0.5 : 1} />
+        </> : <Shape />}
 
-        {ttMode && token.isCurrentUser && (
+        {!wedium && ttMode && token.isCurrentUser && (
           <text
             x="20"
             y="20"

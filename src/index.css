@@ -276,6 +276,43 @@
   );
 }
 
+.discussion-surround { background: hsl(var(--tt-spotlight-overlay)); }
+.wedium-discussion {
+  --background: 250 32% 9%;
+  --foreground: 0 0% 98%;
+  --card: 250 28% 6%;
+  --primary: 239 78% 75%;
+  --primary-foreground: 250 32% 9%;
+  --secondary: 12 91% 62%;
+  --accent: 239 78% 75%;
+  --border: 245 20% 36%;
+  --muted: 248 24% 17%;
+  --muted-foreground: 245 16% 74%;
+  --wedium-peach: 18 95% 84%;
+  --wedium-pink: 350 70% 82%;
+  --wedium-violet: 268 60% 80%;
+  --wedium-periwinkle: 232 78% 78%;
+  --wedium-graph: 0 0% 2%;
+  --wedium-stage: linear-gradient(135deg, hsl(var(--wedium-peach)), hsl(var(--wedium-pink)) 28%, hsl(var(--wedium-violet)) 58%, hsl(var(--wedium-periwinkle)));
+  background-image: var(--wedium-stage);
+}
+.wedium-graph-background { background-image: var(--wedium-stage); }
+.wedium-graph-background::after {
+  content: '';
+  position: absolute;
+  width: 116%;
+  aspect-ratio: 1;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: hsl(var(--wedium-graph));
+  border: 1px solid hsl(var(--foreground) / 0.15);
+}
+.wedium-wordmark { background: hsl(var(--wedium-periwinkle)); border-radius: 4px; padding: 2px 6px; }
+.wedium-discussion .signal-edges line { stroke: hsl(var(--foreground)); }
+.wedium-discussion .signal-nodes svg > circle[filter] { stroke: hsl(var(--primary)); filter: none; }
+
 /* freemind x Gutefrage.net event page (`/gutefrage`).
    Palette: Gutefrage green on a warm off-white. */
 .gutefrage-theme {

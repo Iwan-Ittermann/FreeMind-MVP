@@ -1,0 +1,4 @@
+{
+  "de": { "simTime": "Simulationszeit", "simDayTime": "Tag {{day}} · {{time}} UTC" },
+  "en": { "simTime": "Simulation time", "simDayTime": "Day {{day}} · {{time}} UTC" }
+}

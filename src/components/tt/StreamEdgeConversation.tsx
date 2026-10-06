@@ -24,7 +24,7 @@ export function StreamEdgeConversation({ chat, sourceOpinionId, sourceUserId, co
 
   return (
     <div className="relative flex min-h-0 flex-col">
-      <Conversation className="h-[220px] min-h-0 rounded-md border border-primary/25 bg-card/45 shadow-[0_0_32px_hsl(var(--stream-line)/0.08)]">
+      <Conversation className="h-[220px] max-h-[220px] min-h-0 flex-none rounded-md border border-primary/25 bg-card/45 shadow-[0_0_32px_hsl(var(--stream-line)/0.08)]">
         <ConversationContent className="gap-3 p-3">
           {!isLoading && visibleMessages.length === 0 ? (
             <ConversationEmptyState className="min-h-[180px] p-4" description={t('tt.streamConversationEmpty')} />

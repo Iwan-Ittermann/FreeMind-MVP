@@ -45,22 +45,22 @@ export function StreamCosmicView({ entry, opinions, chats, bestChat }: StreamCos
 
   return (
     <div className="stream-cosmic min-h-full bg-background text-foreground">
-      <div className="grid min-h-full grid-cols-1 lg:grid-cols-[minmax(0,1.08fr)_minmax(360px,0.92fr)]">
-        <article className="relative flex min-h-[300px] flex-col justify-center overflow-hidden border-b border-border/40 px-6 py-10 lg:min-h-full lg:border-b-0 lg:border-r lg:px-10">
+      <div className="grid min-h-full grid-cols-1">
+        <article className="relative flex min-h-[300px] flex-col justify-center overflow-hidden border-b border-border/40 px-6 py-10">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_28%_42%,hsl(var(--stream-line)/0.16),transparent_38%),radial-gradient(circle_at_76%_74%,hsl(var(--stream-warm)/0.13),transparent_30%)]" />
           <div className="relative z-10">
             <div className="mb-7 flex items-center gap-2 text-[10px] font-semibold uppercase text-primary">
               <Radio className="h-3 w-3" />
               {t('tt.streamNow')}
             </div>
-            <blockquote className="font-stream-editorial text-[clamp(2rem,5vw,4.75rem)] leading-[0.98] text-foreground">
+            <blockquote className="font-stream-editorial text-[32px] break-words leading-[1.08] text-foreground">
               “{opinion.text}”
             </blockquote>
             <div className="mt-8 h-px w-24 bg-secondary" />
           </div>
         </article>
 
-        <section className="relative flex min-h-[460px] flex-col overflow-hidden px-4 py-5 lg:px-6">
+        <section className="relative flex min-h-[460px] flex-col overflow-hidden px-4 py-5">
           {chats.length === 0 ? (
             <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">{t('tt.streamEmpty')}</div>
           ) : (
