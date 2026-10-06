@@ -4,7 +4,7 @@
 - [x] Spiralen-Schalter ohne Neuladen synchronisieren
 - [x] 72-Stunden-Simulation auf 60-fache Geschwindigkeit setzen
 - [x] Simulationszeit durch dünne Fortschrittslinie mit rotem Punkt ersetzen
-- [ ] Desktop und Mobil live prüfen
+- [x] Desktop und Mobil live prüfen
 
 ## Stream, Wedium-Look und Simulationszeit
 - [x] Stream auf Desktop wie auf Mobil darstellen

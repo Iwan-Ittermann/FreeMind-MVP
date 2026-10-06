@@ -18,7 +18,7 @@ export function TTSimControl() {
     const tick = () => {
       if (document.visibilityState === 'visible') {
         supabase.functions.invoke('sim-replay', { body: {} }).then(({ data, error }) => {
-          if (alive && !error && !data?.busy && Number.isFinite(data?.frame)) setFrame(data.frame);
+          if (alive && !error && Number.isFinite(data?.frame)) setFrame(data.frame);
         }).catch(() => {});
       }
     };
@@ -33,7 +33,7 @@ export function TTSimControl() {
 
   return (
     <div
-      className="absolute inset-x-4 bottom-2 z-[41] h-3 pointer-events-none"
+      className="absolute inset-x-4 bottom-[23px] z-[41] h-3 pointer-events-none"
       data-sim-frame={frame}
       role="progressbar"
       aria-label={label}
