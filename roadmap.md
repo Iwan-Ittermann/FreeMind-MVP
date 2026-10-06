@@ -1,5 +1,10 @@
 # Roadmap
 
+## Stream, Wedium-Look und Simulationszeit
+- [ ] Stream auf Desktop wie auf Mobil darstellen
+- [ ] /wedium/go: Wedium-Farbverlauf, Freemind × Wedium-Logo, minimalistische Graphansicht und hochgeladenes Node-Icon (Designauswahl ausstehend)
+- [ ] /sim: aktuell dargestellten Zeitstempel sichtbar anzeigen
+
 ## Stream-Design (aktuell)
 - [x] Cosmic Post-Ansicht mit Live-Mini-Graph umsetzen
 - [x] Eigenständige kompakte Read-only-Chats direkt an den Edges umsetzen
