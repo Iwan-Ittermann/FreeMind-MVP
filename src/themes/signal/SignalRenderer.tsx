@@ -166,7 +166,7 @@ export function SignalRenderer({
           {getTTLevelRadii(ttLandmarks)
             // Cosmos background keeps exactly one orientation line outside the
             // zero-point radius (drawn by TTBackground), so drop the outer rings.
-             .filter(({ level, r }) => wedium ? level === 0 || level === 5 || level === 9 : bgStyle !== 'cosmos' || r <= ttLandmarks.blueR)
+             .filter(({ level, r }) => wedium ? level === 1 || level === 5 || level === 10 : bgStyle !== 'cosmos' || r <= ttLandmarks.blueR)
             .map(({ level, r }) => (
             <circle
               key={level}
