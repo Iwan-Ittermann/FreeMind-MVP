@@ -1,4 +1,4 @@
 {
-  "de": { "simTime": "Simulationszeit", "simDayTime": "Tag {{day}} · {{time}} UTC" },
-  "en": { "simTime": "Simulation time", "simDayTime": "Day {{day}} · {{time}} UTC" }
+  "de": { "simTime": "Simulationszeit", "simHour": "Stunde {{hour}} von 72", "simDayTime": "Tag {{day}} · {{time}} UTC" },
+  "en": { "simTime": "Simulation time", "simHour": "Hour {{hour}} of 72", "simDayTime": "Day {{day}} · {{time}} UTC" }
 }

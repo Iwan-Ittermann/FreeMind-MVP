@@ -30,7 +30,7 @@ export function TTSimControl() {
   const seconds = (frame + 18 * 3600) % 86400;
   const time = [Math.floor(seconds / 3600), Math.floor(seconds / 60) % 60, seconds % 60]
     .map((part) => String(part).padStart(2, '0')).join(':');
-  return <div className="absolute right-3 bottom-0 z-40 flex h-7 items-center gap-1.5 text-[10px] text-muted-foreground pointer-events-none" data-sim-frame={frame}>
-    <span>{t('replay.simTime')}</span><time className="tabular-nums">{t('replay.simDayTime', { day, time })}</time>
+  return <div className="absolute right-3 bottom-0 z-[41] flex h-7 items-center gap-1.5 text-[11px] text-foreground pointer-events-none" data-sim-frame={frame}>
+    <span>{t('replay.simTime')}</span><time className="tabular-nums">{t('replay.simDayTime', { day, time })}</time><span className="text-muted-foreground">· {t('replay.simHour', { hour: Math.floor(frame / 3600) + 1 })}</span>
   </div>;
 }
