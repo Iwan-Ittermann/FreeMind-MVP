@@ -1,5 +1,11 @@
 # Roadmap
 
+## Stream-Spirale und beschleunigte Simulation
+- [x] Spiralen-Schalter ohne Neuladen synchronisieren
+- [x] 72-Stunden-Simulation auf 60-fache Geschwindigkeit setzen
+- [x] Simulationszeit durch dünne Fortschrittslinie mit rotem Punkt ersetzen
+- [ ] Desktop und Mobil live prüfen
+
 ## Stream, Wedium-Look und Simulationszeit
 - [x] Stream auf Desktop wie auf Mobil darstellen
 - [x] /wedium/go: Wedium-Farbverlauf, Freemind × Wedium-Logo, reduzierter schwarzer Kreis und hochgeladenes Node-Icon (16 × 25 px, Desktop/Mobil geprüft)

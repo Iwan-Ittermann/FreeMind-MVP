@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
+
+const LOOP_SECONDS = 72 * 60 * 60;
 
 /**
  * Keeps the permanent /sim replay caught up while someone is watching.
@@ -9,7 +10,6 @@ import { supabase } from '@/integrations/supabase/client';
  * server-confirmed frame, never a client clock that could run ahead of the data.
  */
 export function TTSimControl() {
-  const { t } = useTranslation();
   const [frame, setFrame] = useState<number | null>(null);
   useEffect(() => {
     let alive = true;
@@ -25,12 +25,26 @@ export function TTSimControl() {
     return () => { alive = false; window.clearInterval(id); };
   }, []);
   if (frame === null) return null;
-  const day = Math.floor(frame / 86400) + 1;
-  // The established loop starts at 18:00 UTC; show the corresponding clock time.
-  const seconds = (frame + 18 * 3600) % 86400;
-  const time = [Math.floor(seconds / 3600), Math.floor(seconds / 60) % 60, seconds % 60]
-    .map((part) => String(part).padStart(2, '0')).join(':');
-  return <div className="absolute right-3 bottom-0 z-[41] flex h-7 items-center gap-1.5 text-[11px] text-foreground pointer-events-none" data-sim-frame={frame}>
-    <span>{t('replay.simTime')}</span><time className="tabular-nums">{t('replay.simDayTime', { day, time })}</time><span className="text-muted-foreground">· {t('replay.simHour', { hour: Math.floor(frame / 3600) + 1 })}</span>
-  </div>;
+  const progress = Math.min(1, Math.max(0, frame / LOOP_SECONDS));
+  const hour = Math.min(72, Math.floor(frame / 3600) + 1);
+  const label = `Simulation: hour ${hour} of 72`;
+
+  return (
+    <div
+      className="absolute inset-x-4 bottom-2 z-[41] h-3 pointer-events-none"
+      data-sim-frame={frame}
+      role="progressbar"
+      aria-label={label}
+      aria-valuemin={1}
+      aria-valuemax={72}
+      aria-valuenow={hour}
+      title={label}
+    >
+      <div className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-foreground/75" />
+      <div
+        className="absolute top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-destructive shadow-sm"
+        style={{ left: `${progress * 100}%` }}
+      />
+    </div>
+  );
 }

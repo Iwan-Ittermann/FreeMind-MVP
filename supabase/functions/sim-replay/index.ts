@@ -16,6 +16,8 @@ const json = (b: unknown, s = 200) =>
 
 const EPOCH = Date.UTC(2026, 9, 3, 18, 0, 0); // cycle 0 starts here (UTC)
 const D = timeline.duration_seconds as number;
+const SPEED = 60;
+const REAL_CYCLE_MS = (D / SPEED) * 1000;
 type Admin = ReturnType<typeof createClient>;
 type Ev = Record<string, any> & { t: number; type: string };
 const EVENTS = timeline.timeline as Ev[];
@@ -103,9 +105,10 @@ Deno.serve(async (req) => {
   const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
   const now = Date.now();
   const elapsed = Math.max(0, Math.floor((now - EPOCH) / 1000));
-  const cycle = Math.floor(elapsed / D);
-  const frame = elapsed % D;
-  const cycleStart = EPOCH + cycle * D * 1000;
+  const acceleratedElapsed = elapsed * SPEED;
+  const cycle = Math.floor(acceleratedElapsed / D);
+  const frame = acceleratedElapsed % D;
+  const cycleStart = EPOCH + cycle * REAL_CYCLE_MS;
 
   // Single writer: take a short lease.
   const leaseUntil = new Date(now + 50_000).toISOString();
@@ -132,7 +135,7 @@ Deno.serve(async (req) => {
     for (const e of EVENTS) {
       if (e.t <= last || e.t > frame) continue;
       if (Date.now() > deadline) break;
-      const at = new Date(cycleStart + e.t * 1000).toISOString();
+      const at = new Date(cycleStart + (e.t / SPEED) * 1000).toISOString();
       if (e.type === 'opinion') {
         const p = personas.get(e.slot);
         const uid = p && await ensureUser(admin, p);
