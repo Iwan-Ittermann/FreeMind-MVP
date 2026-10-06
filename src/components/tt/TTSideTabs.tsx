@@ -452,7 +452,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                       )}
 
                       {upcomingStreamEntries.length > 0 && (
-                        <div className="border-t border-border/40 px-4 py-4 lg:px-6">
+                        <div className="border-t border-border/40 px-4 py-4">
                           <div className="mb-2 text-[10px] font-semibold uppercase text-primary">
                             {t('tt.streamPreview', 'Als Nächstes')}
                           </div>
@@ -483,7 +483,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                       )}
 
                       {stream.entries.filter((e) => e.index < stream.currentIndex).length > 0 && (
-                        <div className="border-t border-border/40 px-4 py-4 lg:px-6">
+                        <div className="border-t border-border/40 px-4 py-4">
                           <div className="mb-2 text-[10px] font-semibold uppercase text-muted-foreground">
                             {t('tt.streamHistory', 'Verlauf')}
                           </div>

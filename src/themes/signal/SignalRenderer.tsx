@@ -14,6 +14,7 @@ import type { ChatArrow } from '@/hooks/useChatArrows';
 import { useBackgroundPref } from '@/hooks/useBackgroundPref';
 import type { SpiralPoint } from '@/lib/stream-spiral';
 import { SPIRAL_MAX_R, STREAM_ARM_COUNT, STREAM_ARM_TURNS, spiralArmPosition } from '@/lib/stream-spiral';
+import { useWediumPresentation } from '@/contexts/WediumPresentationContext';
 
 /** Daten für die Stream-Spirale (Einheitsraum, Zentrum 0/0, blauer Ring = 300). */
 export interface StreamSpiralOverlay {
@@ -67,6 +68,7 @@ export function SignalRenderer({
   chatArrows,
   streamSpiral,
 }: SignalRendererProps) {
+  const wedium = useWediumPresentation();
   const nodeMap = useMemo(() => new Map(nodes.map(n => [n.id, n])), [nodes]);
   const { bgStyle } = useBackgroundPref();
   const [hidePendingEdges] = useHidePendingEdges();
@@ -164,7 +166,7 @@ export function SignalRenderer({
           {getTTLevelRadii(ttLandmarks)
             // Cosmos background keeps exactly one orientation line outside the
             // zero-point radius (drawn by TTBackground), so drop the outer rings.
-            .filter(({ r }) => bgStyle !== 'cosmos' || r <= ttLandmarks.blueR)
+             .filter(({ level, r }) => wedium ? level === 0 || level === 5 || level === 9 : bgStyle !== 'cosmos' || r <= ttLandmarks.blueR)
             .map(({ level, r }) => (
             <circle
               key={level}
@@ -172,7 +174,7 @@ export function SignalRenderer({
               cy={config.centerY}
               r={r}
               fill="none"
-              stroke="white"
+               stroke="hsl(var(--foreground))"
               strokeOpacity={0.2}
               strokeWidth={0.75}
             />
@@ -204,7 +206,7 @@ export function SignalRenderer({
       )}
 
       {/* Draw all six arms even with only a few candidates. */}
-      {streamSpiral && ttLandmarks && streamSpiral.points.length > 0 && (
+      {!wedium && streamSpiral && ttLandmarks && streamSpiral.points.length > 0 && (
         <g className="stream-spiral" pointerEvents="none">
           {(() => {
             const scale = ttLandmarks.blueR / SPIRAL_MAX_R;

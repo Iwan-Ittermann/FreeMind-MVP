@@ -10,6 +10,7 @@ import { useChatArrows } from '@/hooks/useChatArrows';
 import { useBackgroundPref } from '@/hooks/useBackgroundPref';
 import { useStreamFocus } from '@/hooks/useStreamFocus';
 import { useStreamSpiralPref } from '@/hooks/useStreamSpiralPref';
+import { useWediumPresentation } from '@/contexts/WediumPresentationContext';
 
 interface TTScreenInnerProps {
   topicId: string;
@@ -44,6 +45,7 @@ function TTScreenInnerImpl({
   hideLegend = false,
 }: TTScreenInnerProps) {
   const { t } = useTranslation();
+  const wedium = useWediumPresentation();
   const { user } = useAuth();
   const { data, activeChats, messageAnimations } = useTopicData(topicId);
   const { data: chatArrows } = useChatArrows(topicId, arrowMode);
@@ -130,11 +132,11 @@ function TTScreenInnerImpl({
       data-tt-topic={topicId}
       data-tt-real-topic={topicId}
       className="relative w-full h-[100dvh] snap-start snap-always overflow-hidden"
-      style={{ contain: 'layout size', backgroundColor: '#151c37', transform: 'translateZ(0)', scrollSnapStop: 'always' }}
+      style={{ contain: 'layout size', transform: 'translateZ(0)', scrollSnapStop: 'always' }}
     >
       {/* Full-bleed background, sized so the blue ring spans the viewport width.
           Lives outside the graph wrapper so it isn't clipped. */}
-      <TTBackground hue={hue} viewportWidth={phoneViewportW} variant={bgStyle} />
+      {wedium ? <div className="wedium-graph-background absolute inset-0" aria-hidden /> : <TTBackground hue={hue} viewportWidth={phoneViewportW} variant={bgStyle} />}
 
       {/* Zone labels are intentionally hidden in the Helsinki event build (introduced via help overlay). */}
 

@@ -45,6 +45,7 @@ import { TTDemoAccessPanel, openDemoAccess, useDemoAccess } from '@/components/t
 import { PASSPHRASE_LOGIN_ENABLED } from '@/lib/constants';
 import { TTSimControl } from '@/components/tt/TTSimControl';
 import { cn } from '@/lib/utils';
+import { WediumPresentationContext } from '@/contexts/WediumPresentationContext';
 
 
 /**
@@ -258,12 +259,13 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
 
   return (
     <ReadOnlyProvider value={readOnly}>
-    <div className="fixed inset-0 bg-black flex items-center justify-center">
+    <WediumPresentationContext.Provider value={mode === 'real'}>
+    <div className={cn('fixed inset-0 discussion-surround flex items-center justify-center', mode === 'real' && 'wedium-discussion')}>
       <div
         data-tt-phone-viewport
         className={cn(
           'relative h-[100dvh] w-full shrink-0 bg-background overflow-hidden transition-[max-width] duration-300',
-          streamActive ? 'max-w-[1120px]' : 'max-w-[480px]',
+          'max-w-[480px]',
         )}
       >
         <div className="absolute inset-0 overflow-hidden">
@@ -491,6 +493,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
         </div>
       </div>
     </div>
+    </WediumPresentationContext.Provider>
     </ReadOnlyProvider>
   );
 }
