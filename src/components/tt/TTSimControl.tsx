@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 
 const LOOP_SECONDS = 72 * 60 * 60;
@@ -10,6 +11,7 @@ const LOOP_SECONDS = 72 * 60 * 60;
  * server-confirmed frame, never a client clock that could run ahead of the data.
  */
 export function TTSimControl() {
+  const { t } = useTranslation();
   const [frame, setFrame] = useState<number | null>(null);
   useEffect(() => {
     let alive = true;
@@ -27,7 +29,7 @@ export function TTSimControl() {
   if (frame === null) return null;
   const progress = Math.min(1, Math.max(0, frame / LOOP_SECONDS));
   const hour = Math.min(72, Math.floor(frame / 3600) + 1);
-  const label = `Simulation: hour ${hour} of 72`;
+  const label = `${t('replay.simTime')}: ${t('replay.simHour', { hour })}`;
 
   return (
     <div
