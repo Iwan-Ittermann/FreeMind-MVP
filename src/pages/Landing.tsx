@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { trackEvent } from "@/lib/analytics";
+import { EventSimulationEmbed } from "@/components/EventSimulationEmbed";
+import { Button } from "@/components/ui/button";
 
 const panelClass =
   "snap-start min-h-screen w-full flex items-center justify-center px-5 sm:px-8 md:px-12 py-16 sm:py-20 md:py-24 border-b border-foreground/15";
@@ -22,7 +24,7 @@ const copy = {
     heroSub1: "Not because people are nicer here.",
     heroSub2a: "But because ",
     heroSub2b: "the rules of the game are different.",
-    ctaSandbox: "Try the sandbox",
+    ctaSandbox: "To the Wedium test",
     ctaAugust: "Try the August question",
     problemEyebrow: "The problem",
     problemTitle: "PUBLIC DEBATE RARELY FAILS BECAUSE OF PEOPLE.",
@@ -49,15 +51,15 @@ const copy = {
     aboutTitle: "About me",
     about1: "For years I have wondered why the internet can connect millions of people, yet good conversations are so rare.",
     about2: "freemind is my attempt to prove the opposite.",
-    ctaTitle: "HELP FIND OUT WHETHER THE INTERNET CAN WORK DIFFERENTLY.",
-    ctaLine1: "FOUR DAYS · ONE QUESTION · ",
-    ctaLine2: "ONE PROOF.",
+    ctaTitle: "THE NEXT EVENT: WEDIUM × FREEMIND.",
+    ctaLine1: "10–14 OCTOBER 2026 · ",
+    ctaLine2: "ONE QUESTION.",
     emailPlaceholder: "Email",
     btnLoading: "Sending…",
     btnSent: "Mail sent ✓",
     btnAlready: "Already in ✓",
-    btnIdle: "Register for future events",
-    fine1: "Register once and we will let you know before the next event starts.",
+    btnIdle: "Register for the Wedium test",
+    fine1: "Confirm your email to reserve your place. We will send your access before the event. Unsubscribe any time.",
     sentNote: "📬 Confirmation email on its way — click the link inside to complete your registration.",
     alreadyNote: "You are already confirmed — thank you!",
     imprint: "Imprint",
@@ -74,7 +76,7 @@ const copy = {
     heroSub1: "Nicht weil die Menschen hier netter sind.",
     heroSub2a: "Sondern weil ",
     heroSub2b: "die Spielregeln andere sind.",
-    ctaSandbox: "Sandbox ausprobieren",
+    ctaSandbox: "Zum Wedium Test",
     ctaAugust: "August-Frage ausprobieren",
     problemEyebrow: "Das Problem",
     problemTitle: "ÖFFENTLICHE DEBATTE SCHEITERT SELTEN AN DEN MENSCHEN.",
@@ -101,15 +103,15 @@ const copy = {
     aboutTitle: "Über mich",
     about1: "Seit Jahren frage ich mich, warum das Internet Millionen Menschen verbinden kann und gute Gespräche trotzdem so selten sind.",
     about2: "freemind ist mein Versuch, das Gegenteil zu beweisen.",
-    ctaTitle: "HILF HERAUSZUFINDEN, OB DAS INTERNET ANDERS FUNKTIONIEREN KANN.",
-    ctaLine1: "VIER TAGE · EINE FRAGE · ",
-    ctaLine2: "EIN BEWEIS.",
+    ctaTitle: "DAS NÄCHSTE EVENT: WEDIUM × FREEMIND.",
+    ctaLine1: "10.–14. OKTOBER 2026 · ",
+    ctaLine2: "EINE FRAGE.",
     emailPlaceholder: "E-Mail",
     btnLoading: "Wird gesendet…",
     btnSent: "Mail gesendet ✓",
     btnAlready: "Schon dabei ✓",
-    btnIdle: "Für kommende Events anmelden",
-    fine1: "Ein kommendes Event läuft vier Tage. Melde dich einmal an, wir informieren dich vor dem Start.",
+    btnIdle: "Für den Wedium Test anmelden",
+    fine1: "Bestätige deine E-Mail, um deinen Platz zu sichern. Deinen Zugang schicken wir dir vor dem Event. Abmelden jederzeit möglich.",
     fine2: "Die fünf besten Brückenbauer erhalten je 50 € als Dankeschön.",
     fine3: "Der Rechtsweg ist ausgeschlossen.",
     sentNote: "📬 Bestätigungs-E-Mail unterwegs — klick den Link darin, um die Anmeldung abzuschließen.",
@@ -167,7 +169,7 @@ function EmText({ children }: { children: string }) {
 }
 
 export default function Landing() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const lang: Lang = i18n.language?.startsWith("de") ? "de" : "en";
   const c = copy[lang];
   const setLang = (next: Lang) => {
@@ -209,7 +211,7 @@ export default function Landing() {
     }
     setStatus("loading");
     try {
-      const { data, error } = await supabase.functions.invoke("signup-request", {
+      const { data, error } = await supabase.functions.invoke("wedium-signup-request", {
         body: { email: raw },
       });
       if (error) throw error;
@@ -289,23 +291,11 @@ export default function Landing() {
           </div>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
             <a
-              href="/go"
+              href="/wedium"
               className="group inline-flex items-center gap-3 bg-foreground text-background px-7 py-4 text-sm font-bold uppercase tracking-wider hover:bg-alert transition-colors"
             >
               {c.ctaSandbox}
               <span className="transition-transform group-hover:translate-x-1">→</span>
-            </a>
-            <a
-              href="/sim"
-              className="text-sm font-bold uppercase tracking-wider underline underline-offset-4 hover:text-alert transition-colors"
-            >
-              {c.ctaAugust}
-            </a>
-            <a
-              href="/passphrase-vergessen"
-              className="text-sm text-foreground/60 underline underline-offset-4 hover:text-alert transition-colors"
-            >
-              {"\n"}
             </a>
           </div>
         </div>
@@ -357,6 +347,14 @@ export default function Landing() {
         </div>
       </section>
 
+      <section id="simulation" className={panelClass}>
+        <div className={`${panelInner} flex flex-col gap-8`}>
+          <h2 className={`${displayClass} text-3xl sm:text-5xl`}>{t('replay.tryTitle')}</h2>
+          <p className="max-w-3xl text-lg sm:text-xl leading-relaxed">{t('replay.tryBody')}</p>
+          <EventSimulationEmbed />
+        </div>
+      </section>
+
       <section className={panelClass}>
         <div className={`${panelInner} flex flex-col gap-8`}>
           <h2 className={displayClass} style={{ fontSize: "clamp(1.75rem, 5vw, 3.5rem)" }}>
@@ -377,20 +375,25 @@ export default function Landing() {
           <p className="mb-10 text-lg sm:text-xl font-bold uppercase tracking-wide">
             {c.ctaLine1}<span className="text-alert">{c.ctaLine2}</span>
           </p>
+          <Button asChild variant="link" className="mb-6 h-auto p-0 text-foreground underline underline-offset-4">
+            <a href="/wedium">{c.ctaSandbox} →</a>
+          </Button>
           <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-0 border border-foreground">
             <input
-              type="text"
+              type="email"
+              autoComplete="email"
+              aria-label={c.emailPlaceholder}
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={status !== "idle"}
               placeholder={c.emailPlaceholder}
-              className="flex-grow py-3.5 sm:py-4 outline-none text-sm font-bold uppercase placeholder:text-muted-foreground bg-transparent disabled:opacity-60"
+              className="min-w-0 flex-grow px-4 py-3.5 sm:py-4 outline-none text-sm font-bold uppercase placeholder:text-muted-foreground bg-transparent disabled:opacity-60"
             />
-            <button
+            <Button
               type="submit"
               disabled={status !== "idle"}
-              className="bg-foreground text-background px-6 py-3.5 sm:px-8 sm:py-4 text-sm font-bold uppercase hover:bg-alert transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+              className="h-auto rounded-none whitespace-normal bg-foreground text-background px-6 py-3.5 sm:px-8 sm:py-4 text-sm font-bold uppercase hover:bg-alert transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {status === "loading"
                 ? c.btnLoading
@@ -399,7 +402,7 @@ export default function Landing() {
                   : status === "already"
                     ? c.btnAlready
                     : c.btnIdle}
-            </button>
+            </Button>
           </form>
           <p className="mt-6 text-xs text-muted-foreground whitespace-pre-line">
             {c.fine1}

@@ -677,7 +677,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                 ) : null;
               })()}
 
-              {user && (
+              {user && !hideEventChannels && (
                 <button
                   onClick={handleSignOut}
                   className="mt-3 w-full flex items-center justify-center gap-1.5 rounded-md px-2 py-2 text-xs text-destructive hover:bg-destructive/10 transition-colors"
@@ -686,7 +686,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                   {t('common.signOut', 'Logout')}
                 </button>
               )}
-              {(passphraseSwitch || (!user && PASSPHRASE_LOGIN_ENABLED)) && (
+              {!hideEventChannels && (passphraseSwitch || (!user && PASSPHRASE_LOGIN_ENABLED)) && (
                 <>
                   <button
                     onClick={() => setShowLogin((s) => !s)}

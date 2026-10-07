@@ -53,7 +53,7 @@ import { TTPreEventNotice } from '@/components/tt/TTPreEventNotice';
  * Single-topic mobile UI. This build is locked to the Helsinki event topic (7mm9);
  * multi-topic swipe/loop logic has been removed.
  */
-export default function TT({ mode = 'real', eventPreview = false }: { mode?: 'test' | 'real' | 'sandbox' | 'archive' | 'sim'; eventPreview?: boolean }) {
+export default function TT({ mode = 'real', eventPreview = false, embedded = false, wediumPresentation = false }: { mode?: 'test' | 'real' | 'sandbox' | 'archive' | 'sim'; eventPreview?: boolean; embedded?: boolean; wediumPresentation?: boolean }) {
   useParams<{ topicId?: string }>(); // single-topic routes; params ignored
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -274,8 +274,8 @@ export default function TT({ mode = 'real', eventPreview = false }: { mode?: 'te
 
   return (
     <ReadOnlyProvider value={readOnly}>
-    <WediumPresentationContext.Provider value={false}>
-    <div className="fixed inset-0 discussion-surround flex items-center justify-center">
+    <WediumPresentationContext.Provider value={wediumPresentation}>
+    <div className={cn('fixed inset-0 discussion-surround flex items-center justify-center', wediumPresentation && 'wedium-discussion')}>
       <div
         data-tt-phone-viewport
         className={cn(
@@ -354,6 +354,7 @@ export default function TT({ mode = 'real', eventPreview = false }: { mode?: 'te
               topicId={activeTopicId}
               topicTitle={activeTopicTitle}
               highlight={false}
+              disableNotificationPrompt={eventPreview}
               onOpinionCommitted={() => {
                 queryClient.invalidateQueries({ queryKey: ['tt-own-opinion', activeTopicId, user?.id] });
                 queryClient.invalidateQueries({ queryKey: ['topic', activeTopicId] });
@@ -498,7 +499,7 @@ export default function TT({ mode = 'real', eventPreview = false }: { mode?: 'te
           />
         )}
         {isSim && <TTSimControl topicId={activeTopicId} />}
-        {eventPreview && !streamActive && !selectedNode && <TTPreEventNotice startsAt={eventConfig?.opinionsOpenAt ?? eventConfig?.discussionOpenAt ?? null} now={now} registered={isVerified} />}
+        {eventPreview && !streamActive && !selectedNode && <TTPreEventNotice startsAt={eventConfig?.opinionsOpenAt ?? eventConfig?.discussionOpenAt ?? null} now={now} registered={isVerified} suppressPopup={embedded} />}
 
       </div>
     </div>
