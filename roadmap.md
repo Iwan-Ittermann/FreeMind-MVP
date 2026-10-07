@@ -1,5 +1,12 @@
 # Roadmap
 
+## Simulation besser integrieren
+- [ ] Übergang, Textfluss und Darstellung auf beiden Landingpages angleichen; Scroll-Snap erhalten
+- [ ] Simulation beim Scrollen nach dem Hero vorladen; Bedienelemente erst beim Interagieren zeigen
+- [ ] Spirale standardmäßig ausblenden und Alle Chats ohne eigene Meinung zugänglich machen
+- [ ] Link unter Simulation in neuem Tab öffnen; Popup durch Registrierungslink im Countdown-Banner ersetzen
+- [ ] Wedium-Tab-Zuordnung korrigieren und Interaktionen prüfen
+
 ## Eingebettete Event-Simulation
 - [x] Startseiten-Links auf Wedium-Test ausrichten und August-Hero-Link entfernen
 - [x] Mitmachbare Simulation zwischen „Was passiert“ und „Über mich“ einbetten
