@@ -187,11 +187,10 @@ export function OpinionGraph({
           currentUserOpinionId={currentUserOpinionId || null}
           activeChats={activeChats}
           messageAnimations={messageAnimations}
-           opinionAnimations={opinionAnimations}
           onNodeClick={handleNodeClick}
           onNodeHover={handleNodeHover}
           onEdgeClick={onEdgeClick}
-          {...(useSignalLike ? { showLabels, highlightAllNodes, showZones: chrome !== 'naked', ttMode, ttLandmarks, chatArrows, streamSpiral } : {})}
+          {...(useSignalLike ? { showLabels, highlightAllNodes, showZones: chrome !== 'naked', ttMode, ttLandmarks, chatArrows, streamSpiral, opinionAnimations } : {})}
         />
       </div>
     );

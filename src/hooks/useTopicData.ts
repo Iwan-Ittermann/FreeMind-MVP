@@ -232,7 +232,7 @@ export function useTopicData(topicId: string) {
 
         // Add message animation
         const animId = `${data.chatId}-${Date.now()}`;
-        setMessageAnimations(prev => [...prev, {
+        const animation: MessageAnimationData = {
           id: animId,
           chatId: data.chatId,
           sourceOpinionId: data.sourceOpinionId,
@@ -241,7 +241,8 @@ export function useTopicData(topicId: string) {
           kind: 'message',
           content: data.content,
           durationMs: readingDuration(data.content ?? '', GRAPH_ANIMATION.messageMinMs, GRAPH_ANIMATION.messageMaxMs),
-        }].slice(-GRAPH_ANIMATION.maxVisibleEvents));
+        };
+        setMessageAnimations(prev => [...prev, animation].slice(-GRAPH_ANIMATION.maxVisibleEvents));
 
         // Update active chats
         setActiveChats(prev => {
@@ -301,12 +302,13 @@ export function useTopicData(topicId: string) {
         if (!sourceOpinionId || !targetOpinionId) continue;
         const isRating = item.type === 'rating';
         const content = typeof item.content === 'string' ? item.content : undefined;
-        setMessageAnimations(prev => [...prev, {
+        const animation: MessageAnimationData = {
           id, chatId: String(item.chatId ?? ''), sourceOpinionId, targetOpinionId, timestamp,
           kind: isRating ? 'rating' : 'message', content,
           respect: typeof item.respect === 'number' ? item.respect : undefined,
           durationMs: isRating ? GRAPH_ANIMATION.ratingMs : readingDuration(content ?? '', GRAPH_ANIMATION.messageMinMs, GRAPH_ANIMATION.messageMaxMs),
-        }].slice(-GRAPH_ANIMATION.maxVisibleEvents));
+        };
+        setMessageAnimations(prev => [...prev, animation].slice(-GRAPH_ANIMATION.maxVisibleEvents));
         setActiveChats(prev => [...prev.filter(chat => chat.chatId !== String(item.chatId ?? '')), {
           chatId: String(item.chatId ?? ''), opinionAId: sourceOpinionId, opinionBId: targetOpinionId, lastActivity: timestamp,
         }]);
