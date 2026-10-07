@@ -12,7 +12,7 @@ const LOOP_SECONDS = 72 * 60 * 60;
  * the same discussion no matter who triggered the catch-up. Displays the last
  * server-confirmed frame, never a client clock that could run ahead of the data.
  */
-export function TTSimControl({ topicId }: { topicId: string }) {
+export function TTSimControl({ topicId, compact = false }: { topicId: string; compact?: boolean }) {
   const { t } = useTranslation();
   const [frame, setFrame] = useState<number | null>(null);
   useEffect(() => {
@@ -53,7 +53,7 @@ export function TTSimControl({ topicId }: { topicId: string }) {
 
   return (
     <div
-      className="absolute inset-x-4 bottom-[55px] z-[41] h-7 pointer-events-none"
+      className={`absolute inset-x-4 ${compact ? 'bottom-[8px]' : 'bottom-[55px]'} z-[41] h-7 pointer-events-none`}
       data-sim-frame={frame ?? undefined}
       role="progressbar"
       aria-label={label}

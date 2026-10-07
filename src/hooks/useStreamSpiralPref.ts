@@ -1,17 +1,17 @@
 import { useCallback, useEffect, useState } from 'react';
 
-const KEY = 'freemind_stream_spiral';
+const KEY = 'freemind_stream_spiral_v2';
 const CHANGE_EVENT = 'freemind:stream-spiral-change';
 
 function readPreference() {
   try {
-    return localStorage.getItem(KEY) !== 'off';
+    return localStorage.getItem(KEY) === 'on';
   } catch {
-    return true;
+    return false;
   }
 }
 
-/** Zahnrad-Umschalter: Spirale im Graphen ein-/ausblenden (Standard: an). */
+/** Zahnrad-Umschalter: Spirale im Graphen ein-/ausblenden (Standard: aus). */
 export function useStreamSpiralPref() {
   const [show, setShow] = useState<boolean>(readPreference);
 

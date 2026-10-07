@@ -53,7 +53,7 @@ import { TTPreEventNotice } from '@/components/tt/TTPreEventNotice';
  * Single-topic mobile UI. This build is locked to the Helsinki event topic (7mm9);
  * multi-topic swipe/loop logic has been removed.
  */
-export default function TT({ mode = 'real', eventPreview = false, embedded = false, wediumPresentation = false }: { mode?: 'test' | 'real' | 'sandbox' | 'archive' | 'sim'; eventPreview?: boolean; embedded?: boolean; wediumPresentation?: boolean }) {
+export default function TT({ mode = 'real', eventPreview = false, embedded = false, embedInteractive = false, wediumPresentation = false }: { mode?: 'test' | 'real' | 'sandbox' | 'archive' | 'sim'; eventPreview?: boolean; embedded?: boolean; embedInteractive?: boolean; wediumPresentation?: boolean }) {
   useParams<{ topicId?: string }>(); // single-topic routes; params ignored
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -93,6 +93,8 @@ export default function TT({ mode = 'real', eventPreview = false, embedded = fal
   const [chatNodeId, setChatNodeId] = useState<string | null>(null);
   const [nudgeVisible, setNudgeVisible] = useState(false);
   const [streamActive, setStreamActive] = useState(false);
+  const [graphActive, setGraphActive] = useState(true);
+  const controlsVisible = !embedded || embedInteractive;
 
 
   const { data: activeData, isLoading: activeDataLoading } = useTopicData(activeTopicId);
@@ -306,7 +308,8 @@ export default function TT({ mode = 'real', eventPreview = false, embedded = fal
         />
 
         {/* Persistent chrome */}
-        <TTHeader
+        {!controlsVisible && <p className="absolute inset-x-6 top-7 z-20 text-center font-stream-editorial text-xl leading-snug text-foreground">{activeTopicTitle}</p>}
+        {controlsVisible && <TTHeader
           topicTitle={activeTopicTitle}
           notifications={ttNotifications}
           onMarkAllRead={markAllRead}
@@ -318,8 +321,8 @@ export default function TT({ mode = 'real', eventPreview = false, embedded = fal
           hideEventChannels={eventPreview}
           onOpenStream={() => sideTabsRef.current?.openPanel('stream')}
 
-        />
-        <TTSideTabs
+        />}
+        {controlsVisible && <TTSideTabs
           ref={sideTabsRef}
           opinions={activeData?.opinions ?? []}
           chats={ttChats}
@@ -329,8 +332,9 @@ export default function TT({ mode = 'real', eventPreview = false, embedded = fal
           nodePoints={activeData?.nodePoints}
           unreadCount={totalUnread}
           onActiveChatChange={setChatNodeId}
-          onPanelOpen={() => setTourStep(0)}
+          onPanelOpen={() => { setTourStep(0); setSelectedNode(null); }}
           onStreamActiveChange={setStreamActive}
+          onGraphActiveChange={setGraphActive}
 
 
           onOpinionTap={(opinionId) => {
@@ -339,7 +343,7 @@ export default function TT({ mode = 'real', eventPreview = false, embedded = fal
               setSelectedNode({ id: op.id, x: 0, y: 0, opinion: op } as GraphNode);
             }
           }}
-        />
+        />}
 
         {helpOpen && (
           <TTHelpOverlay
@@ -348,7 +352,7 @@ export default function TT({ mode = 'real', eventPreview = false, embedded = fal
             ownOpinionId={ownOpinionId}
           />
         )}
-        {ownOpinionKnown && !hasOwnOpinion && activeTopicId && !gateVariant && !readOnly && !streamActive && (
+        {controlsVisible && graphActive && ownOpinionKnown && !hasOwnOpinion && activeTopicId && !gateVariant && !readOnly && !streamActive && (
           isVerified || isPlayground || eventPreview ? (
             <TTCenterCTA
               topicId={activeTopicId}
@@ -404,19 +408,19 @@ export default function TT({ mode = 'real', eventPreview = false, embedded = fal
             ownOpinionId={ownOpinionId}
           />
         )}
-        {hasOwnOpinion && !gateVariant && !selectedNode && !discussionEnded && !isArchive && !streamActive && (
+        {controlsVisible && graphActive && hasOwnOpinion && !gateVariant && !selectedNode && !discussionEnded && !isArchive && !streamActive && (
           <TTNudgeHint
             stage={nudgeStage}
             onAction={() => sideTabsRef.current?.openPanel(nudgeStage === 'rate' ? 'opinions' : 'chats')}
             onVisibilityChange={setNudgeVisible}
           />
         )}
-        {hasOwnOpinion && !gateVariant && !selectedNode && !nudgeVisible && !discussionEnded && !isArchive && !streamActive && <TTInstallHint />}
+        {controlsVisible && graphActive && hasOwnOpinion && !gateVariant && !selectedNode && !nudgeVisible && !discussionEnded && !isArchive && !streamActive && <TTInstallHint />}
 
         {!eventPreview && <TTDemoAccessPanel />}
 
 
-        <TTBottomPanel
+        {controlsVisible && graphActive && <TTBottomPanel
           topicId={activeTopicId}
           hasOwnOpinion={hasOwnOpinion && !readOnly}
           ownOpinionKnown={ownOpinionKnown}
@@ -445,7 +449,7 @@ export default function TT({ mode = 'real', eventPreview = false, embedded = fal
           onCloseSelection={() => {
             setSelectedNode(null);
           }}
-        />
+        />}
 
         {gateVariant && (
           <TTGateOverlay
@@ -498,8 +502,8 @@ export default function TT({ mode = 'real', eventPreview = false, embedded = fal
             offsetClass={isPlayground && !hasOwnOpinion ? 'bottom-[196px]' : 'bottom-[150px]'}
           />
         )}
-        {isSim && <TTSimControl topicId={activeTopicId} />}
-        {eventPreview && !streamActive && !selectedNode && <TTPreEventNotice startsAt={eventConfig?.opinionsOpenAt ?? eventConfig?.discussionOpenAt ?? null} now={now} registered={isVerified} suppressPopup={embedded} />}
+        {isSim && <TTSimControl topicId={activeTopicId} compact={!controlsVisible} />}
+        {eventPreview && graphActive && !streamActive && !selectedNode && <TTPreEventNotice startsAt={eventConfig?.opinionsOpenAt ?? eventConfig?.discussionOpenAt ?? null} now={now} registered={isVerified} embedded={embedded} compact={!controlsVisible} />}
 
       </div>
     </div>

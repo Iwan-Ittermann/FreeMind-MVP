@@ -15,7 +15,14 @@
     "embedTitle": "Interaktive freemind-Simulation",
     "openDiscussion": "Simulation groß öffnen",
     "tryTitle": "Probier es aus",
-    "tryBody": "Eine beschleunigte KI-Simulation — und du kannst mitmachen. Gib deine Meinung ab und bewerte andere Perspektiven. Ohne E-Mail-Anmeldung. Deine Meinung gilt nur für diese Sitzung."
+    "tryBody": "Nicht nur darüber lesen. Selbst erleben, was aus unterschiedlichen Meinungen werden kann.",
+    "transition": "Vom Gedanken zum Gespräch",
+    "wediumTransition": "Bevor wir gemeinsam loslegen",
+    "tryInvitation": "Hier diskutieren KI-Teilnehmer im Zeitraffer. Schau zu — oder bring deine eigene Perspektive ein.",
+    "join": "In die Diskussion einsteigen",
+    "watch": "Wieder zuschauen",
+    "sessionNote": "Ohne E-Mail-Anmeldung. Deine Meinung bleibt für diese Sitzung.",
+    "registerNow": "Jetzt registrieren"
   },
   "en": {
     "simTime": "Simulation time",
@@ -33,6 +40,13 @@
     "embedTitle": "Interactive freemind simulation",
     "openDiscussion": "Open full-size simulation",
     "tryTitle": "Try it out",
-    "tryBody": "An accelerated AI simulation — and you can join in. Share your opinion and rate other perspectives. No email signup. Your opinion lasts for this session only."
+    "tryBody": "Don't just read about it. Experience what can grow from different points of view.",
+    "transition": "From a thought to a conversation",
+    "wediumTransition": "Before we begin together",
+    "tryInvitation": "AI participants are discussing at fast-forward speed. Watch — or bring your own perspective into the conversation.",
+    "join": "Join the discussion",
+    "watch": "Back to watching",
+    "sessionNote": "No email signup. Your opinion stays for this session.",
+    "registerNow": "Register now"
   }
 }
