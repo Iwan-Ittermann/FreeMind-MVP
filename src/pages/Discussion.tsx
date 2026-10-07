@@ -75,8 +75,8 @@ export default function TT({ mode = 'real', eventPreview = false }: { mode?: 'te
   // The August archive can be reopened as a second playground: writable for
   // everyone, while everything created during the event stays frozen server-side.
   const archiveOpen = isArchive && !!eventConfig?.archiveOpen;
-  const readOnly = eventPreview || (isArchive && !archiveOpen);
-  const isPlayground = !eventPreview && (isSandbox || archiveOpen || isSim);
+  const readOnly = isArchive && !archiveOpen;
+  const isPlayground = isSandbox || archiveOpen || isSim;
   const activeTopicId = topic?.id ?? '';
   const activeTopicTitle = topic?.title ?? '...';
 
@@ -302,6 +302,7 @@ export default function TT({ mode = 'real', eventPreview = false }: { mode?: 'te
           onRestartTour={() => setTourStep(1)}
           onDeleteOpinion={isPlayground && hasOwnOpinion ? handleDeleteOwnOpinion : undefined}
           passphraseSwitch={isSim && !eventPreview}
+          hideEventChannels={eventPreview}
           onOpenStream={() => sideTabsRef.current?.openPanel('stream')}
 
         />
@@ -475,7 +476,7 @@ export default function TT({ mode = 'real', eventPreview = false }: { mode?: 'te
 
 
 
-        <TTSandboxPassphrase enabled={isPlayground} />
+        <TTSandboxPassphrase enabled={isPlayground && !eventPreview} />
 
         {(isSandbox || isArchive || isSim) && !eventPreview && !streamActive && (
           <TTModeNotice

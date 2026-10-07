@@ -53,6 +53,8 @@ interface TTHeaderProps {
   /** Show the silent passphrase and allow switching account via passphrase. */
   passphraseSwitch?: boolean;
   onOpenStream?: () => void;
+  /** Pre-event: hide daily mail and push options. */
+  hideEventChannels?: boolean;
 }
 
 
@@ -75,7 +77,7 @@ const LANGUAGES = [
   { code: 'en', flag: '🇬🇧', labelKey: 'common.english' },
 ];
 
-export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRestartTour, onOpenHelp, activeTopicId, onDeleteOpinion, passphraseSwitch = false, onOpenStream }: TTHeaderProps) {
+export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRestartTour, onOpenHelp, activeTopicId, onDeleteOpinion, passphraseSwitch = false, onOpenStream, hideEventChannels = false }: TTHeaderProps) {
   const wedium = useWediumPresentation();
   const [deleteBusy, setDeleteBusy] = useState(false);
 
@@ -423,7 +425,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
               )}
             </AnimatePresence>
 
-            {pushStatus !== 'unsupported' && (
+            {!hideEventChannels && pushStatus !== 'unsupported' && (
               <div className="px-3 py-2 border-b border-border/30">
                 <button
                   onClick={togglePush}
@@ -461,7 +463,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
               </div>
             )}
 
-            <div className="px-3 py-2 border-b border-border/30">
+            <div className={`px-3 py-2 border-b border-border/30 ${hideEventChannels ? "hidden" : ""}`}>
 
               <button
                 onClick={toggleDigestOptIn}
