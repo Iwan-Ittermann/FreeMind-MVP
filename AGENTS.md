@@ -9,5 +9,6 @@
 - Display simulation progress from the last successful replay response, not a running client clock, so the indicator cannot advance beyond confirmed replay state.
 - Feed replay and user activity through one deduplicated graph-animation event path, so visual behavior cannot diverge between simulation and live use.
 - Generate reading pauses in presentation seconds mapped to replay time, and serialize queued message flights per chat so catch-up batches cannot animate both sides simultaneously.
-- Resolve /go from the shared event phase and remount the existing discussion when switching from read-only simulation to the real topic, so preview conversations cannot leak into event state.
+- Resolve /go from the shared event phase and remount the existing discussion when switching from interactive simulation to the real topic, so preview conversations cannot leak into event state.
 - Measure graph text bubbles from rendered text before sizing their SVG container, so three-line text fits without oversized empty boxes.
+- Embed the existing /go simulation in same-origin portrait iframes with explicit language and presentation parameters; embeds stay on the simulation topic and suppress registration popups to isolate fixed overlays and prevent duplicate discussion implementations.

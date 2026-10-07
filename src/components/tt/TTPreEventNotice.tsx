@@ -5,18 +5,18 @@ import { Clock3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
-export function TTPreEventNotice({ startsAt, now, registered }: { startsAt: Date | null; now: number; registered: boolean }) {
+export function TTPreEventNotice({ startsAt, now, registered, suppressPopup = false }: { startsAt: Date | null; now: number; registered: boolean; suppressPopup?: boolean }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   useEffect(() => {
-    if (registered) return;
+    if (registered || suppressPopup) return;
     try { if (sessionStorage.getItem('event-registration-seen')) return; } catch { /* storage optional */ }
     const timer = window.setTimeout(() => {
       setOpen(true);
       try { sessionStorage.setItem('event-registration-seen', 'true'); } catch { /* storage optional */ }
     }, 10_000);
     return () => window.clearTimeout(timer);
-  }, [registered]);
+  }, [registered, suppressPopup]);
   const remaining = Math.max(0, (startsAt?.getTime() ?? now) - now);
   const countdown = startsAt ? t('replay.startsIn', {
     days: Math.floor(remaining / 86400000), hours: Math.floor(remaining % 86400000 / 3600000), minutes: Math.floor(remaining % 3600000 / 60000),
