@@ -1,11 +1,11 @@
 # Roadmap
 
 ## /go Event-Vorschau und lesbare Simulation
-- [ ] Nachrichten vollständig und Meinungsblasen textnah darstellen
-- [ ] Fortschrittslinie sofort und bestätigte Sim-Uhr anzeigen
-- [ ] /go zeigt vor dem Event dieselbe read-only Sim mit Countdown und Registrierungs-Popup nach 10 Sekunden
-- [ ] /wedium/go auf /go umleiten; Event- und Sim-Daten getrennt halten
-- [ ] Vorschau, Popup und Zugangsgrenzen prüfen
+- [x] Nachrichten vollständig und Meinungsblasen textnah darstellen (3 Zeilen: 52px, kurze Meinung: 24px)
+- [x] Fortschrittslinie sofort und bestätigte Sim-Uhr anzeigen
+- [x] /go zeigt vor dem Event dieselbe read-only Sim mit Countdown und Registrierungs-Popup nach 10 Sekunden
+- [x] /wedium/go auf /go umleiten; Event- und Sim-Daten getrennt halten
+- [x] Vorschau, Popup und Zugangsgrenzen prüfen (keine Eingabe/Bewertung, Event-Themenwechsel geprüft, Build OK)
 
 ## Graph-Feinschliff und natürlicher Nachrichtenrhythmus
 - [x] Linien dünner und weißgrau darstellen
