@@ -47,7 +47,7 @@ function TTScreenInnerImpl({
   const { t } = useTranslation();
   const wedium = useWediumPresentation();
   const { user } = useAuth();
-  const { data, activeChats, messageAnimations } = useTopicData(topicId);
+  const { data, activeChats, messageAnimations, opinionAnimations } = useTopicData(topicId);
   const { data: chatArrows } = useChatArrows(topicId, arrowMode);
   const { bgStyle } = useBackgroundPref();
   const stream = useStreamFocus(topicId);
@@ -161,6 +161,7 @@ function TTScreenInnerImpl({
                 ratings={data?.ratings ?? []}
                 activeChats={activeChats}
                 messageAnimations={messageAnimations}
+                 opinionAnimations={opinionAnimations}
                 currentUserId={user?.id}
                 currentUserOpinionId={ownOpinionId}
                 onNodeSelect={onNodeSelect}

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Bell, BellOff, Settings, X, SlidersHorizontal, MessageSquare, MessageCircle, Sparkles, CircleHelp, HelpCircle, LogOut, Mail, MoveUpRight, Orbit, Smartphone, Trash2 } from 'lucide-react';
+import { Bell, BellOff, Settings, X, SlidersHorizontal, MessageSquare, MessageCircle, Sparkles, CircleHelp, HelpCircle, LogOut, Mail, MoveUpRight, Orbit, Smartphone, Trash2, Waves, Scale } from 'lucide-react';
 
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
@@ -52,6 +52,7 @@ interface TTHeaderProps {
   onDeleteOpinion?: () => Promise<void> | void;
   /** Show the silent passphrase and allow switching account via passphrase. */
   passphraseSwitch?: boolean;
+  onOpenStream?: () => void;
 }
 
 
@@ -74,7 +75,7 @@ const LANGUAGES = [
   { code: 'en', flag: '🇬🇧', labelKey: 'common.english' },
 ];
 
-export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRestartTour, onOpenHelp, activeTopicId, onDeleteOpinion, passphraseSwitch = false }: TTHeaderProps) {
+export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRestartTour, onOpenHelp, activeTopicId, onDeleteOpinion, passphraseSwitch = false, onOpenStream }: TTHeaderProps) {
   const wedium = useWediumPresentation();
   const [deleteBusy, setDeleteBusy] = useState(false);
 
@@ -540,6 +541,24 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
             className="absolute top-12 right-3 z-40 w-72 space-y-2 pointer-events-auto"
           >
             <div className="rounded-2xl bg-background/95 backdrop-blur-xl border border-border/40 shadow-2xl p-3">
+              {onOpenStream && (
+                <button
+                  onClick={() => { setAccountOpen(false); onOpenStream(); }}
+                  className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left text-xs text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors"
+                >
+                  <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-primary"><Waves className="w-3.5 h-3.5" /></div>
+                  <span className="flex-1">{t('tt.openStream')}</span>
+                </button>
+              )}
+
+              <Link
+                to="/legal"
+                onClick={() => setAccountOpen(false)}
+                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left text-xs text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors"
+              >
+                <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0"><Scale className="w-3.5 h-3.5" /></div>
+                <span className="flex-1">{t('tt.imprint')}</span>
+              </Link>
               <button
                 onClick={() => setArrowMode(!arrowMode)}
                 className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left text-xs transition-colors ${

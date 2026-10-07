@@ -6,7 +6,7 @@ import { MessageDots } from './MessageDots';
 import { calculateLayout, generateMockData } from '@/lib/freemind-layout';
 import { calculateTTLayout, TTLandmarks } from '@/lib/tt-layout';
 import { GraphNode, GraphEdge, LayoutConfig, Opinion, ChatRating, ChatRequest } from '@/types/graph';
-import { ActiveChat, MessageAnimationData } from '@/hooks/useTopicData';
+import { ActiveChat, MessageAnimationData, OpinionAnimationData } from '@/hooks/useTopicData';
 import { useFreeMindTheme } from '@/themes/ThemeContext';
 import { CityRenderer } from '@/themes/city/CityRenderer';
 import { ArcaneRenderer } from '@/themes/arcane/ArcaneRenderer';
@@ -19,6 +19,7 @@ interface OpinionGraphProps {
   chatRequests?: ChatRequest[];
   activeChats?: ActiveChat[];
   messageAnimations?: MessageAnimationData[];
+  opinionAnimations?: OpinionAnimationData[];
   currentUserId?: string | null;
   currentUserOpinionId?: string | null;
   onlineOpinionIds?: Set<string>;
@@ -52,6 +53,7 @@ export function OpinionGraph({
   chatRequests = [],
   activeChats = [],
   messageAnimations = [],
+  opinionAnimations = [],
   currentUserId,
   currentUserOpinionId,
   onlineOpinionIds = new Set(),
@@ -188,7 +190,7 @@ export function OpinionGraph({
           onNodeClick={handleNodeClick}
           onNodeHover={handleNodeHover}
           onEdgeClick={onEdgeClick}
-          {...(useSignalLike ? { showLabels, highlightAllNodes, showZones: chrome !== 'naked', ttMode, ttLandmarks, chatArrows, streamSpiral } : {})}
+          {...(useSignalLike ? { showLabels, highlightAllNodes, showZones: chrome !== 'naked', ttMode, ttLandmarks, chatArrows, streamSpiral, opinionAnimations } : {})}
         />
       </div>
     );

@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { SemanticNodeToken, SemanticZone } from '../types';
 import { useWediumPresentation } from '@/contexts/WediumPresentationContext';
 import wediumNode from '@/assets/wedium-node.png.asset.json';
+import type { OpinionAnimationData } from '@/hooks/useTopicData';
+import { truncateAtWord } from '@/lib/graph-animation';
 
 const NODE_SIZE = 40;
 const HALF = NODE_SIZE / 2;
@@ -122,6 +124,7 @@ interface SignalNodeProps {
   isDimmed: boolean;
   highlightForTour?: boolean;
   showSpeechBubble: boolean;
+  freshOpinion?: OpinionAnimationData;
   scale?: number;
   /** TT mode: gold core stars, emerald middle circles, smaller black extreme nodes. */
   ttMode?: boolean;
@@ -134,7 +137,7 @@ interface SignalNodeProps {
 }
 
 export const SignalNode = memo(function SignalNode({
-  token, isHighlighted, isDimmed, highlightForTour = false, showSpeechBubble, scale = 1, ttMode = false,
+  token, isHighlighted, isDimmed, highlightForTour = false, showSpeechBubble, freshOpinion, scale = 1, ttMode = false,
   graphSize,
   onClick, onPointerDown, onMouseEnter, onMouseLeave,
 }: SignalNodeProps) {
@@ -160,7 +163,7 @@ export const SignalNode = memo(function SignalNode({
   const opacity = isDimmed ? 0.4 : token.isHidden ? 0.3 : showInactive ? 0.9 : 1;
 
   const isScaled = isHighlighted && !isDimmed;
-  const bubbleText = token.opinionText
+  const bubbleText = freshOpinion?.text ? truncateAtWord(freshOpinion.text) : token.opinionText
     ? (token.opinionText.length > 16 ? token.opinionText.slice(0, 16) + '…' : token.opinionText)
     : '';
 
@@ -204,13 +207,23 @@ export const SignalNode = memo(function SignalNode({
   const Inner = (
     <>
       {/* Speech bubble */}
-      {showSpeechBubble && bubbleText && (
+      {(showSpeechBubble || !!freshOpinion) && bubbleText && (
         <g transform={`translate(0, ${-scaledHalf - 14})`} opacity={token.zone === 'core' || token.zone === 'middle' ? 0.5 : 0.92}>
-          <rect x={-75} y={-18} width={150} height={28} rx={8} fill="rgba(26,26,46,0.85)" stroke="#00e5ff" strokeWidth={0.5} strokeOpacity={0.3} />
-          <polygon points="-4,10 4,10 0,16" fill="rgba(26,26,46,0.85)" />
-          <text x={0} y={-3} textAnchor="middle" dominantBaseline="central" fill="#FFFFFFE6" fontSize="13" fontFamily="monospace">
-            {bubbleText}
-          </text>
+          {freshOpinion ? (
+            <motion.g initial={{ opacity: 0, scale: 0.88 }} animate={{ opacity: 1, scale: 1 }}>
+              <rect x={-92} y={-54} width={184} height={66} rx={8} fill="hsl(var(--card))" fillOpacity={0.96} stroke="hsl(var(--primary))" strokeWidth={1} />
+              <polygon points="-4,12 4,12 0,18" fill="hsl(var(--card))" />
+              <foreignObject x={-82} y={-46} width={164} height={50}>
+                <div className="line-clamp-3 text-center text-[10px] leading-[1.35] text-card-foreground">{bubbleText}</div>
+              </foreignObject>
+            </motion.g>
+          ) : (
+            <>
+              <rect x={-75} y={-18} width={150} height={28} rx={8} fill="hsl(var(--card))" fillOpacity={0.85} stroke="hsl(var(--primary))" strokeWidth={0.5} strokeOpacity={0.3} />
+              <polygon points="-4,10 4,10 0,16" fill="hsl(var(--card))" />
+              <text x={0} y={-3} textAnchor="middle" dominantBaseline="central" fill="hsl(var(--card-foreground))" fontSize="13" fontFamily="monospace">{bubbleText}</text>
+            </>
+          )}
         </g>
       )}
 
@@ -340,7 +353,7 @@ export const SignalNode = memo(function SignalNode({
 
 
 
-  if (animateFromCenter) {
+  if (animateFromCenter || freshOpinion) {
     if (!consumedRef.current) {
       consumedRef.current = true;
       try { sessionStorage.removeItem('tt:fresh-opinion'); } catch { /* ignore */ }

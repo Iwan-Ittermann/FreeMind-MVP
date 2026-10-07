@@ -45,5 +45,12 @@
 - [x] Timeline-Generator + Artefakt (src/data/sim-timeline.json)
 - [x] Replay-Engine (Weltzeituhr, fester Loop-Start, Nachholen bei Seitenaufruf)
 - [x] Landingpage-Button auf /sim
-- [ ] Nachrichten-Punkte länger/auffälliger, bleibende Bewertungs-Pfeile
+- [x] Nachrichten als lesbare Textblasen, aktive Kanten und bleibende Bewertungs-Pfeile
 - [ ] Live-KI-Antwort, wenn echte Besucher chatten
+
+## Stream-Navigation und lebendige Sim-Visualisierung
+- [x] Untere Leiste auf Meinungen, Graph und Chats reduzieren
+- [x] Stream und Impressum ins Zahnrad-Menü verlegen
+- [x] Neue Meinungen 4–8 Sekunden als gekürzte Sprechblase zeigen
+- [x] Sim-Nachrichten und Bewertungen mit gemeinsamer Ereignisspur animieren
+- [x] Mobil und Desktop live prüfen

@@ -1,7 +1,10 @@
 import { useMemo } from 'react';
+import { motion } from 'framer-motion';
 import type { MouseEvent } from 'react';
 import { GraphNode } from '@/types/graph';
 import { ChatArrow } from '@/hooks/useChatArrows';
+import type { MessageAnimationData } from '@/hooks/useTopicData';
+import { respectTone } from '@/lib/graph-animation';
 
 interface SignalChatArrowsProps {
   arrows: readonly ChatArrow[];
@@ -9,6 +12,7 @@ interface SignalChatArrowsProps {
   nodeRadius: number;
   highlightedNode: string | null;
   onArrowClick?: (sourceId: string, targetId: string) => void;
+  liveEvents?: readonly MessageAnimationData[];
 }
 
 /** Discrete length steps so "longer = more messages" stays readable. */
@@ -25,34 +29,18 @@ function arrowLength(messageCount: number, distance: number): number {
   return Math.max(5, Math.min(raw, distance * 0.25));
 }
 
-/** Cool/dim (few points) → cyan → warm/bright (many points). */
-function arrowColor(points: number | null, maxPoints: number): string {
-  if (points == null) return '#8895b3';
-  const t = maxPoints > 0 ? Math.min(1, points / maxPoints) : 0;
-  if (t < 0.5) {
-    const k = t / 0.5;
-    // deep blue → cyan
-    const r = Math.round(46 + k * (0 - 46));
-    const g = Math.round(90 + k * (212 - 90));
-    const b = Math.round(180 + k * (255 - 180));
-    return `rgb(${r},${g},${b})`;
-  }
-  const k = (t - 0.5) / 0.5;
-  // cyan → warm amber
-  const r = Math.round(0 + k * 255);
-  const g = Math.round(212 + k * (196 - 212));
-  const b = Math.round(255 + k * (110 - 255));
-  return `rgb(${r},${g},${b})`;
+/** Absolute scale: received points derive from respect × 0–10 disagreement. */
+function arrowColor(points: number | null): string {
+  if (points == null) return 'hsl(var(--muted-foreground))';
+  if (points < 300) return 'hsl(var(--destructive))';
+  if (points >= 650) return 'hsl(var(--success))';
+  return 'hsl(var(--accent-warm))';
 }
 
 export function SignalChatArrows({
-  arrows, nodeMap, nodeRadius, highlightedNode, onArrowClick,
+  arrows, nodeMap, nodeRadius, highlightedNode, onArrowClick, liveEvents = [],
 }: SignalChatArrowsProps) {
-  const maxPoints = useMemo(() => {
-    let max = 0;
-    for (const a of arrows) if (a.receivedPoints != null && a.receivedPoints > max) max = a.receivedPoints;
-    return max;
-  }, [arrows]);
+  const liveRatings = useMemo(() => new Map(liveEvents.filter(event => event.kind === 'rating').map(event => [`${event.sourceOpinionId}|${event.targetOpinionId}`, event])), [liveEvents]);
 
   const handleClick = (event: MouseEvent<SVGGElement>, a: ChatArrow) => {
     event.stopPropagation();
@@ -85,7 +73,9 @@ export function SignalChatArrows({
           a.toOpinionId === highlightedNode;
         const isHighlighted = !!highlightedNode && involved;
         const opacity = involved ? (isHighlighted ? 1 : 0.75) : 0.15;
-        const color = arrowColor(a.receivedPoints, maxPoints);
+        const ratingEvent = liveRatings.get(`${a.toOpinionId}|${a.fromOpinionId}`);
+        const tone = respectTone(ratingEvent?.respect);
+        const color = ratingEvent ? (tone === 'low' ? 'hsl(var(--destructive))' : tone === 'high' ? 'hsl(var(--success))' : 'hsl(var(--accent-warm))') : arrowColor(a.receivedPoints);
         const width = isHighlighted ? 2.2 : 1.4;
 
         // arrow head
@@ -111,6 +101,14 @@ export function SignalChatArrows({
                 strokeWidth={width * 3}
                 strokeOpacity={0.2}
                 strokeLinecap="round"
+              />
+            )}
+            {ratingEvent && (
+              <motion.line
+                x1={x1} y1={y1} x2={x2} y2={y2}
+                stroke={color} strokeWidth={width * 5} strokeLinecap="round"
+                initial={{ opacity: 0.95 }} animate={{ opacity: [0.95, 0.25, 0.8] }}
+                transition={{ duration: 1.2, repeat: 2 }}
               />
             )}
             <line

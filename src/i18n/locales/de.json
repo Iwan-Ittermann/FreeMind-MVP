@@ -821,6 +821,8 @@
     "deleteOpinionFailed": "Meinung konnte nicht gelöscht werden.",
     "yourRating": "Deine Bewertung",
     "streamTab": "Stream",
+    "openStream": "Stream öffnen",
+    "imprint": "Impressum",
     "streamNextIn": "Nächster in",
     "streamNow": "Jetzt im Stream",
     "streamEarlier": "In diesem Umlauf bisher",

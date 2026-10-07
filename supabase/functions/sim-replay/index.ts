@@ -130,6 +130,7 @@ Deno.serve(async (req) => {
     }
     const msgCount: Record<string, number> = {};
     let applied = 0;
+    const animationEvents: Array<Record<string, unknown>> = [];
     const deadline = now + 40_000;
 
     for (const e of EVENTS) {
@@ -145,6 +146,7 @@ Deno.serve(async (req) => {
           if (data) {
             p.opinion_id = data.id;
             await admin.from('sim_personas').update({ opinion_id: data.id, active: true }).eq('id', p.id);
+            animationEvents.push({ id: `opinion:${cycle}:${e.t}:${data.id}`, type: 'opinion', opinionId: data.id, text: e.text });
           }
         }
       } else if (e.type === 'chat_open') {
@@ -157,7 +159,15 @@ Deno.serve(async (req) => {
       } else if (e.type === 'message') {
         const cid = chatMap[e.chat], uid = personas.get(e.sender_slot)?.user_id;
         if (cid && uid) {
-          await admin.from('chat_messages').insert({ chat_id: cid, sender_id: uid, content: e.text, created_at: at, visible: true });
+          const { data: message } = await admin.from('chat_messages')
+            .insert({ chat_id: cid, sender_id: uid, content: e.text, created_at: at, visible: true }).select('id').single();
+          const chatSpec = (timeline.chats as Array<{ id: string; a: number; b: number }>).find((chat) => chat.id === e.chat);
+          const targetSlot = chatSpec ? (chatSpec.a === e.sender_slot ? chatSpec.b : chatSpec.a) : null;
+          const sourceOpinionId = personas.get(e.sender_slot)?.opinion_id;
+          const targetOpinionId = targetSlot == null ? null : personas.get(targetSlot)?.opinion_id;
+          if (message && sourceOpinionId && targetOpinionId) {
+            animationEvents.push({ id: `message:${cycle}:${e.t}:${message.id}`, type: 'message', chatId: cid, sourceOpinionId, targetOpinionId, content: e.text });
+          }
         }
       } else if (e.type === 'rating') {
         const cid = chatMap[e.chat];
@@ -180,6 +190,11 @@ Deno.serve(async (req) => {
             topic_id: tid, rater_opinion_id: rater.opinion_id, target_opinion_id: target.opinion_id,
             disagreement: dis, updated_at: at,
           }, { onConflict: 'rater_opinion_id,target_opinion_id' });
+          animationEvents.push({
+            id: `rating:${cycle}:${e.t}:${rater.opinion_id}:${target.opinion_id}`,
+            type: 'rating', chatId: cid, sourceOpinionId: rater.opinion_id,
+            targetOpinionId: target.opinion_id, respect: e.respect,
+          });
         }
       }
       if (e.type === 'message' && chatMap[e.chat] && msgCount[chatMap[e.chat]] !== undefined) msgCount[chatMap[e.chat]]++;
@@ -188,7 +203,7 @@ Deno.serve(async (req) => {
     }
     await put(admin, 'sim_replay_cursor', `${cycle}:${last}`);
     await put(admin, 'sim_replay_chats', JSON.stringify(chatMap));
-    return json({ cycle, frame, applied, cursor: last });
+    return json({ cycle, frame, applied, cursor: last, events: animationEvents });
   } finally {
     await admin.from('sim_state').update({ lease_expires_at: null }).eq('id', 1);
   }

@@ -277,7 +277,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
               highlightAllNodes={false}
               onNodeSelect={setSelectedNode}
               onEdgeClick={handleEdgeClick}
-              arrowMode={arrowMode}
+              arrowMode={isSim || arrowMode}
               hideLegend={isSim}
             />
           )}
@@ -300,6 +300,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
           onRestartTour={() => setTourStep(1)}
           onDeleteOpinion={isPlayground && hasOwnOpinion ? handleDeleteOwnOpinion : undefined}
           passphraseSwitch={isSim}
+          onOpenStream={() => sideTabsRef.current?.openPanel('stream')}
 
         />
         <TTSideTabs
@@ -480,17 +481,8 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
             offsetClass={isPlayground && !hasOwnOpinion ? 'bottom-[196px]' : 'bottom-[150px]'}
           />
         )}
-        {isSim && <TTSimControl />}
+        {isSim && <TTSimControl topicId={activeTopicId} />}
 
-        {/* Impressum footer — matches the header's slim size */}
-        <div className="absolute bottom-0 inset-x-0 z-40 h-7 px-3 flex items-center justify-start border-t border-border/30 bg-background/40 backdrop-blur-sm pointer-events-auto">
-          <a
-            href="/legal"
-            className="text-[11px] text-muted-foreground/80 hover:text-foreground transition-colors leading-none"
-          >
-            Impressum
-          </a>
-        </div>
       </div>
     </div>
     </WediumPresentationContext.Provider>

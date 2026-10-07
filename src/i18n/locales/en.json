@@ -821,6 +821,8 @@
     "deleteOpinionFailed": "Could not delete your opinion.",
     "yourRating": "Your rating",
     "streamTab": "Stream",
+    "openStream": "Open stream",
+    "imprint": "Legal notice",
     "streamNextIn": "Next in",
     "streamNow": "Now in the stream",
     "streamEarlier": "Earlier this cycle",

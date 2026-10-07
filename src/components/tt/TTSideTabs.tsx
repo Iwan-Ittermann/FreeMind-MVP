@@ -12,7 +12,6 @@ import {
   Pencil,
   ArrowUpDown,
   ChevronLeft,
-  Waves,
 } from 'lucide-react';
 import type { Opinion } from '@/types/graph';
 import type { TTChatItem } from '@/hooks/useTTChats';
@@ -29,7 +28,7 @@ import { cn } from '@/lib/utils';
 
 export interface TTSideTabsHandle {
   openChat: (opinionId: string) => void;
-  openPanel: (panel: 'opinions' | 'chats') => void;
+  openPanel: (panel: 'opinions' | 'stream' | 'chats') => void;
 }
 
 
@@ -121,7 +120,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
         setActiveAllChat(null);
         setActiveChatOpinionId(opinionId);
       },
-      openPanel(panel: 'opinions' | 'chats') {
+      openPanel(panel: 'opinions' | 'stream' | 'chats') {
         setActiveAllChat(null);
         setActiveChatOpinionId(null);
         if (panel === 'chats') setChatScope('mine');
@@ -678,14 +677,13 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
           target={ratingTarget}
         />
 
-        {/* Tab bar — sits directly above the Impressum footer */}
+        {/* Three primary tabs; secondary destinations live in the settings menu. */}
         <div
           role="tablist"
-          className="absolute bottom-[33px] inset-x-0 z-40 h-12 flex items-stretch border-t border-border/30 bg-background/90 backdrop-blur-md"
+          className="absolute bottom-0 inset-x-0 z-40 h-12 flex items-stretch border-t border-border/30 bg-background/90 backdrop-blur-md"
         >
           {tabButton('opinions', t('tt.opinions'), List, { helpKey: 'opinions-tab' })}
           {tabButton('graph', t('tt.graphTab', 'Kreis'), CircleDot)}
-          {tabButton('stream', t('tt.streamTab', 'Stream'), Waves)}
           {tabButton('chats', t('tt.chats'), MessagesSquare, {
             disabled: !hasOwnOpinion,
             badge: unreadCount,
