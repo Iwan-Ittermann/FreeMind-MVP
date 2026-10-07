@@ -1,6 +1,6 @@
 import { useMemo, useCallback, useRef } from 'react';
 import { GraphNode, GraphEdge, LayoutConfig } from '@/types/graph';
-import { ActiveChat, MessageAnimationData } from '@/hooks/useTopicData';
+import { ActiveChat, MessageAnimationData, OpinionAnimationData } from '@/hooks/useTopicData';
 import { tokenizeNodes, tokenizeEdge, tokenizeZones } from '../tokenizer';
 import { SemanticNodeToken, SemanticEdgeToken, SemanticEventToken } from '../types';
 import { SignalZones } from './SignalZones';
@@ -38,6 +38,7 @@ interface SignalRendererProps {
   currentUserOpinionId: string | null;
   activeChats: ActiveChat[];
   messageAnimations: MessageAnimationData[];
+  opinionAnimations: OpinionAnimationData[];
   onNodeClick: (node: GraphNode | null) => void;
   onNodeHover: (node: GraphNode | null) => void;
   onEdgeClick?: (edge: GraphEdge) => void;
@@ -58,7 +59,7 @@ interface SignalRendererProps {
 export function SignalRenderer({
   nodes, edges, config, width, height,
   highlightedNode, currentUserId, currentUserOpinionId,
-  activeChats, messageAnimations,
+  activeChats, messageAnimations, opinionAnimations,
   onNodeClick, onNodeHover, onEdgeClick,
   showLabels = 'highlighted-only',
   highlightAllNodes = false,
@@ -150,6 +151,10 @@ export function SignalRenderer({
   }, [showLabels, highlightedNode, currentUserOpinionId]);
 
   const nodeScale = ttMode ? (config.nodeRadius / 6) * 1.6 : config.nodeRadius / 6;
+  const freshOpinionById = useMemo(
+    () => new Map(opinionAnimations.map(event => [event.opinionId, event])),
+    [opinionAnimations],
+  );
 
   return (
     <svg
@@ -263,6 +268,7 @@ export function SignalRenderer({
 
             highlightForTour={highlightAllNodes}
             showSpeechBubble={shouldShowBubble(nt.id)}
+            freshOpinion={freshOpinionById.get(nt.id)}
             scale={nodeScale}
             ttMode={ttMode}
             graphSize={width}
@@ -273,7 +279,7 @@ export function SignalRenderer({
           />
         ))}
       </g>
-      <SignalEventMarker events={eventTokens} />
+      <SignalEventMarker events={eventTokens} messageAnimations={messageAnimations} />
     </svg>
   );
 }
