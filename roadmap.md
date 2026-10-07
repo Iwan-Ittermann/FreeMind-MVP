@@ -74,3 +74,7 @@
 - [x] Nachrichten langsamer an einer Ecke entlang der sichtbaren Kante führen
 - [x] Viele eigenständige Meinungsunterschied-Bewertungen für Cluster ergänzen
 - [x] Datensatz neu erzeugen, Replay-Funktion veröffentlichen und live prüfen
+
+## Später (während des Events)
+- [ ] Push-Option: auf Desktop "im Browser" statt "aufs Handy" anzeigen
+- [ ] Mobil: zuerst "Shortcut installieren" anbieten
