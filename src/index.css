@@ -318,6 +318,7 @@
 .simulation-stage-active { height: 720px; }
 .simulation-placeholder { background: hsl(var(--foreground) / 0.05); }
 .simulation-section { scroll-snap-stop: normal; }
+.simulation-section:has(.simulation-stage-active) { scroll-snap-align: none; }
 .wedium-discussion [data-tt-tab-panel] { background: hsl(var(--background)); }
 @media (max-width: 1023px) {
   .simulation-stage { height: 440px; max-width: 400px; }
