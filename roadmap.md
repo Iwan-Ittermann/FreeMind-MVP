@@ -60,4 +60,4 @@
 - [x] Neue Meinungsblasen innerhalb des sichtbaren Graphen halten
 - [x] Nachrichten langsamer an einer Ecke entlang der sichtbaren Kante führen
 - [x] Viele eigenständige Meinungsunterschied-Bewertungen für Cluster ergänzen
-- [ ] Datensatz neu erzeugen, Replay-Funktion veröffentlichen und live prüfen
+- [x] Datensatz neu erzeugen, Replay-Funktion veröffentlichen und live prüfen
