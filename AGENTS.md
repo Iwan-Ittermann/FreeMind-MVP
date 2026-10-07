@@ -6,3 +6,4 @@
 - The /sim replay runs deterministically at 60× speed from a fixed loop epoch, writes backdated events server-side, and catches up on page views (no cron), so every visitor sees the identical state.
 - Scope Wedium discussion visuals through presentation context and semantic CSS tokens; reuse the existing graph and interactions instead of maintaining a separate renderer.
 - Display simulation progress from the last successful replay response, not a running client clock, so the indicator cannot advance beyond confirmed replay state.
+- Feed replay and user activity through one deduplicated graph-animation event path, so visual behavior cannot diverge between simulation and live use.

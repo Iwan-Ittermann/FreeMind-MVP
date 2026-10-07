@@ -277,7 +277,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
               highlightAllNodes={false}
               onNodeSelect={setSelectedNode}
               onEdgeClick={handleEdgeClick}
-              arrowMode={arrowMode}
+              arrowMode={isSim || arrowMode}
               hideLegend={isSim}
             />
           )}

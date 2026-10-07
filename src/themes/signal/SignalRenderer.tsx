@@ -207,6 +207,7 @@ export function SignalRenderer({
           nodeRadius={config.nodeRadius}
           highlightedNode={highlightedNode}
           onArrowClick={handleEdgeClick}
+          liveEvents={messageAnimations}
         />
       )}
 

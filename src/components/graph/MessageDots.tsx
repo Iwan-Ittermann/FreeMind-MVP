@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { GraphNode } from '@/types/graph';
 import { MessageAnimationData } from '@/hooks/useTopicData';
+import { GRAPH_ANIMATION } from '@/lib/graph-animation';
 
 interface MessageDotsProps {
   nodes: GraphNode[];
@@ -39,7 +40,7 @@ export function MessageDots({ nodes, messageAnimations }: MessageDotsProps) {
               }}
               exit={{ opacity: 0 }}
               transition={{ 
-                duration: 0.8,
+                duration: (anim.durationMs ?? GRAPH_ANIMATION.messageMinMs) / 1000,
                 ease: "easeInOut",
                 opacity: { times: [0, 0.8, 1] },
                 scale: { times: [0, 0.5, 1] }
