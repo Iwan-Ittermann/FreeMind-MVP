@@ -15,7 +15,7 @@ i18n.use(initReactI18next).init({
   // English-first globally; wedium and sim start in German unless a language was chosen before.
   lng: (() => {
     const germanFirst = () =>
-      window.location.pathname.startsWith('/wedium') || window.location.pathname.startsWith('/sim');
+       window.location.pathname === '/go' || window.location.pathname.startsWith('/wedium') || window.location.pathname.startsWith('/sim');
     try {
       const storedLanguage = localStorage.getItem('freemind_lang');
       if (storedLanguage) return storedLanguage;

@@ -46,13 +46,14 @@ import { PASSPHRASE_LOGIN_ENABLED } from '@/lib/constants';
 import { TTSimControl } from '@/components/tt/TTSimControl';
 import { cn } from '@/lib/utils';
 import { WediumPresentationContext } from '@/contexts/WediumPresentationContext';
+import { TTPreEventNotice } from '@/components/tt/TTPreEventNotice';
 
 
 /**
  * Single-topic mobile UI. This build is locked to the Helsinki event topic (7mm9);
  * multi-topic swipe/loop logic has been removed.
  */
-export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbox' | 'archive' | 'sim' }) {
+export default function TT({ mode = 'real', eventPreview = false }: { mode?: 'test' | 'real' | 'sandbox' | 'archive' | 'sim'; eventPreview?: boolean }) {
   useParams<{ topicId?: string }>(); // single-topic routes; params ignored
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -74,8 +75,8 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
   // The August archive can be reopened as a second playground: writable for
   // everyone, while everything created during the event stays frozen server-side.
   const archiveOpen = isArchive && !!eventConfig?.archiveOpen;
-  const readOnly = isArchive && !archiveOpen;
-  const isPlayground = isSandbox || archiveOpen || isSim;
+  const readOnly = eventPreview || (isArchive && !archiveOpen);
+  const isPlayground = !eventPreview && (isSandbox || archiveOpen || isSim);
   const activeTopicId = topic?.id ?? '';
   const activeTopicTitle = topic?.title ?? '...';
 
@@ -105,11 +106,12 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
     queryKey: ['tt-own-opinion', activeTopicId, user?.id],
     enabled: !!activeTopicId && !!user,
     queryFn: async () => {
+       if (!user) return null;
       const { data, error } = await supabase
         .from('opinions_public')
         .select('id')
         .eq('topic_id', activeTopicId)
-        .eq('user_id', user!.id)
+        .eq('user_id', user.id)
         .eq('visible', true)
         .maybeSingle();
 
@@ -259,8 +261,8 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
 
   return (
     <ReadOnlyProvider value={readOnly}>
-    <WediumPresentationContext.Provider value={mode === 'real'}>
-    <div className={cn('fixed inset-0 discussion-surround flex items-center justify-center', mode === 'real' && 'wedium-discussion')}>
+    <WediumPresentationContext.Provider value={false}>
+    <div className="fixed inset-0 discussion-surround flex items-center justify-center">
       <div
         data-tt-phone-viewport
         className={cn(
@@ -299,7 +301,7 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
           onOpenHelp={() => setHelpOpen(true)}
           onRestartTour={() => setTourStep(1)}
           onDeleteOpinion={isPlayground && hasOwnOpinion ? handleDeleteOwnOpinion : undefined}
-          passphraseSwitch={isSim}
+          passphraseSwitch={isSim && !eventPreview}
           onOpenStream={() => sideTabsRef.current?.openPanel('stream')}
 
         />
@@ -308,8 +310,8 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
           opinions={activeData?.opinions ?? []}
           chats={ttChats}
           topicId={activeTopicId}
-          hasOwnOpinion={hasOwnOpinion}
-          myOpinionId={ownOpinionId}
+          hasOwnOpinion={hasOwnOpinion && !readOnly}
+          myOpinionId={readOnly ? null : ownOpinionId}
           nodePoints={activeData?.nodePoints}
           unreadCount={totalUnread}
           onActiveChatChange={setChatNodeId}
@@ -396,14 +398,14 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
         )}
         {hasOwnOpinion && !gateVariant && !selectedNode && !nudgeVisible && !discussionEnded && !isArchive && !streamActive && <TTInstallHint />}
 
-        <TTDemoAccessPanel />
+        {!eventPreview && <TTDemoAccessPanel />}
 
 
         <TTBottomPanel
           topicId={activeTopicId}
-          hasOwnOpinion={hasOwnOpinion}
+          hasOwnOpinion={hasOwnOpinion && !readOnly}
           ownOpinionKnown={ownOpinionKnown}
-          ownOpinionId={ownOpinionId}
+          ownOpinionId={readOnly ? null : ownOpinionId}
           highlightAddOpinionForm={false}
           highlightLetsChatButton={activeTourStep?.highlight === 'chat'}
           highlightDisagreementScale={activeTourStep?.highlight === 'difference'}
@@ -475,13 +477,14 @@ export default function TT({ mode = 'real' }: { mode?: 'test' | 'real' | 'sandbo
 
         <TTSandboxPassphrase enabled={isPlayground} />
 
-        {(isSandbox || isArchive || isSim) && !streamActive && (
+        {(isSandbox || isArchive || isSim) && !eventPreview && !streamActive && (
           <TTModeNotice
             mode={isSim ? 'sim' : isSandbox ? 'sandbox' : archiveOpen ? 'archive-open' : 'archive'}
             offsetClass={isPlayground && !hasOwnOpinion ? 'bottom-[196px]' : 'bottom-[150px]'}
           />
         )}
         {isSim && <TTSimControl topicId={activeTopicId} />}
+        {eventPreview && !streamActive && !selectedNode && <TTPreEventNotice startsAt={eventConfig?.opinionsOpenAt ?? eventConfig?.discussionOpenAt ?? null} now={now} registered={isVerified} />}
 
       </div>
     </div>
