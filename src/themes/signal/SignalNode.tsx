@@ -182,9 +182,9 @@ export const SignalNode = memo(function SignalNode({
   const freshBubbleOffsetY = freshBubbleBelow ? scaledHalf + 16 : -scaledHalf - 14;
 
   // Detect "freshly added" own opinion: TTCenterCTA writes the opinion id +
-  // timestamp to sessionStorage right after submit. We animate the user node
-  // from the graph center to its target position once, then clear the flag.
-  const animateFromCenter = useMemo(() => {
+  // timestamp to sessionStorage right after submit. Pop in at the final position
+  // once, then clear the flag; replay opinions use the same entrance.
+  const animateEntrance = useMemo(() => {
     if (!ttMode || !token.isCurrentUser || !token.id || !graphWidth) return false;
     if (!Number.isFinite(token.x) || !Number.isFinite(token.y) || !Number.isFinite(graphWidth)) return false;
     try {
@@ -201,8 +201,6 @@ export const SignalNode = memo(function SignalNode({
   }, [ttMode, token.isCurrentUser, token.id, graphWidth, token.x, token.y]);
 
   const consumedRef = useRef(false);
-  const centerX = graphWidth ? graphWidth / 2 : 0;
-  const centerY = graphHeight ? graphHeight / 2 : centerX;
 
   const groupProps = {
     style: { cursor: 'pointer' as const, opacity },
@@ -367,20 +365,21 @@ export const SignalNode = memo(function SignalNode({
 
 
 
-  if (animateFromCenter || freshOpinion) {
+  if (animateEntrance || freshOpinion) {
     if (!consumedRef.current) {
       consumedRef.current = true;
       try { sessionStorage.removeItem('tt:fresh-opinion'); } catch { /* ignore */ }
     }
     return (
-      <motion.g
-        {...groupProps}
-        initial={{ x: centerX, y: centerY, scale: 0.4, opacity: 0 }}
-        animate={{ x: token.x, y: token.y, scale: 1, opacity }}
-        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      >
-        {Inner}
-      </motion.g>
+      <g {...groupProps} transform={`translate(${token.x}, ${token.y})`}>
+        <motion.g
+          initial={{ scale: 0.2, opacity: 0 }}
+          animate={{ scale: [0.2, 1.12, 1], opacity: [0, 1, 1] }}
+          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+        >
+          {Inner}
+        </motion.g>
+      </g>
     );
   }
 
