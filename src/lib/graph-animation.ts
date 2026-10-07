@@ -1,6 +1,6 @@
 export const GRAPH_ANIMATION = {
-  messageMinMs: 3200,
-  messageMaxMs: 5600,
+  messageMinMs: 5600,
+  messageMaxMs: 9000,
   ratingMs: 4200,
   activeEdgeMs: 5600,
   opinionMinMs: 4000,
@@ -9,7 +9,7 @@ export const GRAPH_ANIMATION = {
 } as const;
 
 export function readingDuration(text: string, min: number, max: number) {
-  return Math.min(max, Math.max(min, min + text.length * 24));
+  return Math.min(max, Math.max(min, min + text.length * 32));
 }
 
 export function truncateAtWord(text: string, max = 140) {

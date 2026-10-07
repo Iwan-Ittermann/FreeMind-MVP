@@ -34,7 +34,7 @@ export function TTSimControl({ topicId }: { topicId: string }) {
       }
     };
     tick();
-    const id = window.setInterval(tick, 20_000);
+    const id = window.setInterval(tick, 10_000);
     return () => { alive = false; window.clearInterval(id); };
   }, [topicId]);
   if (frame === null) return null;

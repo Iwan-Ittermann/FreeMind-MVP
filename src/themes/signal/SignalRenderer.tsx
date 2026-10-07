@@ -160,7 +160,7 @@ export function SignalRenderer({
     <svg
       width={width}
       height={height}
-      className="overflow-visible"
+      className="overflow-hidden"
       style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}
     >
       <rect width={width} height={height} fill="transparent" onClick={() => onNodeClick(null)} />
@@ -272,7 +272,8 @@ export function SignalRenderer({
             freshOpinion={freshOpinionById.get(nt.id)}
             scale={nodeScale}
             ttMode={ttMode}
-            graphSize={width}
+            graphWidth={width}
+            graphHeight={height}
             onClick={(event) => handleNodeClick(nt.id, event)}
             onPointerDown={(event) => event.stopPropagation()}
             onMouseEnter={() => handleNodeHover(nt.id)}

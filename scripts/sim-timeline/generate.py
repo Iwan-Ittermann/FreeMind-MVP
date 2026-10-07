@@ -120,6 +120,42 @@ def rate(rng, rater, target, msgs_until, t):
     return {"t": t + delay, "respect": int(min(100, max(0, respect))), "disagreement": disagreement}
 
 
+def opinion_difference_events(rng, joins):
+    """Model the opinion-list habit separately from chat respect ratings.
+
+    A newly joined person rates many already visible opinions over the following
+    minutes, while a few earlier participants also rate the newcomer. Values are
+    deterministic and camp-driven so the graph forms stable clusters.
+    """
+    events = []
+    ordered = sorted(joins, key=joins.get)
+    for position, rater in enumerate(ordered):
+        visible = ordered[:position]
+        rng.shuffle(visible)
+        chosen = visible[:min(len(visible), rng.randint(10, 16))]
+        for index, target in enumerate(chosen):
+            camp_distance = abs(CAMP_OF[rater] - CAMP_OF[target])
+            disagreement = min(10, max(0, round(1.2 + 2.7 * camp_distance + rng.uniform(-0.8, 0.8))))
+            events.append(dict(
+                t=min(joins[rater] + rng.randint(90, 24 * 60) + index * rng.randint(20, 75), DURATION - 60),
+                type="difference_rating", from_slot=rater, to_slot=target,
+                disagreement=disagreement,
+            ))
+
+        # Existing participants notice and rate a sample of each fresh opinion.
+        inbound = visible[:]
+        rng.shuffle(inbound)
+        for index, older_rater in enumerate(inbound[:min(len(inbound), 4)]):
+            camp_distance = abs(CAMP_OF[older_rater] - CAMP_OF[rater])
+            disagreement = min(10, max(0, round(1.2 + 2.7 * camp_distance + rng.uniform(-0.8, 0.8))))
+            events.append(dict(
+                t=min(joins[rater] + rng.randint(4 * 60, 35 * 60) + index * rng.randint(30, 120), DURATION - 60),
+                type="difference_rating", from_slot=older_rater, to_slot=rater,
+                disagreement=disagreement,
+            ))
+    return events
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int, default=7)
@@ -156,6 +192,7 @@ def main():
         texts = dict(zip([c["id"] for c in chats], ex.map(lambda c: write_chat(c, P), chats)))
 
     events = [dict(t=joins[s], type="opinion", slot=s, text=P[s]["opinion"]) for s in range(40)]
+    events.extend(opinion_difference_events(rng, joins))
     for c in chats:
         ts = message_times(rng, c["start"], c["end"], len(texts[c["id"]]), c["pattern"])
         events.append(dict(t=ts[0] - rng.randint(30, 240), type="chat_open", chat=c["id"], from_slot=c["a"], to_slot=c["b"], moment=c["moment"]))
@@ -176,7 +213,7 @@ def main():
                                        respect=r["respect"], disagreement=r["disagreement"],
                                        bridge=r["respect"] >= 75 and abs(CAMP_OF[rater] - CAMP_OF[target]) >= 2))
     events = sorted((e for e in events if 0 <= e["t"] < DURATION), key=lambda e: (e["t"], e["type"]))
-    out = dict(version=2, topic="Wie könnte Social Media wieder positiver werden?", duration_seconds=DURATION, seed=args.seed,
+    out = dict(version=3, topic="Wie könnte Social Media wieder positiver werden?", duration_seconds=DURATION, seed=args.seed,
                personas=[dict(slot=s, name=P[s]["name"], camp=CAMP_OF[s]) for s in range(40)],
                chats=[dict(id=c["id"], a=c["a"], b=c["b"], moment=c["moment"]) for c in chats], timeline=events)
     dest = ROOT / "src/data/sim-timeline.json"

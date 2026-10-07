@@ -16,7 +16,7 @@ const json = (b: unknown, s = 200) =>
 
 const EPOCH = Date.UTC(2026, 9, 3, 18, 0, 0); // cycle 0 starts here (UTC)
 const D = timeline.duration_seconds as number;
-const SPEED = 60;
+const SPEED = 120;
 const REAL_CYCLE_MS = (D / SPEED) * 1000;
 type Admin = ReturnType<typeof createClient>;
 type Ev = Record<string, any> & { t: number; type: string };
@@ -169,6 +169,14 @@ Deno.serve(async (req) => {
             animationEvents.push({ id: `message:${cycle}:${e.t}:${message.id}`, type: 'message', chatId: cid, sourceOpinionId, targetOpinionId, content: e.text });
           }
         }
+      } else if (e.type === 'difference_rating') {
+        const rater = personas.get(e.from_slot), target = personas.get(e.to_slot);
+        if (rater?.opinion_id && target?.opinion_id) {
+          await admin.from('opinion_ratings').upsert({
+            topic_id: tid, rater_opinion_id: rater.opinion_id, target_opinion_id: target.opinion_id,
+            disagreement: Math.min(10, Math.max(0, Math.round(e.disagreement))), updated_at: at,
+          }, { onConflict: 'rater_opinion_id,target_opinion_id' });
+        }
       } else if (e.type === 'rating') {
         const cid = chatMap[e.chat];
         const rater = personas.get(e.from_slot), target = personas.get(e.to_slot);
@@ -186,10 +194,6 @@ Deno.serve(async (req) => {
             { topic_id: tid, rater_id: rater.user_id, kind: 'understanding', target_opinion_id: target.opinion_id, chat_id: cid, value: e.respect, created_at: at },
             { topic_id: tid, rater_id: rater.user_id, kind: 'difference', target_opinion_id: target.opinion_id, chat_id: cid, value: dis, created_at: at },
           ]);
-          await admin.from('opinion_ratings').upsert({
-            topic_id: tid, rater_opinion_id: rater.opinion_id, target_opinion_id: target.opinion_id,
-            disagreement: dis, updated_at: at,
-          }, { onConflict: 'rater_opinion_id,target_opinion_id' });
           animationEvents.push({
             id: `rating:${cycle}:${e.t}:${rater.opinion_id}:${target.opinion_id}`,
             type: 'rating', chatId: cid, sourceOpinionId: rater.opinion_id,

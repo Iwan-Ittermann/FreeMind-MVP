@@ -54,3 +54,10 @@
 - [x] Neue Meinungen 4–8 Sekunden als gekürzte Sprechblase zeigen
 - [x] Sim-Nachrichten und Bewertungen mit gemeinsamer Ereignisspur animieren
 - [x] Mobil und Desktop live prüfen
+
+## Schnellere Simulation und Cluster-Bewertungen
+- [x] Replay auf 120× erhöhen (eine Simulationsstunde in 30 Sekunden)
+- [x] Neue Meinungsblasen innerhalb des sichtbaren Graphen halten
+- [x] Nachrichten langsamer an einer Ecke entlang der sichtbaren Kante führen
+- [x] Viele eigenständige Meinungsunterschied-Bewertungen für Cluster ergänzen
+- [ ] Datensatz neu erzeugen, Replay-Funktion veröffentlichen und live prüfen
