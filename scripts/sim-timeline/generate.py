@@ -29,14 +29,17 @@ def add_reading_pauses(events, seed):
     for chat, messages in sorted(by_chat.items()):
         messages.sort(key=lambda e: e['t'])
         original = [e['t'] for e in messages]
-        revised = [original[0]]
-        for index, message in enumerate(messages[1:], 1):
+        gaps = []
+        for message in messages[1:]:
             pause = rng.randint(5, 60)
             message['reading_seconds'] = pause
-            revised.append(max(original[index], revised[-1] + (9 + pause) * REPLAY_SPEED))
-        # Preserve the loop end without cutting off final messages.
-        overflow = max(0, revised[-1] - (DURATION - 120))
-        revised = [t - overflow for t in revised]
+            gaps.append((9 + pause) * REPLAY_SPEED)
+        revised = [original[0]]
+        for index, message in enumerate(messages[1:], 1):
+            # Reserve room for later replies; only shorten an idle gap when the
+            # final evening conversation would otherwise cross the loop end.
+            latest = DURATION - 120 - sum(gaps[index:])
+            revised.append(min(latest, max(original[index], revised[-1] + gaps[index - 1])))
         opened = next(e['t'] for e in events if e['type'] == 'chat_open' and e['chat'] == chat)
         assert revised[0] > opened, f'Not enough room for reading pauses in {chat}'
         for event in events:
