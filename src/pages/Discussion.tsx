@@ -349,7 +349,7 @@ export default function TT({ mode = 'real', eventPreview = false }: { mode?: 'te
           />
         )}
         {ownOpinionKnown && !hasOwnOpinion && activeTopicId && !gateVariant && !readOnly && !streamActive && (
-          isVerified || isPlayground ? (
+          isVerified || isPlayground || eventPreview ? (
             <TTCenterCTA
               topicId={activeTopicId}
               topicTitle={activeTopicTitle}
