@@ -25,6 +25,7 @@ import { TTRatingDialog } from './TTRatingDialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useReadOnlyTopic } from '@/contexts/ReadOnlyContext';
 
 export interface TTSideTabsHandle {
   openChat: (opinionId: string) => void;
@@ -82,8 +83,9 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
     ref,
   ) {
     const { t } = useTranslation();
+    const readOnly = useReadOnlyTopic();
     const [tab, setTab] = useState<TTTab>('graph');
-    const [chatScope, setChatScope] = useState<ChatScope>('mine');
+    const [chatScope, setChatScope] = useState<ChatScope>(readOnly ? 'all' : 'mine');
     const [activeChatOpinionId, setActiveChatOpinionId] = useState<string | null>(null);
     const [activeAllChat, setActiveAllChat] = useState<AllTopicChatItem | null>(null);
     const [chatSearch, setChatSearch] = useState('');
@@ -123,12 +125,12 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
       openPanel(panel: 'opinions' | 'stream' | 'chats') {
         setActiveAllChat(null);
         setActiveChatOpinionId(null);
-        if (panel === 'chats') setChatScope('mine');
+        if (panel === 'chats') setChatScope(readOnly ? 'all' : 'mine');
         setTab(panel);
         onPanelOpen?.();
       },
 
-    }), [hasOwnOpinion, onPanelOpen]);
+    }), [hasOwnOpinion, onPanelOpen, readOnly]);
 
     // Notify parent which chat (= which node) is currently open, for glow effect.
     useEffect(() => {
