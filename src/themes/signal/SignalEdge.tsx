@@ -20,7 +20,7 @@ export const SignalEdge = memo(function SignalEdge({
   const isPending = token.isPending;
 
   // Pending edges: dim cyan stubs instead of full-length red dashes
-  const baseWidth = isPending ? 1 : 1.5;
+  const baseWidth = isPending ? 0.5 : 0.5;
   const strokeWidth = isHighlighted ? baseWidth * 2 : baseWidth;
 
   const opacity = isDimmed
@@ -31,9 +31,9 @@ export const SignalEdge = memo(function SignalEdge({
         ? 0.12
         : 0.15 + token.respectLevel * 0.25;
 
-  // All edges use cyan; pending are just much dimmer
-  const stroke = '#00D4FF';
-  const glowColor = '#00D4FF';
+  // Neutral connection lines; respect colors belong to the rating arrows.
+  const stroke = 'hsl(var(--foreground) / 0.7)';
+  const glowColor = stroke;
 
   return (
     <g>
