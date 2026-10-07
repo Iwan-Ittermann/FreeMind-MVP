@@ -1,5 +1,11 @@
 # Roadmap
 
+## Graph-Feinschliff und natürlicher Nachrichtenrhythmus
+- [x] Linien dünner und weißgrau darstellen
+- [x] Rechteckiges Abschneiden der Nodes beseitigen; neue Nodes an Ort und Stelle aufploppen lassen
+- [x] Deterministische Lese-/Verarbeitungszeiten ergänzen und Nachrichten desselben Chats nacheinander animieren
+- [x] Datensatz und Live-Darstellung prüfen (26 Chats, mindestens 14 Sekunden Abstand, Replay deployed)
+
 ## Stream-Spirale und beschleunigte Simulation
 - [x] Spiralen-Schalter ohne Neuladen synchronisieren
 - [x] 72-Stunden-Simulation auf 60-fache Geschwindigkeit setzen

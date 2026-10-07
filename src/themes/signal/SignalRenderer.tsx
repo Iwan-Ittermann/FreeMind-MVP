@@ -160,7 +160,7 @@ export function SignalRenderer({
     <svg
       width={width}
       height={height}
-      className="overflow-hidden"
+      className={ttMode ? 'overflow-visible' : 'overflow-hidden'}
       style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}
     >
       <rect width={width} height={height} fill="transparent" onClick={() => onNodeClick(null)} />

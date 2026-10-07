@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
+import { GRAPH_ANIMATION } from '@/lib/graph-animation';
 
 const LOOP_SECONDS = 72 * 60 * 60;
 
@@ -15,19 +16,25 @@ export function TTSimControl({ topicId }: { topicId: string }) {
   const [frame, setFrame] = useState<number | null>(null);
   useEffect(() => {
     let alive = true;
+    const timers = new Set<number>();
+    const nextChatFlight = new Map<string, number>();
     const tick = () => {
       if (document.visibilityState === 'visible') {
         supabase.functions.invoke('sim-replay', { body: {} }).then(({ data, error }) => {
           if (alive && !error && Number.isFinite(data?.frame)) {
             setFrame(data.frame);
             const events = Array.isArray(data?.events) ? data.events as Array<Record<string, unknown>> : [];
-            const priority = { opinion: 0, rating: 1, message: 2 } as Record<string, number>;
-            events.sort((a, b) => (priority[String(a.type)] ?? 3) - (priority[String(b.type)] ?? 3));
             events.slice(0, 12).forEach((item, index) => {
-              window.setTimeout(() => {
+              const now = Date.now();
+              const chatId = item.type === 'message' ? String(item.chatId) : null;
+              const startsAt = Math.max(now + index * 850, chatId ? nextChatFlight.get(chatId) ?? 0 : 0);
+              if (chatId) nextChatFlight.set(chatId, startsAt + GRAPH_ANIMATION.messageMaxMs + 5000);
+              const timer = window.setTimeout(() => {
+                timers.delete(timer);
                 if (!alive) return;
                 window.dispatchEvent(new CustomEvent('tt:sim-events', { detail: { topicId, events: [item] } }));
-              }, index * 850);
+              }, startsAt - now);
+              timers.add(timer);
             });
           }
         }).catch(() => {});
@@ -35,7 +42,7 @@ export function TTSimControl({ topicId }: { topicId: string }) {
     };
     tick();
     const id = window.setInterval(tick, 10_000);
-    return () => { alive = false; window.clearInterval(id); };
+    return () => { alive = false; window.clearInterval(id); timers.forEach(window.clearTimeout); };
   }, [topicId]);
   if (frame === null) return null;
   const progress = Math.min(1, Math.max(0, frame / LOOP_SECONDS));

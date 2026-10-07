@@ -8,3 +8,4 @@
 - Scope Wedium discussion visuals through presentation context and semantic CSS tokens; reuse the existing graph and interactions instead of maintaining a separate renderer.
 - Display simulation progress from the last successful replay response, not a running client clock, so the indicator cannot advance beyond confirmed replay state.
 - Feed replay and user activity through one deduplicated graph-animation event path, so visual behavior cannot diverge between simulation and live use.
+- Generate reading pauses in presentation seconds mapped to replay time, and serialize queued message flights per chat so catch-up batches cannot animate both sides simultaneously.

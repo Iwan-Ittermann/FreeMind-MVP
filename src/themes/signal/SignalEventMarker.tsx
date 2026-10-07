@@ -27,7 +27,7 @@ export const SignalEventMarker = memo(function SignalEventMarker({ events, messa
           const bubbleX = evt.targetX >= evt.sourceX ? 0 : -150;
           return <motion.g key={`${key}-${i}`} pointerEvents="none">
           <motion.line x1={evt.sourceX} y1={evt.sourceY} x2={evt.targetX} y2={evt.targetY}
-            stroke={rating ? color : 'hsl(var(--primary))'} strokeWidth={rating ? 5 : 3} strokeLinecap="round"
+            stroke={rating ? color : 'hsl(var(--foreground) / 0.7)'} strokeWidth={rating ? 4 : 2} strokeLinecap="round"
             initial={{ opacity: 0 }} animate={{ opacity: [0, 0.9, 0] }} transition={{ duration }} />
           <motion.circle
             r={rating ? 7 : 4}
