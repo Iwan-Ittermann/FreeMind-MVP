@@ -1,4 +1,4 @@
 {
-  "de": { "simTime": "Simulationszeit", "simHour": "Stunde {{hour}} von 72", "simDayTime": "Tag {{day}} · {{time}} UTC" },
-  "en": { "simTime": "Simulation time", "simHour": "Hour {{hour}} of 72", "simDayTime": "Day {{day}} · {{time}} UTC" }
+  "de": { "simTime": "Simulationszeit", "simHour": "Stunde {{hour}} von 72", "simDayTime": "Tag {{day}} · {{time}} UTC", "simClock": "Tag {{day}} / {{hour}} Uhr", "loading": "Sim-Zeit lädt …", "preview": "KI-Simulation", "startsIn": "Event in {{days}} T {{hours}} Std {{minutes}} Min", "startPending": "Event-Termin folgt", "registerTitle": "Sei beim Live-Event dabei", "registerBody": "Melde dich für die echte Diskussion an.", "register": "Registrieren", "later": "Später" },
+  "en": { "simTime": "Simulation time", "simHour": "Hour {{hour}} of 72", "simDayTime": "Day {{day}} · {{time}} UTC", "simClock": "Day {{day}} / {{hour}}:00", "loading": "Loading sim time …", "preview": "AI simulation", "startsIn": "Event in {{days}} d {{hours}} h {{minutes}} min", "startPending": "Event date to follow", "registerTitle": "Join the live event", "registerBody": "Sign up for the real discussion.", "register": "Register", "later": "Later" }
 }

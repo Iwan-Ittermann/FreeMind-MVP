@@ -6,6 +6,7 @@ import { useWediumPresentation } from '@/contexts/WediumPresentationContext';
 import wediumNode from '@/assets/wedium-node.png.asset.json';
 import type { OpinionAnimationData } from '@/hooks/useTopicData';
 import { truncateAtWord } from '@/lib/graph-animation';
+import { SignalTextBubble } from './SignalTextBubble';
 
 const NODE_SIZE = 40;
 const HALF = NODE_SIZE / 2;
@@ -219,15 +220,11 @@ export const SignalNode = memo(function SignalNode({
       {(showSpeechBubble || !!freshOpinion) && bubbleText && (
         <g
           transform={`translate(${freshOpinion ? freshBubbleOffsetX : 0}, ${freshOpinion ? freshBubbleOffsetY : -scaledHalf - 14})`}
-          opacity={token.zone === 'core' || token.zone === 'middle' ? 0.5 : 0.92}
+          opacity={freshOpinion ? 1 : token.zone === 'core' || token.zone === 'middle' ? 0.5 : 0.92}
         >
           {freshOpinion ? (
             <motion.g initial={{ opacity: 0, scale: 0.88 }} animate={{ opacity: 1, scale: 1 }}>
-              <rect x={-92} y={freshBubbleBelow ? 0 : -54} width={184} height={66} rx={8} fill="hsl(var(--card))" fillOpacity={0.96} stroke="hsl(var(--primary))" strokeWidth={1} />
-              <polygon points={freshBubbleBelow ? `${-freshBubbleOffsetX - 4},0 ${-freshBubbleOffsetX + 4},0 ${-freshBubbleOffsetX},-6` : `${-freshBubbleOffsetX - 4},12 ${-freshBubbleOffsetX + 4},12 ${-freshBubbleOffsetX},18`} fill="hsl(var(--card))" />
-              <foreignObject x={-82} y={freshBubbleBelow ? 8 : -46} width={164} height={50}>
-                <div className="line-clamp-3 text-center text-[10px] leading-[1.35] text-card-foreground">{bubbleText}</div>
-              </foreignObject>
+              <SignalTextBubble text={bubbleText} maxWidth={freshBubbleWidth} below={freshBubbleBelow} />
             </motion.g>
           ) : (
             <>

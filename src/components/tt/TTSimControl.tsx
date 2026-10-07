@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { GRAPH_ANIMATION } from '@/lib/graph-animation';
+import { Clock3 } from 'lucide-react';
 
 const LOOP_SECONDS = 72 * 60 * 60;
 
@@ -15,13 +16,14 @@ export function TTSimControl({ topicId }: { topicId: string }) {
   const { t } = useTranslation();
   const [frame, setFrame] = useState<number | null>(null);
   useEffect(() => {
+    if (!topicId) return;
     let alive = true;
     const timers = new Set<number>();
     const nextChatFlight = new Map<string, number>();
     const tick = () => {
       if (document.visibilityState === 'visible') {
         supabase.functions.invoke('sim-replay', { body: {} }).then(({ data, error }) => {
-          if (alive && !error && Number.isFinite(data?.frame)) {
+           if (alive && !error && !data?.busy && Number.isFinite(data?.frame)) {
             setFrame(data.frame);
             const events = Array.isArray(data?.events) ? data.events as Array<Record<string, unknown>> : [];
             events.slice(0, 12).forEach((item, index) => {
@@ -44,27 +46,30 @@ export function TTSimControl({ topicId }: { topicId: string }) {
     const id = window.setInterval(tick, 10_000);
     return () => { alive = false; window.clearInterval(id); timers.forEach(window.clearTimeout); };
   }, [topicId]);
-  if (frame === null) return null;
-  const progress = Math.min(1, Math.max(0, frame / LOOP_SECONDS));
-  const hour = Math.min(72, Math.floor(frame / 3600) + 1);
-  const label = `${t('replay.simTime')}: ${t('replay.simHour', { hour })}`;
+  const progress = Math.min(1, Math.max(0, (frame ?? 0) / LOOP_SECONDS));
+  const day = Math.floor((frame ?? 0) / 86400) + 1;
+  const hour = Math.floor(((frame ?? 0) % 86400) / 3600);
+  const label = frame === null ? t('replay.loading') : t('replay.simClock', { day, hour });
 
   return (
     <div
-      className="absolute inset-x-4 bottom-[55px] z-[41] h-3 pointer-events-none"
-      data-sim-frame={frame}
+      className="absolute inset-x-4 bottom-[55px] z-[41] h-7 pointer-events-none"
+      data-sim-frame={frame ?? undefined}
       role="progressbar"
       aria-label={label}
-      aria-valuemin={1}
-      aria-valuemax={72}
-      aria-valuenow={hour}
+      aria-valuemin={0}
+      aria-valuemax={LOOP_SECONDS}
+      aria-valuenow={frame ?? undefined}
+      aria-valuetext={label}
+      aria-busy={frame === null}
       title={label}
     >
-      <div className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-foreground/75" />
-      <div
-        className="absolute top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-destructive shadow-sm"
+      <span className="absolute right-0 top-0 inline-flex items-center gap-1 text-[10px] leading-3 text-foreground/75 tabular-nums"><Clock3 className="h-3 w-3" />{label}</span>
+      <div className="absolute inset-x-0 bottom-1 h-px bg-foreground/75" />
+      {frame !== null && <div
+        className="absolute bottom-1 h-2.5 w-2.5 -translate-x-1/2 translate-y-1/2 rounded-full bg-destructive shadow-sm"
         style={{ left: `${progress * 100}%` }}
-      />
+      />}
     </div>
   );
 }
