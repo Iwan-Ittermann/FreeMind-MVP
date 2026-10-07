@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Opinion, ChatRating } from '@/types/graph';
 import { setAnimationChannel, removeAnimationChannel } from '@/lib/animation-channel';
 import { useAppSetting } from '@/hooks/useAppSettings';
+import { GRAPH_ANIMATION, readingDuration } from '@/lib/graph-animation';
 
 export interface TopicData {
   id: string;
@@ -36,6 +37,18 @@ export interface MessageAnimationData {
   sourceOpinionId: string;
   targetOpinionId: string;
   timestamp: number;
+  kind?: 'message' | 'rating';
+  content?: string;
+  respect?: number;
+  durationMs?: number;
+}
+
+export interface OpinionAnimationData {
+  id: string;
+  opinionId: string;
+  text: string;
+  timestamp: number;
+  durationMs: number;
 }
 
 // Seeded random number generator for deterministic fake node ratings
@@ -89,6 +102,7 @@ export function useTopicData(topicId: string) {
   const queryClient = useQueryClient();
   const [activeChats, setActiveChats] = useState<ActiveChat[]>([]);
   const [messageAnimations, setMessageAnimations] = useState<MessageAnimationData[]>([]);
+  const [opinionAnimations, setOpinionAnimations] = useState<OpinionAnimationData[]>([]);
 
   // Per-topic hide setting
   const { data: hideSetting } = useAppSetting(`hide_fake_nodes_${topicId}`);
@@ -99,11 +113,12 @@ export function useTopicData(topicId: string) {
     const interval = setInterval(() => {
       const now = Date.now();
       setActiveChats(prev => 
-        prev.filter(chat => now - chat.lastActivity < 3000)
+        prev.filter(chat => now - chat.lastActivity < GRAPH_ANIMATION.activeEdgeMs)
       );
       setMessageAnimations(prev =>
-        prev.filter(anim => now - anim.timestamp < 2000)
+        prev.filter(anim => now - anim.timestamp < (anim.durationMs ?? GRAPH_ANIMATION.messageMaxMs))
       );
+      setOpinionAnimations(prev => prev.filter(anim => now - anim.timestamp < anim.durationMs));
     }, 500);
     return () => clearInterval(interval);
   }, []);
@@ -125,7 +140,20 @@ export function useTopicData(topicId: string) {
           table: 'opinions',
           filter: `topic_id=eq.${topicId}`,
         },
-        () => {
+        (payload) => {
+          if (payload.eventType === 'INSERT') {
+            const row = payload.new as { id?: string; text?: string };
+            if (row.id && row.text) {
+              const timestamp = Date.now();
+              setOpinionAnimations(prev => [...prev, {
+                id: `opinion-${row.id}`,
+                opinionId: row.id,
+                text: row.text,
+                timestamp,
+                durationMs: readingDuration(row.text, GRAPH_ANIMATION.opinionMinMs, GRAPH_ANIMATION.opinionMaxMs),
+              }].slice(-GRAPH_ANIMATION.maxVisibleEvents));
+            }
+          }
           queryClient.refetchQueries({ queryKey: ['topic', topicId] });
         }
       )
@@ -199,6 +227,7 @@ export function useTopicData(topicId: string) {
           sourceOpinionId: string;
           targetOpinionId: string;
           chatId: string;
+          content?: string;
         };
 
         // Add message animation
@@ -209,7 +238,10 @@ export function useTopicData(topicId: string) {
           sourceOpinionId: data.sourceOpinionId,
           targetOpinionId: data.targetOpinionId,
           timestamp: Date.now(),
-        }]);
+          kind: 'message',
+          content: data.content,
+          durationMs: readingDuration(data.content ?? '', GRAPH_ANIMATION.messageMinMs, GRAPH_ANIMATION.messageMaxMs),
+        }].slice(-GRAPH_ANIMATION.maxVisibleEvents));
 
         // Update active chats
         setActiveChats(prev => {
@@ -245,6 +277,44 @@ export function useTopicData(topicId: string) {
       supabase.removeChannel(animChannel);
     };
   }, [topicId, queryClient]);
+
+  useEffect(() => {
+    if (!topicId) return;
+    const seen = new Set<string>();
+    const onSimEvents = (event: Event) => {
+      const detail = (event as CustomEvent<{ topicId?: string; events?: Array<Record<string, unknown>> }>).detail;
+      if (detail?.topicId && detail.topicId !== topicId) return;
+      for (const item of detail?.events ?? []) {
+        const id = String(item.id ?? '');
+        if (!id || seen.has(id)) continue;
+        seen.add(id);
+        const timestamp = Date.now();
+        if (item.type === 'opinion') {
+          const opinionId = String(item.opinionId ?? '');
+          const text = String(item.text ?? '');
+          if (!opinionId || !text) continue;
+          setOpinionAnimations(prev => [...prev, { id, opinionId, text, timestamp, durationMs: readingDuration(text, GRAPH_ANIMATION.opinionMinMs, GRAPH_ANIMATION.opinionMaxMs) }].slice(-GRAPH_ANIMATION.maxVisibleEvents));
+          continue;
+        }
+        const sourceOpinionId = String(item.sourceOpinionId ?? '');
+        const targetOpinionId = String(item.targetOpinionId ?? '');
+        if (!sourceOpinionId || !targetOpinionId) continue;
+        const isRating = item.type === 'rating';
+        const content = typeof item.content === 'string' ? item.content : undefined;
+        setMessageAnimations(prev => [...prev, {
+          id, chatId: String(item.chatId ?? ''), sourceOpinionId, targetOpinionId, timestamp,
+          kind: isRating ? 'rating' : 'message', content,
+          respect: typeof item.respect === 'number' ? item.respect : undefined,
+          durationMs: isRating ? GRAPH_ANIMATION.ratingMs : readingDuration(content ?? '', GRAPH_ANIMATION.messageMinMs, GRAPH_ANIMATION.messageMaxMs),
+        }].slice(-GRAPH_ANIMATION.maxVisibleEvents));
+        setActiveChats(prev => [...prev.filter(chat => chat.chatId !== String(item.chatId ?? '')), {
+          chatId: String(item.chatId ?? ''), opinionAId: sourceOpinionId, opinionBId: targetOpinionId, lastActivity: timestamp,
+        }]);
+      }
+    };
+    window.addEventListener('tt:sim-events', onSimEvents);
+    return () => window.removeEventListener('tt:sim-events', onSimEvents);
+  }, [topicId]);
 
   const query = useQuery({
     queryKey: ['topic', topicId],
@@ -458,6 +528,7 @@ export function useTopicData(topicId: string) {
     data: filteredData,
     activeChats,
     messageAnimations,
+    opinionAnimations,
   };
 }
 
