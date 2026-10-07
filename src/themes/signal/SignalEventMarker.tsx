@@ -24,6 +24,7 @@ export const SignalEventMarker = memo(function SignalEventMarker({ events, messa
           const color = tone === 'low' ? 'hsl(var(--destructive))' : tone === 'high' ? 'hsl(var(--success))' : 'hsl(var(--accent-warm))';
           const duration = (item?.durationMs ?? GRAPH_ANIMATION.messageMinMs) / 1000;
           const text = item?.content ? truncateAtWord(item.content, 92) : '';
+          const bubbleX = evt.targetX >= evt.sourceX ? 0 : -150;
           return <motion.g key={`${key}-${i}`} pointerEvents="none">
           <motion.line x1={evt.sourceX} y1={evt.sourceY} x2={evt.targetX} y2={evt.targetY}
             stroke={rating ? color : 'hsl(var(--primary))'} strokeWidth={rating ? 5 : 3} strokeLinecap="round"
@@ -45,12 +46,15 @@ export const SignalEventMarker = memo(function SignalEventMarker({ events, messa
             transition={{ duration, ease: 'easeInOut' }}
           />
           {!rating && text && (
-            <motion.foreignObject width={150} height={46} x={-75} y={-23}
+            <motion.g
               initial={{ x: evt.sourceX, y: evt.sourceY, opacity: 0 }}
               animate={{ x: evt.targetX, y: evt.targetY, opacity: [0, 1, 1, 0] }}
-              transition={{ duration, ease: 'easeInOut' }}>
-              <div className="line-clamp-2 rounded-md border border-primary/50 bg-card/95 px-2 py-1 text-center text-[9px] leading-tight text-card-foreground shadow-md">{text}</div>
-            </motion.foreignObject>
+              transition={{ duration, ease: 'easeInOut' }}
+            >
+              <foreignObject width={150} height={46} x={bubbleX} y={-46}>
+                <div className="line-clamp-2 rounded-md border border-primary/50 bg-card/95 px-2 py-1 text-center text-[9px] leading-tight text-card-foreground shadow-md">{text}</div>
+              </foreignObject>
+            </motion.g>
           )}
           </motion.g>;
         })}

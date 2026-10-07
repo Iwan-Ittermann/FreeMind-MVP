@@ -129,7 +129,8 @@ interface SignalNodeProps {
   /** TT mode: gold core stars, emerald middle circles, smaller black extreme nodes. */
   ttMode?: boolean;
   /** SVG width — needed to compute graph center for fresh-node entrance animation. */
-  graphSize?: number;
+  graphWidth?: number;
+  graphHeight?: number;
   onClick: (event: React.MouseEvent<SVGGElement>) => void;
   onPointerDown?: (event: React.PointerEvent<SVGGElement>) => void;
   onMouseEnter: () => void;
@@ -138,7 +139,7 @@ interface SignalNodeProps {
 
 export const SignalNode = memo(function SignalNode({
   token, isHighlighted, isDimmed, highlightForTour = false, showSpeechBubble, freshOpinion, scale = 1, ttMode = false,
-  graphSize,
+  graphWidth, graphHeight,
   onClick, onPointerDown, onMouseEnter, onMouseLeave,
 }: SignalNodeProps) {
   const { t } = useTranslation();
@@ -170,13 +171,22 @@ export const SignalNode = memo(function SignalNode({
   // All TT nodes render at the same size, regardless of ring
   const effectiveScale = wedium ? Math.min(scale, 1) : scale;
   const scaledHalf = HALF * effectiveScale;
+  const freshBubbleWidth = 184;
+  const freshBubbleHalf = freshBubbleWidth / 2;
+  const bubbleMargin = 10;
+  const bubbleCenterX = graphWidth
+    ? Math.min(graphWidth - freshBubbleHalf - bubbleMargin, Math.max(freshBubbleHalf + bubbleMargin, token.x))
+    : token.x;
+  const freshBubbleOffsetX = bubbleCenterX - token.x;
+  const freshBubbleBelow = token.y < 94;
+  const freshBubbleOffsetY = freshBubbleBelow ? scaledHalf + 16 : -scaledHalf - 14;
 
   // Detect "freshly added" own opinion: TTCenterCTA writes the opinion id +
   // timestamp to sessionStorage right after submit. We animate the user node
   // from the graph center to its target position once, then clear the flag.
   const animateFromCenter = useMemo(() => {
-    if (!ttMode || !token.isCurrentUser || !token.id || !graphSize) return false;
-    if (!Number.isFinite(token.x) || !Number.isFinite(token.y) || !Number.isFinite(graphSize)) return false;
+    if (!ttMode || !token.isCurrentUser || !token.id || !graphWidth) return false;
+    if (!Number.isFinite(token.x) || !Number.isFinite(token.y) || !Number.isFinite(graphWidth)) return false;
     try {
       const raw = sessionStorage.getItem('tt:fresh-opinion');
       if (!raw) return false;
@@ -188,10 +198,11 @@ export const SignalNode = memo(function SignalNode({
       }
       return true;
     } catch { return false; }
-  }, [ttMode, token.isCurrentUser, token.id, graphSize, token.x, token.y]);
+  }, [ttMode, token.isCurrentUser, token.id, graphWidth, token.x, token.y]);
 
   const consumedRef = useRef(false);
-  const center = graphSize ? graphSize / 2 : 0;
+  const centerX = graphWidth ? graphWidth / 2 : 0;
+  const centerY = graphHeight ? graphHeight / 2 : centerX;
 
   const groupProps = {
     style: { cursor: 'pointer' as const, opacity },
@@ -208,12 +219,15 @@ export const SignalNode = memo(function SignalNode({
     <>
       {/* Speech bubble */}
       {(showSpeechBubble || !!freshOpinion) && bubbleText && (
-        <g transform={`translate(0, ${-scaledHalf - 14})`} opacity={token.zone === 'core' || token.zone === 'middle' ? 0.5 : 0.92}>
+        <g
+          transform={`translate(${freshOpinion ? freshBubbleOffsetX : 0}, ${freshOpinion ? freshBubbleOffsetY : -scaledHalf - 14})`}
+          opacity={token.zone === 'core' || token.zone === 'middle' ? 0.5 : 0.92}
+        >
           {freshOpinion ? (
             <motion.g initial={{ opacity: 0, scale: 0.88 }} animate={{ opacity: 1, scale: 1 }}>
-              <rect x={-92} y={-54} width={184} height={66} rx={8} fill="hsl(var(--card))" fillOpacity={0.96} stroke="hsl(var(--primary))" strokeWidth={1} />
-              <polygon points="-4,12 4,12 0,18" fill="hsl(var(--card))" />
-              <foreignObject x={-82} y={-46} width={164} height={50}>
+              <rect x={-92} y={freshBubbleBelow ? 0 : -54} width={184} height={66} rx={8} fill="hsl(var(--card))" fillOpacity={0.96} stroke="hsl(var(--primary))" strokeWidth={1} />
+              <polygon points={freshBubbleBelow ? `${-freshBubbleOffsetX - 4},0 ${-freshBubbleOffsetX + 4},0 ${-freshBubbleOffsetX},-6` : `${-freshBubbleOffsetX - 4},12 ${-freshBubbleOffsetX + 4},12 ${-freshBubbleOffsetX},18`} fill="hsl(var(--card))" />
+              <foreignObject x={-82} y={freshBubbleBelow ? 8 : -46} width={164} height={50}>
                 <div className="line-clamp-3 text-center text-[10px] leading-[1.35] text-card-foreground">{bubbleText}</div>
               </foreignObject>
             </motion.g>
@@ -361,7 +375,7 @@ export const SignalNode = memo(function SignalNode({
     return (
       <motion.g
         {...groupProps}
-        initial={{ x: center, y: center, scale: 0.4, opacity: 0 }}
+        initial={{ x: centerX, y: centerY, scale: 0.4, opacity: 0 }}
         animate={{ x: token.x, y: token.y, scale: 1, opacity }}
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
       >
