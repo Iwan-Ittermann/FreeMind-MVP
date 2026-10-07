@@ -1,11 +1,11 @@
 # Roadmap
 
 ## Eingebettete Event-Simulation
-- [ ] Startseiten-Links auf Wedium-Test ausrichten und August-Hero-Link entfernen
-- [ ] Mitmachbare Simulation zwischen „Was passiert“ und „Über mich“ einbetten
-- [ ] Wedium-Creator-Platzhalter durch Simulation im Koop-Look ersetzen
-- [ ] Beide Anmeldebereiche auf Wedium-Event ausrichten und Wedium-Anmeldung nutzen
-- [ ] Einbettung, Sprachwechsel, Meinungseingabe und Event-Grenzen prüfen
+- [x] Startseiten-Links auf Wedium-Test ausrichten und August-Hero-Link entfernen
+- [x] Mitmachbare Simulation zwischen „Was passiert“ und „Über mich“ einbetten
+- [x] Wedium-Creator-Platzhalter durch Simulation im Koop-Look ersetzen
+- [x] Beide Anmeldebereiche auf Wedium-Event ausrichten und Wedium-Anmeldung nutzen
+- [x] Einbettung, Sprachwechsel und Meinungseingabe ohne Verifizierung geprüft; Einbettungen bleiben auf dem Simulationsthema, Anmeldeformulare mit abgefangener Antwort geprüft
 
 ## /go Event-Vorschau und lesbare Simulation
 - [x] Nachrichten vollständig und Meinungsblasen textnah darstellen (3 Zeilen: 52px, kurze Meinung: 24px)
