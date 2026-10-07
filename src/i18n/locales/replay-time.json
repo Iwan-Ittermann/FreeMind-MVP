@@ -1,4 +1,38 @@
 {
-  "de": { "simTime": "Simulationszeit", "simHour": "Stunde {{hour}} von 72", "simDayTime": "Tag {{day}} · {{time}} UTC", "simClock": "Tag {{day}} / {{hour}} Uhr", "loading": "Sim-Zeit lädt …", "preview": "KI-Simulation", "startsIn": "Event in {{days}} T {{hours}} Std {{minutes}} Min", "startPending": "Event-Termin folgt", "registerTitle": "Sei beim Live-Event dabei", "registerBody": "Melde dich für die echte Diskussion an.", "register": "Registrieren", "later": "Später" },
-  "en": { "simTime": "Simulation time", "simHour": "Hour {{hour}} of 72", "simDayTime": "Day {{day}} · {{time}} UTC", "simClock": "Day {{day}} / {{hour}}:00", "loading": "Loading sim time …", "preview": "AI simulation", "startsIn": "Event in {{days}} d {{hours}} h {{minutes}} min", "startPending": "Event date to follow", "registerTitle": "Join the live event", "registerBody": "Sign up for the real discussion.", "register": "Register", "later": "Later" }
+  "de": {
+    "simTime": "Simulationszeit",
+    "simHour": "Stunde {{hour}} von 72",
+    "simDayTime": "Tag {{day}} · {{time}} UTC",
+    "simClock": "Tag {{day}} / {{hour}} Uhr",
+    "loading": "Sim-Zeit lädt …",
+    "preview": "KI-Simulation",
+    "startsIn": "Event in {{days}} T {{hours}} Std {{minutes}} Min",
+    "startPending": "Event-Termin folgt",
+    "registerTitle": "Sei beim Live-Event dabei",
+    "registerBody": "Melde dich für die echte Diskussion an.",
+    "register": "Registrieren",
+    "later": "Später",
+    "embedTitle": "Interaktive freemind-Simulation",
+    "openDiscussion": "Simulation auf /go öffnen",
+    "tryTitle": "Probier es aus",
+    "tryBody": "Eine beschleunigte KI-Simulation — und du kannst mitmachen. Gib deine Meinung ab, bewerte andere Perspektiven und probiere Gespräche aus. Ohne E-Mail-Anmeldung. Deine Meinung gilt nur für diese Sitzung."
+  },
+  "en": {
+    "simTime": "Simulation time",
+    "simHour": "Hour {{hour}} of 72",
+    "simDayTime": "Day {{day}} · {{time}} UTC",
+    "simClock": "Day {{day}} / {{hour}}:00",
+    "loading": "Loading sim time …",
+    "preview": "AI simulation",
+    "startsIn": "Event in {{days}} d {{hours}} h {{minutes}} min",
+    "startPending": "Event date to follow",
+    "registerTitle": "Join the live event",
+    "registerBody": "Sign up for the real discussion.",
+    "register": "Register",
+    "later": "Later",
+    "embedTitle": "Interactive freemind simulation",
+    "openDiscussion": "Open simulation on /go",
+    "tryTitle": "Try it out",
+    "tryBody": "An accelerated AI simulation — and you can join in. Share your opinion, rate other perspectives and try conversations. No email signup. Your opinion lasts for this session only."
+  }
 }

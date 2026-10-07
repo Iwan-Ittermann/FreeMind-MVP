@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { trackEvent } from "@/lib/analytics";
+import { EventSimulationEmbed } from "@/components/EventSimulationEmbed";
+import { Button } from "@/components/ui/button";
 
 const panelClass =
   "snap-start min-h-screen w-full flex items-center justify-center px-5 sm:px-8 md:px-12 py-16 sm:py-20 md:py-24 border-b border-foreground/15";
@@ -15,8 +17,6 @@ const bodyProseClass = "text-lg sm:text-xl md:text-2xl leading-snug space-y-5 ma
 
 type Lang = "en" | "de";
 
-/** Placeholder creators — replaced as soon as wedium sends names, photos, quotes. */
-const CREATORS = [1, 2, 3, 4, 5];
 
 const copy = {
   de: {
@@ -66,15 +66,15 @@ const copy = {
     creatorQuote: "„Zitat folgt.“",
 
     ctaTitle: "SEI DABEI!",
-    ctaLine1: "FÜNF TAGE · EINE FRAGE · ",
+    ctaLine1: "10.–14. OKTOBER 2026 · ",
     ctaLine2: "EIN BEWEIS.",
     emailPlaceholder: "E-Mail",
     btnLoading: "Wird gesendet…",
     btnSent: "Mail gesendet ✓",
     btnAlready: "Schon dabei ✓",
-    btnIdle: "Für das Event anmelden",
+    btnIdle: "Meinen Platz sichern",
     fine1:
-      "Du bekommst eine Bestätigungs-Mail, eine Willkommens-Mail, kurz vor dem Start eine Erinnerung mit deinem Zugang und während des Events eine kurze Abend-Mail. Abmelden jederzeit mit einem Klick.",
+      "Bestätige deine E-Mail, um deinen Platz zu sichern. Du bekommst deinen Zugang vor dem Start und während des Events eine kurze Abend-Mail. Abmelden jederzeit mit einem Klick.",
     sentNote:
       "📬 Bestätigungs-E-Mail unterwegs — klick den Link darin, um die Anmeldung abzuschließen.",
     alreadyNote: "Du bist bereits bestätigt — danke!",
@@ -133,15 +133,15 @@ const copy = {
     creatorQuote: "“Quote to follow.”",
 
     ctaTitle: "BE THERE WHEN WE TRY IT AGAIN.",
-    ctaLine1: "FIVE DAYS · ONE QUESTION · ",
+    ctaLine1: "10–14 OCTOBER 2026 · ",
     ctaLine2: "ONE PROOF.",
     emailPlaceholder: "Email",
     btnLoading: "Sending…",
     btnSent: "Mail sent ✓",
     btnAlready: "Already in ✓",
-    btnIdle: "Register for the event",
+    btnIdle: "Reserve my place",
     fine1:
-      "You get a confirmation mail, a welcome mail, a reminder with your access just before the start, and a short evening mail during the event. Unsubscribe any time with one click.",
+      "Confirm your email to reserve your place. You will receive your access before the start and a short evening email during the event. Unsubscribe any time with one click.",
     sentNote:
       "📬 Confirmation email on its way — click the link inside to complete your registration.",
     alreadyNote: "You are already confirmed — thank you!",
@@ -171,7 +171,7 @@ function WediumMark() {
 }
 
 export default function Wedium() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const lang: Lang = i18n.language?.startsWith("en") ? "en" : "de";
   const c = copy[lang];
   const setLang = (next: Lang) => {
@@ -287,6 +287,9 @@ export default function Wedium() {
               {c.ctaPrimary}
               <span className="transition-transform group-hover:translate-x-1">→</span>
             </a>
+            <Button asChild variant="link" className="text-foreground underline underline-offset-4">
+              <a href="#simulation">{c.ctaSecondary} →</a>
+            </Button>
           </div>
         </div>
       </section>
@@ -360,78 +363,13 @@ export default function Wedium() {
 
       </section>
 
-      {/* Creators */}
-      <section className={`${panelClass} relative overflow-hidden`}>
-        <div
-          aria-hidden="true"
-          className="wedium-gradient pointer-events-none absolute -right-24 -top-24 h-[28rem] w-[28rem] rounded-full opacity-25 blur-3xl"
-        />
-        <div className={`${panelInner} relative`}>
-          <div className="mb-12 md:mb-20 text-left">
-            <p className={eyebrowClass}>{c.creatorsEyebrow}</p>
-            <h2 className={displayClass} style={{ fontSize: "clamp(2rem, 7vw, 5rem)" }}>
-              {c.creatorsTitle}
-            </h2>
-            <p className="mt-3 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-              {c.creatorsNote}
-            </p>
-          </div>
-
-          {/* Mobile: stacked */}
-          <div className="flex flex-col gap-16 md:hidden">
-            {CREATORS.map((n) => (
-              <div key={n} className="flex flex-col items-center text-center gap-5">
-                <div className="w-36 h-36 rounded-full p-1.5 wedium-gradient shadow-xl">
-                  <div className="w-full h-full rounded-full bg-background" />
-                </div>
-                <div>
-                  <p className={`${displayClass} text-xl`}>
-                    {c.creatorName} {n}
-                  </p>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-alert">
-                    {c.creatorHandle}
-                  </p>
-                  <p className="mt-2 text-base italic text-foreground/80 leading-snug">
-                    {c.creatorQuote}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Desktop: freeform constellation */}
-          <div className="relative hidden md:block h-[760px]">
-            {[
-              { top: "top-[0%]", left: "left-[0%]", align: "items-start", text: "text-left", width: "max-w-[260px]" },
-              { top: "top-[6%]", left: "right-[0%]", align: "items-end", text: "text-right", width: "max-w-[280px]" },
-              { top: "top-[40%]", left: "left-1/2 -translate-x-1/2", align: "items-center", text: "text-center", width: "max-w-[340px]" },
-              { top: "bottom-[6%]", left: "left-[4%]", align: "items-start", text: "text-left", width: "max-w-[280px]" },
-              { top: "bottom-[10%]", left: "right-[6%]", align: "items-end", text: "text-right", width: "max-w-[280px]" },
-            ].map((pos, i) => (
-              <div
-                key={i}
-                className={`absolute ${pos.top} ${pos.left} flex flex-col ${pos.align} ${pos.text} gap-5 ${pos.width} transition-transform duration-500 hover:-translate-y-2`}
-              >
-                <div className="w-40 h-40 rounded-full p-1.5 wedium-gradient shadow-xl">
-                  <div className="w-full h-full rounded-full bg-background" />
-                </div>
-                <div>
-                  <p className={`${displayClass} text-2xl`}>
-                    {c.creatorName} {CREATORS[i]}
-                  </p>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-alert">
-                    {c.creatorHandle}
-                  </p>
-                  <p className="mt-2 text-lg italic text-foreground/80 leading-relaxed">
-                    {c.creatorQuote}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+      <section id="simulation" className={panelClass}>
+        <div className={`${panelInner} flex flex-col gap-8`}>
+          <h2 className={`${displayClass} text-3xl sm:text-5xl`}>{t('replay.tryTitle')}</h2>
+          <p className="max-w-3xl text-lg sm:text-xl leading-relaxed">{t('replay.tryBody')}</p>
+          <EventSimulationEmbed wedium />
         </div>
       </section>
-
 
       {/* Registration */}
       <section id="cta" className={`${panelClass} wedium-gradient`}>
@@ -443,20 +381,25 @@ export default function Wedium() {
             {c.ctaLine1}
             <span className="text-alert">{c.ctaLine2}</span>
           </p>
+          <Button asChild variant="link" className="mb-6 h-auto p-0 text-foreground underline underline-offset-4">
+            <a href="#simulation">{c.ctaSecondary} →</a>
+          </Button>
           <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-0 border border-foreground">
             <input
-              type="text"
+              type="email"
+              autoComplete="email"
+              aria-label={c.emailPlaceholder}
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={status !== "idle"}
               placeholder={c.emailPlaceholder}
-              className="flex-grow px-4 py-3.5 sm:py-4 outline-none text-sm font-bold uppercase placeholder:text-muted-foreground bg-transparent disabled:opacity-60"
+              className="min-w-0 flex-grow px-4 py-3.5 sm:py-4 outline-none text-sm font-bold uppercase placeholder:text-muted-foreground bg-transparent disabled:opacity-60"
             />
-            <button
+            <Button
               type="submit"
               disabled={status !== "idle"}
-              className="bg-foreground text-background px-6 py-3.5 sm:px-8 sm:py-4 text-sm font-bold uppercase hover:bg-alert transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+              className="h-auto rounded-none whitespace-normal bg-foreground text-background px-6 py-3.5 sm:px-8 sm:py-4 text-sm font-bold uppercase hover:bg-alert transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {status === "loading"
                 ? c.btnLoading
@@ -465,7 +408,7 @@ export default function Wedium() {
                   : status === "already"
                     ? c.btnAlready
                     : c.btnIdle}
-            </button>
+            </Button>
           </form>
           <p className="mt-6 text-xs text-muted-foreground max-w-2xl">{c.fine1}</p>
           {status === "sent" && (
