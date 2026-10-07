@@ -171,11 +171,16 @@ Deno.serve(async (req) => {
         }
       } else if (e.type === 'difference_rating') {
         const rater = personas.get(e.from_slot), target = personas.get(e.to_slot);
-        if (rater?.opinion_id && target?.opinion_id) {
+        if (rater?.user_id && rater.opinion_id && target?.opinion_id) {
           await admin.from('opinion_ratings').upsert({
             topic_id: tid, rater_opinion_id: rater.opinion_id, target_opinion_id: target.opinion_id,
             disagreement: Math.min(10, Math.max(0, Math.round(e.disagreement))), updated_at: at,
           }, { onConflict: 'rater_opinion_id,target_opinion_id' });
+          await admin.from('rating_events').insert({
+            topic_id: tid, rater_id: rater.user_id, kind: 'difference',
+            target_opinion_id: target.opinion_id,
+            value: Math.min(10, Math.max(0, Math.round(e.disagreement))), created_at: at,
+          });
         }
       } else if (e.type === 'rating') {
         const cid = chatMap[e.chat];
