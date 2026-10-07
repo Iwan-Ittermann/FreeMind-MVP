@@ -313,6 +313,21 @@
 .wedium-discussion .signal-edges line { stroke: hsl(var(--foreground)); }
 .wedium-discussion .signal-nodes svg > circle[filter] { stroke: hsl(var(--primary)); filter: none; }
 
+/* The landing invitation unfolds around the existing, already loaded discussion. */
+.simulation-stage { height: 560px; max-width: 440px; border-radius: 8px; transition: height 400ms ease; }
+.simulation-stage-active { height: 720px; }
+.simulation-placeholder { background: hsl(var(--foreground) / 0.05); }
+.simulation-section { scroll-snap-stop: normal; }
+.wedium-discussion [data-tt-tab-panel] { background: hsl(var(--background)); }
+@media (max-width: 1023px) {
+  .simulation-stage { height: 440px; max-width: 400px; }
+  .simulation-stage-active { height: 660px; }
+  .simulation-editorial { max-width: 640px; margin-inline: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .simulation-stage { transition: none; }
+}
+
 /* freemind x Gutefrage.net event page (`/gutefrage`).
    Palette: Gutefrage green on a warm off-white. */
 .gutefrage-theme {

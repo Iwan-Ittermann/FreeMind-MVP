@@ -347,10 +347,8 @@ export default function Landing() {
         </div>
       </section>
 
-      <section id="simulation" className={panelClass}>
-        <div className={`${panelInner} flex flex-col gap-8`}>
-          <h2 className={`${displayClass} text-3xl sm:text-5xl`}>{t('replay.tryTitle')}</h2>
-          <p className="max-w-3xl text-lg sm:text-xl leading-relaxed">{t('replay.tryBody')}</p>
+      <section id="simulation" className="simulation-section snap-start min-h-[100svh] w-full flex items-center justify-center px-5 sm:px-8 md:px-12 py-12 border-b border-foreground/15">
+        <div className={panelInner}>
           <EventSimulationEmbed />
         </div>
       </section>

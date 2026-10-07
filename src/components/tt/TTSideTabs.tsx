@@ -56,6 +56,7 @@ interface TTSideTabsProps {
   /** Fired when the user opens the opinion or chat list (used to close the tour). */
   onPanelOpen?: () => void;
   onStreamActiveChange?: (active: boolean) => void;
+  onGraphActiveChange?: (active: boolean) => void;
 }
 
 const SPRING = { type: 'spring' as const, stiffness: 320, damping: 30 };
@@ -79,13 +80,14 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
       onActiveChatChange,
       onPanelOpen,
       onStreamActiveChange,
+      onGraphActiveChange,
     },
     ref,
   ) {
     const { t } = useTranslation();
     const readOnly = useReadOnlyTopic();
     const [tab, setTab] = useState<TTTab>('graph');
-    const [chatScope, setChatScope] = useState<ChatScope>(readOnly ? 'all' : 'mine');
+    const [chatScope, setChatScope] = useState<ChatScope>(readOnly || !hasOwnOpinion ? 'all' : 'mine');
     const [activeChatOpinionId, setActiveChatOpinionId] = useState<string | null>(null);
     const [activeAllChat, setActiveAllChat] = useState<AllTopicChatItem | null>(null);
     const [chatSearch, setChatSearch] = useState('');
@@ -125,7 +127,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
       openPanel(panel: 'opinions' | 'stream' | 'chats') {
         setActiveAllChat(null);
         setActiveChatOpinionId(null);
-        if (panel === 'chats') setChatScope(readOnly ? 'all' : 'mine');
+        if (panel === 'chats') setChatScope(readOnly || !hasOwnOpinion ? 'all' : 'mine');
         setTab(panel);
         onPanelOpen?.();
       },
@@ -142,6 +144,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
       onStreamActiveChange?.(tab === 'stream');
       return () => onStreamActiveChange?.(false);
     }, [tab, onStreamActiveChange]);
+    useEffect(() => { onGraphActiveChange?.(tab === 'graph'); }, [tab, onGraphActiveChange]);
 
     const selectedStreamEntry = useMemo(() => {
       if (selectedStreamIndex == null) return stream.current;
@@ -253,7 +256,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
             // lands on the "my chats" list — never on the read-only all-chats
             // view and never inside a chat that is already open.
             if (key === 'chats') {
-              setChatScope('mine');
+               setChatScope(readOnly || !hasOwnOpinion ? 'all' : 'mine');
               setActiveAllChat(null);
               setActiveChatOpinionId(null);
             }
@@ -295,6 +298,7 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
           {tab !== 'graph' && (
             <motion.div
               key={tab}
+              data-tt-tab-panel={tab}
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 16 }}
@@ -682,12 +686,12 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
         {/* Three primary tabs; secondary destinations live in the settings menu. */}
         <div
           role="tablist"
+          data-active-tab={tab}
           className="absolute bottom-0 inset-x-0 z-40 h-12 flex items-stretch border-t border-border/30 bg-background/90 backdrop-blur-md"
         >
           {tabButton('opinions', t('tt.opinions'), List, { helpKey: 'opinions-tab' })}
           {tabButton('graph', t('tt.graphTab', 'Kreis'), CircleDot)}
           {tabButton('chats', t('tt.chats'), MessagesSquare, {
-            disabled: !hasOwnOpinion,
             badge: unreadCount,
             helpKey: 'chats-tab',
           })}
