@@ -167,11 +167,12 @@ export default function TT({ mode = 'real', eventPreview = false }: { mode?: 'te
     return idx >= 0 ? idx + 1 : null;
   }, [discussionEnded, ownOpinionId, activeData]);
 
-  // The sandbox is open to everyone: no email verification nag.
+  // The sandbox and the pre-event /go simulation are open to everyone:
+  // no email verification nag before the event starts.
   useEffect(() => {
-    setVerificationBypass(isPlayground);
+    setVerificationBypass(isPlayground || eventPreview);
     return () => setVerificationBypass(false);
-  }, [isPlayground]);
+  }, [isPlayground, eventPreview]);
 
   // Sandbox bots react to human opinions on page load / after submitting.
   // The reopened August question runs without bots.
