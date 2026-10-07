@@ -75,8 +75,8 @@ export default function TT({ mode = 'real', eventPreview = false }: { mode?: 'te
   // The August archive can be reopened as a second playground: writable for
   // everyone, while everything created during the event stays frozen server-side.
   const archiveOpen = isArchive && !!eventConfig?.archiveOpen;
-  const readOnly = eventPreview || (isArchive && !archiveOpen);
-  const isPlayground = !eventPreview && (isSandbox || archiveOpen || isSim);
+  const readOnly = isArchive && !archiveOpen;
+  const isPlayground = isSandbox || archiveOpen || isSim;
   const activeTopicId = topic?.id ?? '';
   const activeTopicTitle = topic?.title ?? '...';
 
@@ -190,6 +190,18 @@ export default function TT({ mode = 'real', eventPreview = false }: { mode?: 'te
   }, [activeTopicId, queryClient, user?.id]);
 
 
+  // /go preview: opinions only live for one browser session. A new session
+  // discards the previous preview opinion before the visitor sees the graph.
+  const previewSessionCheckedRef = useRef(false);
+  useEffect(() => {
+    if (!eventPreview || !ownOpinionKnown || !activeTopicId || previewSessionCheckedRef.current) return;
+    previewSessionCheckedRef.current = true;
+    const key = `freemind_go_preview_session_${activeTopicId}`;
+    let fresh = true;
+    try { fresh = !sessionStorage.getItem(key); sessionStorage.setItem(key, '1'); } catch { /* ignore */ }
+    if (fresh && hasOwnOpinion) void handleDeleteOwnOpinion().catch(() => undefined);
+  }, [eventPreview, ownOpinionKnown, activeTopicId, hasOwnOpinion, handleDeleteOwnOpinion]);
+
   const handleEdgeClick = useCallback((edge: GraphEdge) => {
     if (isMobile) return;
     chatManagerRef.current?.openReadOnlyChat(edge.source, edge.target);
@@ -302,6 +314,7 @@ export default function TT({ mode = 'real', eventPreview = false }: { mode?: 'te
           onRestartTour={() => setTourStep(1)}
           onDeleteOpinion={isPlayground && hasOwnOpinion ? handleDeleteOwnOpinion : undefined}
           passphraseSwitch={isSim && !eventPreview}
+          hideEventChannels={eventPreview}
           onOpenStream={() => sideTabsRef.current?.openPanel('stream')}
 
         />
@@ -475,7 +488,7 @@ export default function TT({ mode = 'real', eventPreview = false }: { mode?: 'te
 
 
 
-        <TTSandboxPassphrase enabled={isPlayground} />
+        <TTSandboxPassphrase enabled={isPlayground && !eventPreview} />
 
         {(isSandbox || isArchive || isSim) && !eventPreview && !streamActive && (
           <TTModeNotice
