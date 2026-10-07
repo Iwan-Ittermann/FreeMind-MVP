@@ -13,9 +13,9 @@
     "register": "Registrieren",
     "later": "Später",
     "embedTitle": "Interaktive freemind-Simulation",
-    "openDiscussion": "Simulation auf /go öffnen",
+    "openDiscussion": "Simulation groß öffnen",
     "tryTitle": "Probier es aus",
-    "tryBody": "Eine beschleunigte KI-Simulation — und du kannst mitmachen. Gib deine Meinung ab, bewerte andere Perspektiven und probiere Gespräche aus. Ohne E-Mail-Anmeldung. Deine Meinung gilt nur für diese Sitzung."
+    "tryBody": "Eine beschleunigte KI-Simulation — und du kannst mitmachen. Gib deine Meinung ab und bewerte andere Perspektiven. Ohne E-Mail-Anmeldung. Deine Meinung gilt nur für diese Sitzung."
   },
   "en": {
     "simTime": "Simulation time",
@@ -31,8 +31,8 @@
     "register": "Register",
     "later": "Later",
     "embedTitle": "Interactive freemind simulation",
-    "openDiscussion": "Open simulation on /go",
+    "openDiscussion": "Open full-size simulation",
     "tryTitle": "Try it out",
-    "tryBody": "An accelerated AI simulation — and you can join in. Share your opinion, rate other perspectives and try conversations. No email signup. Your opinion lasts for this session only."
+    "tryBody": "An accelerated AI simulation — and you can join in. Share your opinion and rate other perspectives. No email signup. Your opinion lasts for this session only."
   }
 }

@@ -20,6 +20,7 @@ interface TTCenterCTAProps {
   highlight?: boolean;
   onOpinionSubmitted?: () => void;
   onOpinionCommitted?: () => void;
+  disableNotificationPrompt?: boolean;
 }
 
 /**
@@ -34,6 +35,7 @@ export function TTCenterCTA({
   highlight = false,
   onOpinionSubmitted,
   onOpinionCommitted,
+  disableNotificationPrompt = false,
 }: TTCenterCTAProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -105,6 +107,7 @@ export function TTCenterCTA({
       // missing permission API, cross-origin iframe) must NEVER take down
       // the successful submit.
       try {
+        if (!disableNotificationPrompt) {
         const prevCount = parseInt(localStorage.getItem('tt:opinion-submit-count') || '0', 10) || 0;
         const newCount = prevCount + 1;
         localStorage.setItem('tt:opinion-submit-count', String(newCount));
@@ -126,6 +129,7 @@ export function TTCenterCTA({
           Notification.permission === 'granted'
         ) {
           enableTopicNotifications(topicId);
+        }
         }
       } catch (notifErr) {
         console.warn('[TTCenterCTA] notification setup failed (non-fatal):', notifErr);
