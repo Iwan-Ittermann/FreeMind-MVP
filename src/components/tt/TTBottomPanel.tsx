@@ -257,7 +257,7 @@ export function TTBottomPanel({
             )}
 
             {/* Step 2: chat unlocked once the rating is stored */}
-            {ratingDone && (
+            {ratingDone && !topicReadOnly && (
               <div className="mt-3 flex flex-col items-center gap-1.5">
                 {hasSavedRating && (
                   <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">

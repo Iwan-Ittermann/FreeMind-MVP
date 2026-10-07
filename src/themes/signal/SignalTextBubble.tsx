@@ -25,7 +25,7 @@ export function SignalTextBubble({ text, maxWidth, anchor = 'center', below = fa
   const x = anchor === 'left' ? 0 : anchor === 'right' ? -size.width : -size.width / 2;
   return (
     <foreignObject x={x} y={below ? 0 : -size.height} width={maxWidth} height={size.height + 2} overflow="visible">
-      <div ref={ref} data-graph-text-bubble className="inline-block max-w-full align-top rounded-md border border-primary/50 bg-card/95 px-2 py-1 text-center text-[10px] leading-[14px] text-card-foreground shadow-md">
+      <div ref={ref} data-graph-text-bubble className="inline-block max-w-full align-top rounded-md border border-primary/50 bg-card px-2 py-1 text-center text-[10px] leading-[14px] text-card-foreground shadow-md">
         <div className="line-clamp-3 break-words">{text}</div>
       </div>
     </foreignObject>

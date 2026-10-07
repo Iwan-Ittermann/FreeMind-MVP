@@ -403,9 +403,9 @@ export default function TT({ mode = 'real', eventPreview = false }: { mode?: 'te
 
         <TTBottomPanel
           topicId={activeTopicId}
-          hasOwnOpinion={hasOwnOpinion}
+          hasOwnOpinion={hasOwnOpinion && !readOnly}
           ownOpinionKnown={ownOpinionKnown}
-          ownOpinionId={ownOpinionId}
+          ownOpinionId={readOnly ? null : ownOpinionId}
           highlightAddOpinionForm={false}
           highlightLetsChatButton={activeTourStep?.highlight === 'chat'}
           highlightDisagreementScale={activeTourStep?.highlight === 'difference'}
