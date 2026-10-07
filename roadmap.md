@@ -53,4 +53,4 @@
 - [x] Stream und Impressum ins Zahnrad-Menü verlegen
 - [x] Neue Meinungen 4–8 Sekunden als gekürzte Sprechblase zeigen
 - [x] Sim-Nachrichten und Bewertungen mit gemeinsamer Ereignisspur animieren
-- [ ] Mobil und Desktop live prüfen
+- [x] Mobil und Desktop live prüfen

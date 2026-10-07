@@ -236,7 +236,7 @@ export function useChatMessages(
       
       if (error) throw error;
     },
-    onSuccess: async () => {
+    onSuccess: async (_data, variables) => {
       // Ensure the new message appears even if realtime is delayed
       queryClient.invalidateQueries({ queryKey: ['chat-messages', chatId] });
 
@@ -252,6 +252,7 @@ export function useChatMessages(
                 sourceOpinionId: broadcastInfo.myOpinionId,
                 targetOpinionId: broadcastInfo.theirOpinionId,
                 chatId,
+                content: variables.content,
               },
             });
           } else {
@@ -331,6 +332,7 @@ export function useChatMessages(
               sourceOpinionId: broadcastInfo.myOpinionId,
               targetOpinionId: broadcastInfo.theirOpinionId,
               chatId,
+              content: 'Voice message',
             },
           });
         }
