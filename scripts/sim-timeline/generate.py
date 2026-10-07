@@ -8,11 +8,50 @@ import argparse, json, random, re, sys, concurrent.futures as cf
 from pathlib import Path
 
 sys.path.insert(0, "/tmp")
-from lovable_ai import call_ai_json  # copied from the ai-gateway skill
 
 ROOT = Path(__file__).resolve().parents[2]
 H = 3600
 DURATION = 72 * H
+REPLAY_SPEED = 120
+
+
+def add_reading_pauses(events, seed):
+    """Keep original async rhythms, but allow reading + processing after a flight.
+
+    Pauses are measured in presentation seconds, then mapped into the accelerated
+    timeline. Existing texts and independent opinion ratings remain untouched.
+    """
+    rng = random.Random(f"reading:{seed}")
+    by_chat = {}
+    for event in events:
+        if event['type'] == 'message':
+            by_chat.setdefault(event['chat'], []).append(event)
+    for chat, messages in sorted(by_chat.items()):
+        messages.sort(key=lambda e: e['t'])
+        original = [e['t'] for e in messages]
+        revised = [original[0]]
+        for index, message in enumerate(messages[1:], 1):
+            pause = rng.randint(5, 60)
+            message['reading_seconds'] = pause
+            revised.append(max(original[index], revised[-1] + (9 + pause) * REPLAY_SPEED))
+        # Preserve the loop end without cutting off final messages.
+        overflow = max(0, revised[-1] - (DURATION - 120))
+        revised = [t - overflow for t in revised]
+        opened = next(e['t'] for e in events if e['type'] == 'chat_open' and e['chat'] == chat)
+        assert revised[0] > opened, f'Not enough room for reading pauses in {chat}'
+        for event in events:
+            if event['type'] == 'rating' and event.get('chat') == chat:
+                preceding = max((i for i, t in enumerate(original) if t <= event['t']), default=0)
+                event['t'] = min(DURATION - 60, event['t'] + revised[preceding] - original[preceding])
+        for event, timestamp in zip(messages, revised):
+            event['t'] = timestamp
+    return sorted(events, key=lambda e: (e['t'], e['type']))
+
+
+def save_timeline(data):
+    serialized = json.dumps(data, ensure_ascii=False, indent=1)
+    for path in ('src/data/sim-timeline.json', 'supabase/functions/_shared/sim-timeline.json'):
+        (ROOT / path).write_text(serialized)
 
 # Camp axis: 0 Haftung/Gesetz, 1 Jugendschutz, 2 Transparenz/Daten, 3 Freiheit/Minimal-Staat
 CAMPS = {
@@ -82,6 +121,7 @@ def message_times(rng, start, end, n, pattern):
 
 
 def write_chat(chat, P):
+    from lovable_ai import call_ai_json
     a, b = P[chat["a"]], P[chat["b"]]
     prompt = f"""Thema der Diskussion: „Wie könnte Social Media wieder positiver werden?"
 Schreibe einen realistischen privaten Chat (deutsch, Du-Form, wie Messenger: kurz, manchmal Tippfehler-frei aber umgangssprachlich, keine Emojis-Flut, keine Anrede-Floskeln) mit genau {chat['n']} Nachrichten, abwechselnd beginnend mit {a['name']}.
@@ -159,7 +199,16 @@ def opinion_difference_events(rng, joins):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int, default=7)
+    ap.add_argument('--retime-existing', action='store_true', help='Retain all texts; only add reading pauses')
     args = ap.parse_args()
+    if args.retime_existing:
+        data = json.loads((ROOT / 'src/data/sim-timeline.json').read_text())
+        if data.get('version', 0) < 4:
+            data['timeline'] = add_reading_pauses(data['timeline'], data['seed'])
+            data['version'] = 4
+            save_timeline(data)
+        print('Reading pauses applied; version', data['version'])
+        return
     rng = random.Random(args.seed)
     P = load_personas()
     joins = join_times(rng)
@@ -213,12 +262,13 @@ def main():
                                        respect=r["respect"], disagreement=r["disagreement"],
                                        bridge=r["respect"] >= 75 and abs(CAMP_OF[rater] - CAMP_OF[target]) >= 2))
     events = sorted((e for e in events if 0 <= e["t"] < DURATION), key=lambda e: (e["t"], e["type"]))
-    out = dict(version=3, topic="Wie könnte Social Media wieder positiver werden?", duration_seconds=DURATION, seed=args.seed,
+    events = add_reading_pauses(events, args.seed)
+    out = dict(version=4, topic="Wie könnte Social Media wieder positiver werden?", duration_seconds=DURATION, seed=args.seed,
                personas=[dict(slot=s, name=P[s]["name"], camp=CAMP_OF[s]) for s in range(40)],
                chats=[dict(id=c["id"], a=c["a"], b=c["b"], moment=c["moment"]) for c in chats], timeline=events)
     dest = ROOT / "src/data/sim-timeline.json"
     dest.parent.mkdir(exist_ok=True)
-    dest.write_text(json.dumps(out, ensure_ascii=False, indent=1))
+    save_timeline(out)
     kinds = {}
     for e in events:
         kinds[e["type"]] = kinds.get(e["type"], 0) + 1
