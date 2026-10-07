@@ -16,7 +16,7 @@ const json = (b: unknown, s = 200) =>
 
 const EPOCH = Date.UTC(2026, 9, 3, 18, 0, 0); // cycle 0 starts here (UTC)
 const D = timeline.duration_seconds as number;
-const SPEED = 120;
+const SPEED = 180;
 const REAL_CYCLE_MS = (D / SPEED) * 1000;
 type Admin = ReturnType<typeof createClient>;
 type Ev = Record<string, any> & { t: number; type: string };
