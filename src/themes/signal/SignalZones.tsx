@@ -113,9 +113,37 @@ export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function Si
       <circle cx={cx} cy={cy} r={modRing2} fill="none" stroke="url(#signal-mod-ring-2)" strokeWidth={modStep * 0.6} opacity={0.4} />
       <circle cx={cx} cy={cy} r={moderateR - modStep * 0.15} fill="none" stroke="url(#signal-mod-ring-3)" strokeWidth={modStep * 0.5} opacity={0.35} />
 
-      {/* Discrete level rings — 10 levels, color-coded by zone */}
+      {/* Discrete level rings — 10 levels, color-coded by zone.
+          Wedium presentation: 20 rings at slightly thicker stroke (decorative only). */}
       {(() => {
         const minR = config.nodeRadius * 2;
+        const wedium = useWediumPresentation();
+        const ringCount = wedium ? 20 : 10;
+        const zoneColors: Record<string, string> = {
+          respectful: 'rgba(255, 255, 255, 0.16)',
+          moderate: 'rgba(255, 255, 255, 0.12)',
+          extreme: 'rgba(255, 255, 255, 0.10)',
+        };
+        const zoneForLevel = (level: number, radii: number[]): string => {
+          if (radii[level] <= respectfulR) return 'respectful';
+          if (radii[level] <= moderateR) return 'moderate';
+          return 'extreme';
+        };
+        if (wedium) {
+          // 20 evenly distributed rings between the innermost and outermost level.
+          const radii = Array.from({ length: ringCount }, (_, i) =>
+            minR + (r - minR) * (i / (ringCount - 1)),
+          );
+          return radii.map((radius, i) => (
+            <circle
+              key={`level-wedium-${i}`}
+              cx={cx} cy={cy} r={radius}
+              fill="none"
+              stroke={zoneColors[zoneForLevel(i, radii)]}
+              strokeWidth={0.8}
+            />
+          ));
+        }
         const levelRadii: { level: number; radius: number; zone: 'respectful' | 'moderate' | 'extreme' }[] = [
           { level: 10, radius: minR, zone: 'respectful' },
           { level: 9, radius: respectfulR * 0.33, zone: 'respectful' },
@@ -128,11 +156,6 @@ export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function Si
           { level: 2, radius: moderateR + (r - moderateR) * 0.5, zone: 'extreme' },
           { level: 1, radius: r - config.nodeRadius, zone: 'extreme' },
         ];
-        const zoneColors: Record<string, string> = {
-          respectful: 'rgba(255, 255, 255, 0.16)',
-          moderate: 'rgba(255, 255, 255, 0.12)',
-          extreme: 'rgba(255, 255, 255, 0.10)',
-        };
         return levelRadii.map(({ level, radius, zone }) => (
           <circle
             key={`level-${level}`}
