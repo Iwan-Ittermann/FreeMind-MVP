@@ -10,6 +10,7 @@ interface SignalZonesProps {
 
 export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function SignalZones({ zones, config }, ref) {
   const { t } = useTranslation();
+  const wedium = useWediumPresentation();
   const cx = config.centerX;
   const cy = config.centerY;
   const r = config.outerRadius;
