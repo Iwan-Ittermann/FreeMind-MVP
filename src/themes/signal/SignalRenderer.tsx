@@ -171,7 +171,8 @@ export function SignalRenderer({
           {getTTLevelRadii(ttLandmarks)
             // Cosmos background keeps exactly one orientation line outside the
             // zero-point radius (drawn by TTBackground), so drop the outer rings.
-             .filter(({ level, r }) => wedium ? level === 1 || level === 5 || level === 10 : bgStyle !== 'cosmos' || r <= ttLandmarks.blueR)
+            // Wedium presentation: double ring density, slightly thicker stroke.
+            .filter(({ level, r }) => wedium ? [1, 3, 5, 7, 9, 10].includes(level) : bgStyle !== 'cosmos' || r <= ttLandmarks.blueR)
             .map(({ level, r }) => (
             <circle
               key={level}
@@ -180,8 +181,8 @@ export function SignalRenderer({
               r={r}
               fill="none"
                stroke="hsl(var(--foreground))"
-              strokeOpacity={0.2}
-              strokeWidth={0.75}
+              strokeOpacity={wedium ? 0.25 : 0.2}
+              strokeWidth={wedium ? 1 : 0.75}
             />
           ))}
         </g>
