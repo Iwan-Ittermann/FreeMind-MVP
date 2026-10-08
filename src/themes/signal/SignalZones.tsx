@@ -1,5 +1,6 @@
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useWediumPresentation } from '@/contexts/WediumPresentationContext';
 import { SemanticZoneToken } from '../types';
 import { LayoutConfig } from '@/types/graph';
 
@@ -118,7 +119,6 @@ export const SignalZones = forwardRef<SVGGElement, SignalZonesProps>(function Si
           Wedium presentation: 20 rings at slightly thicker stroke (decorative only). */}
       {(() => {
         const minR = config.nodeRadius * 2;
-        const wedium = useWediumPresentation();
         const ringCount = wedium ? 20 : 10;
         const zoneColors: Record<string, string> = {
           respectful: 'rgba(255, 255, 255, 0.16)',
