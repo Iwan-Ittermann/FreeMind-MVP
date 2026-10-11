@@ -18,6 +18,8 @@ export function useTTNotifications(activeTopicId: string) {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState<TTNotification[]>([]);
   const seenIds = useRef(new Set<string>());
+  // The permanent /sim replay must not produce any notifications.
+  const simTopicId = useRef<string | null>(null);
 
   const addNotification = useCallback(
     (n: Omit<TTNotification, 'topicId'>, topicId: string) => {
@@ -54,6 +56,27 @@ export function useTTNotifications(activeTopicId: string) {
   // Track existing chat IDs to distinguish "new chat" vs "new message"
   const knownChatIds = useRef(new Set<string>());
 
+  // Resolve the simulation topic once so sim replay events can be skipped.
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      const { data: setting } = await supabase
+        .from('app_settings')
+        .select('value')
+        .eq('key', 'sim_topic_short_code')
+        .maybeSingle();
+      const code = setting?.value?.trim();
+      if (!code || !alive) return;
+      const { data: topic } = await supabase
+        .from('topics')
+        .select('id')
+        .eq('short_code', code)
+        .maybeSingle();
+      if (alive && topic) simTopicId.current = topic.id;
+    })();
+    return () => { alive = false; };
+  }, []);
+
   useEffect(() => {
     if (!user) return;
 
@@ -71,6 +94,7 @@ export function useTTNotifications(activeTopicId: string) {
             text: string;
           };
           if (row.user_id === user.id) return;
+          if (simTopicId.current && row.topic_id === simTopicId.current) return;
           if (!isFilterEnabled(row.topic_id, 'newOpinion')) return;
           addNotification(
             {
@@ -109,6 +133,7 @@ export function useTTNotifications(activeTopicId: string) {
             .single();
           const topicId = chatData?.topic_id;
           if (!topicId) return;
+          if (simTopicId.current && topicId === simTopicId.current) return;
 
           if (isNewChat) {
             if (!isFilterEnabled(topicId, 'newChat')) return;
