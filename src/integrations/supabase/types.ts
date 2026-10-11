@@ -1889,6 +1889,7 @@ export type Database = {
       }
       is_real_event_topic: { Args: { _topic_id: string }; Returns: boolean }
       is_sandbox_topic: { Args: { _topic_id: string }; Returns: boolean }
+      is_sim_topic: { Args: { v_topic: string }; Returns: boolean }
       is_verified_participant: { Args: { _user_id: string }; Returns: boolean }
       log_audit: {
         Args: {

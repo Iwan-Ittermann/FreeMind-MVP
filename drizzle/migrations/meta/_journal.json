@@ -8,6 +8,13 @@
       "when": 1791375141068,
       "tag": "0000_open_sim_topic_for_unverified_opinions",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791738226624,
+      "tag": "0001_sim_topic_no_notifications",
+      "breakpoints": true
     }
   ]
 }
