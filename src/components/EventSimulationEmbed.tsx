@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { ArrowRight, ArrowUpRight, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { SimDatasetSwitch } from '@/components/SimDatasetSwitch';
+import { useSimDataset } from '@/hooks/useSimDataset';
 
 export function EventSimulationEmbed({ wedium = false }: { wedium?: boolean }) {
   const { t, i18n } = useTranslation();
@@ -11,6 +13,7 @@ export function EventSimulationEmbed({ wedium = false }: { wedium?: boolean }) {
   const frameRef = useRef<HTMLIFrameElement>(null);
   const [preload, setPreload] = useState(false);
   const [interactive, setInteractive] = useState(false);
+  const [dataset, setDataset] = useSimDataset();
   const sendInteraction = () => frameRef.current?.contentWindow?.postMessage({ type: 'freemind:embed-interaction', active: interactive }, window.location.origin);
   useEffect(() => {
     const main = sectionRef.current?.closest('main');
@@ -36,12 +39,13 @@ export function EventSimulationEmbed({ wedium = false }: { wedium?: boolean }) {
         <p className="text-xs text-muted-foreground">{t('replay.sessionNote')}</p>
       </div>
       <div className="flex w-full min-w-0 flex-col items-center gap-4">
+      <SimDatasetSwitch value={dataset} onChange={setDataset} />
       <div id="simulation-frame" className={cn('simulation-stage relative w-full overflow-hidden', interactive && 'simulation-stage-active')}>
       {preload ? <iframe
         ref={frameRef}
-        key={lang}
+        key={`${lang}-${dataset}`}
         title={t('replay.embedTitle')}
-        src={`/go?embed=1&lang=${lang}${wedium ? '&presentation=wedium' : ''}`}
+        src={`/go?embed=1&lang=${lang}&dataset=${dataset}${wedium ? '&presentation=wedium' : ''}`}
         loading="eager"
         onLoad={sendInteraction}
         tabIndex={interactive ? 0 : -1}
@@ -50,7 +54,7 @@ export function EventSimulationEmbed({ wedium = false }: { wedium?: boolean }) {
       </div>
       {!interactive && <ChevronDown className="h-4 w-4 text-muted-foreground" aria-hidden />}
       <Button asChild variant="link" className="h-auto text-xs text-foreground underline underline-offset-4">
-        <a href={`/go${wedium ? '?presentation=wedium' : ''}`} target="_blank" rel="noopener noreferrer">{t('replay.openDiscussion')}<ArrowUpRight /></a>
+        <a href={`/sim?dataset=${dataset}`} target="_blank" rel="noopener noreferrer">{t('replay.openDiscussion')}<ArrowUpRight /></a>
       </Button>
       </div>
     </div>

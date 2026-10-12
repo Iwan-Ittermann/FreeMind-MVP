@@ -1292,6 +1292,7 @@ export type Database = {
       }
       sim_state: {
         Row: {
+          august_lease_expires_at: string | null
           created_at: string
           id: number
           lease_expires_at: string | null
@@ -1302,6 +1303,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          august_lease_expires_at?: string | null
           created_at?: string
           id?: number
           lease_expires_at?: string | null
@@ -1312,6 +1314,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          august_lease_expires_at?: string | null
           created_at?: string
           id?: number
           lease_expires_at?: string | null

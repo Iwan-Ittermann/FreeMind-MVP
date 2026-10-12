@@ -22,7 +22,12 @@
     "join": "TESTVERSION AUSPROBIEREN",
     "watch": "Wieder zuschauen",
     "sessionNote": "Ohne Anmeldung. Meinung wird nicht gespeichert. ",
-    "registerNow": "Jetzt registrieren"
+    "registerNow": "Jetzt registrieren",
+    "datasetLabel": "Datenset",
+    "datasetSocial": "KI-Simulation",
+    "datasetAugust": "August-Diskussion (echt)",
+    "previewAugust": "Echte August-Diskussion, anonymisiert & beschleunigt",
+    "augustNotice": "Wiedergabe: Das ist die echte August-Diskussion, anonymisiert und beschleunigt abgespielt. Du kannst mitmachen — deine Meinung gilt nur für diese Sitzung."
   },
   "en": {
     "simTime": "Simulation time",
@@ -47,6 +52,11 @@
     "join": "Join the discussion",
     "watch": "Back to watching",
     "sessionNote": "No email signup. Your opinion stays for this session.",
-    "registerNow": "Register now"
+    "registerNow": "Register now",
+    "datasetLabel": "Dataset",
+    "datasetSocial": "AI simulation",
+    "datasetAugust": "August discussion (real)",
+    "previewAugust": "Real August discussion, anonymized & sped up",
+    "augustNotice": "Replay: this is the real August discussion, anonymized and sped up. You can join in — your opinion only lasts for this session."
   }
 }

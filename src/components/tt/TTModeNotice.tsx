@@ -15,7 +15,7 @@ export function TTModeNotice({
   mode,
   offsetClass = 'bottom-[150px]',
 }: {
-  mode: 'sandbox' | 'archive' | 'archive-open' | 'sim';
+  mode: 'sandbox' | 'archive' | 'archive-open' | 'sim' | 'sim-august';
   /** Vertical offset so the notice never overlaps the CTA above the nav bar. */
   offsetClass?: string;
 }) {
@@ -42,7 +42,9 @@ export function TTModeNotice({
 
 
   const text =
-    mode === 'sim'
+    mode === 'sim-august'
+      ? t('replay.augustNotice')
+      : mode === 'sim'
       ? t(
           'tt.simNotice',
           'Simulation: All participants here are AI personas. Press play and watch them discuss, chat and rate each other.',

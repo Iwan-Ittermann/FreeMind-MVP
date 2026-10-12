@@ -8,7 +8,7 @@ export interface EventTopic {
   short_code: string;
 }
 
-export type EventTopicRole = 'test' | 'real' | 'sandbox' | 'archive' | 'sim';
+export type EventTopicRole = 'test' | 'real' | 'sandbox' | 'archive' | 'sim' | 'sim-august';
 
 /**
  * Resolves the topic for a route role.
@@ -30,6 +30,8 @@ export function useEventTopic(role: EventTopicRole) {
           ? config?.archiveShortCode || config?.realShortCode || null
           : role === 'sim'
             ? config?.simShortCode ?? null
+            : role === 'sim-august'
+              ? config?.simAugustShortCode ?? null
             : config?.realShortCode || config?.testShortCode || null;
 
   const query = useQuery({

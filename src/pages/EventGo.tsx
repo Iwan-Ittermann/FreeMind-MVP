@@ -8,6 +8,8 @@ import Discussion from './Discussion';
 export default function EventGo() {
   const [params] = useSearchParams();
   const embedded = params.get('embed') === '1';
+  // Dataset choice only applies to the embedded player; /go itself always shows the AI simulation.
+  const dataset = embedded && params.get('dataset') === 'august' ? 'august' : 'social';
   const wediumPresentation = params.get('presentation') === 'wedium';
   const { i18n } = useTranslation();
   const lang = params.get('lang');
@@ -28,5 +30,5 @@ export default function EventGo() {
   const { phase } = useEventPhase(config);
   if (isLoading || !config) return <div className="fixed inset-0 bg-background" aria-busy="true" />;
   const preview = embedded || !config.realShortCode || phase === 'prelaunch';
-  return <Discussion key={preview ? 'event-preview' : 'event-live'} mode={preview ? 'sim' : 'real'} eventPreview={preview} embedded={embedded} embedInteractive={embedInteractive} wediumPresentation={wediumPresentation} />;
+  return <Discussion key={preview ? `event-preview-${dataset}` : 'event-live'} simDataset={dataset} mode={preview ? 'sim' : 'real'} eventPreview={preview} embedded={embedded} embedInteractive={embedInteractive} wediumPresentation={wediumPresentation} />;
 }

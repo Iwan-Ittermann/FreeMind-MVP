@@ -19,7 +19,7 @@ export function useTTNotifications(activeTopicId: string) {
   const [notifications, setNotifications] = useState<TTNotification[]>([]);
   const seenIds = useRef(new Set<string>());
   // The permanent /sim replay must not produce any notifications.
-  const simTopicId = useRef<string | null>(null);
+  const simTopicIds = useRef<Set<string>>(new Set());
 
   const addNotification = useCallback(
     (n: Omit<TTNotification, 'topicId'>, topicId: string) => {
@@ -63,16 +63,14 @@ export function useTTNotifications(activeTopicId: string) {
       const { data: setting } = await supabase
         .from('app_settings')
         .select('value')
-        .eq('key', 'sim_topic_short_code')
-        .maybeSingle();
-      const code = setting?.value?.trim();
-      if (!code || !alive) return;
-      const { data: topic } = await supabase
+        .in('key', ['sim_topic_short_code', 'sim_august_topic_short_code']);
+      const codes = (setting ?? []).map((s) => s.value?.trim()).filter(Boolean) as string[];
+      if (!codes.length || !alive) return;
+      const { data: topics } = await supabase
         .from('topics')
         .select('id')
-        .eq('short_code', code)
-        .maybeSingle();
-      if (alive && topic) simTopicId.current = topic.id;
+        .in('short_code', codes);
+      if (alive && topics) simTopicIds.current = new Set(topics.map((t) => t.id));
     })();
     return () => { alive = false; };
   }, []);
@@ -94,7 +92,7 @@ export function useTTNotifications(activeTopicId: string) {
             text: string;
           };
           if (row.user_id === user.id) return;
-          if (simTopicId.current && row.topic_id === simTopicId.current) return;
+          if (simTopicIds.current.has(row.topic_id)) return;
           if (!isFilterEnabled(row.topic_id, 'newOpinion')) return;
           addNotification(
             {
@@ -133,7 +131,7 @@ export function useTTNotifications(activeTopicId: string) {
             .single();
           const topicId = chatData?.topic_id;
           if (!topicId) return;
-          if (simTopicId.current && topicId === simTopicId.current) return;
+          if (topicId && simTopicIds.current.has(topicId)) return;
 
           if (isNewChat) {
             if (!isFilterEnabled(topicId, 'newChat')) return;

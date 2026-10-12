@@ -44,6 +44,7 @@ import { useArrowModePref } from '@/hooks/useArrowModePref';
 import { TTDemoAccessPanel, openDemoAccess, useDemoAccess } from '@/components/tt/TTDemoAccessPanel';
 import { PASSPHRASE_LOGIN_ENABLED } from '@/lib/constants';
 import { TTSimControl } from '@/components/tt/TTSimControl';
+import type { SimDataset } from '@/hooks/useSimDataset';
 import { cn } from '@/lib/utils';
 import { WediumPresentationContext } from '@/contexts/WediumPresentationContext';
 import { TTPreEventNotice } from '@/components/tt/TTPreEventNotice';
@@ -53,7 +54,7 @@ import { TTPreEventNotice } from '@/components/tt/TTPreEventNotice';
  * Single-topic mobile UI. This build is locked to the Helsinki event topic (7mm9);
  * multi-topic swipe/loop logic has been removed.
  */
-export default function TT({ mode = 'real', eventPreview = false, embedded = false, embedInteractive = false, wediumPresentation = false }: { mode?: 'test' | 'real' | 'sandbox' | 'archive' | 'sim'; eventPreview?: boolean; embedded?: boolean; embedInteractive?: boolean; wediumPresentation?: boolean }) {
+export default function TT({ mode = 'real', eventPreview = false, embedded = false, embedInteractive = false, wediumPresentation = false, simDataset = 'social' }: { simDataset?: SimDataset; mode?: 'test' | 'real' | 'sandbox' | 'archive' | 'sim'; eventPreview?: boolean; embedded?: boolean; embedInteractive?: boolean; wediumPresentation?: boolean }) {
   useParams<{ topicId?: string }>(); // single-topic routes; params ignored
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -61,7 +62,7 @@ export default function TT({ mode = 'real', eventPreview = false, embedded = fal
   const { isVerified } = useIsVerified();
   const isMobile = useIsMobile();
   const chatManagerRef = useRef<FloatingChatManagerHandle>(null);
-  const { topic, isLoading: topicLoading, config: eventConfig } = useEventTopic(mode);
+  const { topic, isLoading: topicLoading, config: eventConfig } = useEventTopic(mode === 'sim' && simDataset === 'august' ? 'sim-august' : mode);
   const { phase, gated: phaseGated, now } = useEventPhase(eventConfig);
   const { arrowMode } = useArrowModePref();
   // Time phases apply to the real question only — /test stays open at all times.
@@ -498,12 +499,12 @@ export default function TT({ mode = 'real', eventPreview = false, embedded = fal
 
         {(isSandbox || isArchive || isSim) && !eventPreview && !streamActive && (
           <TTModeNotice
-            mode={isSim ? 'sim' : isSandbox ? 'sandbox' : archiveOpen ? 'archive-open' : 'archive'}
+            mode={isSim ? (simDataset === 'august' ? 'sim-august' : 'sim') : isSandbox ? 'sandbox' : archiveOpen ? 'archive-open' : 'archive'}
             offsetClass={isPlayground && !hasOwnOpinion ? 'bottom-[196px]' : 'bottom-[150px]'}
           />
         )}
-        {isSim && <TTSimControl topicId={activeTopicId} compact={!controlsVisible} />}
-        {eventPreview && graphActive && !streamActive && !selectedNode && <TTPreEventNotice startsAt={eventConfig?.opinionsOpenAt ?? eventConfig?.discussionOpenAt ?? null} now={now} registered={isVerified} embedded={embedded} compact={!controlsVisible} />}
+        {isSim && <TTSimControl dataset={simDataset} topicId={activeTopicId} compact={!controlsVisible} />}
+        {eventPreview && graphActive && !streamActive && !selectedNode && <TTPreEventNotice startsAt={eventConfig?.opinionsOpenAt ?? eventConfig?.discussionOpenAt ?? null} now={now} registered={isVerified} embedded={embedded} compact={!controlsVisible} august={simDataset === 'august'} />}
 
       </div>
     </div>

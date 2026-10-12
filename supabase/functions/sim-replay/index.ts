@@ -3,7 +3,8 @@
 // current frame into the normal discussion tables, so every visitor sees the
 // same state. At a new cycle the simulated data is wiped and replay restarts.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import timeline from '../_shared/sim-timeline.json' with { type: 'json' };
+import socialTimeline from '../_shared/sim-timeline.json' with { type: 'json' };
+import augustTimeline from '../_shared/sim-august-timeline.json' with { type: 'json' };
 import { SIM_PERSONAS, SIM_TOPIC_TITLE } from '../_shared/sim-personas.ts';
 
 const cors = {
@@ -15,12 +16,19 @@ const json = (b: unknown, s = 200) =>
   new Response(JSON.stringify(b), { status: s, headers: { ...cors, 'Content-Type': 'application/json' } });
 
 const EPOCH = Date.UTC(2026, 9, 3, 18, 0, 0); // cycle 0 starts here (UTC)
-const D = timeline.duration_seconds as number;
 const SPEED = 180;
-const REAL_CYCLE_MS = (D / SPEED) * 1000;
 type Admin = ReturnType<typeof createClient>;
 type Ev = Record<string, any> & { t: number; type: string };
-const EVENTS = timeline.timeline as Ev[];
+type Dataset = 'social' | 'august';
+// Each dataset has its own topic, persona slots, cursor and lease; renderer and replay are shared.
+const DATASETS: Record<Dataset, { timeline: any; topicKey: string; slotOffset: number; suffix: string; lease: string; title: string; personas: Array<{ slot: number; name: string; persona: string; opinion: string }> }> = {
+  social: { timeline: socialTimeline, topicKey: 'sim_topic_short_code', slotOffset: 0, suffix: '', lease: 'lease_expires_at', title: SIM_TOPIC_TITLE,
+    personas: SIM_PERSONAS.map((p) => ({ slot: p.slot, name: p.name, persona: p.persona, opinion: p.opinion })) },
+  august: { timeline: augustTimeline, topicKey: 'sim_august_topic_short_code', slotOffset: 1000, suffix: '_august', lease: 'august_lease_expires_at',
+    title: (augustTimeline as any).topic,
+    personas: ((augustTimeline as any).persona_list as any[]).map((p) => ({ slot: p.slot, name: p.name, persona: 'August-Teilnehmer:in (anonymisiert)', opinion: p.opinion })) },
+};
+let cfg = DATASETS.social;
 
 async function setting(admin: Admin, key: string) {
   const { data } = await admin.from('app_settings').select('value').eq('key', key).maybeSingle();
@@ -30,32 +38,35 @@ const put = (admin: Admin, key: string, value: string) =>
   admin.from('app_settings').upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' });
 
 async function topicId(admin: Admin): Promise<string | null> {
-  const code = (await setting(admin, 'sim_topic_short_code'))?.trim();
+  const code = (await setting(admin, cfg.topicKey))?.trim();
   if (code) {
     const { data } = await admin.from('topics').select('id').eq('short_code', code).maybeSingle();
     if (data) return data.id;
   }
-  const short = Array.from({ length: 4 }, () => 'abcdefghijklmnopqrstuvwxyz0123456789'[Math.floor(Math.random() * 36)]).join('');
+  const short = cfg.suffix ? 'au08' : Array.from({ length: 4 }, (_, i) => (i % 2 ? '0123456789' : 'abcdefghijklmnopqrstuvwxyz')[Math.floor(Math.random() * (i % 2 ? 10 : 26))]).join('');
   const { data } = await admin.from('topics')
-    .insert({ title: SIM_TOPIC_TITLE, is_active: true, status: 'Active', url_slug: 'sim', short_code: short })
+    .insert({ title: cfg.title, is_active: true, status: 'Active', url_slug: 'sim' + cfg.suffix.replace('_', '-'), short_code: short })
     .select('id').single();
   if (!data) return null;
-  await put(admin, 'sim_topic_short_code', short);
+  await put(admin, cfg.topicKey, short);
   return data.id;
 }
 
 async function personaRows(admin: Admin) {
-  const { count } = await admin.from('sim_personas').select('id', { count: 'exact', head: true });
-  if (!count) {
-    await admin.from('sim_personas').insert(SIM_PERSONAS.map((p) => ({ slot: p.slot, name: p.name, persona: p.persona, opinion_text: p.opinion })));
+  const lo = cfg.slotOffset, hi = cfg.slotOffset + 999;
+  const { data: existing } = await admin.from('sim_personas').select('slot').gte('slot', lo).lte('slot', hi);
+  const have = new Set((existing ?? []).map((r: any) => r.slot));
+  const missing = cfg.personas.filter((p) => !have.has(p.slot + lo));
+  if (missing.length) {
+    await admin.from('sim_personas').insert(missing.map((p) => ({ slot: p.slot + lo, name: p.name, persona: p.persona, opinion_text: p.opinion })));
   }
-  const { data } = await admin.from('sim_personas').select('*').order('slot');
-  return new Map((data ?? []).map((r: any) => [r.slot as number, r]));
+  const { data } = await admin.from('sim_personas').select('*').gte('slot', lo).lte('slot', hi).order('slot');
+  return new Map((data ?? []).map((r: any) => [(r.slot as number) - lo, r]));
 }
 
 async function ensureUser(admin: Admin, p: any): Promise<string | null> {
   if (p.user_id) return p.user_id;
-  const email = `sim+${String(p.slot).padStart(2, '0')}@freemind.chat`;
+  const email = `sim+${String(p.slot).padStart(2, '0')}@freemind.chat`; // p.slot is the raw DB slot
   const { data: c } = await admin.auth.admin.createUser({
     email, password: `sim-${crypto.randomUUID()}`, email_confirm: true,
     user_metadata: { sim: true, demo_name: p.name },
@@ -96,13 +107,22 @@ async function wipe(admin: Admin, tid: string, personas: Map<number, any>) {
       if (error) console.error('wipe opinions', error.message);
     }
   }
-  await admin.from('sim_personas').update({ opinion_id: null, active: false }).gte('slot', 0);
+  await admin.from('sim_personas').update({ opinion_id: null, active: false }).gte('slot', cfg.slotOffset).lte('slot', cfg.slotOffset + 999);
   for (const p of personas.values()) { p.opinion_id = null; p.active = false; }
 }
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: cors });
   const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+  let body: any = {};
+  try { body = await req.json(); } catch { body = {}; }
+  const ds = body?.dataset ?? 'social';
+  if (ds !== 'social' && ds !== 'august') return json({ error: 'invalid dataset' }, 400);
+  cfg = DATASETS[ds as Dataset];
+  const timeline = cfg.timeline;
+  const D = timeline.duration_seconds as number;
+  const REAL_CYCLE_MS = (D / SPEED) * 1000;
+  const EVENTS = timeline.timeline as Ev[];
   const now = Date.now();
   const elapsed = Math.max(0, Math.floor((now - EPOCH) / 1000));
   const acceleratedElapsed = elapsed * SPEED;
@@ -112,17 +132,17 @@ Deno.serve(async (req) => {
 
   // Single writer: take a short lease.
   const leaseUntil = new Date(now + 50_000).toISOString();
-  const { data: got } = await admin.from('sim_state').update({ lease_expires_at: leaseUntil })
-    .eq('id', 1).or(`lease_expires_at.is.null,lease_expires_at.lt.${new Date(now).toISOString()}`).select('id');
+  const { data: got } = await admin.from('sim_state').update({ [cfg.lease]: leaseUntil })
+    .eq('id', 1).or(`${cfg.lease}.is.null,${cfg.lease}.lt.${new Date(now).toISOString()}`).select('id');
   if (!got?.length) return json({ cycle, frame, busy: true });
 
   try {
     const tid = await topicId(admin);
     if (!tid) return json({ error: 'no topic' }, 500);
     const personas = await personaRows(admin);
-    const [cCycle, cT] = ((await setting(admin, 'sim_replay_cursor')) ?? '-1:-1').split(':').map(Number);
+    const [cCycle, cT] = ((await setting(admin, 'sim_replay_cursor' + cfg.suffix)) ?? '-1:-1').split(':').map(Number);
     let last = cT;
-    let chatMap: Record<string, string> = JSON.parse((await setting(admin, 'sim_replay_chats')) ?? '{}');
+    let chatMap: Record<string, string> = JSON.parse((await setting(admin, 'sim_replay_chats' + cfg.suffix)) ?? '{}');
     if (cCycle !== cycle) {
       await wipe(admin, tid, personas);
       last = -1;
@@ -210,10 +230,10 @@ Deno.serve(async (req) => {
       last = e.t;
       applied++;
     }
-    await put(admin, 'sim_replay_cursor', `${cycle}:${last}`);
-    await put(admin, 'sim_replay_chats', JSON.stringify(chatMap));
+    await put(admin, 'sim_replay_cursor' + cfg.suffix, `${cycle}:${last}`);
+    await put(admin, 'sim_replay_chats' + cfg.suffix, JSON.stringify(chatMap));
     return json({ cycle, frame, applied, cursor: last, events: animationEvents });
   } finally {
-    await admin.from('sim_state').update({ lease_expires_at: null }).eq('id', 1);
+    await admin.from('sim_state').update({ [cfg.lease]: null }).eq('id', 1);
   }
 });
