@@ -43,7 +43,7 @@ async function topicId(admin: Admin): Promise<string | null> {
     const { data } = await admin.from('topics').select('id').eq('short_code', code).maybeSingle();
     if (data) return data.id;
   }
-  const short = Array.from({ length: 4 }, () => 'abcdefghijklmnopqrstuvwxyz0123456789'[Math.floor(Math.random() * 36)]).join('');
+  const short = cfg.suffix ? 'au08' : Array.from({ length: 4 }, (_, i) => (i % 2 ? '0123456789' : 'abcdefghijklmnopqrstuvwxyz')[Math.floor(Math.random() * (i % 2 ? 10 : 26))]).join('');
   const { data } = await admin.from('topics')
     .insert({ title: cfg.title, is_active: true, status: 'Active', url_slug: 'sim' + cfg.suffix.replace('_', '-'), short_code: short })
     .select('id').single();
