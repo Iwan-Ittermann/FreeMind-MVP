@@ -503,8 +503,8 @@ export default function TT({ mode = 'real', eventPreview = false, embedded = fal
             offsetClass={isPlayground && !hasOwnOpinion ? 'bottom-[196px]' : 'bottom-[150px]'}
           />
         )}
-        {isSim && <TTSimControl dataset={simDataset} topicId={activeTopicId} compact={!controlsVisible} />}
-        {eventPreview && graphActive && !streamActive && !selectedNode && <TTPreEventNotice startsAt={eventConfig?.opinionsOpenAt ?? eventConfig?.discussionOpenAt ?? null} now={now} registered={isVerified} embedded={embedded} compact={!controlsVisible} />}
+        {isSim && <TTSimControl dataset={simDataset} topicId={activeTopicId} compact={!controlsVisible} august={simDataset === 'august'} />}
+        {eventPreview && graphActive && !streamActive && !selectedNode && <TTPreEventNotice startsAt={eventConfig?.opinionsOpenAt ?? eventConfig?.discussionOpenAt ?? null} now={now} registered={isVerified} embedded={embedded} compact={!controlsVisible} august={simDataset === 'august'} />}
 
       </div>
     </div>
