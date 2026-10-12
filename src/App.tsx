@@ -26,6 +26,7 @@ import Sogehts from "./pages/Sogehts";
 import Bericht from "./pages/Bericht";
 import NotificationsPage from "./pages/Notifications";
 import PassphraseRecall from "./pages/PassphraseRecall";
+import SimPage from "./pages/SimPage";
 
 
 import { VerificationDialog } from "@/components/VerificationDialog";

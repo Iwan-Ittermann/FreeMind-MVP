@@ -22,7 +22,10 @@
     "join": "TESTVERSION AUSPROBIEREN",
     "watch": "Wieder zuschauen",
     "sessionNote": "Ohne Anmeldung. Meinung wird nicht gespeichert. ",
-    "registerNow": "Jetzt registrieren"
+    "registerNow": "Jetzt registrieren",
+    "datasetLabel": "Datenset",
+    "datasetSocial": "KI-Simulation",
+    "datasetAugust": "August-Diskussion (echt)"
   },
   "en": {
     "simTime": "Simulation time",
@@ -47,6 +50,9 @@
     "join": "Join the discussion",
     "watch": "Back to watching",
     "sessionNote": "No email signup. Your opinion stays for this session.",
-    "registerNow": "Register now"
+    "registerNow": "Register now",
+    "datasetLabel": "Dataset",
+    "datasetSocial": "AI simulation",
+    "datasetAugust": "August discussion (real)"
   }
 }
