@@ -499,7 +499,7 @@ export default function TT({ mode = 'real', eventPreview = false, embedded = fal
 
         {(isSandbox || isArchive || isSim) && !eventPreview && !streamActive && (
           <TTModeNotice
-            mode={isSim ? 'sim' : isSandbox ? 'sandbox' : archiveOpen ? 'archive-open' : 'archive'}
+            mode={isSim ? (simDataset === 'august' ? 'sim-august' : 'sim') : isSandbox ? 'sandbox' : archiveOpen ? 'archive-open' : 'archive'}
             offsetClass={isPlayground && !hasOwnOpinion ? 'bottom-[196px]' : 'bottom-[150px]'}
           />
         )}
