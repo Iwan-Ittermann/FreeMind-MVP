@@ -8,6 +8,7 @@ export const EVENT_SETTING_KEYS = [
   'sandbox_topic_short_code',
   'archive_topic_short_code',
   'sim_topic_short_code',
+  'sim_august_topic_short_code',
   'archive_open',
   'opinions_open_at',
   'discussion_open_at',
@@ -22,6 +23,7 @@ export interface EventConfig {
   sandboxShortCode: string | null;
   archiveShortCode: string | null;
   simShortCode: string | null;
+  simAugustShortCode: string | null;
   /** True while the finished August topic is open for new participation. */
   archiveOpen: boolean;
   opinionsOpenAt: Date | null;
@@ -53,6 +55,7 @@ export function useEventConfig() {
         sandboxShortCode: map.get('sandbox_topic_short_code') || null,
         archiveShortCode: map.get('archive_topic_short_code') || null,
         simShortCode: map.get('sim_topic_short_code') || null,
+        simAugustShortCode: map.get('sim_august_topic_short_code') || null,
         archiveOpen: (map.get('archive_open') || '').toLowerCase() === 'true',
         opinionsOpenAt: parseDate(map.get('opinions_open_at')),
         discussionOpenAt: parseDate(map.get('discussion_open_at')),

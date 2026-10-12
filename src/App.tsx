@@ -65,7 +65,7 @@ function AppRoutes() {
       <Route path="/go" element={<EventGo />} />
       <Route path="/aug-test" element={<Discussion mode="archive" />} />
       <Route path="/test" element={<Discussion mode="test" />} />
-      <Route path="/sim" element={<Discussion mode="sim" />} />
+      <Route path="/sim" element={<SimPage />} />
       <Route path="/confirm" element={<Confirm />} />
 
       <Route path="/unsubscribe" element={<Unsubscribe />} />

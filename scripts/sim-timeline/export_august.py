@@ -29,7 +29,7 @@ def ts(v):
 topic = q(f"select id, title from topics where short_code='{TOPIC_CODE}'")[0]
 tid = topic['id']
 ops = q(f"""select id, user_id, text, created_at from opinions where topic_id='{tid}'
-  and coalesce(visible, true) and user_id::text not like '{BOT_PREFIX}%' order by created_at""")
+  and coalesce(visible, true) and user_id::text not like '{BOT_PREFIX}%' and text !~* '^\\s*test' order by created_at""")
 slot_of = {o['id']: i for i, o in enumerate(ops)}
 user_slot = {o['user_id']: i for i, o in enumerate(ops)}
 chats = q(f"select id, opinion_a_id, opinion_b_id, created_at from chats where topic_id='{tid}' order by created_at")

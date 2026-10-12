@@ -63,16 +63,14 @@ export function useTTNotifications(activeTopicId: string) {
       const { data: setting } = await supabase
         .from('app_settings')
         .select('value')
-        .eq('key', 'sim_topic_short_code')
-        .maybeSingle();
-      const code = setting?.value?.trim();
-      if (!code || !alive) return;
-      const { data: topic } = await supabase
+        .in('key', ['sim_topic_short_code', 'sim_august_topic_short_code']);
+      const codes = (setting ?? []).map((s) => s.value?.trim()).filter(Boolean) as string[];
+      if (!codes.length || !alive) return;
+      const { data: topics } = await supabase
         .from('topics')
         .select('id')
-        .eq('short_code', code)
-        .maybeSingle();
-      if (alive && topic) simTopicId.current = topic.id;
+        .in('short_code', codes);
+      if (alive && topics) simTopicIds.current = new Set(topics.map((t) => t.id));
     })();
     return () => { alive = false; };
   }, []);

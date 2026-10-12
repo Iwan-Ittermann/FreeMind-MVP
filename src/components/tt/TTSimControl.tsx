@@ -12,7 +12,7 @@ const LOOP_SECONDS = 72 * 60 * 60;
  * the same discussion no matter who triggered the catch-up. Displays the last
  * server-confirmed frame, never a client clock that could run ahead of the data.
  */
-export function TTSimControl({ topicId, compact = false }: { topicId: string; compact?: boolean }) {
+export function TTSimControl({ topicId, compact = false, dataset = 'social' }: { topicId: string; compact?: boolean; dataset?: 'social' | 'august' }) {
   const { t } = useTranslation();
   const [frame, setFrame] = useState<number | null>(null);
   useEffect(() => {
@@ -22,7 +22,7 @@ export function TTSimControl({ topicId, compact = false }: { topicId: string; co
     const nextChatFlight = new Map<string, number>();
     const tick = () => {
       if (document.visibilityState === 'visible') {
-        supabase.functions.invoke('sim-replay', { body: {} }).then(({ data, error }) => {
+        supabase.functions.invoke('sim-replay', { body: { dataset } }).then(({ data, error }) => {
            if (alive && !error && !data?.busy && Number.isFinite(data?.frame)) {
             setFrame(data.frame);
             const events = Array.isArray(data?.events) ? data.events as Array<Record<string, unknown>> : [];
@@ -45,7 +45,7 @@ export function TTSimControl({ topicId, compact = false }: { topicId: string; co
     tick();
     const id = window.setInterval(tick, 10_000);
     return () => { alive = false; window.clearInterval(id); timers.forEach(window.clearTimeout); };
-  }, [topicId]);
+  }, [topicId, dataset]);
   const progress = Math.min(1, Math.max(0, (frame ?? 0) / LOOP_SECONDS));
   const day = Math.floor((frame ?? 0) / 86400) + 1;
   const hour = Math.floor(((frame ?? 0) % 86400) / 3600);
