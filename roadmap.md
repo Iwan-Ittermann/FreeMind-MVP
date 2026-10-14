@@ -1,5 +1,12 @@
 # Roadmap
 
+## Simulation testen und markieren
+- [ ] Eigene Meinung deutlicher hervorheben
+- [ ] Zehn wechselnde Dummy-Antworten nach Besuchernachrichten an Sim-Teilnehmer; Respektbewertung prüfen
+- [ ] Simulations-Pille oben links und neues Countdown-Banner
+- [ ] Hochauflösendes Wedium-PNG verwenden und Browser-Icon aktualisieren
+- [ ] Ablauf und Darstellung prüfen
+
 ## Eigenständige Wedium-Simulation
 - [x] /wedium/go als Simulation mit bestehendem Wedium-Look wiederherstellen (bestehende Wedium-Bildreferenzen wiederverwendet)
 - [x] /go mit normalem Auge anzeigen; beide Ansichten auf Desktop und Mobil geprüft (Wedium-Bilder werden lokal nicht ausgeliefert)
