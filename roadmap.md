@@ -1,11 +1,11 @@
 # Roadmap
 
 ## Simulation testen und markieren
-- [ ] Eigene Meinung deutlicher hervorheben
-- [ ] Zehn wechselnde Dummy-Antworten nach Besuchernachrichten an Sim-Teilnehmer; Respektbewertung prüfen
-- [ ] Simulations-Pille oben links und neues Countdown-Banner
-- [ ] Hochauflösendes Wedium-PNG verwenden und Browser-Icon aktualisieren
-- [ ] Ablauf und Darstellung prüfen
+- [x] Eigene Meinung mit dauerhaftem Ring und DU-Markierung deutlicher hervorheben
+- [x] Zehn wechselnde Dummy-Antworten nach Besuchernachrichten an Sim-Teilnehmer; Rotation und wiederholte Anfrage live getestet
+- [x] Simulations-Pille oben links und neues Countdown-Banner
+- [x] Hochauflösendes Wedium-PNG verwenden und Browser-Icon aktualisieren
+- [x] Meinung, Chat, Dummy-Antwort und gespeicherte Respektbewertung im Browser auf Desktop und Mobil geprüft
 
 ## Eigenständige Wedium-Simulation
 - [x] /wedium/go als Simulation mit bestehendem Wedium-Look wiederherstellen (bestehende Wedium-Bildreferenzen wiederverwendet)
@@ -84,7 +84,7 @@
 - [x] Replay-Engine (Weltzeituhr, fester Loop-Start, Nachholen bei Seitenaufruf)
 - [x] Landingpage-Button auf /sim
 - [x] Nachrichten als lesbare Textblasen, aktive Kanten und bleibende Bewertungs-Pfeile
-- [ ] Live-KI-Antwort, wenn echte Besucher chatten
+- [x] Wechselnde Dummy-Antworten statt Live-KI, wenn echte Besucher mit Sim-Teilnehmern chatten
 
 ## Stream-Navigation und lebendige Sim-Visualisierung
 - [x] Untere Leiste auf Meinungen, Graph und Chats reduzieren
