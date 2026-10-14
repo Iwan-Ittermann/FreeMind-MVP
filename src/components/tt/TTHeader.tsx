@@ -22,7 +22,7 @@ import {
 import { PASSPHRASE_LOGIN_ENABLED } from '@/lib/constants';
 import { clearDemoAccess } from '@/components/tt/TTDemoAccessPanel';
 import { useWediumPresentation } from '@/contexts/WediumPresentationContext';
-import wediumLogo from '@/assets/wedium-logo.png.asset.json';
+import wediumLogo from '@/assets/wedium-logo-negative.svg.asset.json';
 import {
   getPushStatus,
   subscribeToPush,

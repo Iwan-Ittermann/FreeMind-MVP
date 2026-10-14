@@ -309,7 +309,7 @@
   background: hsl(var(--wedium-graph));
   border: 1px solid hsl(var(--foreground) / 0.15);
 }
-.wedium-wordmark { background: hsl(var(--wedium-periwinkle)); border-radius: 4px; padding: 2px 6px; }
+.wedium-wordmark { display: inline-flex; align-items: center; }
 .wedium-discussion .signal-edges line { stroke: hsl(var(--foreground)); }
 .wedium-discussion .signal-nodes svg > circle[filter] { stroke: hsl(var(--primary)); filter: none; }
 

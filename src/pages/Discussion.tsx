@@ -298,6 +298,7 @@ export default function TT({ mode = 'real', eventPreview = false, embedded = fal
               onEdgeClick={handleEdgeClick}
               arrowMode={isSim || arrowMode}
               hideLegend={isSim}
+              hideEmptyBridgingHint={isSim}
               backgroundVariant={graphBackground}
             />
           )}
