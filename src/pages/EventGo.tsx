@@ -5,12 +5,12 @@ import { useTranslation } from 'react-i18next';
 import Discussion from './Discussion';
 
 /** Switch entire discussion instances, never their topic IDs in place. */
-export default function EventGo() {
+export default function EventGo({ standaloneWedium = false }: { standaloneWedium?: boolean }) {
   const [params] = useSearchParams();
   const embedded = params.get('embed') === '1';
   // Dataset choice only applies to the embedded player; /go itself always shows the AI simulation.
   const dataset = embedded && params.get('dataset') === 'august' ? 'august' : 'social';
-  const wediumPresentation = params.get('presentation') === 'wedium';
+  const wediumPresentation = standaloneWedium || (embedded && params.get('presentation') === 'wedium');
   const { i18n } = useTranslation();
   const lang = params.get('lang');
   const [embedInteractive, setEmbedInteractive] = useState(false);
@@ -29,6 +29,6 @@ export default function EventGo() {
   const { data: config, isLoading } = useEventConfig();
   const { phase } = useEventPhase(config);
   if (isLoading || !config) return <div className="fixed inset-0 bg-background" aria-busy="true" />;
-  const preview = embedded || !config.realShortCode || phase === 'prelaunch';
-  return <Discussion key={preview ? `event-preview-${dataset}` : 'event-live'} simDataset={dataset} mode={preview ? 'sim' : 'real'} eventPreview={preview} embedded={embedded} embedInteractive={embedInteractive} wediumPresentation={wediumPresentation} />;
+  const preview = standaloneWedium || embedded || !config.realShortCode || phase === 'prelaunch';
+  return <Discussion key={preview ? `event-preview-${dataset}` : 'event-live'} simDataset={dataset} mode={preview ? 'sim' : 'real'} eventPreview={preview} embedded={embedded} embedInteractive={embedInteractive} wediumPresentation={wediumPresentation} graphBackground={!embedded && !standaloneWedium ? 'eye' : undefined} />;
 }

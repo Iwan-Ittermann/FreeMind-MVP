@@ -7,13 +7,14 @@ import { TTBackground } from './TTBackground';
 import { useTranslation } from 'react-i18next';
 import { GraphEdge, GraphNode } from '@/types/graph';
 import { useChatArrows } from '@/hooks/useChatArrows';
-import { useBackgroundPref } from '@/hooks/useBackgroundPref';
+import { useBackgroundPref, type TTBackgroundStyle } from '@/hooks/useBackgroundPref';
 import { useStreamFocus } from '@/hooks/useStreamFocus';
 import { useStreamSpiralPref } from '@/hooks/useStreamSpiralPref';
 import { useWediumPresentation } from '@/contexts/WediumPresentationContext';
 
 interface TTScreenInnerProps {
   topicId: string;
+  backgroundVariant?: TTBackgroundStyle;
   hue?: number;
   /** Provided by parent scroll container. Used for parallax. */
   scrollYProgress?: MotionValue<number>;
@@ -43,6 +44,7 @@ function TTScreenInnerImpl({
   highlightAllNodes = false,
   arrowMode = false,
   hideLegend = false,
+  backgroundVariant,
 }: TTScreenInnerProps) {
   const { t } = useTranslation();
   const wedium = useWediumPresentation();
@@ -136,7 +138,7 @@ function TTScreenInnerImpl({
     >
       {/* Full-bleed background, sized so the blue ring spans the viewport width.
           Lives outside the graph wrapper so it isn't clipped. */}
-      {wedium ? <div className="wedium-graph-background absolute inset-0" aria-hidden /> : <TTBackground hue={hue} viewportWidth={phoneViewportW} variant={bgStyle} />}
+      {wedium ? <div className="wedium-graph-background absolute inset-0" aria-hidden /> : <TTBackground hue={hue} viewportWidth={phoneViewportW} variant={backgroundVariant ?? bgStyle} />}
 
       {/* Zone labels are intentionally hidden in the Helsinki event build (introduced via help overlay). */}
 
@@ -240,6 +242,7 @@ export const TTScreenInner = memo(TTScreenInnerImpl, (prev, next) => {
     prev.selectedNodeId === next.selectedNodeId &&
     prev.highlightAllNodes === next.highlightAllNodes &&
     prev.arrowMode === next.arrowMode &&
+    prev.backgroundVariant === next.backgroundVariant &&
     prev.hue === next.hue
   );
 });

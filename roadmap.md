@@ -1,5 +1,9 @@
 # Roadmap
 
+## Eigenständige Wedium-Simulation
+- [ ] /wedium/go als Simulation mit bestehendem Wedium-Look wiederherstellen
+- [ ] /go mit normalem Auge anzeigen; beide Ansichten prüfen
+
 ## Simulation besser integrieren
 - [x] Übergang, Textfluss und Darstellung auf beiden Landingpages angleichen; Scroll-Snap beim Zuschauen erhalten
 - [x] Simulation beim Scrollen nach dem Hero vorladen; Bedienelemente erst beim Interagieren zeigen
