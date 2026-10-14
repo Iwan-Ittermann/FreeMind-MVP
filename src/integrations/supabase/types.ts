@@ -1930,6 +1930,10 @@ export type Database = {
           read_ct: number
         }[]
       }
+      reply_to_sim_message: {
+        Args: { p_language?: string; p_message_id: string }
+        Returns: string
+      }
       report_content:
         | {
             Args: {

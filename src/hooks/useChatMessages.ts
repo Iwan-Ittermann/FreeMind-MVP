@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { getAnimationChannel } from '@/lib/animation-channel';
 import { requireVerified } from '@/lib/verification';
+import { useTranslation } from 'react-i18next';
 
 export interface ChatMessage {
   id: string;
@@ -72,7 +73,20 @@ export function useChatMessages(
   readOnlyPair?: { sourceOpinionId: string; targetOpinionId: string; sourceUserId?: string | null },
 ): UseChatMessagesResult {
   const { user } = useAuth();
+  const { i18n } = useTranslation();
   const queryClient = useQueryClient();
+
+  const { data: isSimulation = false } = useQuery({
+    queryKey: ['sim-chat-topic', broadcastInfo?.topicId],
+    enabled: !!broadcastInfo?.topicId && !readOnlyPair,
+    queryFn: async () => {
+      if (!broadcastInfo?.topicId) return false;
+      const { data, error } = await supabase.rpc('is_sim_topic', { v_topic: broadcastInfo.topicId });
+      if (error) throw error;
+      return data === true;
+    },
+    staleTime: 60_000,
+  });
 
   // Fetch existing messages
   // Include user?.id in query key to refetch when user changes (fixes isOwn calculation)
@@ -230,13 +244,16 @@ export function useChatMessages(
       };
       if (replyToId) insertData.reply_to_id = replyToId;
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('chat_messages')
-        .insert(insertData);
+        .insert(insertData)
+        .select('id')
+        .single();
       
       if (error) throw error;
+      return data.id;
     },
-    onSuccess: async (_data, variables) => {
+    onSuccess: async (messageId, variables) => {
       // Ensure the new message appears even if realtime is delayed
       queryClient.invalidateQueries({ queryKey: ['chat-messages', chatId] });
 
@@ -263,8 +280,23 @@ export function useChatMessages(
         }
       }
 
-      // If this is a bot chat, trigger the AI response
-      if (isBotChat && chatId) {
+      // The server validates simulation topic, sender, partner and duplicate replies.
+      // Calling for every sent message also covers the first send before topic lookup finishes.
+      if (isSimulation) setIsBotTyping(true);
+      try {
+        if (isSimulation) await new Promise(resolve => setTimeout(resolve, 2200));
+        const { error } = await supabase.rpc('reply_to_sim_message', {
+          p_message_id: messageId,
+          p_language: i18n.language.startsWith('en') ? 'en' : 'de',
+        });
+        if (error) console.error('Simulation reply failed:', error);
+        queryClient.invalidateQueries({ queryKey: ['chat-messages', chatId] });
+      } finally {
+        if (isSimulation) setIsBotTyping(false);
+      }
+
+      // Keep the regular assistant separate from canned simulation participants.
+      if (isBotChat && chatId && !isSimulation) {
         setIsBotTyping(true);
         try {
           const { error } = await supabase.functions.invoke('ai-chat', {

@@ -14,3 +14,4 @@
 - Measure graph text bubbles from rendered text before sizing their SVG container, so three-line text fits without oversized empty boxes.
 - Embed the existing /go simulation in same-origin portrait iframes with explicit language and presentation parameters; preload after the first landing scroll and reveal interaction chrome via origin/source-validated parent messages, keeping one renderer and the simulation topic isolated.
 - Replay datasets (AI simulation, real August discussion) share one renderer and one sim-replay function, separated only by topic setting, persona slot range, cursor and lease, so a new dataset never needs a second player.
+- Generate canned simulation replies through the authenticated message-ID RPC; validate topic, participants and persona server-side and lock the chat for idempotent rotation, so retries never double-reply or affect real discussions.
