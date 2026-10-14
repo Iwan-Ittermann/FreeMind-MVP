@@ -162,7 +162,7 @@ export const SignalNode = memo(function SignalNode({
         ? TTStarShape
         : (shapeSet[token.zone] ?? MiddleShape);
 
-  const opacity = isDimmed ? 0.4 : token.isHidden ? 0.3 : showInactive ? 0.9 : 1;
+  const opacity = token.isCurrentUser ? 1 : isDimmed ? 0.4 : token.isHidden ? 0.3 : showInactive ? 0.9 : 1;
 
   const isScaled = isHighlighted && !isDimmed;
   const bubbleText = freshOpinion?.text ? truncateAtWord(freshOpinion.text) : token.opinionText
@@ -253,6 +253,10 @@ export const SignalNode = memo(function SignalNode({
         <SharedDefs />
         <circle cx="20" cy="20" r="22" fill="transparent" />
 
+        {token.isCurrentUser && ttMode && (
+          <circle cx="20" cy="20" r="23" fill="hsl(var(--primary) / 0.18)" stroke="hsl(var(--primary))" strokeWidth={2.5} />
+        )}
+
         {/* Active (already discussing) — soft halo so it reads brighter than inactive nodes */}
         {!wedium && ttMode && !showInactive && !token.isBot && !isDimmed && (
           <circle cx="20" cy="20" r="13" fill="none" stroke="#FFFFFF" strokeOpacity={0.22} strokeWidth={1} />
@@ -262,7 +266,7 @@ export const SignalNode = memo(function SignalNode({
           <circle cx="20" cy="20" r="18" fill="none" stroke="#00e5ff" strokeWidth={2} filter="url(#signal-select-glow)" />
         )}
         {wedium ? <>
-          <circle cx="20" cy="20" r="18" fill="hsl(var(--card))" stroke={token.isCurrentUser || isHighlighted ? 'hsl(var(--primary))' : 'hsl(var(--foreground))'} strokeOpacity={showInactive ? 0.3 : 0.65} strokeWidth="1" />
+          <circle cx="20" cy="20" r="18" fill="hsl(var(--card))" stroke={token.isCurrentUser || isHighlighted ? 'hsl(var(--primary))' : 'hsl(var(--foreground))'} strokeOpacity={token.isCurrentUser ? 1 : showInactive ? 0.3 : 0.65} strokeWidth={token.isCurrentUser ? 2 : 1} />
           <image href={wediumNode.url} x="12" y="6" width="16" height="25" opacity={showInactive ? 0.5 : 1} />
         </> : <Shape />}
 
@@ -284,6 +288,13 @@ export const SignalNode = memo(function SignalNode({
           </text>
         )}
       </svg>
+
+      {token.isCurrentUser && ttMode && (
+        <g transform={`translate(0, ${scaledHalf + 16})`} pointerEvents="none">
+          <rect x={-28} y={-9} width={56} height={18} rx={9} fill="hsl(var(--primary))" />
+          <text textAnchor="middle" dominantBaseline="central" fontSize={10} fontWeight={700} fill="hsl(var(--primary-foreground))">{t('common.you')}</text>
+        </g>
+      )}
 
       {/* "YOU" badge — hidden in TT mode where red color suffices */}
       {token.isCurrentUser && !ttMode && (
