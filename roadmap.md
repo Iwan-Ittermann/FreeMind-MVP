@@ -1,8 +1,8 @@
 # Roadmap
 
 ## Eigenständige Wedium-Simulation
-- [ ] /wedium/go als Simulation mit bestehendem Wedium-Look wiederherstellen
-- [ ] /go mit normalem Auge anzeigen; beide Ansichten prüfen
+- [x] /wedium/go als Simulation mit bestehendem Wedium-Look wiederherstellen (bestehende Wedium-Bildreferenzen wiederverwendet)
+- [x] /go mit normalem Auge anzeigen; beide Ansichten auf Desktop und Mobil geprüft (Wedium-Bilder werden lokal nicht ausgeliefert)
 
 ## Simulation besser integrieren
 - [x] Übergang, Textfluss und Darstellung auf beiden Landingpages angleichen; Scroll-Snap beim Zuschauen erhalten
