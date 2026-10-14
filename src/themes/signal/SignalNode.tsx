@@ -290,7 +290,7 @@ export const SignalNode = memo(function SignalNode({
       </svg>
 
       {token.isCurrentUser && ttMode && (
-        <g transform={`translate(0, ${scaledHalf + 16})`} pointerEvents="none">
+        <g transform={`translate(${graphWidth ? Math.max(32, Math.min(graphWidth - 32, token.x)) - token.x : 0}, ${graphHeight && token.y + scaledHalf + 25 > graphHeight ? -scaledHalf - 16 : scaledHalf + 16})`} pointerEvents="none">
           <rect x={-28} y={-9} width={56} height={18} rx={9} fill="hsl(var(--primary))" />
           <text textAnchor="middle" dominantBaseline="central" fontSize={10} fontWeight={700} fill="hsl(var(--primary-foreground))">{t('common.you')}</text>
         </g>
