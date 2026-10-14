@@ -28,6 +28,7 @@ interface TTScreenInnerProps {
   arrowMode?: boolean;
   /** Hide the node-state legend (e.g. on /sim). */
   hideLegend?: boolean;
+  hideEmptyBridgingHint?: boolean;
   /** Called from parent so it can read opinions for the side panel. */
   onDataReady?: (data: ReturnType<typeof useTopicData>['data']) => void;
 }
@@ -44,6 +45,7 @@ function TTScreenInnerImpl({
   highlightAllNodes = false,
   arrowMode = false,
   hideLegend = false,
+  hideEmptyBridgingHint = false,
   backgroundVariant,
 }: TTScreenInnerProps) {
   const { t } = useTranslation();
@@ -126,7 +128,7 @@ function TTScreenInnerImpl({
     }
     return false;
   }, [data?.nodePoints]);
-  const showEmptyBridgingHint = !!data && (data.opinions?.length ?? 0) >= 2 && !hasAnyBridging;
+  const showEmptyBridgingHint = !hideEmptyBridgingHint && !!data && (data.opinions?.length ?? 0) >= 2 && !hasAnyBridging;
 
 
   return (
@@ -242,6 +244,7 @@ export const TTScreenInner = memo(TTScreenInnerImpl, (prev, next) => {
     prev.selectedNodeId === next.selectedNodeId &&
     prev.highlightAllNodes === next.highlightAllNodes &&
     prev.arrowMode === next.arrowMode &&
+    prev.hideEmptyBridgingHint === next.hideEmptyBridgingHint &&
     prev.backgroundVariant === next.backgroundVariant &&
     prev.hue === next.hue
   );
