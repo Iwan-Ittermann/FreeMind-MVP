@@ -48,13 +48,14 @@ import type { SimDataset } from '@/hooks/useSimDataset';
 import { cn } from '@/lib/utils';
 import { WediumPresentationContext } from '@/contexts/WediumPresentationContext';
 import { TTPreEventNotice } from '@/components/tt/TTPreEventNotice';
+import type { TTBackgroundStyle } from '@/hooks/useBackgroundPref';
 
 
 /**
  * Single-topic mobile UI. This build is locked to the Helsinki event topic (7mm9);
  * multi-topic swipe/loop logic has been removed.
  */
-export default function TT({ mode = 'real', eventPreview = false, embedded = false, embedInteractive = false, wediumPresentation = false, simDataset = 'social' }: { simDataset?: SimDataset; mode?: 'test' | 'real' | 'sandbox' | 'archive' | 'sim'; eventPreview?: boolean; embedded?: boolean; embedInteractive?: boolean; wediumPresentation?: boolean }) {
+export default function TT({ mode = 'real', eventPreview = false, embedded = false, embedInteractive = false, wediumPresentation = false, simDataset = 'social', graphBackground }: { simDataset?: SimDataset; mode?: 'test' | 'real' | 'sandbox' | 'archive' | 'sim'; eventPreview?: boolean; embedded?: boolean; embedInteractive?: boolean; wediumPresentation?: boolean; graphBackground?: TTBackgroundStyle }) {
   useParams<{ topicId?: string }>(); // single-topic routes; params ignored
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -297,6 +298,7 @@ export default function TT({ mode = 'real', eventPreview = false, embedded = fal
               onEdgeClick={handleEdgeClick}
               arrowMode={isSim || arrowMode}
               hideLegend={isSim}
+              backgroundVariant={graphBackground}
             />
           )}
         </div>

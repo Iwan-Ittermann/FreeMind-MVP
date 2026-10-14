@@ -58,7 +58,7 @@ function AppRoutes() {
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/wedium" element={<Wedium />} />
-      <Route path="/wedium/go" element={<Navigate to="/go" replace />} />
+      <Route path="/wedium/go" element={<EventGo standaloneWedium />} />
       <Route path="/wedium/confirm" element={<Confirm wedium />} />
       <Route path="/gutefrage" element={<Gutefrage />} />
       <Route path="/gutefrage/confirm" element={<Confirm gutefrage />} />
