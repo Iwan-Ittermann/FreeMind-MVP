@@ -258,10 +258,12 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
     <>
       <header className="absolute top-0 inset-x-0 z-30 px-3 pointer-events-none bg-background/60 backdrop-blur-sm">
         <div className="flex items-center justify-between pointer-events-auto py-1 border-b border-border/30">
-          <div className="flex min-w-0 items-center gap-2">
+          {/* Baseline-aligned: the logo's ink sits flush with its box bottom, so sharing the
+              text baseline keeps both wordmarks on one visual line. */}
+          <div className="flex min-w-0 items-baseline gap-2">
           <Link
             to="/"
-            className="text-foreground/90 font-medium tracking-tight lowercase text-[13px] leading-none hover:text-foreground transition-colors translate-y-[2px]"
+            className="text-foreground/90 font-medium tracking-tight lowercase text-[13px] leading-none hover:text-foreground transition-colors"
           >
             freemind
           </Link>
