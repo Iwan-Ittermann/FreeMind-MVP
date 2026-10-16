@@ -6,7 +6,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { trackEvent } from "@/lib/analytics";
 import { EventSimulationEmbed } from "@/components/EventSimulationEmbed";
 import { Button } from "@/components/ui/button";
-import wediumLogo from "@/assets/wedium-logo-rgb.png.asset.json";
+// Dark (navy) wordmark: the /wedium top bar is a pale blush surface, so the white
+// variant's "dium" half disappears there. The white one stays for /wedium/go and the sim.
+import wediumLogo from "@/assets/wedium-logo-rgb-pos.png.asset.json";
 
 const panelClass =
   "snap-start min-h-screen w-full flex items-center justify-center px-5 sm:px-8 md:px-12 py-16 sm:py-20 md:py-24 border-b border-foreground/15";

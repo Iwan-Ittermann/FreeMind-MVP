@@ -3,7 +3,7 @@
 ## Wedium-Logo und Kopfzeile
 - [x] Hochgeladenes Wedium-Logo prüfen: identisch mit dem bereits eingebundenen (kein Austausch nötig)
 - [x] Sim-Kopfzeile: beide Wortmarken auf gemeinsame Grundlinie gesetzt, Logo-Proportion verkleinert; Desktop und Mobil nachgemessen
-- [ ] /wedium-Kopfzeile: „dium" ist auf dem hellen Balken kaum lesbar — dunkle Variante (wedium_logo_rgb_pos) nur auf Zuruf einsetzen
+- [x] /wedium-Kopfzeile: „dium" war auf dem hellen Balken kaum lesbar — dunkle (navy) Variante dort eingesetzt; helles Logo bleibt auf /wedium/go und in der Sim
 
 ## Simulation testen und markieren
 - [x] Eigene Meinung mit dauerhaftem Ring und DU-Markierung deutlicher hervorheben
