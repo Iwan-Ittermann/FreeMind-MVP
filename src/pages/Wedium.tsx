@@ -160,13 +160,9 @@ function EmText({ children }: { children: string }) {
   return <>{parts.map((part, i) => (i % 2 === 1 ? <em key={i}>{part}</em> : part))}</>;
 }
 
-/** Text stand-in for the wedium wordmark until the real logo file arrives. */
 function WediumMark() {
   return (
-    <span className="font-display text-xl sm:text-2xl font-black lowercase tracking-tight text-foreground">
-      <em className="not-italic font-black">we</em>
-      <span className="font-bold">dium</span>
-    </span>
+    <img src={wediumLogo.url} alt="wedium" className="h-6 sm:h-7 w-auto object-contain" />
   );
 }
 
