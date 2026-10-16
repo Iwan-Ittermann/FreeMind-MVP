@@ -261,7 +261,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
           <div className="flex min-w-0 items-center gap-2">
           <Link
             to="/"
-            className="text-foreground/90 font-medium tracking-tight lowercase text-[13px] leading-none hover:text-foreground transition-colors"
+            className="text-foreground/90 font-medium tracking-tight lowercase text-[13px] leading-none hover:text-foreground transition-colors translate-y-[2px]"
           >
             freemind
           </Link>
