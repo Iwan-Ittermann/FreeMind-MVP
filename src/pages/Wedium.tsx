@@ -165,7 +165,7 @@ function EmText({ children }: { children: string }) {
 
 function WediumMark() {
   return (
-    <img src={wediumLogo.url} alt="wedium" className="h-6 sm:h-7 w-auto object-contain" />
+    <img src={wediumLogo.url} alt="wedium" className="h-[18px] sm:h-[22px] w-auto object-contain" />
   );
 }
 
@@ -234,8 +234,8 @@ export default function Wedium() {
     >
       {/* Top bar: co-branding + language switch */}
       <div className="fixed top-0 inset-x-0 z-[40] flex items-center justify-between gap-3 px-4 py-2.5 border-b border-foreground/20 bg-background/80 backdrop-blur-sm">
-        <a href="/" className="flex items-center gap-2.5">
-          <span className="font-display text-xl sm:text-2xl font-black uppercase tracking-tighter">
+        <a href="/" className="flex items-baseline gap-2.5">
+          <span className="font-display text-xl sm:text-2xl leading-none font-black uppercase tracking-tighter">
             freemind
           </span>
           <span className="text-sm font-bold text-alert">x</span>
