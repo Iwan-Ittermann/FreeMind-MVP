@@ -22,7 +22,7 @@ import {
 import { PASSPHRASE_LOGIN_ENABLED } from '@/lib/constants';
 import { clearDemoAccess } from '@/components/tt/TTDemoAccessPanel';
 import { useWediumPresentation } from '@/contexts/WediumPresentationContext';
-import wediumLogo from '@/assets/wedium-logo-negative.png.asset.json';
+import wediumLogo from '@/assets/wedium-logo-rgb-neg.png.asset.json';
 import {
   getPushStatus,
   subscribeToPush,
@@ -265,7 +265,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
           >
             freemind
           </Link>
-          {wedium && <><span className="text-muted-foreground" aria-hidden>×</span><a href="https://wedium.social" target="_blank" rel="noreferrer" className="wedium-wordmark"><img src={wediumLogo.url} alt="Wedium" className="h-5 w-[76px] object-contain" /></a></>}
+          {wedium && <><span className="text-muted-foreground" aria-hidden>×</span><a href="https://wedium.social" target="_blank" rel="noreferrer" className="wedium-wordmark"><img src={wediumLogo.url} alt="Wedium" className="h-5 w-auto object-contain" /></a></>}
           </div>
 
           <div className="flex items-center gap-0.5">
