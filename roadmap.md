@@ -1,5 +1,10 @@
 # Roadmap
 
+## Wedium-Logo und Kopfzeile
+- [x] Hochgeladenes Wedium-Logo prüfen: identisch mit dem bereits eingebundenen (kein Austausch nötig)
+- [x] Sim-Kopfzeile: beide Wortmarken auf gemeinsame Grundlinie gesetzt, Logo-Proportion verkleinert; Desktop und Mobil nachgemessen
+- [ ] /wedium-Kopfzeile: „dium" ist auf dem hellen Balken kaum lesbar — dunkle Variante (wedium_logo_rgb_pos) nur auf Zuruf einsetzen
+
 ## Simulation testen und markieren
 - [x] Eigene Meinung mit dauerhaftem Ring und DU-Markierung deutlicher hervorheben
 - [x] Zehn wechselnde Dummy-Antworten nach Besuchernachrichten an Sim-Teilnehmer; Rotation und wiederholte Anfrage live getestet
