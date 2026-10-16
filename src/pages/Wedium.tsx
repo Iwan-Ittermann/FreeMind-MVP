@@ -5,6 +5,7 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { trackEvent } from "@/lib/analytics";
 import { EventSimulationEmbed } from "@/components/EventSimulationEmbed";
+import wediumLogoAsset from "@/assets/wedium-logo-rgb-neg.png.asset.json";
 import { Button } from "@/components/ui/button";
 
 const panelClass =
