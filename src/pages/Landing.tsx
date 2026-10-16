@@ -45,14 +45,16 @@ const copy = {
       "Then you meet people you would probably never have met.",
       "Can you understand each other, even if you strongly disagree?",
       "Every conversation appears live on the graph — a living visualisation of the discussion.",
-      "For three days, the graph puts the bridge builders at the centre of attention.",
+      "For four days, the graph puts the bridge builders at the centre of attention.",
     ],
     whatBold: "Built to be _moderate_, not moderated.",
     aboutTitle: "About me",
     about1: "For years I have wondered why the internet can connect millions of people, yet good conversations are so rare.",
     about2: "freemind is my attempt to prove the opposite.",
-    ctaTitle: "THE NEXT EVENT: WEDIUM × FREEMIND.",
-    ctaLine1: "10–14 OCTOBER 2026 · ",
+    ctaTitle: "TEST WITH US.",
+    ctaIntro: "Find out how well freemind fits as a feature for wedium.",
+    ctaMore: "More info",
+    ctaLine1: "WEDIUM × FREEMIND · 28–31 OCTOBER 2026 · ",
     ctaLine2: "ONE QUESTION.",
     emailPlaceholder: "Email",
     btnLoading: "Sending…",
@@ -97,14 +99,16 @@ const copy = {
       "Dann triffst du Menschen, die du sonst nie getroffen hättest.",
       "Könnt ihr euch verstehen, auch wenn ihr stark anderer Meinung seid?",
       "Jedes Gespräch erscheint live im Graph — einer lebendigen Visualisierung der Diskussion.",
-      "Drei Tage lang rückt der Graph die Brückenbauer ins Zentrum.",
+      "Vier Tage lang rückt der Graph die Brückenbauer ins Zentrum.",
     ],
     whatBold: "Gebaut, um _moderat_ zu sein, nicht moderiert.",
     aboutTitle: "Über mich",
     about1: "Seit Jahren frage ich mich, warum das Internet Millionen Menschen verbinden kann und gute Gespräche trotzdem so selten sind.",
     about2: "freemind ist mein Versuch, das Gegenteil zu beweisen.",
-    ctaTitle: "DAS NÄCHSTE EVENT: WEDIUM × FREEMIND.",
-    ctaLine1: "10.–14. OKTOBER 2026 · ",
+    ctaTitle: "TESTE MIT UNS.",
+    ctaIntro: "Finde heraus, wie gut freemind als Funktion zu wedium passt.",
+    ctaMore: "Mehr Infos",
+    ctaLine1: "WEDIUM × FREEMIND · 28.–31. OKTOBER 2026 · ",
     ctaLine2: "EINE FRAGE.",
     emailPlaceholder: "E-Mail",
     btnLoading: "Wird gesendet…",
@@ -370,11 +374,12 @@ export default function Landing() {
           <h2 className={`${displayClass} mb-8`} style={{ fontSize: "clamp(1.75rem, 5vw, 3.5rem)" }}>
             {c.ctaTitle}
           </h2>
+          <p className="mb-6 text-lg sm:text-xl leading-snug max-w-3xl">{c.ctaIntro}</p>
           <p className="mb-10 text-lg sm:text-xl font-bold uppercase tracking-wide">
             {c.ctaLine1}<span className="text-alert">{c.ctaLine2}</span>
           </p>
           <Button asChild variant="link" className="mb-6 h-auto p-0 text-foreground underline underline-offset-4">
-            <a href="/wedium">{c.ctaSandbox} →</a>
+            <a href="/wedium">{c.ctaMore} →</a>
           </Button>
           <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-0 border border-foreground">
             <input

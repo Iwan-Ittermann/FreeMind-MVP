@@ -23,7 +23,7 @@ type Lang = "en" | "de";
 
 const copy = {
   de: {
-    metaTitle: "wedium x freemind — Live-Event 10.–14. Oktober 2026",
+    metaTitle: "wedium x freemind — Live-Event 28.–31. Oktober 2026",
     metaDesc:
       "wedium-Creator und ihre Communities diskutieren vier Tage lang eine Frage: Welche Gesetze wünschst du dir für soziale Medien?",
     heroEyebrow: "WEDIUM X FREEMIND · 28.–31. OKTOBER 2026",
@@ -90,11 +90,11 @@ const copy = {
     errGeneric: "Etwas ist schiefgelaufen. Bitte versuch es erneut.",
   },
   en: {
-    metaTitle: "wedium x freemind — live event 10–14 October 2026",
+    metaTitle: "wedium x freemind — live event 28–31 October 2026",
     metaDesc:
-      "wedium creators and their communities discuss one question for five days: which laws do you want for social media?",
-    heroEyebrow: "WEDIUM X FREEMIND · 10–14 OCTOBER 2026",
-    heroTitle: "FIVE DAYS. ONE QUESTION. ONE PROOF.",
+      "wedium creators and their communities discuss one question for four days: which laws do you want for social media?",
+    heroEyebrow: "WEDIUM X FREEMIND · 28–31 OCTOBER 2026",
+    heroTitle: "FOUR DAYS. ONE QUESTION. ONE PROOF.",
     heroSub1: "wedium creators bring their communities together.",
     heroSub2a: "freemind makes sure it turns into ",
     heroSub2b: "a real conversation.",
@@ -121,7 +121,7 @@ const copy = {
       "Then you meet people you would probably never have met.",
       "Can you understand each other, even if you strongly disagree?",
       "Every conversation appears live on the graph — a living visualisation of the discussion.",
-      "For five days, the graph puts the bridge builders at the centre of attention.",
+      "For four days, the graph puts the bridge builders at the centre of attention.",
     ],
     whatBold: "Built to be _moderate_, not moderated.",
     faqLeadBefore: "Have questions? Feel free to ask them ",
@@ -136,7 +136,7 @@ const copy = {
     creatorQuote: "“Quote to follow.”",
 
     ctaTitle: "BE THERE WHEN WE TRY IT AGAIN.",
-    ctaLine1: "10–14 OCTOBER 2026 · ",
+    ctaLine1: "28–31 OCTOBER 2026 · ",
     ctaLine2: "ONE PROOF.",
     emailPlaceholder: "Email",
     btnLoading: "Sending…",
