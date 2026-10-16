@@ -47,7 +47,7 @@ const copy = {
     exp1b: "Aufmerksamkeit",
     exp2a: "freemind und wedium belohnen ",
     exp2b: "Echtheit",
-    exp3: "Können wir noch produktiv diskutieren? Finde es mit uns heraus - und lerne 4 Tage lang neue Perspektiven kennen.",
+    exp3: "Können wir noch produktiv diskutieren? Finde es mit uns heraus – und lerne 4 Tage lang neue Perspektiven kennen.",
     whatTitle: "Was passiert?",
     what: [
       "Es beginnt damit, dass du eine Frage beantwortest.",
@@ -70,7 +70,7 @@ const copy = {
 
     ctaTitle: "SEI DABEI!",
     ctaLine1: "28.–31. OKTOBER 2026 · ",
-    ctaLine2: "HILF UNS ZU BEWEISEN, DASS ECHTE GESPRÄCHE IM INTERNETZ MÖGLICH SIND. ",
+    ctaLine2: "HILF UNS ZU BEWEISEN, DASS ECHTE GESPRÄCHE IM INTERNET MÖGLICH SIND. ",
     emailPlaceholder: "E-Mail",
     btnLoading: "Wird gesendet…",
     btnSent: "Mail gesendet ✓",
