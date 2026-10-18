@@ -365,308 +365,308 @@
  ],
  "timeline": [
   {
-   "t": 451,
+   "t": 60,
    "type": "opinion",
    "slot": 0,
    "text": "Plattformen müssen für Verstöße haften, die ihre Algorithmen bewusst verstärken — wie ein Verlag für seine Titelseite."
   },
   {
-   "t": 2024,
+   "t": 227,
    "type": "opinion",
    "slot": 4,
    "text": "Ich sehe wöchentlich, was Cybermobbing anrichtet. Plattformen brauchen echte Meldepflichten mit Fristen, nicht freiwillige Selbstverpflichtungen."
   },
   {
-   "t": 2256,
+   "t": 431,
    "type": "difference_rating",
    "from_slot": 4,
    "to_slot": 0,
    "disagreement": 1
   },
   {
-   "t": 3564,
+   "t": 460,
    "type": "difference_rating",
    "from_slot": 0,
    "to_slot": 4,
    "disagreement": 1
   },
   {
-   "t": 4024,
+   "t": 488,
    "type": "opinion",
    "slot": 27,
    "text": "Wie beim Autofahren: Wer eine Plattform mit Millionen Nutzern betreibt, braucht einen Führerschein — also Auflagen und Haftung."
   },
   {
-   "t": 4997,
+   "t": 712,
    "type": "difference_rating",
    "from_slot": 27,
    "to_slot": 4,
    "disagreement": 0
   },
   {
-   "t": 5005,
+   "t": 743,
    "type": "difference_rating",
    "from_slot": 27,
    "to_slot": 0,
    "disagreement": 2
   },
   {
-   "t": 5419,
+   "t": 774,
    "type": "opinion",
    "slot": 2,
    "text": "Jugendschutz zuerst: klare Altersgrenzen und ein Werbeverbot für alle unter 16. Kinder sind kein Geschäftsmodell."
   },
   {
-   "t": 5478,
+   "t": 1011,
    "type": "difference_rating",
    "from_slot": 4,
    "to_slot": 27,
    "disagreement": 1
   },
   {
-   "t": 5506,
+   "t": 1044,
    "type": "difference_rating",
    "from_slot": 0,
    "to_slot": 27,
    "disagreement": 1
   },
   {
-   "t": 5687,
+   "t": 1076,
    "type": "difference_rating",
    "from_slot": 4,
    "to_slot": 2,
    "disagreement": 3
   },
   {
-   "t": 5830,
+   "t": 1109,
    "type": "difference_rating",
    "from_slot": 2,
    "to_slot": 4,
    "disagreement": 3
   },
   {
-   "t": 5840,
+   "t": 1141,
    "type": "difference_rating",
    "from_slot": 2,
    "to_slot": 27,
    "disagreement": 4
   },
   {
-   "t": 6407,
+   "t": 1174,
    "type": "difference_rating",
    "from_slot": 0,
    "to_slot": 2,
    "disagreement": 4
   },
   {
-   "t": 6637,
+   "t": 1207,
    "type": "difference_rating",
    "from_slot": 27,
    "to_slot": 2,
    "disagreement": 3
   },
   {
-   "t": 6761,
+   "t": 1240,
    "type": "difference_rating",
    "from_slot": 2,
    "to_slot": 0,
    "disagreement": 4
   },
   {
-   "t": 7194,
+   "t": 1273,
    "type": "opinion",
    "slot": 6,
    "text": "Endlose Feeds sind nach Suchtprinzipien gebaut. Design-Regeln wie kein Autoplay für Minderjährige wären wirksamer als Löschpflichten."
   },
   {
-   "t": 7655,
+   "t": 1526,
    "type": "difference_rating",
    "from_slot": 6,
    "to_slot": 2,
    "disagreement": 1
   },
   {
-   "t": 7683,
+   "t": 1560,
    "type": "difference_rating",
    "from_slot": 4,
    "to_slot": 6,
    "disagreement": 4
   },
   {
-   "t": 7788,
+   "t": 1594,
    "type": "difference_rating",
    "from_slot": 6,
    "to_slot": 27,
    "disagreement": 4
   },
   {
-   "t": 7792,
+   "t": 1628,
    "type": "difference_rating",
    "from_slot": 6,
    "to_slot": 0,
    "disagreement": 5
   },
   {
-   "t": 8506,
+   "t": 1663,
    "type": "difference_rating",
    "from_slot": 6,
    "to_slot": 4,
    "disagreement": 4
   },
   {
-   "t": 8566,
+   "t": 1697,
    "type": "difference_rating",
    "from_slot": 27,
    "to_slot": 6,
    "disagreement": 4
   },
   {
-   "t": 8681,
+   "t": 1732,
    "type": "difference_rating",
    "from_slot": 0,
    "to_slot": 6,
    "disagreement": 4
   },
   {
-   "t": 9229,
+   "t": 1766,
    "type": "difference_rating",
    "from_slot": 2,
    "to_slot": 6,
    "disagreement": 1
   },
   {
-   "t": 9418,
+   "t": 1801,
    "type": "opinion",
    "slot": 26,
    "text": "Essstörungen und Selbstverletzungs-Content verbreiten sich viral. Hier braucht es harte Verbreitungsverbote, nicht nur Warnhinweise."
   },
   {
-   "t": 9751,
+   "t": 2065,
    "type": "difference_rating",
    "from_slot": 26,
    "to_slot": 27,
    "disagreement": 1
   },
   {
-   "t": 10028,
+   "t": 2100,
    "type": "difference_rating",
    "from_slot": 26,
    "to_slot": 6,
    "disagreement": 4
   },
   {
-   "t": 10041,
+   "t": 2136,
    "type": "difference_rating",
    "from_slot": 26,
    "to_slot": 4,
    "disagreement": 1
   },
   {
-   "t": 10153,
+   "t": 2172,
    "type": "difference_rating",
    "from_slot": 4,
    "to_slot": 26,
    "disagreement": 1
   },
   {
-   "t": 10195,
+   "t": 2208,
    "type": "difference_rating",
    "from_slot": 0,
    "to_slot": 26,
    "disagreement": 1
   },
   {
-   "t": 10228,
+   "t": 2243,
    "type": "difference_rating",
    "from_slot": 2,
    "to_slot": 26,
    "disagreement": 4
   },
   {
-   "t": 10372,
+   "t": 2279,
    "type": "difference_rating",
    "from_slot": 26,
    "to_slot": 2,
    "disagreement": 3
   },
   {
-   "t": 10554,
+   "t": 2315,
    "type": "difference_rating",
    "from_slot": 26,
    "to_slot": 0,
    "disagreement": 1
   },
   {
-   "t": 10687,
+   "t": 2351,
    "type": "difference_rating",
    "from_slot": 6,
    "to_slot": 26,
    "disagreement": 4
   },
   {
-   "t": 10716,
+   "t": 2387,
    "type": "opinion",
    "slot": 1,
    "text": "Keine neuen Verbote, sondern Transparenz: offene Algorithmen und Datenzugang für unabhängige Forschung. Erst messen, dann regulieren."
   },
   {
-   "t": 10934,
+   "t": 2661,
    "type": "difference_rating",
    "from_slot": 1,
    "to_slot": 0,
    "disagreement": 7
   },
   {
-   "t": 11172,
+   "t": 2698,
    "type": "difference_rating",
    "from_slot": 0,
    "to_slot": 1,
    "disagreement": 7
   },
   {
-   "t": 11347,
+   "t": 2734,
    "type": "difference_rating",
    "from_slot": 1,
    "to_slot": 6,
    "disagreement": 4
   },
   {
-   "t": 11348,
+   "t": 2771,
    "type": "difference_rating",
    "from_slot": 27,
    "to_slot": 1,
    "disagreement": 7
   },
   {
-   "t": 11622,
+   "t": 2808,
    "type": "difference_rating",
    "from_slot": 2,
    "to_slot": 1,
    "disagreement": 4
   },
   {
-   "t": 11628,
+   "t": 2845,
    "type": "difference_rating",
    "from_slot": 1,
    "to_slot": 2,
    "disagreement": 3
   },
   {
-   "t": 11634,
+   "t": 2882,
    "type": "difference_rating",
    "from_slot": 1,
    "to_slot": 26,
    "disagreement": 7
   },
   {
-   "t": 11759,
+   "t": 2919,
    "type": "difference_rating",
    "from_slot": 1,
    "to_slot": 4,
    "disagreement": 6
   },
   {
-   "t": 11848,
+   "t": 2957,
    "type": "chat_open",
    "chat": "c09",
    "from_slot": 26,
@@ -674,7 +674,7 @@
    "moment": "organic"
   },
   {
-   "t": 11957,
+   "t": 3427,
    "type": "message",
    "chat": "c09",
    "sender_slot": 26,
@@ -683,297 +683,297 @@
    "heat": "normal"
   },
   {
-   "t": 12059,
+   "t": 3905,
    "type": "difference_rating",
    "from_slot": 1,
    "to_slot": 27,
    "disagreement": 6
   },
   {
-   "t": 12586,
+   "t": 3944,
    "type": "difference_rating",
    "from_slot": 26,
    "to_slot": 1,
    "disagreement": 7
   },
   {
-   "t": 12744,
+   "t": 3983,
    "type": "opinion",
    "slot": 8,
    "text": "Mehr Regulierung heißt oft mehr Überwachung. Altersverifizierung für alle wäre ein Datenschutz-Albtraum."
   },
   {
-   "t": 13377,
+   "t": 4275,
    "type": "difference_rating",
    "from_slot": 8,
    "to_slot": 4,
    "disagreement": 6
   },
   {
-   "t": 13493,
+   "t": 4314,
    "type": "difference_rating",
    "from_slot": 8,
    "to_slot": 27,
    "disagreement": 7
   },
   {
-   "t": 13535,
+   "t": 4353,
    "type": "difference_rating",
    "from_slot": 8,
    "to_slot": 2,
    "disagreement": 4
   },
   {
-   "t": 13684,
+   "t": 4392,
    "type": "difference_rating",
    "from_slot": 8,
    "to_slot": 0,
    "disagreement": 7
   },
   {
-   "t": 13802,
+   "t": 4431,
    "type": "difference_rating",
    "from_slot": 2,
    "to_slot": 8,
    "disagreement": 5
   },
   {
-   "t": 13826,
+   "t": 4471,
    "type": "difference_rating",
    "from_slot": 8,
    "to_slot": 1,
    "disagreement": 2
   },
   {
-   "t": 13977,
+   "t": 4510,
    "type": "difference_rating",
    "from_slot": 8,
    "to_slot": 26,
    "disagreement": 6
   },
   {
-   "t": 14155,
+   "t": 4549,
    "type": "difference_rating",
    "from_slot": 8,
    "to_slot": 6,
    "disagreement": 3
   },
   {
-   "t": 14322,
+   "t": 4589,
    "type": "difference_rating",
    "from_slot": 26,
    "to_slot": 8,
    "disagreement": 7
   },
   {
-   "t": 14552,
+   "t": 4628,
    "type": "difference_rating",
    "from_slot": 0,
    "to_slot": 8,
    "disagreement": 7
   },
   {
-   "t": 14716,
+   "t": 4668,
    "type": "opinion",
    "slot": 24,
    "text": "Regulierung ja, aber technisch fundiert. Algorithmus-Audits durch unabhängige Stellen sind machbar und wirksam."
   },
   {
-   "t": 14873,
+   "t": 4966,
    "type": "difference_rating",
    "from_slot": 24,
    "to_slot": 2,
    "disagreement": 4
   },
   {
-   "t": 14907,
+   "t": 5005,
    "type": "difference_rating",
    "from_slot": 6,
    "to_slot": 8,
    "disagreement": 4
   },
   {
-   "t": 15183,
+   "t": 5045,
    "type": "difference_rating",
    "from_slot": 8,
    "to_slot": 24,
    "disagreement": 1
   },
   {
-   "t": 15184,
+   "t": 5085,
    "type": "difference_rating",
    "from_slot": 24,
    "to_slot": 27,
    "disagreement": 7
   },
   {
-   "t": 15239,
+   "t": 5125,
    "type": "difference_rating",
    "from_slot": 24,
    "to_slot": 26,
    "disagreement": 7
   },
   {
-   "t": 15324,
+   "t": 5165,
    "type": "difference_rating",
    "from_slot": 24,
    "to_slot": 0,
    "disagreement": 7
   },
   {
-   "t": 15337,
+   "t": 5206,
    "type": "difference_rating",
    "from_slot": 4,
    "to_slot": 24,
    "disagreement": 6
   },
   {
-   "t": 15471,
+   "t": 5246,
    "type": "difference_rating",
    "from_slot": 1,
    "to_slot": 24,
    "disagreement": 1
   },
   {
-   "t": 15637,
+   "t": 5286,
    "type": "difference_rating",
    "from_slot": 24,
    "to_slot": 6,
    "disagreement": 4
   },
   {
-   "t": 15750,
+   "t": 5326,
    "type": "difference_rating",
    "from_slot": 24,
    "to_slot": 1,
    "disagreement": 2
   },
   {
-   "t": 15768,
+   "t": 5366,
    "type": "difference_rating",
    "from_slot": 24,
    "to_slot": 8,
    "disagreement": 1
   },
   {
-   "t": 15929,
+   "t": 5407,
    "type": "opinion",
    "slot": 3,
    "text": "So wenig Gesetze wie möglich. Gelöscht wird nur, was ein Gericht entschieden hat — sonst entscheiden Konzerne über unsere Meinungsfreiheit."
   },
   {
-   "t": 16166,
+   "t": 5710,
    "type": "difference_rating",
    "from_slot": 24,
    "to_slot": 4,
    "disagreement": 7
   },
   {
-   "t": 16440,
+   "t": 5751,
    "type": "difference_rating",
    "from_slot": 3,
    "to_slot": 2,
    "disagreement": 6
   },
   {
-   "t": 16559,
+   "t": 5791,
    "type": "difference_rating",
    "from_slot": 4,
    "to_slot": 3,
    "disagreement": 9
   },
   {
-   "t": 16732,
+   "t": 5832,
    "type": "difference_rating",
    "from_slot": 3,
    "to_slot": 24,
    "disagreement": 4
   },
   {
-   "t": 16772,
+   "t": 5873,
    "type": "difference_rating",
    "from_slot": 6,
    "to_slot": 24,
    "disagreement": 4
   },
   {
-   "t": 16908,
+   "t": 5914,
    "type": "difference_rating",
    "from_slot": 6,
    "to_slot": 3,
    "disagreement": 6
   },
   {
-   "t": 16996,
+   "t": 5955,
    "type": "difference_rating",
    "from_slot": 3,
    "to_slot": 26,
    "disagreement": 9
   },
   {
-   "t": 17247,
+   "t": 5995,
    "type": "difference_rating",
    "from_slot": 3,
    "to_slot": 27,
    "disagreement": 9
   },
   {
-   "t": 17282,
+   "t": 6036,
    "type": "difference_rating",
    "from_slot": 3,
    "to_slot": 1,
    "disagreement": 4
   },
   {
-   "t": 17303,
+   "t": 6077,
    "type": "difference_rating",
    "from_slot": 3,
    "to_slot": 8,
    "disagreement": 3
   },
   {
-   "t": 17321,
+   "t": 6118,
    "type": "difference_rating",
    "from_slot": 3,
    "to_slot": 6,
    "disagreement": 7
   },
   {
-   "t": 17435,
+   "t": 6159,
    "type": "difference_rating",
    "from_slot": 27,
    "to_slot": 3,
    "disagreement": 10
   },
   {
-   "t": 17452,
+   "t": 6200,
    "type": "difference_rating",
    "from_slot": 3,
    "to_slot": 4,
    "disagreement": 9
   },
   {
-   "t": 17492,
+   "t": 6241,
    "type": "difference_rating",
    "from_slot": 3,
    "to_slot": 0,
    "disagreement": 9
   },
   {
-   "t": 18075,
+   "t": 6282,
    "type": "difference_rating",
    "from_slot": 1,
    "to_slot": 3,
    "disagreement": 4
   },
   {
-   "t": 18139,
+   "t": 6324,
    "type": "opinion",
    "slot": 5,
    "text": "Regulierung tötet Innovation. Kleine Plattformen können sich Compliance nicht leisten — am Ende bleiben nur die ganz Großen übrig."
   },
   {
-   "t": 18438,
+   "t": 6633,
    "type": "chat_open",
    "chat": "c15",
    "from_slot": 8,
@@ -981,14 +981,14 @@
    "moment": "organic"
   },
   {
-   "t": 18512,
+   "t": 7154,
    "type": "difference_rating",
    "from_slot": 5,
    "to_slot": 1,
    "disagreement": 3
   },
   {
-   "t": 18648,
+   "t": 7196,
    "type": "message",
    "chat": "c15",
    "sender_slot": 8,
@@ -997,160 +997,160 @@
    "heat": "normal"
   },
   {
-   "t": 18677,
+   "t": 7721,
    "type": "difference_rating",
    "from_slot": 26,
    "to_slot": 5,
    "disagreement": 10
   },
   {
-   "t": 18700,
+   "t": 7764,
    "type": "difference_rating",
    "from_slot": 5,
    "to_slot": 6,
    "disagreement": 7
   },
   {
-   "t": 18790,
+   "t": 7806,
    "type": "difference_rating",
    "from_slot": 5,
    "to_slot": 27,
    "disagreement": 10
   },
   {
-   "t": 18847,
+   "t": 7848,
    "type": "difference_rating",
    "from_slot": 5,
    "to_slot": 24,
    "disagreement": 5
   },
   {
-   "t": 18854,
+   "t": 7891,
    "type": "difference_rating",
    "from_slot": 5,
    "to_slot": 8,
    "disagreement": 4
   },
   {
-   "t": 18888,
+   "t": 7933,
    "type": "difference_rating",
    "from_slot": 5,
    "to_slot": 2,
    "disagreement": 7
   },
   {
-   "t": 18915,
+   "t": 7975,
    "type": "difference_rating",
    "from_slot": 5,
    "to_slot": 3,
    "disagreement": 2
   },
   {
-   "t": 19168,
+   "t": 8018,
    "type": "difference_rating",
    "from_slot": 8,
    "to_slot": 5,
    "disagreement": 4
   },
   {
-   "t": 19177,
+   "t": 8060,
    "type": "difference_rating",
    "from_slot": 5,
    "to_slot": 26,
    "disagreement": 10
   },
   {
-   "t": 19379,
+   "t": 8103,
    "type": "difference_rating",
    "from_slot": 5,
    "to_slot": 4,
    "disagreement": 10
   },
   {
-   "t": 19478,
+   "t": 8145,
    "type": "difference_rating",
    "from_slot": 5,
    "to_slot": 0,
    "disagreement": 9
   },
   {
-   "t": 19589,
+   "t": 8188,
    "type": "opinion",
    "slot": 25,
    "text": "Jede Generation hat ihre Moralpanik. Früher waren es Comics und Rockmusik, heute TikTok. Der Staat soll sich raushalten."
   },
   {
-   "t": 19713,
+   "t": 8508,
    "type": "difference_rating",
    "from_slot": 25,
    "to_slot": 26,
    "disagreement": 9
   },
   {
-   "t": 19741,
+   "t": 8551,
    "type": "difference_rating",
    "from_slot": 25,
    "to_slot": 27,
    "disagreement": 9
   },
   {
-   "t": 20134,
+   "t": 8594,
    "type": "difference_rating",
    "from_slot": 25,
    "to_slot": 0,
    "disagreement": 10
   },
   {
-   "t": 20167,
+   "t": 8637,
    "type": "difference_rating",
    "from_slot": 25,
    "to_slot": 8,
    "disagreement": 5
   },
   {
-   "t": 20225,
+   "t": 8680,
    "type": "difference_rating",
    "from_slot": 4,
    "to_slot": 25,
    "disagreement": 9
   },
   {
-   "t": 20306,
+   "t": 8723,
    "type": "difference_rating",
    "from_slot": 25,
    "to_slot": 24,
    "disagreement": 4
   },
   {
-   "t": 20326,
+   "t": 8766,
    "type": "difference_rating",
    "from_slot": 6,
    "to_slot": 25,
    "disagreement": 6
   },
   {
-   "t": 20362,
+   "t": 8809,
    "type": "difference_rating",
    "from_slot": 1,
    "to_slot": 5,
    "disagreement": 4
   },
   {
-   "t": 20369,
+   "t": 8852,
    "type": "difference_rating",
    "from_slot": 25,
    "to_slot": 4,
    "disagreement": 9
   },
   {
-   "t": 20439,
+   "t": 8895,
    "type": "difference_rating",
    "from_slot": 4,
    "to_slot": 5,
    "disagreement": 10
   },
   {
-   "t": 20541,
+   "t": 8938,
    "type": "message",
    "chat": "c09",
    "sender_slot": 2,
@@ -1160,75 +1160,145 @@
    "reading_seconds": 38
   },
   {
-   "t": 20564,
+   "t": 9478,
    "type": "difference_rating",
    "from_slot": 25,
    "to_slot": 2,
    "disagreement": 7
   },
   {
-   "t": 20828,
+   "t": 9522,
    "type": "difference_rating",
    "from_slot": 0,
    "to_slot": 25,
    "disagreement": 9
   },
   {
-   "t": 20846,
+   "t": 9565,
    "type": "difference_rating",
    "from_slot": 25,
    "to_slot": 5,
    "disagreement": 1
   },
   {
-   "t": 20931,
+   "t": 9609,
    "type": "difference_rating",
    "from_slot": 27,
    "to_slot": 25,
    "disagreement": 10
   },
   {
-   "t": 20942,
+   "t": 9652,
    "type": "difference_rating",
    "from_slot": 25,
    "to_slot": 3,
    "disagreement": 0
   },
   {
-   "t": 21022,
+   "t": 9696,
    "type": "difference_rating",
    "from_slot": 25,
    "to_slot": 6,
    "disagreement": 7
   },
   {
-   "t": 21042,
+   "t": 9739,
    "type": "difference_rating",
    "from_slot": 25,
    "to_slot": 1,
    "disagreement": 3
   },
   {
-   "t": 25506,
+   "t": 9783,
    "type": "opinion",
    "slot": 30,
    "text": "Prävention schlägt Verbot. Medienkompetenz gehört in jeden Lehrplan, dann erübrigen sich viele Regulierungsdebatten."
   },
   {
-   "t": 25714,
+   "t": 10110,
    "type": "opinion",
    "slot": 22,
    "text": "Personalisierte Werbung für Minderjährige gehört verboten, Punkt. Für Erwachsene reicht Transparenz, wer was bezahlt."
   },
   {
-   "t": 25797,
+   "t": 10440,
    "type": "difference_rating",
    "from_slot": 30,
    "to_slot": 1,
    "disagreement": 4
   },
   {
-   "t": 25821,
+   "t": 11035,
+   "type": "difference_rating",
+   "from_slot": 30,
+   "to_slot": 26,
+   "disagreement": 4
+  },
+  {
+   "t": 11080,
+   "type": "difference_rating",
+   "from_slot": 22,
+   "to_slot": 8,
+   "disagreement": 5
+  },
+  {
+   "t": 11124,
+   "type": "difference_rating",
+   "from_slot": 22,
+   "to_slot": 5,
+   "disagreement": 7
+  },
+  {
+   "t": 11168,
+   "type": "difference_rating",
+   "from_slot": 30,
+   "to_slot": 6,
+   "disagreement": 1
+  },
+  {
+   "t": 11213,
+   "type": "difference_rating",
+   "from_slot": 22,
+   "to_slot": 24,
+   "disagreement": 3
+  },
+  {
+   "t": 11257,
+   "type": "difference_rating",
+   "from_slot": 30,
+   "to_slot": 5,
+   "disagreement": 7
+  },
+  {
+   "t": 11301,
+   "type": "difference_rating",
+   "from_slot": 8,
+   "to_slot": 30,
+   "disagreement": 3
+  },
+  {
+   "t": 11346,
+   "type": "difference_rating",
+   "from_slot": 1,
+   "to_slot": 22,
+   "disagreement": 3
+  },
+  {
+   "t": 11390,
+   "type": "difference_rating",
+   "from_slot": 1,
+   "to_slot": 30,
+   "disagreement": 5
+  },
+  {
+   "t": 11435,
+   "type": "difference_rating",
+   "from_slot": 22,
+   "to_slot": 2,
+   "disagreement": 1
+  },
+  {
+   "t": 11458,
    "type": "message",
    "chat": "c09",
    "sender_slot": 26,
@@ -1238,362 +1308,292 @@
    "reading_seconds": 35
   },
   {
-   "t": 26021,
-   "type": "difference_rating",
-   "from_slot": 30,
-   "to_slot": 26,
-   "disagreement": 4
-  },
-  {
-   "t": 26074,
-   "type": "difference_rating",
-   "from_slot": 22,
-   "to_slot": 8,
-   "disagreement": 5
-  },
-  {
-   "t": 26202,
-   "type": "difference_rating",
-   "from_slot": 22,
-   "to_slot": 5,
-   "disagreement": 7
-  },
-  {
-   "t": 26207,
-   "type": "difference_rating",
-   "from_slot": 30,
-   "to_slot": 6,
-   "disagreement": 1
-  },
-  {
-   "t": 26240,
-   "type": "difference_rating",
-   "from_slot": 22,
-   "to_slot": 24,
-   "disagreement": 3
-  },
-  {
-   "t": 26271,
-   "type": "difference_rating",
-   "from_slot": 30,
-   "to_slot": 5,
-   "disagreement": 7
-  },
-  {
-   "t": 26314,
-   "type": "difference_rating",
-   "from_slot": 8,
-   "to_slot": 30,
-   "disagreement": 3
-  },
-  {
-   "t": 26341,
-   "type": "difference_rating",
-   "from_slot": 1,
-   "to_slot": 22,
-   "disagreement": 3
-  },
-  {
-   "t": 26395,
-   "type": "difference_rating",
-   "from_slot": 1,
-   "to_slot": 30,
-   "disagreement": 5
-  },
-  {
-   "t": 26442,
-   "type": "difference_rating",
-   "from_slot": 22,
-   "to_slot": 2,
-   "disagreement": 1
-  },
-  {
-   "t": 26449,
+   "t": 11479,
    "type": "difference_rating",
    "from_slot": 30,
    "to_slot": 8,
    "disagreement": 3
   },
   {
-   "t": 26515,
+   "t": 11524,
    "type": "difference_rating",
    "from_slot": 4,
    "to_slot": 30,
    "disagreement": 4
   },
   {
-   "t": 26580,
+   "t": 11568,
    "type": "difference_rating",
    "from_slot": 30,
    "to_slot": 4,
    "disagreement": 4
   },
   {
-   "t": 26624,
+   "t": 11613,
    "type": "difference_rating",
    "from_slot": 6,
    "to_slot": 22,
    "disagreement": 2
   },
   {
-   "t": 26668,
+   "t": 11658,
    "type": "difference_rating",
    "from_slot": 22,
    "to_slot": 0,
    "disagreement": 4
   },
   {
-   "t": 26813,
+   "t": 11702,
    "type": "difference_rating",
    "from_slot": 22,
    "to_slot": 6,
    "disagreement": 2
   },
   {
-   "t": 26817,
+   "t": 11747,
    "type": "difference_rating",
    "from_slot": 30,
    "to_slot": 0,
    "disagreement": 4
   },
   {
-   "t": 26819,
+   "t": 11791,
    "type": "difference_rating",
    "from_slot": 30,
    "to_slot": 3,
    "disagreement": 7
   },
   {
-   "t": 26932,
+   "t": 11836,
    "type": "difference_rating",
    "from_slot": 22,
    "to_slot": 27,
    "disagreement": 3
   },
   {
-   "t": 26949,
+   "t": 11881,
    "type": "difference_rating",
    "from_slot": 30,
    "to_slot": 27,
    "disagreement": 5
   },
   {
-   "t": 26957,
+   "t": 11926,
    "type": "difference_rating",
    "from_slot": 30,
    "to_slot": 25,
    "disagreement": 7
   },
   {
-   "t": 26967,
+   "t": 11970,
    "type": "difference_rating",
    "from_slot": 22,
    "to_slot": 25,
    "disagreement": 7
   },
   {
-   "t": 26968,
+   "t": 12015,
    "type": "difference_rating",
    "from_slot": 24,
    "to_slot": 30,
    "disagreement": 5
   },
   {
-   "t": 27056,
+   "t": 12060,
    "type": "difference_rating",
    "from_slot": 22,
    "to_slot": 4,
    "disagreement": 4
   },
   {
-   "t": 27086,
+   "t": 12105,
    "type": "difference_rating",
    "from_slot": 22,
    "to_slot": 1,
    "disagreement": 4
   },
   {
-   "t": 27212,
+   "t": 12150,
    "type": "difference_rating",
    "from_slot": 22,
    "to_slot": 26,
    "disagreement": 4
   },
   {
-   "t": 27363,
+   "t": 12194,
    "type": "difference_rating",
    "from_slot": 22,
    "to_slot": 3,
    "disagreement": 6
   },
   {
-   "t": 27439,
+   "t": 12239,
    "type": "difference_rating",
    "from_slot": 22,
    "to_slot": 30,
    "disagreement": 1
   },
   {
-   "t": 27466,
+   "t": 12284,
    "type": "difference_rating",
    "from_slot": 24,
    "to_slot": 22,
    "disagreement": 4
   },
   {
-   "t": 27797,
+   "t": 12329,
    "type": "difference_rating",
    "from_slot": 27,
    "to_slot": 22,
    "disagreement": 3
   },
   {
-   "t": 27985,
+   "t": 12374,
    "type": "opinion",
    "slot": 32,
    "text": "Das NetzDG hat gezeigt: Überblockierung ist real. Regulierung braucht immer starke Beschwerdemechanismen für gelöschte Inhalte."
   },
   {
-   "t": 28353,
+   "t": 12712,
    "type": "opinion",
    "slot": 23,
    "text": "Amerikanische Konzerne bestimmen, was Deutschland diskutiert. Wir brauchen europäische Plattformen mit europäischen Regeln."
   },
   {
-   "t": 28661,
+   "t": 13051,
    "type": "difference_rating",
    "from_slot": 23,
    "to_slot": 5,
    "disagreement": 9
   },
   {
-   "t": 28782,
+   "t": 13096,
    "type": "difference_rating",
    "from_slot": 32,
    "to_slot": 4,
    "disagreement": 9
   },
   {
-   "t": 28809,
+   "t": 13141,
    "type": "difference_rating",
    "from_slot": 32,
    "to_slot": 27,
    "disagreement": 9
   },
   {
-   "t": 28822,
+   "t": 13187,
    "type": "difference_rating",
    "from_slot": 32,
    "to_slot": 2,
    "disagreement": 6
   },
   {
-   "t": 28827,
+   "t": 13232,
    "type": "difference_rating",
    "from_slot": 32,
    "to_slot": 8,
    "disagreement": 4
   },
   {
-   "t": 28894,
+   "t": 13277,
    "type": "difference_rating",
    "from_slot": 23,
    "to_slot": 3,
    "disagreement": 9
   },
   {
-   "t": 28897,
+   "t": 13323,
    "type": "difference_rating",
    "from_slot": 23,
    "to_slot": 8,
    "disagreement": 7
   },
   {
-   "t": 28917,
+   "t": 13368,
    "type": "difference_rating",
    "from_slot": 32,
    "to_slot": 30,
    "disagreement": 7
   },
   {
-   "t": 28962,
+   "t": 13414,
    "type": "difference_rating",
    "from_slot": 32,
    "to_slot": 0,
    "disagreement": 10
   },
   {
-   "t": 29012,
+   "t": 13459,
    "type": "difference_rating",
    "from_slot": 23,
    "to_slot": 6,
    "disagreement": 5
   },
   {
-   "t": 29117,
+   "t": 13505,
    "type": "difference_rating",
    "from_slot": 23,
    "to_slot": 26,
    "disagreement": 1
   },
   {
-   "t": 29179,
+   "t": 13550,
    "type": "difference_rating",
    "from_slot": 23,
    "to_slot": 24,
    "disagreement": 6
   },
   {
-   "t": 29218,
+   "t": 13596,
    "type": "difference_rating",
    "from_slot": 32,
    "to_slot": 25,
    "disagreement": 1
   },
   {
-   "t": 29287,
+   "t": 13641,
    "type": "difference_rating",
    "from_slot": 23,
    "to_slot": 0,
    "disagreement": 1
   },
   {
-   "t": 29304,
+   "t": 13687,
    "type": "difference_rating",
    "from_slot": 23,
    "to_slot": 32,
    "disagreement": 9
   },
   {
-   "t": 29315,
+   "t": 13732,
    "type": "difference_rating",
    "from_slot": 23,
    "to_slot": 1,
    "disagreement": 6
   },
   {
-   "t": 29322,
+   "t": 13778,
    "type": "difference_rating",
    "from_slot": 25,
    "to_slot": 32,
    "disagreement": 1
   },
   {
-   "t": 29374,
+   "t": 13823,
    "type": "difference_rating",
    "from_slot": 32,
    "to_slot": 23,
    "disagreement": 10
   },
   {
-   "t": 29388,
+   "t": 13869,
    "type": "difference_rating",
    "from_slot": 23,
    "to_slot": 25,
    "disagreement": 9
   },
   {
-   "t": 29396,
+   "t": 13915,
    "type": "message",
    "chat": "c15",
    "sender_slot": 27,
@@ -1603,42 +1603,42 @@
    "reading_seconds": 58
   },
   {
-   "t": 29450,
+   "t": 14487,
    "type": "difference_rating",
    "from_slot": 32,
    "to_slot": 22,
    "disagreement": 7
   },
   {
-   "t": 29473,
+   "t": 14533,
    "type": "difference_rating",
    "from_slot": 5,
    "to_slot": 23,
    "disagreement": 10
   },
   {
-   "t": 29535,
+   "t": 14579,
    "type": "difference_rating",
    "from_slot": 32,
    "to_slot": 5,
    "disagreement": 2
   },
   {
-   "t": 29541,
+   "t": 14625,
    "type": "difference_rating",
    "from_slot": 25,
    "to_slot": 23,
    "disagreement": 9
   },
   {
-   "t": 29589,
+   "t": 14671,
    "type": "difference_rating",
    "from_slot": 32,
    "to_slot": 1,
    "disagreement": 3
   },
   {
-   "t": 29632,
+   "t": 14717,
    "type": "chat_open",
    "chat": "c00",
    "from_slot": 0,
@@ -1646,56 +1646,56 @@
    "moment": "clash"
   },
   {
-   "t": 29690,
+   "t": 15293,
    "type": "difference_rating",
    "from_slot": 32,
    "to_slot": 26,
    "disagreement": 9
   },
   {
-   "t": 29695,
+   "t": 15339,
    "type": "difference_rating",
    "from_slot": 23,
    "to_slot": 30,
    "disagreement": 3
   },
   {
-   "t": 29710,
+   "t": 15385,
    "type": "difference_rating",
    "from_slot": 1,
    "to_slot": 23,
    "disagreement": 6
   },
   {
-   "t": 29757,
+   "t": 15432,
    "type": "difference_rating",
    "from_slot": 0,
    "to_slot": 32,
    "disagreement": 9
   },
   {
-   "t": 29758,
+   "t": 15478,
    "type": "difference_rating",
    "from_slot": 23,
    "to_slot": 27,
    "disagreement": 1
   },
   {
-   "t": 29789,
+   "t": 15524,
    "type": "difference_rating",
    "from_slot": 23,
    "to_slot": 22,
    "disagreement": 5
   },
   {
-   "t": 29805,
+   "t": 15571,
    "type": "difference_rating",
    "from_slot": 24,
    "to_slot": 32,
    "disagreement": 3
   },
   {
-   "t": 29861,
+   "t": 15617,
    "type": "message",
    "chat": "c00",
    "sender_slot": 0,
@@ -1704,21 +1704,21 @@
    "heat": "high"
   },
   {
-   "t": 30012,
+   "t": 16198,
    "type": "difference_rating",
    "from_slot": 23,
    "to_slot": 2,
    "disagreement": 4
   },
   {
-   "t": 30146,
+   "t": 16244,
    "type": "difference_rating",
    "from_slot": 6,
    "to_slot": 32,
    "disagreement": 7
   },
   {
-   "t": 33180,
+   "t": 16291,
    "type": "message",
    "chat": "c09",
    "sender_slot": 2,
@@ -1728,250 +1728,250 @@
    "reading_seconds": 42
   },
   {
-   "t": 33444,
+   "t": 16875,
    "type": "opinion",
    "slot": 31,
    "text": "Mein Sohn hängt fünf Stunden täglich am Handy. Da helfen keine Appelle — die Plattformen müssen Nutzungsgrenzen einbauen."
   },
   {
-   "t": 33729,
+   "t": 17226,
    "type": "difference_rating",
    "from_slot": 31,
    "to_slot": 3,
    "disagreement": 7
   },
   {
-   "t": 33746,
+   "t": 17273,
    "type": "difference_rating",
    "from_slot": 27,
    "to_slot": 31,
    "disagreement": 4
   },
   {
-   "t": 33912,
+   "t": 17320,
    "type": "opinion",
    "slot": 16,
    "text": "Viele Jugendliche rutschen in extremistische Gruppen. Plattformen müssen Empfehlungssysteme für Minderjährige abschalten."
   },
   {
-   "t": 33989,
+   "t": 17673,
    "type": "difference_rating",
    "from_slot": 31,
    "to_slot": 26,
    "disagreement": 4
   },
   {
-   "t": 33995,
+   "t": 17720,
    "type": "difference_rating",
    "from_slot": 31,
    "to_slot": 22,
    "disagreement": 1
   },
   {
-   "t": 34053,
+   "t": 17767,
    "type": "difference_rating",
    "from_slot": 16,
    "to_slot": 8,
    "disagreement": 4
   },
   {
-   "t": 34321,
+   "t": 17815,
    "type": "difference_rating",
    "from_slot": 31,
    "to_slot": 5,
    "disagreement": 7
   },
   {
-   "t": 34336,
+   "t": 17862,
    "type": "difference_rating",
    "from_slot": 31,
    "to_slot": 24,
    "disagreement": 5
   },
   {
-   "t": 34360,
+   "t": 17909,
    "type": "difference_rating",
    "from_slot": 31,
    "to_slot": 1,
    "disagreement": 5
   },
   {
-   "t": 34396,
+   "t": 17956,
    "type": "difference_rating",
    "from_slot": 16,
    "to_slot": 5,
    "disagreement": 7
   },
   {
-   "t": 34483,
+   "t": 18003,
    "type": "difference_rating",
    "from_slot": 31,
    "to_slot": 2,
    "disagreement": 2
   },
   {
-   "t": 34497,
+   "t": 18051,
    "type": "difference_rating",
    "from_slot": 31,
    "to_slot": 27,
    "disagreement": 4
   },
   {
-   "t": 34542,
+   "t": 18098,
    "type": "difference_rating",
    "from_slot": 31,
    "to_slot": 30,
    "disagreement": 2
   },
   {
-   "t": 34598,
+   "t": 18145,
    "type": "difference_rating",
    "from_slot": 31,
    "to_slot": 32,
    "disagreement": 6
   },
   {
-   "t": 34604,
+   "t": 18192,
    "type": "difference_rating",
    "from_slot": 31,
    "to_slot": 6,
    "disagreement": 1
   },
   {
-   "t": 34647,
+   "t": 18240,
    "type": "difference_rating",
    "from_slot": 31,
    "to_slot": 4,
    "disagreement": 4
   },
   {
-   "t": 34652,
+   "t": 18287,
    "type": "difference_rating",
    "from_slot": 24,
    "to_slot": 31,
    "disagreement": 3
   },
   {
-   "t": 34732,
+   "t": 18334,
    "type": "difference_rating",
    "from_slot": 31,
    "to_slot": 25,
    "disagreement": 6
   },
   {
-   "t": 34768,
+   "t": 18382,
    "type": "difference_rating",
    "from_slot": 6,
    "to_slot": 31,
    "disagreement": 2
   },
   {
-   "t": 34901,
+   "t": 18429,
    "type": "difference_rating",
    "from_slot": 23,
    "to_slot": 16,
    "disagreement": 4
   },
   {
-   "t": 35103,
+   "t": 18476,
    "type": "difference_rating",
    "from_slot": 16,
    "to_slot": 31,
    "disagreement": 1
   },
   {
-   "t": 35118,
+   "t": 18524,
    "type": "difference_rating",
    "from_slot": 16,
    "to_slot": 1,
    "disagreement": 4
   },
   {
-   "t": 35156,
+   "t": 18571,
    "type": "difference_rating",
    "from_slot": 16,
    "to_slot": 23,
    "disagreement": 4
   },
   {
-   "t": 35157,
+   "t": 18619,
    "type": "difference_rating",
    "from_slot": 16,
    "to_slot": 6,
    "disagreement": 1
   },
   {
-   "t": 35203,
+   "t": 18666,
    "type": "difference_rating",
    "from_slot": 16,
    "to_slot": 3,
    "disagreement": 7
   },
   {
-   "t": 35243,
+   "t": 18714,
    "type": "difference_rating",
    "from_slot": 24,
    "to_slot": 16,
    "disagreement": 4
   },
   {
-   "t": 35246,
+   "t": 18761,
    "type": "difference_rating",
    "from_slot": 31,
    "to_slot": 0,
    "disagreement": 4
   },
   {
-   "t": 35350,
+   "t": 18808,
    "type": "difference_rating",
    "from_slot": 16,
    "to_slot": 24,
    "disagreement": 4
   },
   {
-   "t": 35476,
+   "t": 18856,
    "type": "difference_rating",
    "from_slot": 16,
    "to_slot": 4,
    "disagreement": 4
   },
   {
-   "t": 35534,
+   "t": 18903,
    "type": "difference_rating",
    "from_slot": 16,
    "to_slot": 0,
    "disagreement": 3
   },
   {
-   "t": 35543,
+   "t": 18951,
    "type": "difference_rating",
    "from_slot": 16,
    "to_slot": 2,
    "disagreement": 1
   },
   {
-   "t": 35690,
+   "t": 18999,
    "type": "difference_rating",
    "from_slot": 30,
    "to_slot": 31,
    "disagreement": 1
   },
   {
-   "t": 35896,
+   "t": 19046,
    "type": "difference_rating",
    "from_slot": 26,
    "to_slot": 16,
    "disagreement": 4
   },
   {
-   "t": 35903,
+   "t": 19094,
    "type": "difference_rating",
    "from_slot": 1,
    "to_slot": 16,
    "disagreement": 3
   },
   {
-   "t": 38021,
+   "t": 19141,
    "type": "message",
    "chat": "c00",
    "sender_slot": 3,
@@ -1981,7 +1981,7 @@
    "reading_seconds": 59
   },
   {
-   "t": 38672,
+   "t": 19737,
    "type": "chat_open",
    "chat": "c17",
    "from_slot": 0,
@@ -1989,7 +1989,7 @@
    "moment": "organic"
   },
   {
-   "t": 38817,
+   "t": 20336,
    "type": "message",
    "chat": "c17",
    "sender_slot": 0,
@@ -1998,7 +1998,7 @@
    "heat": "normal"
   },
   {
-   "t": 39013,
+   "t": 20937,
    "type": "chat_open",
    "chat": "c11",
    "from_slot": 30,
@@ -2006,7 +2006,7 @@
    "moment": "organic"
   },
   {
-   "t": 39235,
+   "t": 21540,
    "type": "message",
    "chat": "c11",
    "sender_slot": 30,
@@ -2015,7 +2015,7 @@
    "heat": "normal"
   },
   {
-   "t": 40388,
+   "t": 22145,
    "type": "message",
    "chat": "c15",
    "sender_slot": 8,
@@ -2025,7 +2025,7 @@
    "reading_seconds": 6
   },
   {
-   "t": 42152,
+   "t": 22753,
    "type": "chat_open",
    "chat": "c13",
    "from_slot": 31,
@@ -2033,7 +2033,7 @@
    "moment": "organic"
   },
   {
-   "t": 42216,
+   "t": 23363,
    "type": "message",
    "chat": "c13",
    "sender_slot": 31,
@@ -2042,7 +2042,7 @@
    "heat": "normal"
   },
   {
-   "t": 42235,
+   "t": 24060,
    "type": "message",
    "chat": "c11",
    "sender_slot": 4,
@@ -2052,7 +2052,7 @@
    "reading_seconds": 16
   },
   {
-   "t": 42710,
+   "t": 24588,
    "type": "chat_open",
    "chat": "c23",
    "from_slot": 23,
@@ -2060,7 +2060,7 @@
    "moment": "organic"
   },
   {
-   "t": 42944,
+   "t": 25204,
    "type": "message",
    "chat": "c23",
    "sender_slot": 23,
@@ -2069,7 +2069,7 @@
    "heat": "normal"
   },
   {
-   "t": 42961,
+   "t": 25822,
    "type": "message",
    "chat": "c09",
    "sender_slot": 26,
@@ -2079,7 +2079,7 @@
    "reading_seconds": 16
   },
   {
-   "t": 44621,
+   "t": 26442,
    "type": "message",
    "chat": "c00",
    "sender_slot": 0,
@@ -2089,7 +2089,7 @@
    "reading_seconds": 46
   },
   {
-   "t": 44829,
+   "t": 27063,
    "type": "message",
    "chat": "c15",
    "sender_slot": 27,
@@ -2099,7 +2099,7 @@
    "reading_seconds": 19
   },
   {
-   "t": 45095,
+   "t": 27687,
    "type": "rating",
    "chat": "c15",
    "from_slot": 8,
@@ -2109,7 +2109,7 @@
    "bridge": false
   },
   {
-   "t": 45109,
+   "t": 28312,
    "type": "chat_open",
    "chat": "c14",
    "from_slot": 25,
@@ -2117,7 +2117,7 @@
    "moment": "organic"
   },
   {
-   "t": 45260,
+   "t": 28939,
    "type": "message",
    "chat": "c14",
    "sender_slot": 25,
@@ -2126,7 +2126,7 @@
    "heat": "normal"
   },
   {
-   "t": 45262,
+   "t": 29568,
    "type": "rating",
    "chat": "c15",
    "from_slot": 27,
@@ -2136,132 +2136,132 @@
    "bridge": false
   },
   {
-   "t": 46005,
+   "t": 30199,
    "type": "opinion",
    "slot": 19,
    "text": "Leseförderung statt Bildschirmzeit. Der Staat sollte in Bibliotheken investieren statt immer mehr Regeln fürs Netz zu schreiben."
   },
   {
-   "t": 46144,
+   "t": 30578,
    "type": "difference_rating",
    "from_slot": 19,
    "to_slot": 2,
    "disagreement": 3
   },
   {
-   "t": 46518,
+   "t": 30629,
    "type": "difference_rating",
    "from_slot": 19,
    "to_slot": 16,
    "disagreement": 3
   },
   {
-   "t": 46535,
+   "t": 30679,
    "type": "difference_rating",
    "from_slot": 26,
    "to_slot": 19,
    "disagreement": 6
   },
   {
-   "t": 46558,
+   "t": 30730,
    "type": "difference_rating",
    "from_slot": 24,
    "to_slot": 19,
    "disagreement": 2
   },
   {
-   "t": 46921,
+   "t": 30781,
    "type": "difference_rating",
    "from_slot": 19,
    "to_slot": 22,
    "disagreement": 3
   },
   {
-   "t": 46973,
+   "t": 30831,
    "type": "difference_rating",
    "from_slot": 19,
    "to_slot": 4,
    "disagreement": 6
   },
   {
-   "t": 46985,
+   "t": 30882,
    "type": "difference_rating",
    "from_slot": 19,
    "to_slot": 32,
    "disagreement": 3
   },
   {
-   "t": 47160,
+   "t": 30933,
    "type": "difference_rating",
    "from_slot": 19,
    "to_slot": 27,
    "disagreement": 6
   },
   {
-   "t": 47197,
+   "t": 30983,
    "type": "difference_rating",
    "from_slot": 19,
    "to_slot": 26,
    "disagreement": 6
   },
   {
-   "t": 47211,
+   "t": 31034,
    "type": "difference_rating",
    "from_slot": 19,
    "to_slot": 0,
    "disagreement": 6
   },
   {
-   "t": 47235,
+   "t": 31085,
    "type": "difference_rating",
    "from_slot": 19,
    "to_slot": 6,
    "disagreement": 3
   },
   {
-   "t": 47252,
+   "t": 31136,
    "type": "difference_rating",
    "from_slot": 4,
    "to_slot": 19,
    "disagreement": 6
   },
   {
-   "t": 47472,
+   "t": 31186,
    "type": "difference_rating",
    "from_slot": 19,
    "to_slot": 24,
    "disagreement": 1
   },
   {
-   "t": 47580,
+   "t": 31237,
    "type": "difference_rating",
    "from_slot": 19,
    "to_slot": 3,
    "disagreement": 5
   },
   {
-   "t": 47599,
+   "t": 31288,
    "type": "difference_rating",
    "from_slot": 19,
    "to_slot": 25,
    "disagreement": 4
   },
   {
-   "t": 47681,
+   "t": 31339,
    "type": "difference_rating",
    "from_slot": 19,
    "to_slot": 8,
    "disagreement": 2
   },
   {
-   "t": 47757,
+   "t": 31389,
    "type": "difference_rating",
    "from_slot": 8,
    "to_slot": 19,
    "disagreement": 2
   },
   {
-   "t": 48941,
+   "t": 31440,
    "type": "message",
    "chat": "c00",
    "sender_slot": 3,
@@ -2271,7 +2271,7 @@
    "reading_seconds": 27
   },
   {
-   "t": 49218,
+   "t": 32076,
    "type": "message",
    "chat": "c23",
    "sender_slot": 30,
@@ -2281,7 +2281,7 @@
    "reading_seconds": 27
   },
   {
-   "t": 49315,
+   "t": 32713,
    "type": "message",
    "chat": "c11",
    "sender_slot": 30,
@@ -2291,7 +2291,7 @@
    "reading_seconds": 50
   },
   {
-   "t": 49776,
+   "t": 33352,
    "type": "message",
    "chat": "c13",
    "sender_slot": 3,
@@ -2301,7 +2301,7 @@
    "reading_seconds": 54
   },
   {
-   "t": 51187,
+   "t": 33993,
    "type": "message",
    "chat": "c17",
    "sender_slot": 31,
@@ -2311,7 +2311,7 @@
    "reading_seconds": 49
   },
   {
-   "t": 54115,
+   "t": 35233,
    "type": "message",
    "chat": "c11",
    "sender_slot": 4,
@@ -2321,7 +2321,7 @@
    "reading_seconds": 31
   },
   {
-   "t": 54461,
+   "t": 35279,
    "type": "message",
    "chat": "c00",
    "sender_slot": 0,
@@ -2331,7 +2331,7 @@
    "reading_seconds": 37
   },
   {
-   "t": 54473,
+   "t": 35924,
    "type": "message",
    "chat": "c09",
    "sender_slot": 2,
@@ -2341,7 +2341,7 @@
    "reading_seconds": 7
   },
   {
-   "t": 54690,
+   "t": 36571,
    "type": "rating",
    "chat": "c00",
    "from_slot": 3,
@@ -2351,7 +2351,7 @@
    "bridge": false
   },
   {
-   "t": 54828,
+   "t": 37219,
    "type": "rating",
    "chat": "c00",
    "from_slot": 0,
@@ -2361,7 +2361,7 @@
    "bridge": false
   },
   {
-   "t": 57179,
+   "t": 37869,
    "type": "message",
    "chat": "c15",
    "sender_slot": 8,
@@ -2371,7 +2371,7 @@
    "reading_seconds": 43
   },
   {
-   "t": 57216,
+   "t": 38520,
    "type": "message",
    "chat": "c13",
    "sender_slot": 31,
@@ -2381,13 +2381,13 @@
    "reading_seconds": 53
   },
   {
-   "t": 57496,
+   "t": 39173,
    "type": "opinion",
    "slot": 7,
    "text": "Desinformation ist ein Geschäftsmodell. Wer davon profitiert, muss zahlen: Werbesperren für wiederholte Falschmeldungen."
   },
   {
-   "t": 57521,
+   "t": 39565,
    "type": "rating",
    "chat": "c13",
    "from_slot": 3,
@@ -2397,7 +2397,7 @@
    "bridge": false
   },
   {
-   "t": 57739,
+   "t": 40220,
    "type": "rating",
    "chat": "c13",
    "from_slot": 31,
@@ -2407,63 +2407,63 @@
    "bridge": false
   },
   {
-   "t": 57767,
+   "t": 40877,
    "type": "difference_rating",
    "from_slot": 7,
    "to_slot": 30,
    "disagreement": 4
   },
   {
-   "t": 57874,
+   "t": 40929,
    "type": "difference_rating",
    "from_slot": 7,
    "to_slot": 3,
    "disagreement": 9
   },
   {
-   "t": 57895,
+   "t": 40982,
    "type": "difference_rating",
    "from_slot": 7,
    "to_slot": 32,
    "disagreement": 10
   },
   {
-   "t": 58054,
+   "t": 41034,
    "type": "difference_rating",
    "from_slot": 7,
    "to_slot": 8,
    "disagreement": 7
   },
   {
-   "t": 58081,
+   "t": 41087,
    "type": "difference_rating",
    "from_slot": 7,
    "to_slot": 31,
    "disagreement": 4
   },
   {
-   "t": 58116,
+   "t": 41140,
    "type": "difference_rating",
    "from_slot": 7,
    "to_slot": 23,
    "disagreement": 2
   },
   {
-   "t": 58162,
+   "t": 41192,
    "type": "difference_rating",
    "from_slot": 4,
    "to_slot": 7,
    "disagreement": 1
   },
   {
-   "t": 58211,
+   "t": 41245,
    "type": "difference_rating",
    "from_slot": 7,
    "to_slot": 5,
    "disagreement": 9
   },
   {
-   "t": 58249,
+   "t": 41297,
    "type": "chat_open",
    "chat": "c01",
    "from_slot": 2,
@@ -2471,13 +2471,13 @@
    "moment": "clash"
   },
   {
-   "t": 58317,
+   "t": 41956,
    "type": "opinion",
    "slot": 13,
    "text": "Wer entscheidet, was Desinformation ist? Zentrale Wahrheitswächter sind gefährlicher als das Chaos, das sie bekämpfen sollen."
   },
   {
-   "t": 58328,
+   "t": 42352,
    "type": "message",
    "chat": "c01",
    "sender_slot": 2,
@@ -2486,48 +2486,48 @@
    "heat": "high"
   },
   {
-   "t": 58468,
+   "t": 43013,
    "type": "difference_rating",
    "from_slot": 25,
    "to_slot": 7,
    "disagreement": 9
   },
   {
-   "t": 58504,
+   "t": 43066,
    "type": "difference_rating",
    "from_slot": 5,
    "to_slot": 7,
    "disagreement": 9
   },
   {
-   "t": 58570,
+   "t": 43118,
    "type": "difference_rating",
    "from_slot": 7,
    "to_slot": 24,
    "disagreement": 7
   },
   {
-   "t": 58573,
+   "t": 43171,
    "type": "difference_rating",
    "from_slot": 7,
    "to_slot": 22,
    "disagreement": 4
   },
   {
-   "t": 58586,
+   "t": 43224,
    "type": "opinion",
    "slot": 17,
    "text": "Der digitale Markt funktioniert nicht, weil Nutzer das Produkt sind. Wettbewerb durch Interoperabilität schlägt jede Inhaltsregulierung."
   },
   {
-   "t": 58599,
+   "t": 43622,
    "type": "difference_rating",
    "from_slot": 13,
    "to_slot": 2,
    "disagreement": 6
   },
   {
-   "t": 58769,
+   "t": 43675,
    "type": "message",
    "chat": "c23",
    "sender_slot": 23,
@@ -2537,21 +2537,21 @@
    "reading_seconds": 20
   },
   {
-   "t": 58781,
+   "t": 44338,
    "type": "difference_rating",
    "from_slot": 13,
    "to_slot": 30,
    "disagreement": 6
   },
   {
-   "t": 58795,
+   "t": 44391,
    "type": "difference_rating",
    "from_slot": 13,
    "to_slot": 31,
    "disagreement": 7
   },
   {
-   "t": 58862,
+   "t": 44444,
    "type": "message",
    "chat": "c17",
    "sender_slot": 0,
@@ -2561,194 +2561,194 @@
    "reading_seconds": 35
   },
   {
-   "t": 58898,
+   "t": 45109,
    "type": "difference_rating",
    "from_slot": 13,
    "to_slot": 8,
    "disagreement": 4
   },
   {
-   "t": 58946,
+   "t": 45163,
    "type": "difference_rating",
    "from_slot": 13,
    "to_slot": 19,
    "disagreement": 3
   },
   {
-   "t": 59011,
+   "t": 45216,
    "type": "difference_rating",
    "from_slot": 13,
    "to_slot": 27,
    "disagreement": 10
   },
   {
-   "t": 59034,
+   "t": 45269,
    "type": "opinion",
    "slot": 28,
    "text": "Plattformen sind der neue öffentliche Raum. Der gehört uns allen — also demokratische Mitbestimmung bei den Regeln statt Konzernwillkür."
   },
   {
-   "t": 59035,
+   "t": 45669,
    "type": "difference_rating",
    "from_slot": 13,
    "to_slot": 0,
    "disagreement": 10
   },
   {
-   "t": 59037,
+   "t": 45722,
    "type": "difference_rating",
    "from_slot": 13,
    "to_slot": 4,
    "disagreement": 10
   },
   {
-   "t": 59056,
+   "t": 45775,
    "type": "difference_rating",
    "from_slot": 17,
    "to_slot": 23,
    "disagreement": 7
   },
   {
-   "t": 59063,
+   "t": 45829,
    "type": "difference_rating",
    "from_slot": 7,
    "to_slot": 4,
    "disagreement": 1
   },
   {
-   "t": 59077,
+   "t": 45882,
    "type": "difference_rating",
    "from_slot": 13,
    "to_slot": 3,
    "disagreement": 0
   },
   {
-   "t": 59220,
+   "t": 45936,
    "type": "difference_rating",
    "from_slot": 28,
    "to_slot": 24,
    "disagreement": 0
   },
   {
-   "t": 59331,
+   "t": 45989,
    "type": "difference_rating",
    "from_slot": 7,
    "to_slot": 0,
    "disagreement": 2
   },
   {
-   "t": 59382,
+   "t": 46042,
    "type": "difference_rating",
    "from_slot": 32,
    "to_slot": 28,
    "disagreement": 4
   },
   {
-   "t": 59472,
+   "t": 46096,
    "type": "difference_rating",
    "from_slot": 30,
    "to_slot": 28,
    "disagreement": 4
   },
   {
-   "t": 59502,
+   "t": 46149,
    "type": "difference_rating",
    "from_slot": 17,
    "to_slot": 22,
    "disagreement": 4
   },
   {
-   "t": 59527,
+   "t": 46203,
    "type": "difference_rating",
    "from_slot": 3,
    "to_slot": 7,
    "disagreement": 10
   },
   {
-   "t": 59542,
+   "t": 46256,
    "type": "difference_rating",
    "from_slot": 17,
    "to_slot": 25,
    "disagreement": 3
   },
   {
-   "t": 59556,
+   "t": 46309,
    "type": "difference_rating",
    "from_slot": 13,
    "to_slot": 6,
    "disagreement": 6
   },
   {
-   "t": 59566,
+   "t": 46363,
    "type": "difference_rating",
    "from_slot": 13,
    "to_slot": 24,
    "disagreement": 3
   },
   {
-   "t": 59634,
+   "t": 46416,
    "type": "difference_rating",
    "from_slot": 30,
    "to_slot": 13,
    "disagreement": 7
   },
   {
-   "t": 59634,
+   "t": 46470,
    "type": "difference_rating",
    "from_slot": 17,
    "to_slot": 6,
    "disagreement": 4
   },
   {
-   "t": 59655,
+   "t": 46523,
    "type": "difference_rating",
    "from_slot": 17,
    "to_slot": 7,
    "disagreement": 7
   },
   {
-   "t": 59709,
+   "t": 46577,
    "type": "difference_rating",
    "from_slot": 0,
    "to_slot": 13,
    "disagreement": 10
   },
   {
-   "t": 59715,
+   "t": 46630,
    "type": "opinion",
    "slot": 18,
    "text": "Ich habe jahrelang gelöscht, was ihr nie seht. Die Arbeitsbedingungen der Moderatoren gehören in jedes Regulierungsgesetz."
   },
   {
-   "t": 59726,
+   "t": 47031,
    "type": "difference_rating",
    "from_slot": 28,
    "to_slot": 19,
    "disagreement": 2
   },
   {
-   "t": 59758,
+   "t": 47085,
    "type": "difference_rating",
    "from_slot": 17,
    "to_slot": 13,
    "disagreement": 4
   },
   {
-   "t": 59833,
+   "t": 47138,
    "type": "difference_rating",
    "from_slot": 28,
    "to_slot": 25,
    "disagreement": 4
   },
   {
-   "t": 59865,
+   "t": 47192,
    "type": "difference_rating",
    "from_slot": 1,
    "to_slot": 28,
    "disagreement": 1
   },
   {
-   "t": 59875,
+   "t": 47246,
    "type": "message",
    "chat": "c11",
    "sender_slot": 30,
@@ -2758,77 +2758,77 @@
    "reading_seconds": 39
   },
   {
-   "t": 59882,
+   "t": 47916,
    "type": "difference_rating",
    "from_slot": 13,
    "to_slot": 7,
    "disagreement": 9
   },
   {
-   "t": 59882,
+   "t": 47969,
    "type": "difference_rating",
    "from_slot": 17,
    "to_slot": 4,
    "disagreement": 7
   },
   {
-   "t": 59884,
+   "t": 48023,
    "type": "difference_rating",
    "from_slot": 13,
    "to_slot": 26,
    "disagreement": 9
   },
   {
-   "t": 59898,
+   "t": 48077,
    "type": "difference_rating",
    "from_slot": 17,
    "to_slot": 26,
    "disagreement": 6
   },
   {
-   "t": 59921,
+   "t": 48131,
    "type": "difference_rating",
    "from_slot": 28,
    "to_slot": 22,
    "disagreement": 4
   },
   {
-   "t": 59926,
+   "t": 48184,
    "type": "difference_rating",
    "from_slot": 17,
    "to_slot": 30,
    "disagreement": 4
   },
   {
-   "t": 59932,
+   "t": 48238,
    "type": "difference_rating",
    "from_slot": 28,
    "to_slot": 32,
    "disagreement": 4
   },
   {
-   "t": 59986,
+   "t": 48292,
    "type": "difference_rating",
    "from_slot": 28,
    "to_slot": 4,
    "disagreement": 7
   },
   {
-   "t": 59991,
+   "t": 48345,
    "type": "difference_rating",
    "from_slot": 18,
    "to_slot": 16,
    "disagreement": 4
   },
   {
-   "t": 60015,
+   "t": 48399,
    "type": "difference_rating",
    "from_slot": 28,
    "to_slot": 13,
    "disagreement": 4
   },
   {
-   "t": 60027,
+   "t": 48453,
    "type": "chat_open",
    "chat": "c24",
    "from_slot": 19,
@@ -2836,56 +2836,56 @@
    "moment": "organic"
   },
   {
-   "t": 60029,
+   "t": 49125,
    "type": "difference_rating",
    "from_slot": 13,
    "to_slot": 5,
    "disagreement": 2
   },
   {
-   "t": 60035,
+   "t": 49179,
    "type": "difference_rating",
    "from_slot": 28,
    "to_slot": 6,
    "disagreement": 4
   },
   {
-   "t": 60048,
+   "t": 49233,
    "type": "difference_rating",
    "from_slot": 17,
    "to_slot": 8,
    "disagreement": 1
   },
   {
-   "t": 60051,
+   "t": 49287,
    "type": "difference_rating",
    "from_slot": 26,
    "to_slot": 13,
    "disagreement": 10
   },
   {
-   "t": 60071,
+   "t": 49341,
    "type": "difference_rating",
    "from_slot": 17,
    "to_slot": 3,
    "disagreement": 3
   },
   {
-   "t": 60084,
+   "t": 49395,
    "type": "difference_rating",
    "from_slot": 28,
    "to_slot": 8,
    "disagreement": 1
   },
   {
-   "t": 60108,
+   "t": 49448,
    "type": "difference_rating",
    "from_slot": 28,
    "to_slot": 31,
    "disagreement": 4
   },
   {
-   "t": 60163,
+   "t": 49502,
    "type": "message",
    "chat": "c24",
    "sender_slot": 19,
@@ -2894,175 +2894,175 @@
    "heat": "normal"
   },
   {
-   "t": 60177,
+   "t": 50177,
    "type": "difference_rating",
    "from_slot": 28,
    "to_slot": 0,
    "disagreement": 7
   },
   {
-   "t": 60187,
+   "t": 50231,
    "type": "difference_rating",
    "from_slot": 17,
    "to_slot": 19,
    "disagreement": 1
   },
   {
-   "t": 60187,
+   "t": 50285,
    "type": "difference_rating",
    "from_slot": 17,
    "to_slot": 31,
    "disagreement": 5
   },
   {
-   "t": 60200,
+   "t": 50339,
    "type": "difference_rating",
    "from_slot": 17,
    "to_slot": 1,
    "disagreement": 0
   },
   {
-   "t": 60226,
+   "t": 50393,
    "type": "difference_rating",
    "from_slot": 28,
    "to_slot": 1,
    "disagreement": 1
   },
   {
-   "t": 60245,
+   "t": 50447,
    "type": "difference_rating",
    "from_slot": 0,
    "to_slot": 18,
    "disagreement": 1
   },
   {
-   "t": 60248,
+   "t": 50501,
    "type": "difference_rating",
    "from_slot": 28,
    "to_slot": 27,
    "disagreement": 7
   },
   {
-   "t": 60272,
+   "t": 50555,
    "type": "difference_rating",
    "from_slot": 13,
    "to_slot": 17,
    "disagreement": 5
   },
   {
-   "t": 60282,
+   "t": 50609,
    "type": "difference_rating",
    "from_slot": 18,
    "to_slot": 31,
    "disagreement": 4
   },
   {
-   "t": 60342,
+   "t": 50663,
    "type": "difference_rating",
    "from_slot": 18,
    "to_slot": 8,
    "disagreement": 7
   },
   {
-   "t": 60346,
+   "t": 50717,
    "type": "difference_rating",
    "from_slot": 3,
    "to_slot": 13,
    "disagreement": 1
   },
   {
-   "t": 60383,
+   "t": 50771,
    "type": "difference_rating",
    "from_slot": 27,
    "to_slot": 17,
    "disagreement": 6
   },
   {
-   "t": 60417,
+   "t": 50825,
    "type": "difference_rating",
    "from_slot": 17,
    "to_slot": 32,
    "disagreement": 3
   },
   {
-   "t": 60467,
+   "t": 50879,
    "type": "difference_rating",
    "from_slot": 28,
    "to_slot": 3,
    "disagreement": 3
   },
   {
-   "t": 60555,
+   "t": 50933,
    "type": "difference_rating",
    "from_slot": 6,
    "to_slot": 17,
    "disagreement": 3
   },
   {
-   "t": 60555,
+   "t": 50987,
    "type": "difference_rating",
    "from_slot": 18,
    "to_slot": 27,
    "disagreement": 2
   },
   {
-   "t": 60561,
+   "t": 51041,
    "type": "difference_rating",
    "from_slot": 28,
    "to_slot": 2,
    "disagreement": 3
   },
   {
-   "t": 60586,
+   "t": 51096,
    "type": "difference_rating",
    "from_slot": 18,
    "to_slot": 7,
    "disagreement": 1
   },
   {
-   "t": 60602,
+   "t": 51150,
    "type": "difference_rating",
    "from_slot": 18,
    "to_slot": 5,
    "disagreement": 10
   },
   {
-   "t": 60605,
+   "t": 51204,
    "type": "difference_rating",
    "from_slot": 8,
    "to_slot": 17,
    "disagreement": 1
   },
   {
-   "t": 60613,
+   "t": 51258,
    "type": "difference_rating",
    "from_slot": 7,
    "to_slot": 18,
    "disagreement": 1
   },
   {
-   "t": 60646,
+   "t": 51312,
    "type": "difference_rating",
    "from_slot": 18,
    "to_slot": 13,
    "disagreement": 10
   },
   {
-   "t": 60701,
+   "t": 51366,
    "type": "difference_rating",
    "from_slot": 18,
    "to_slot": 6,
    "disagreement": 4
   },
   {
-   "t": 60842,
+   "t": 51420,
    "type": "difference_rating",
    "from_slot": 18,
    "to_slot": 25,
    "disagreement": 9
   },
   {
-   "t": 60867,
+   "t": 51475,
    "type": "rating",
    "chat": "c09",
    "from_slot": 2,
@@ -3072,28 +3072,28 @@
    "bridge": false
   },
   {
-   "t": 60911,
+   "t": 52152,
    "type": "difference_rating",
    "from_slot": 22,
    "to_slot": 28,
    "disagreement": 4
   },
   {
-   "t": 60917,
+   "t": 52207,
    "type": "difference_rating",
    "from_slot": 1,
    "to_slot": 18,
    "disagreement": 7
   },
   {
-   "t": 61102,
+   "t": 52261,
    "type": "difference_rating",
    "from_slot": 18,
    "to_slot": 32,
    "disagreement": 9
   },
   {
-   "t": 61215,
+   "t": 52315,
    "type": "rating",
    "chat": "c09",
    "from_slot": 26,
@@ -3103,14 +3103,14 @@
    "bridge": false
   },
   {
-   "t": 61245,
+   "t": 52994,
    "type": "difference_rating",
    "from_slot": 4,
    "to_slot": 18,
    "disagreement": 1
   },
   {
-   "t": 61301,
+   "t": 53049,
    "type": "message",
    "chat": "c00",
    "sender_slot": 3,
@@ -3120,35 +3120,35 @@
    "reading_seconds": 48
   },
   {
-   "t": 61336,
+   "t": 53729,
    "type": "difference_rating",
    "from_slot": 18,
    "to_slot": 24,
    "disagreement": 7
   },
   {
-   "t": 61439,
+   "t": 53783,
    "type": "difference_rating",
    "from_slot": 18,
    "to_slot": 23,
    "disagreement": 1
   },
   {
-   "t": 61455,
+   "t": 53838,
    "type": "difference_rating",
    "from_slot": 18,
    "to_slot": 19,
    "disagreement": 7
   },
   {
-   "t": 61555,
+   "t": 53892,
    "type": "difference_rating",
    "from_slot": 18,
    "to_slot": 3,
    "disagreement": 9
   },
   {
-   "t": 61555,
+   "t": 53947,
    "type": "message",
    "chat": "c14",
    "sender_slot": 31,
@@ -3158,14 +3158,14 @@
    "reading_seconds": 7
   },
   {
-   "t": 61616,
+   "t": 54629,
    "type": "difference_rating",
    "from_slot": 18,
    "to_slot": 30,
    "disagreement": 5
   },
   {
-   "t": 62256,
+   "t": 54683,
    "type": "message",
    "chat": "c13",
    "sender_slot": 3,
@@ -3175,13 +3175,13 @@
    "reading_seconds": 33
   },
   {
-   "t": 63471,
+   "t": 55366,
    "type": "opinion",
    "slot": 33,
    "text": "Auf dem Land brauchen wir die Netzwerke für Direktvermarktung. Mehr Regeln treffen auch kleine Betriebe wie meinen."
   },
   {
-   "t": 63542,
+   "t": 55777,
    "type": "message",
    "chat": "c17",
    "sender_slot": 31,
@@ -3191,14 +3191,14 @@
    "reading_seconds": 30
   },
   {
-   "t": 63757,
+   "t": 56462,
    "type": "difference_rating",
    "from_slot": 33,
    "to_slot": 18,
    "disagreement": 9
   },
   {
-   "t": 63823,
+   "t": 56516,
    "type": "chat_open",
    "chat": "c22",
    "from_slot": 4,
@@ -3206,7 +3206,7 @@
    "moment": "organic"
   },
   {
-   "t": 63848,
+   "t": 57202,
    "type": "message",
    "chat": "c01",
    "sender_slot": 5,
@@ -3216,42 +3216,42 @@
    "reading_seconds": 37
   },
   {
-   "t": 63932,
+   "t": 57889,
    "type": "difference_rating",
    "from_slot": 33,
    "to_slot": 2,
    "disagreement": 7
   },
   {
-   "t": 63937,
+   "t": 57945,
    "type": "difference_rating",
    "from_slot": 33,
    "to_slot": 23,
    "disagreement": 9
   },
   {
-   "t": 63945,
+   "t": 58000,
    "type": "difference_rating",
    "from_slot": 13,
    "to_slot": 33,
    "disagreement": 1
   },
   {
-   "t": 63956,
+   "t": 58055,
    "type": "difference_rating",
    "from_slot": 33,
    "to_slot": 0,
    "disagreement": 9
   },
   {
-   "t": 63989,
+   "t": 58110,
    "type": "difference_rating",
    "from_slot": 33,
    "to_slot": 28,
    "disagreement": 4
   },
   {
-   "t": 63993,
+   "t": 58165,
    "type": "message",
    "chat": "c22",
    "sender_slot": 4,
@@ -3260,14 +3260,14 @@
    "heat": "normal"
   },
   {
-   "t": 64177,
+   "t": 58853,
    "type": "difference_rating",
    "from_slot": 33,
    "to_slot": 13,
    "disagreement": 1
   },
   {
-   "t": 64288,
+   "t": 58908,
    "type": "message",
    "chat": "c15",
    "sender_slot": 27,
@@ -3277,77 +3277,77 @@
    "reading_seconds": 26
   },
   {
-   "t": 64312,
+   "t": 59598,
    "type": "difference_rating",
    "from_slot": 33,
    "to_slot": 24,
    "disagreement": 4
   },
   {
-   "t": 64355,
+   "t": 59653,
    "type": "difference_rating",
    "from_slot": 33,
    "to_slot": 6,
    "disagreement": 6
   },
   {
-   "t": 64375,
+   "t": 59708,
    "type": "difference_rating",
    "from_slot": 30,
    "to_slot": 33,
    "disagreement": 6
   },
   {
-   "t": 64396,
+   "t": 59764,
    "type": "difference_rating",
    "from_slot": 33,
    "to_slot": 5,
    "disagreement": 1
   },
   {
-   "t": 64515,
+   "t": 59819,
    "type": "difference_rating",
    "from_slot": 27,
    "to_slot": 33,
    "disagreement": 10
   },
   {
-   "t": 64598,
+   "t": 59874,
    "type": "difference_rating",
    "from_slot": 33,
    "to_slot": 16,
    "disagreement": 6
   },
   {
-   "t": 64630,
+   "t": 59929,
    "type": "difference_rating",
    "from_slot": 33,
    "to_slot": 26,
    "disagreement": 10
   },
   {
-   "t": 65067,
+   "t": 59985,
    "type": "difference_rating",
    "from_slot": 33,
    "to_slot": 1,
    "disagreement": 4
   },
   {
-   "t": 65188,
+   "t": 60040,
    "type": "difference_rating",
    "from_slot": 33,
    "to_slot": 25,
    "disagreement": 2
   },
   {
-   "t": 65200,
+   "t": 60095,
    "type": "difference_rating",
    "from_slot": 33,
    "to_slot": 32,
    "disagreement": 1
   },
   {
-   "t": 65244,
+   "t": 60150,
    "type": "rating",
    "chat": "c17",
    "from_slot": 31,
@@ -3357,27 +3357,27 @@
    "bridge": false
   },
   {
-   "t": 65450,
+   "t": 60842,
    "type": "difference_rating",
    "from_slot": 33,
    "to_slot": 27,
    "disagreement": 10
   },
   {
-   "t": 65538,
+   "t": 60897,
    "type": "difference_rating",
    "from_slot": 2,
    "to_slot": 33,
    "disagreement": 7
   },
   {
-   "t": 66295,
+   "t": 60953,
    "type": "opinion",
    "slot": 20,
    "text": "Upload-Filter und automatische Löschung treffen immer die Falschen. Gerichte müssen entscheiden, nicht Maschinen."
   },
   {
-   "t": 66712,
+   "t": 61368,
    "type": "rating",
    "chat": "c17",
    "from_slot": 0,
@@ -3387,7 +3387,7 @@
    "bridge": false
   },
   {
-   "t": 66763,
+   "t": 62062,
    "type": "message",
    "chat": "c24",
    "sender_slot": 5,
@@ -3397,42 +3397,42 @@
    "reading_seconds": 46
   },
   {
-   "t": 66782,
+   "t": 62756,
    "type": "difference_rating",
    "from_slot": 20,
    "to_slot": 30,
    "disagreement": 7
   },
   {
-   "t": 66811,
+   "t": 62812,
    "type": "difference_rating",
    "from_slot": 20,
    "to_slot": 31,
    "disagreement": 7
   },
   {
-   "t": 66814,
+   "t": 62867,
    "type": "difference_rating",
    "from_slot": 20,
    "to_slot": 27,
    "disagreement": 10
   },
   {
-   "t": 66828,
+   "t": 62923,
    "type": "difference_rating",
    "from_slot": 20,
    "to_slot": 1,
    "disagreement": 3
   },
   {
-   "t": 66924,
+   "t": 62978,
    "type": "difference_rating",
    "from_slot": 20,
    "to_slot": 28,
    "disagreement": 5
   },
   {
-   "t": 66993,
+   "t": 63034,
    "type": "message",
    "chat": "c22",
    "sender_slot": 13,
@@ -3442,91 +3442,91 @@
    "reading_seconds": 16
   },
   {
-   "t": 67199,
+   "t": 63730,
    "type": "difference_rating",
    "from_slot": 20,
    "to_slot": 18,
    "disagreement": 9
   },
   {
-   "t": 67213,
+   "t": 63786,
    "type": "difference_rating",
    "from_slot": 20,
    "to_slot": 7,
    "disagreement": 9
   },
   {
-   "t": 67275,
+   "t": 63841,
    "type": "difference_rating",
    "from_slot": 20,
    "to_slot": 16,
    "disagreement": 6
   },
   {
-   "t": 67486,
+   "t": 63897,
    "type": "difference_rating",
    "from_slot": 20,
    "to_slot": 13,
    "disagreement": 2
   },
   {
-   "t": 67530,
+   "t": 63953,
    "type": "difference_rating",
    "from_slot": 16,
    "to_slot": 20,
    "disagreement": 6
   },
   {
-   "t": 67540,
+   "t": 64008,
    "type": "difference_rating",
    "from_slot": 20,
    "to_slot": 24,
    "disagreement": 3
   },
   {
-   "t": 67578,
+   "t": 64064,
    "type": "difference_rating",
    "from_slot": 20,
    "to_slot": 32,
    "disagreement": 1
   },
   {
-   "t": 67647,
+   "t": 64120,
    "type": "difference_rating",
    "from_slot": 20,
    "to_slot": 8,
    "disagreement": 4
   },
   {
-   "t": 67832,
+   "t": 64176,
    "type": "difference_rating",
    "from_slot": 20,
    "to_slot": 3,
    "disagreement": 2
   },
   {
-   "t": 67875,
+   "t": 64231,
    "type": "difference_rating",
    "from_slot": 4,
    "to_slot": 20,
    "disagreement": 9
   },
   {
-   "t": 67919,
+   "t": 64287,
    "type": "difference_rating",
    "from_slot": 20,
    "to_slot": 26,
    "disagreement": 10
   },
   {
-   "t": 67938,
+   "t": 64343,
    "type": "difference_rating",
    "from_slot": 2,
    "to_slot": 20,
    "disagreement": 6
   },
   {
-   "t": 68021,
+   "t": 64399,
    "type": "message",
    "chat": "c00",
    "sender_slot": 0,
@@ -3536,34 +3536,34 @@
    "reading_seconds": 47
   },
   {
-   "t": 68268,
+   "t": 65097,
    "type": "opinion",
    "slot": 14,
    "text": "Der Algorithmus belohnt Empörung. Plattformen sollten verpflichtet werden, auch chronologische Feeds anzubieten."
   },
   {
-   "t": 68292,
+   "t": 65516,
    "type": "difference_rating",
    "from_slot": 28,
    "to_slot": 20,
    "disagreement": 4
   },
   {
-   "t": 68358,
+   "t": 65572,
    "type": "difference_rating",
    "from_slot": 20,
    "to_slot": 0,
    "disagreement": 9
   },
   {
-   "t": 68425,
+   "t": 65627,
    "type": "difference_rating",
    "from_slot": 20,
    "to_slot": 4,
    "disagreement": 9
   },
   {
-   "t": 68496,
+   "t": 65683,
    "type": "message",
    "chat": "c13",
    "sender_slot": 31,
@@ -3573,28 +3573,28 @@
    "reading_seconds": 43
   },
   {
-   "t": 68552,
+   "t": 66383,
    "type": "difference_rating",
    "from_slot": 14,
    "to_slot": 0,
    "disagreement": 4
   },
   {
-   "t": 68639,
+   "t": 66439,
    "type": "difference_rating",
    "from_slot": 14,
    "to_slot": 26,
    "disagreement": 4
   },
   {
-   "t": 68701,
+   "t": 66495,
    "type": "difference_rating",
    "from_slot": 2,
    "to_slot": 14,
    "disagreement": 1
   },
   {
-   "t": 68748,
+   "t": 66551,
    "type": "rating",
    "chat": "c13",
    "from_slot": 31,
@@ -3604,28 +3604,28 @@
    "bridge": false
   },
   {
-   "t": 68753,
+   "t": 67252,
    "type": "difference_rating",
    "from_slot": 14,
    "to_slot": 13,
    "disagreement": 7
   },
   {
-   "t": 68756,
+   "t": 67308,
    "type": "difference_rating",
    "from_slot": 14,
    "to_slot": 7,
    "disagreement": 5
   },
   {
-   "t": 68787,
+   "t": 67364,
    "type": "difference_rating",
    "from_slot": 14,
    "to_slot": 30,
    "disagreement": 2
   },
   {
-   "t": 68818,
+   "t": 67420,
    "type": "rating",
    "chat": "c13",
    "from_slot": 3,
@@ -3635,63 +3635,63 @@
    "bridge": true
   },
   {
-   "t": 69260,
+   "t": 68122,
    "type": "difference_rating",
    "from_slot": 14,
    "to_slot": 23,
    "disagreement": 5
   },
   {
-   "t": 69407,
+   "t": 68178,
    "type": "difference_rating",
    "from_slot": 26,
    "to_slot": 14,
    "disagreement": 4
   },
   {
-   "t": 69454,
+   "t": 68234,
    "type": "difference_rating",
    "from_slot": 14,
    "to_slot": 24,
    "disagreement": 3
   },
   {
-   "t": 69607,
+   "t": 68290,
    "type": "difference_rating",
    "from_slot": 14,
    "to_slot": 33,
    "disagreement": 7
   },
   {
-   "t": 69631,
+   "t": 68347,
    "type": "difference_rating",
    "from_slot": 13,
    "to_slot": 14,
    "disagreement": 7
   },
   {
-   "t": 69636,
+   "t": 68403,
    "type": "difference_rating",
    "from_slot": 14,
    "to_slot": 16,
    "disagreement": 1
   },
   {
-   "t": 69766,
+   "t": 68459,
    "type": "difference_rating",
    "from_slot": 14,
    "to_slot": 27,
    "disagreement": 4
   },
   {
-   "t": 70464,
+   "t": 68515,
    "type": "difference_rating",
    "from_slot": 17,
    "to_slot": 14,
    "disagreement": 4
   },
   {
-   "t": 70568,
+   "t": 68572,
    "type": "message",
    "chat": "c01",
    "sender_slot": 2,
@@ -3701,7 +3701,7 @@
    "reading_seconds": 47
   },
   {
-   "t": 71400,
+   "t": 69275,
    "type": "chat_open",
    "chat": "c12",
    "from_slot": 28,
@@ -3709,7 +3709,7 @@
    "moment": "organic"
   },
   {
-   "t": 71539,
+   "t": 69979,
    "type": "message",
    "chat": "c23",
    "sender_slot": 30,
@@ -3719,7 +3719,7 @@
    "reading_seconds": 51
   },
   {
-   "t": 71618,
+   "t": 70685,
    "type": "message",
    "chat": "c12",
    "sender_slot": 28,
@@ -3728,7 +3728,7 @@
    "heat": "normal"
   },
   {
-   "t": 72857,
+   "t": 71391,
    "type": "message",
    "chat": "c11",
    "sender_slot": 4,
@@ -3738,7 +3738,7 @@
    "reading_seconds": 60
   },
   {
-   "t": 73451,
+   "t": 72098,
    "type": "chat_open",
    "chat": "c08",
    "from_slot": 7,
@@ -3746,7 +3746,7 @@
    "moment": "organic"
   },
   {
-   "t": 73610,
+   "t": 72806,
    "type": "message",
    "chat": "c08",
    "sender_slot": 7,
@@ -3755,7 +3755,7 @@
    "heat": "normal"
   },
   {
-   "t": 74683,
+   "t": 73515,
    "type": "message",
    "chat": "c24",
    "sender_slot": 19,
@@ -3765,7 +3765,7 @@
    "reading_seconds": 57
   },
   {
-   "t": 75014,
+   "t": 74225,
    "type": "message",
    "chat": "c15",
    "sender_slot": 8,
@@ -3775,13 +3775,13 @@
    "reading_seconds": 36
   },
   {
-   "t": 75085,
+   "t": 74936,
    "type": "opinion",
    "slot": 12,
    "text": "Lokaler Journalismus stirbt, während Plattformen die Werbegelder abschöpfen. Eine Plattformabgabe für Medienförderung wäre fair."
   },
   {
-   "t": 75188,
+   "t": 75362,
    "type": "rating",
    "chat": "c15",
    "from_slot": 27,
@@ -3791,28 +3791,28 @@
    "bridge": true
   },
   {
-   "t": 75323,
+   "t": 76074,
    "type": "difference_rating",
    "from_slot": 12,
    "to_slot": 6,
    "disagreement": 4
   },
   {
-   "t": 75379,
+   "t": 76131,
    "type": "difference_rating",
    "from_slot": 12,
    "to_slot": 8,
    "disagreement": 7
   },
   {
-   "t": 75417,
+   "t": 76189,
    "type": "difference_rating",
    "from_slot": 12,
    "to_slot": 7,
    "disagreement": 2
   },
   {
-   "t": 75547,
+   "t": 76246,
    "type": "rating",
    "chat": "c15",
    "from_slot": 8,
@@ -3822,56 +3822,56 @@
    "bridge": true
   },
   {
-   "t": 75579,
+   "t": 76959,
    "type": "difference_rating",
    "from_slot": 27,
    "to_slot": 12,
    "disagreement": 0
   },
   {
-   "t": 75650,
+   "t": 77016,
    "type": "difference_rating",
    "from_slot": 12,
    "to_slot": 1,
    "disagreement": 7
   },
   {
-   "t": 75767,
+   "t": 77073,
    "type": "difference_rating",
    "from_slot": 12,
    "to_slot": 19,
    "disagreement": 7
   },
   {
-   "t": 75955,
+   "t": 77130,
    "type": "difference_rating",
    "from_slot": 12,
    "to_slot": 28,
    "disagreement": 7
   },
   {
-   "t": 76073,
+   "t": 77187,
    "type": "difference_rating",
    "from_slot": 12,
    "to_slot": 5,
    "disagreement": 9
   },
   {
-   "t": 76240,
+   "t": 77244,
    "type": "difference_rating",
    "from_slot": 12,
    "to_slot": 24,
    "disagreement": 6
   },
   {
-   "t": 76249,
+   "t": 77301,
    "type": "difference_rating",
    "from_slot": 12,
    "to_slot": 31,
    "disagreement": 4
   },
   {
-   "t": 76301,
+   "t": 77359,
    "type": "message",
    "chat": "c00",
    "sender_slot": 3,
@@ -3881,21 +3881,21 @@
    "reading_seconds": 60
   },
   {
-   "t": 76386,
+   "t": 78073,
    "type": "difference_rating",
    "from_slot": 12,
    "to_slot": 18,
    "disagreement": 1
   },
   {
-   "t": 76425,
+   "t": 78130,
    "type": "difference_rating",
    "from_slot": 12,
    "to_slot": 13,
    "disagreement": 10
   },
   {
-   "t": 76658,
+   "t": 78187,
    "type": "message",
    "chat": "c12",
    "sender_slot": 18,
@@ -3905,14 +3905,14 @@
    "reading_seconds": 33
   },
   {
-   "t": 76692,
+   "t": 78903,
    "type": "difference_rating",
    "from_slot": 4,
    "to_slot": 12,
    "disagreement": 1
   },
   {
-   "t": 76723,
+   "t": 78960,
    "type": "message",
    "chat": "c24",
    "sender_slot": 5,
@@ -3922,7 +3922,7 @@
    "reading_seconds": 8
   },
   {
-   "t": 76741,
+   "t": 79677,
    "type": "rating",
    "chat": "c00",
    "from_slot": 0,
@@ -3932,14 +3932,14 @@
    "bridge": false
   },
   {
-   "t": 76834,
+   "t": 80394,
    "type": "difference_rating",
    "from_slot": 22,
    "to_slot": 12,
    "disagreement": 4
   },
   {
-   "t": 76861,
+   "t": 80451,
    "type": "rating",
    "chat": "c00",
    "from_slot": 3,
@@ -3949,14 +3949,14 @@
    "bridge": false
   },
   {
-   "t": 77054,
+   "t": 81170,
    "type": "difference_rating",
    "from_slot": 24,
    "to_slot": 12,
    "disagreement": 7
   },
   {
-   "t": 77227,
+   "t": 81227,
    "type": "message",
    "chat": "c14",
    "sender_slot": 25,
@@ -3966,7 +3966,7 @@
    "reading_seconds": 28
   },
   {
-   "t": 77835,
+   "t": 81946,
    "type": "message",
    "chat": "c08",
    "sender_slot": 32,
@@ -3976,7 +3976,7 @@
    "reading_seconds": 17
   },
   {
-   "t": 78608,
+   "t": 82666,
    "type": "message",
    "chat": "c01",
    "sender_slot": 5,
@@ -3986,7 +3986,7 @@
    "reading_seconds": 58
   },
   {
-   "t": 80057,
+   "t": 83387,
    "type": "message",
    "chat": "c11",
    "sender_slot": 30,
@@ -3996,17 +3996,7 @@
    "reading_seconds": 51
   },
   {
-   "t": 82688,
-   "type": "message",
-   "chat": "c01",
-   "sender_slot": 2,
-   "text": "Ich verstehe ja, dass Gründer Freiraum brauchen, aber nicht auf Kosten von 12-Jährigen. Ohne harte Altersgrenzen wird Social Media niemals ein positiver Ort, sondern bleibt eine manipulative Werbeschleuder.",
-   "warm": false,
-   "heat": "high",
-   "reading_seconds": 25
-  },
-  {
-   "t": 82771,
+   "t": 84831,
    "type": "message",
    "chat": "c22",
    "sender_slot": 4,
@@ -4016,7 +4006,17 @@
    "reading_seconds": 29
   },
   {
-   "t": 82808,
+   "t": 85186,
+   "type": "message",
+   "chat": "c01",
+   "sender_slot": 2,
+   "text": "Ich verstehe ja, dass Gründer Freiraum brauchen, aber nicht auf Kosten von 12-Jährigen. Ohne harte Altersgrenzen wird Social Media niemals ein positiver Ort, sondern bleibt eine manipulative Werbeschleuder.",
+   "warm": false,
+   "heat": "high",
+   "reading_seconds": 25
+  },
+  {
+   "t": 85554,
    "type": "rating",
    "chat": "c01",
    "from_slot": 2,
@@ -4026,7 +4026,7 @@
    "bridge": false
   },
   {
-   "t": 82813,
+   "t": 86278,
    "type": "rating",
    "chat": "c01",
    "from_slot": 5,
@@ -4036,7 +4036,7 @@
    "bridge": false
   },
   {
-   "t": 82843,
+   "t": 87003,
    "type": "message",
    "chat": "c24",
    "sender_slot": 19,
@@ -4046,7 +4046,7 @@
    "reading_seconds": 42
   },
   {
-   "t": 82874,
+   "t": 87728,
    "type": "message",
    "chat": "c23",
    "sender_slot": 23,
@@ -4056,7 +4056,7 @@
    "reading_seconds": 52
   },
   {
-   "t": 83481,
+   "t": 88455,
    "type": "message",
    "chat": "c12",
    "sender_slot": 28,
@@ -4066,7 +4066,7 @@
    "reading_seconds": 45
   },
   {
-   "t": 84322,
+   "t": 89182,
    "type": "chat_open",
    "chat": "c20",
    "from_slot": 3,
@@ -4074,7 +4074,7 @@
    "moment": "organic"
   },
   {
-   "t": 84431,
+   "t": 89910,
    "type": "message",
    "chat": "c20",
    "sender_slot": 3,
@@ -4083,7 +4083,7 @@
    "heat": "normal"
   },
   {
-   "t": 86803,
+   "t": 90638,
    "type": "message",
    "chat": "c24",
    "sender_slot": 5,
@@ -4093,7 +4093,7 @@
    "reading_seconds": 24
   },
   {
-   "t": 87349,
+   "t": 91368,
    "type": "message",
    "chat": "c14",
    "sender_slot": 31,
@@ -4103,7 +4103,7 @@
    "reading_seconds": 45
   },
   {
-   "t": 87597,
+   "t": 92098,
    "type": "chat_open",
    "chat": "c02",
    "from_slot": 18,
@@ -4111,7 +4111,7 @@
    "moment": "shock"
   },
   {
-   "t": 87608,
+   "t": 92829,
    "type": "message",
    "chat": "c01",
    "sender_slot": 5,
@@ -4121,7 +4121,7 @@
    "reading_seconds": 32
   },
   {
-   "t": 87675,
+   "t": 93561,
    "type": "rating",
    "chat": "c14",
    "from_slot": 25,
@@ -4131,7 +4131,7 @@
    "bridge": false
   },
   {
-   "t": 87783,
+   "t": 94293,
    "type": "message",
    "chat": "c02",
    "sender_slot": 18,
@@ -4140,7 +4140,7 @@
    "heat": "normal"
   },
   {
-   "t": 87897,
+   "t": 95026,
    "type": "rating",
    "chat": "c14",
    "from_slot": 31,
@@ -4150,7 +4150,7 @@
    "bridge": false
   },
   {
-   "t": 87949,
+   "t": 95760,
    "type": "message",
    "chat": "c08",
    "sender_slot": 7,
@@ -4160,7 +4160,7 @@
    "reading_seconds": 35
   },
   {
-   "t": 88651,
+   "t": 96495,
    "type": "message",
    "chat": "c22",
    "sender_slot": 13,
@@ -4170,7 +4170,7 @@
    "reading_seconds": 40
   },
   {
-   "t": 88688,
+   "t": 97230,
    "type": "rating",
    "chat": "c24",
    "from_slot": 19,
@@ -4180,7 +4180,7 @@
    "bridge": false
   },
   {
-   "t": 89322,
+   "t": 97966,
    "type": "message",
    "chat": "c11",
    "sender_slot": 4,
@@ -4190,7 +4190,7 @@
    "reading_seconds": 23
   },
   {
-   "t": 89721,
+   "t": 98703,
    "type": "message",
    "chat": "c12",
    "sender_slot": 18,
@@ -4200,7 +4200,7 @@
    "reading_seconds": 43
   },
   {
-   "t": 90009,
+   "t": 99441,
    "type": "rating",
    "chat": "c12",
    "from_slot": 28,
@@ -4210,7 +4210,7 @@
    "bridge": false
   },
   {
-   "t": 90022,
+   "t": 100179,
    "type": "rating",
    "chat": "c12",
    "from_slot": 18,
@@ -4220,7 +4220,7 @@
    "bridge": false
   },
   {
-   "t": 90608,
+   "t": 100918,
    "type": "message",
    "chat": "c01",
    "sender_slot": 2,
@@ -4230,7 +4230,7 @@
    "reading_seconds": 16
   },
   {
-   "t": 90863,
+   "t": 101658,
    "type": "rating",
    "chat": "c01",
    "from_slot": 2,
@@ -4240,7 +4240,7 @@
    "bridge": false
   },
   {
-   "t": 91119,
+   "t": 102398,
    "type": "rating",
    "chat": "c01",
    "from_slot": 5,
@@ -4250,7 +4250,7 @@
    "bridge": false
   },
   {
-   "t": 91289,
+   "t": 103139,
    "type": "message",
    "chat": "c20",
    "sender_slot": 12,
@@ -4260,7 +4260,7 @@
    "reading_seconds": 44
   },
   {
-   "t": 91309,
+   "t": 103881,
    "type": "message",
    "chat": "c08",
    "sender_slot": 32,
@@ -4270,7 +4270,7 @@
    "reading_seconds": 19
   },
   {
-   "t": 93109,
+   "t": 106401,
    "type": "message",
    "chat": "c08",
    "sender_slot": 7,
@@ -4280,7 +4280,7 @@
    "reading_seconds": 6
   },
   {
-   "t": 93204,
+   "t": 106431,
    "type": "rating",
    "chat": "c08",
    "from_slot": 32,
@@ -4290,7 +4290,7 @@
    "bridge": false
   },
   {
-   "t": 93221,
+   "t": 106431,
    "type": "rating",
    "chat": "c08",
    "from_slot": 7,
@@ -4300,7 +4300,7 @@
    "bridge": false
   },
   {
-   "t": 94531,
+   "t": 106855,
    "type": "message",
    "chat": "c22",
    "sender_slot": 4,
@@ -4310,7 +4310,7 @@
    "reading_seconds": 40
   },
   {
-   "t": 94590,
+   "t": 107600,
    "type": "rating",
    "chat": "c22",
    "from_slot": 4,
@@ -4320,7 +4320,7 @@
    "bridge": false
   },
   {
-   "t": 94875,
+   "t": 108346,
    "type": "rating",
    "chat": "c22",
    "from_slot": 13,
@@ -4330,7 +4330,7 @@
    "bridge": false
   },
   {
-   "t": 95069,
+   "t": 109093,
    "type": "rating",
    "chat": "c24",
    "from_slot": 5,
@@ -4340,7 +4340,7 @@
    "bridge": false
   },
   {
-   "t": 95372,
+   "t": 109840,
    "type": "message",
    "chat": "c23",
    "sender_slot": 30,
@@ -4350,7 +4350,7 @@
    "reading_seconds": 25
   },
   {
-   "t": 95943,
+   "t": 110588,
    "type": "message",
    "chat": "c02",
    "sender_slot": 3,
@@ -4360,7 +4360,7 @@
    "reading_seconds": 59
   },
   {
-   "t": 96998,
+   "t": 111336,
    "type": "chat_open",
    "chat": "c03",
    "from_slot": 18,
@@ -4368,7 +4368,7 @@
    "moment": "shock"
   },
   {
-   "t": 97170,
+   "t": 112085,
    "type": "message",
    "chat": "c03",
    "sender_slot": 18,
@@ -4377,7 +4377,7 @@
    "heat": "normal"
   },
   {
-   "t": 97641,
+   "t": 112835,
    "type": "message",
    "chat": "c12",
    "sender_slot": 28,
@@ -4387,7 +4387,7 @@
    "reading_seconds": 57
   },
   {
-   "t": 99183,
+   "t": 113586,
    "type": "message",
    "chat": "c14",
    "sender_slot": 25,
@@ -4397,7 +4397,7 @@
    "reading_seconds": 22
   },
   {
-   "t": 99535,
+   "t": 114337,
    "type": "rating",
    "chat": "c11",
    "from_slot": 30,
@@ -4407,7 +4407,7 @@
    "bridge": false
   },
   {
-   "t": 99791,
+   "t": 115089,
    "type": "rating",
    "chat": "c11",
    "from_slot": 4,
@@ -4417,7 +4417,7 @@
    "bridge": false
   },
   {
-   "t": 100401,
+   "t": 115841,
    "type": "message",
    "chat": "c12",
    "sender_slot": 18,
@@ -4427,7 +4427,7 @@
    "reading_seconds": 14
   },
   {
-   "t": 100771,
+   "t": 116594,
    "type": "message",
    "chat": "c22",
    "sender_slot": 13,
@@ -4437,7 +4437,7 @@
    "reading_seconds": 43
   },
   {
-   "t": 102741,
+   "t": 117348,
    "type": "message",
    "chat": "c20",
    "sender_slot": 3,
@@ -4447,7 +4447,7 @@
    "reading_seconds": 57
   },
   {
-   "t": 102793,
+   "t": 118102,
    "type": "rating",
    "chat": "c20",
    "from_slot": 3,
@@ -4457,7 +4457,7 @@
    "bridge": false
   },
   {
-   "t": 103032,
+   "t": 118857,
    "type": "message",
    "chat": "c23",
    "sender_slot": 23,
@@ -4467,7 +4467,7 @@
    "reading_seconds": 21
   },
   {
-   "t": 103203,
+   "t": 119613,
    "type": "message",
    "chat": "c08",
    "sender_slot": 32,
@@ -4477,7 +4477,7 @@
    "reading_seconds": 56
   },
   {
-   "t": 103206,
+   "t": 120369,
    "type": "rating",
    "chat": "c20",
    "from_slot": 12,
@@ -4487,7 +4487,7 @@
    "bridge": false
   },
   {
-   "t": 105921,
+   "t": 121126,
    "type": "message",
    "chat": "c12",
    "sender_slot": 28,
@@ -4497,7 +4497,7 @@
    "reading_seconds": 37
   },
   {
-   "t": 106161,
+   "t": 121883,
    "type": "rating",
    "chat": "c12",
    "from_slot": 28,
@@ -4507,7 +4507,7 @@
    "bridge": false
   },
   {
-   "t": 106422,
+   "t": 122642,
    "type": "rating",
    "chat": "c12",
    "from_slot": 18,
@@ -4517,7 +4517,7 @@
    "bridge": true
   },
   {
-   "t": 107794,
+   "t": 123400,
    "type": "message",
    "chat": "c02",
    "sender_slot": 18,
@@ -4527,7 +4527,7 @@
    "reading_seconds": 21
   },
   {
-   "t": 107827,
+   "t": 124160,
    "type": "message",
    "chat": "c03",
    "sender_slot": 7,
@@ -4537,7 +4537,7 @@
    "reading_seconds": 8
   },
   {
-   "t": 108451,
+   "t": 124919,
    "type": "message",
    "chat": "c22",
    "sender_slot": 4,
@@ -4547,7 +4547,7 @@
    "reading_seconds": 55
   },
   {
-   "t": 111113,
+   "t": 125680,
    "type": "message",
    "chat": "c14",
    "sender_slot": 31,
@@ -4557,7 +4557,7 @@
    "reading_seconds": 20
   },
   {
-   "t": 111219,
+   "t": 126441,
    "type": "rating",
    "chat": "c14",
    "from_slot": 31,
@@ -4567,7 +4567,7 @@
    "bridge": false
   },
   {
-   "t": 111370,
+   "t": 127203,
    "type": "message",
    "chat": "c20",
    "sender_slot": 12,
@@ -4577,7 +4577,7 @@
    "reading_seconds": 50
   },
   {
-   "t": 111539,
+   "t": 127965,
    "type": "rating",
    "chat": "c14",
    "from_slot": 25,
@@ -4587,7 +4587,7 @@
    "bridge": false
   },
   {
-   "t": 111800,
+   "t": 128728,
    "type": "rating",
    "chat": "c20",
    "from_slot": 12,
@@ -4597,7 +4597,7 @@
    "bridge": false
   },
   {
-   "t": 111901,
+   "t": 129492,
    "type": "rating",
    "chat": "c20",
    "from_slot": 3,
@@ -4607,7 +4607,7 @@
    "bridge": false
   },
   {
-   "t": 112053,
+   "t": 130256,
    "type": "rating",
    "chat": "c23",
    "from_slot": 30,
@@ -4617,7 +4617,7 @@
    "bridge": false
   },
   {
-   "t": 112203,
+   "t": 131020,
    "type": "rating",
    "chat": "c23",
    "from_slot": 23,
@@ -4627,7 +4627,7 @@
    "bridge": false
   },
   {
-   "t": 112987,
+   "t": 131786,
    "type": "message",
    "chat": "c03",
    "sender_slot": 18,
@@ -4637,13 +4637,13 @@
    "reading_seconds": 34
   },
   {
-   "t": 113395,
+   "t": 132551,
    "type": "opinion",
    "slot": 34,
    "text": "Kunst und Satire leiden unter Löschalgorithmen. Regulierung muss künstlerische Freiheit ausdrücklich schützen."
   },
   {
-   "t": 113434,
+   "t": 133011,
    "type": "message",
    "chat": "c02",
    "sender_slot": 3,
@@ -4653,119 +4653,119 @@
    "reading_seconds": 38
   },
   {
-   "t": 113796,
+   "t": 133778,
    "type": "difference_rating",
    "from_slot": 34,
    "to_slot": 33,
    "disagreement": 2
   },
   {
-   "t": 113841,
+   "t": 133839,
    "type": "difference_rating",
    "from_slot": 34,
    "to_slot": 7,
    "disagreement": 9
   },
   {
-   "t": 113950,
+   "t": 133901,
    "type": "difference_rating",
    "from_slot": 34,
    "to_slot": 5,
    "disagreement": 2
   },
   {
-   "t": 113999,
+   "t": 133962,
    "type": "difference_rating",
    "from_slot": 34,
    "to_slot": 3,
    "disagreement": 2
   },
   {
-   "t": 114037,
+   "t": 134023,
    "type": "difference_rating",
    "from_slot": 20,
    "to_slot": 34,
    "disagreement": 1
   },
   {
-   "t": 114183,
+   "t": 134085,
    "type": "difference_rating",
    "from_slot": 34,
    "to_slot": 1,
    "disagreement": 4
   },
   {
-   "t": 114261,
+   "t": 134146,
    "type": "difference_rating",
    "from_slot": 34,
    "to_slot": 24,
    "disagreement": 4
   },
   {
-   "t": 114364,
+   "t": 134208,
    "type": "difference_rating",
    "from_slot": 34,
    "to_slot": 30,
    "disagreement": 6
   },
   {
-   "t": 114372,
+   "t": 134269,
    "type": "difference_rating",
    "from_slot": 30,
    "to_slot": 34,
    "disagreement": 7
   },
   {
-   "t": 114551,
+   "t": 134330,
    "type": "difference_rating",
    "from_slot": 34,
    "to_slot": 26,
    "disagreement": 9
   },
   {
-   "t": 114633,
+   "t": 134392,
    "type": "difference_rating",
    "from_slot": 2,
    "to_slot": 34,
    "disagreement": 6
   },
   {
-   "t": 114704,
+   "t": 134453,
    "type": "difference_rating",
    "from_slot": 34,
    "to_slot": 27,
    "disagreement": 9
   },
   {
-   "t": 114845,
+   "t": 134514,
    "type": "difference_rating",
    "from_slot": 34,
    "to_slot": 28,
    "disagreement": 4
   },
   {
-   "t": 114972,
+   "t": 134576,
    "type": "difference_rating",
    "from_slot": 34,
    "to_slot": 14,
    "disagreement": 7
   },
   {
-   "t": 115022,
+   "t": 134637,
    "type": "difference_rating",
    "from_slot": 34,
    "to_slot": 6,
    "disagreement": 6
   },
   {
-   "t": 115393,
+   "t": 134699,
    "type": "difference_rating",
    "from_slot": 3,
    "to_slot": 34,
    "disagreement": 1
   },
   {
-   "t": 115411,
+   "t": 134760,
    "type": "message",
    "chat": "c22",
    "sender_slot": 13,
@@ -4775,7 +4775,7 @@
    "reading_seconds": 49
   },
   {
-   "t": 115474,
+   "t": 135531,
    "type": "message",
    "chat": "c02",
    "sender_slot": 18,
@@ -4785,7 +4785,7 @@
    "reading_seconds": 8
   },
   {
-   "t": 115674,
+   "t": 136297,
    "type": "rating",
    "chat": "c22",
    "from_slot": 13,
@@ -4795,7 +4795,7 @@
    "bridge": true
   },
   {
-   "t": 115951,
+   "t": 137066,
    "type": "rating",
    "chat": "c22",
    "from_slot": 4,
@@ -4805,7 +4805,7 @@
    "bridge": true
   },
   {
-   "t": 115989,
+   "t": 137836,
    "type": "rating",
    "chat": "c02",
    "from_slot": 18,
@@ -4815,7 +4815,7 @@
    "bridge": false
   },
   {
-   "t": 117274,
+   "t": 138606,
    "type": "message",
    "chat": "c02",
    "sender_slot": 3,
@@ -4825,7 +4825,7 @@
    "reading_seconds": 6
   },
   {
-   "t": 117301,
+   "t": 139377,
    "type": "rating",
    "chat": "c02",
    "from_slot": 3,
@@ -4835,7 +4835,7 @@
    "bridge": false
   },
   {
-   "t": 119947,
+   "t": 140148,
    "type": "message",
    "chat": "c03",
    "sender_slot": 7,
@@ -4845,7 +4845,7 @@
    "reading_seconds": 49
   },
   {
-   "t": 120301,
+   "t": 140920,
    "type": "chat_open",
    "chat": "c25",
    "from_slot": 34,
@@ -4853,7 +4853,7 @@
    "moment": "organic"
   },
   {
-   "t": 120378,
+   "t": 141693,
    "type": "message",
    "chat": "c25",
    "sender_slot": 34,
@@ -4862,7 +4862,7 @@
    "heat": "high"
   },
   {
-   "t": 121188,
+   "t": 142466,
    "type": "message",
    "chat": "c08",
    "sender_slot": 7,
@@ -4872,7 +4872,7 @@
    "reading_seconds": 46
   },
   {
-   "t": 121273,
+   "t": 143240,
    "type": "rating",
    "chat": "c08",
    "from_slot": 7,
@@ -4882,7 +4882,7 @@
    "bridge": true
   },
   {
-   "t": 121479,
+   "t": 144014,
    "type": "rating",
    "chat": "c08",
    "from_slot": 32,
@@ -4892,7 +4892,7 @@
    "bridge": true
   },
   {
-   "t": 123338,
+   "t": 144789,
    "type": "message",
    "chat": "c02",
    "sender_slot": 18,
@@ -4902,7 +4902,7 @@
    "reading_seconds": 25
   },
   {
-   "t": 125658,
+   "t": 145564,
    "type": "message",
    "chat": "c25",
    "sender_slot": 1,
@@ -4912,7 +4912,7 @@
    "reading_seconds": 35
   },
   {
-   "t": 126307,
+   "t": 146340,
    "type": "message",
    "chat": "c03",
    "sender_slot": 18,
@@ -4922,124 +4922,124 @@
    "reading_seconds": 44
   },
   {
-   "t": 127575,
+   "t": 147116,
    "type": "opinion",
    "slot": 29,
    "text": "Man regelt Spiele-Mechaniken, nicht Inhalte. Lootboxen wurden reguliert — warum nicht endlose Scroll-Mechaniken?"
   },
   {
-   "t": 128004,
+   "t": 147582,
    "type": "difference_rating",
    "from_slot": 29,
    "to_slot": 20,
    "disagreement": 6
   },
   {
-   "t": 128084,
+   "t": 147644,
    "type": "difference_rating",
    "from_slot": 29,
    "to_slot": 5,
    "disagreement": 7
   },
   {
-   "t": 128138,
+   "t": 147706,
    "type": "difference_rating",
    "from_slot": 29,
    "to_slot": 6,
    "disagreement": 1
   },
   {
-   "t": 128388,
+   "t": 147769,
    "type": "difference_rating",
    "from_slot": 29,
    "to_slot": 23,
    "disagreement": 4
   },
   {
-   "t": 128531,
+   "t": 147831,
    "type": "difference_rating",
    "from_slot": 29,
    "to_slot": 26,
    "disagreement": 4
   },
   {
-   "t": 128551,
+   "t": 147893,
    "type": "difference_rating",
    "from_slot": 1,
    "to_slot": 29,
    "disagreement": 4
   },
   {
-   "t": 128562,
+   "t": 147955,
    "type": "difference_rating",
    "from_slot": 29,
    "to_slot": 14,
    "disagreement": 0
   },
   {
-   "t": 128631,
+   "t": 148017,
    "type": "difference_rating",
    "from_slot": 29,
    "to_slot": 34,
    "disagreement": 7
   },
   {
-   "t": 128700,
+   "t": 148079,
    "type": "opinion",
    "slot": 21,
    "text": "Die Debattenkultur leidet. Vielleicht brauchen wir weniger Regeln und mehr Verpflichtung zu echter Gegenrede auf den Plattformen."
   },
   {
-   "t": 128891,
+   "t": 148546,
    "type": "difference_rating",
    "from_slot": 21,
    "to_slot": 0,
    "disagreement": 7
   },
   {
-   "t": 128958,
+   "t": 148608,
    "type": "difference_rating",
    "from_slot": 29,
    "to_slot": 12,
    "disagreement": 3
   },
   {
-   "t": 129098,
+   "t": 148670,
    "type": "difference_rating",
    "from_slot": 29,
    "to_slot": 17,
    "disagreement": 4
   },
   {
-   "t": 129153,
+   "t": 148733,
    "type": "difference_rating",
    "from_slot": 21,
    "to_slot": 34,
    "disagreement": 3
   },
   {
-   "t": 129235,
+   "t": 148795,
    "type": "difference_rating",
    "from_slot": 21,
    "to_slot": 26,
    "disagreement": 7
   },
   {
-   "t": 129241,
+   "t": 148857,
    "type": "difference_rating",
    "from_slot": 19,
    "to_slot": 29,
    "disagreement": 4
   },
   {
-   "t": 129352,
+   "t": 148919,
    "type": "difference_rating",
    "from_slot": 29,
    "to_slot": 31,
    "disagreement": 1
   },
   {
-   "t": 129427,
+   "t": 148981,
    "type": "message",
    "chat": "c03",
    "sender_slot": 7,
@@ -5049,49 +5049,49 @@
    "reading_seconds": 17
   },
   {
-   "t": 129430,
+   "t": 149760,
    "type": "difference_rating",
    "from_slot": 16,
    "to_slot": 21,
    "disagreement": 5
   },
   {
-   "t": 129499,
+   "t": 149822,
    "type": "difference_rating",
    "from_slot": 28,
    "to_slot": 21,
    "disagreement": 1
   },
   {
-   "t": 129552,
+   "t": 149884,
    "type": "difference_rating",
    "from_slot": 34,
    "to_slot": 29,
    "disagreement": 7
   },
   {
-   "t": 129688,
+   "t": 149946,
    "type": "difference_rating",
    "from_slot": 21,
    "to_slot": 30,
    "disagreement": 5
   },
   {
-   "t": 129748,
+   "t": 150009,
    "type": "difference_rating",
    "from_slot": 20,
    "to_slot": 29,
    "disagreement": 6
   },
   {
-   "t": 129779,
+   "t": 150071,
    "type": "difference_rating",
    "from_slot": 21,
    "to_slot": 16,
    "disagreement": 4
   },
   {
-   "t": 129818,
+   "t": 150133,
    "type": "message",
    "chat": "c02",
    "sender_slot": 3,
@@ -5101,70 +5101,70 @@
    "reading_seconds": 45
   },
   {
-   "t": 129871,
+   "t": 150912,
    "type": "difference_rating",
    "from_slot": 21,
    "to_slot": 31,
    "disagreement": 4
   },
   {
-   "t": 129907,
+   "t": 150975,
    "type": "difference_rating",
    "from_slot": 21,
    "to_slot": 4,
    "disagreement": 7
   },
   {
-   "t": 130120,
+   "t": 151037,
    "type": "difference_rating",
    "from_slot": 21,
    "to_slot": 7,
    "disagreement": 7
   },
   {
-   "t": 130160,
+   "t": 151099,
    "type": "difference_rating",
    "from_slot": 21,
    "to_slot": 18,
    "disagreement": 7
   },
   {
-   "t": 130202,
+   "t": 151162,
    "type": "difference_rating",
    "from_slot": 21,
    "to_slot": 12,
    "disagreement": 7
   },
   {
-   "t": 130427,
+   "t": 151224,
    "type": "difference_rating",
    "from_slot": 21,
    "to_slot": 28,
    "disagreement": 0
   },
   {
-   "t": 130553,
+   "t": 151286,
    "type": "difference_rating",
    "from_slot": 21,
    "to_slot": 24,
    "disagreement": 2
   },
   {
-   "t": 130864,
+   "t": 151349,
    "type": "difference_rating",
    "from_slot": 2,
    "to_slot": 21,
    "disagreement": 3
   },
   {
-   "t": 130942,
+   "t": 151411,
    "type": "difference_rating",
    "from_slot": 0,
    "to_slot": 21,
    "disagreement": 7
   },
   {
-   "t": 131058,
+   "t": 151473,
    "type": "message",
    "chat": "c25",
    "sender_slot": 34,
@@ -5174,7 +5174,7 @@
    "reading_seconds": 36
   },
   {
-   "t": 131059,
+   "t": 152253,
    "type": "chat_open",
    "chat": "c04",
    "from_slot": 21,
@@ -5182,7 +5182,7 @@
    "moment": "bridge"
   },
   {
-   "t": 131105,
+   "t": 153034,
    "type": "message",
    "chat": "c04",
    "sender_slot": 21,
@@ -5191,72 +5191,62 @@
    "heat": "normal"
   },
   {
-   "t": 133793,
+   "t": 153814,
    "type": "opinion",
    "slot": 38,
    "text": "Statt zu verbieten: Plattformen könnten verpflichtet werden, Bildungsinhalte sichtbarer zu machen. Positiv-Anreize statt Strafen."
   },
   {
-   "t": 134092,
+   "t": 154283,
    "type": "difference_rating",
    "from_slot": 38,
    "to_slot": 21,
    "disagreement": 2
   },
   {
-   "t": 134454,
+   "t": 154346,
    "type": "difference_rating",
    "from_slot": 14,
    "to_slot": 38,
    "disagreement": 4
   },
   {
-   "t": 134466,
+   "t": 154408,
    "type": "difference_rating",
    "from_slot": 38,
    "to_slot": 33,
    "disagreement": 4
   },
   {
-   "t": 134520,
+   "t": 154471,
    "type": "difference_rating",
    "from_slot": 28,
    "to_slot": 38,
    "disagreement": 1
   },
   {
-   "t": 134542,
+   "t": 154533,
    "type": "difference_rating",
    "from_slot": 38,
    "to_slot": 3,
    "disagreement": 4
   },
   {
-   "t": 134567,
+   "t": 154596,
    "type": "difference_rating",
    "from_slot": 38,
    "to_slot": 30,
    "disagreement": 4
   },
   {
-   "t": 134585,
-   "type": "message",
-   "chat": "c04",
-   "sender_slot": 14,
-   "text": "Das Problem ist halt, dass Wut die meiste Watchtime bringt. Der Algorithmus pusht genau den Content, der die Leute aufregt, weil das Geld bringt.",
-   "warm": false,
-   "heat": "normal",
-   "reading_seconds": 20
-  },
-  {
-   "t": 134681,
+   "t": 155440,
    "type": "difference_rating",
    "from_slot": 7,
    "to_slot": 38,
    "disagreement": 7
   },
   {
-   "t": 134707,
+   "t": 155503,
    "type": "message",
    "chat": "c03",
    "sender_slot": 18,
@@ -5266,73 +5256,73 @@
    "reading_seconds": 35
   },
   {
-   "t": 134708,
+   "t": 155554,
+   "type": "message",
+   "chat": "c04",
+   "sender_slot": 14,
+   "text": "Das Problem ist halt, dass Wut die meiste Watchtime bringt. Der Algorithmus pusht genau den Content, der die Leute aufregt, weil das Geld bringt.",
+   "warm": false,
+   "heat": "normal",
+   "reading_seconds": 20
+  },
+  {
+   "t": 156285,
    "type": "difference_rating",
    "from_slot": 38,
    "to_slot": 27,
    "disagreement": 6
   },
   {
-   "t": 134724,
+   "t": 156348,
    "type": "difference_rating",
    "from_slot": 38,
    "to_slot": 2,
    "disagreement": 4
   },
   {
-   "t": 134864,
+   "t": 156411,
    "type": "difference_rating",
    "from_slot": 38,
    "to_slot": 25,
    "disagreement": 4
   },
   {
-   "t": 134880,
+   "t": 156473,
    "type": "difference_rating",
    "from_slot": 2,
    "to_slot": 38,
    "disagreement": 3
   },
   {
-   "t": 134932,
+   "t": 156536,
    "type": "difference_rating",
    "from_slot": 38,
    "to_slot": 8,
    "disagreement": 1
   },
   {
-   "t": 135288,
+   "t": 156599,
    "type": "difference_rating",
    "from_slot": 38,
    "to_slot": 18,
    "disagreement": 7
   },
   {
-   "t": 135383,
+   "t": 156661,
    "type": "difference_rating",
    "from_slot": 38,
    "to_slot": 14,
    "disagreement": 4
   },
   {
-   "t": 135489,
+   "t": 156724,
    "type": "difference_rating",
    "from_slot": 38,
    "to_slot": 24,
    "disagreement": 1
   },
   {
-   "t": 137465,
-   "type": "message",
-   "chat": "c04",
-   "sender_slot": 21,
-   "text": "Du hast recht, die Technik scheint uns gegeneinander aufzuhetzen, bevor wir überhaupt ein Wort gewechselt haben.",
-   "warm": true,
-   "heat": "normal",
-   "reading_seconds": 15
-  },
-  {
-   "t": 137778,
+   "t": 157570,
    "type": "message",
    "chat": "c25",
    "sender_slot": 1,
@@ -5342,7 +5332,17 @@
    "reading_seconds": 47
   },
   {
-   "t": 137978,
+   "t": 158074,
+   "type": "message",
+   "chat": "c04",
+   "sender_slot": 21,
+   "text": "Du hast recht, die Technik scheint uns gegeneinander aufzuhetzen, bevor wir überhaupt ein Wort gewechselt haben.",
+   "warm": true,
+   "heat": "normal",
+   "reading_seconds": 15
+  },
+  {
+   "t": 158354,
    "type": "message",
    "chat": "c02",
    "sender_slot": 18,
@@ -5352,7 +5352,7 @@
    "reading_seconds": 59
   },
   {
-   "t": 138113,
+   "t": 159138,
    "type": "rating",
    "chat": "c02",
    "from_slot": 18,
@@ -5362,7 +5362,7 @@
    "bridge": true
   },
   {
-   "t": 138150,
+   "t": 159923,
    "type": "rating",
    "chat": "c02",
    "from_slot": 3,
@@ -5372,7 +5372,7 @@
    "bridge": false
   },
   {
-   "t": 140347,
+   "t": 160708,
    "type": "message",
    "chat": "c03",
    "sender_slot": 7,
@@ -5382,7 +5382,7 @@
    "reading_seconds": 38
   },
   {
-   "t": 141138,
+   "t": 161494,
    "type": "message",
    "chat": "c25",
    "sender_slot": 34,
@@ -5392,7 +5392,7 @@
    "reading_seconds": 19
   },
   {
-   "t": 141879,
+   "t": 162280,
    "type": "chat_open",
    "chat": "c10",
    "from_slot": 38,
@@ -5400,7 +5400,7 @@
    "moment": "organic"
   },
   {
-   "t": 142038,
+   "t": 163067,
    "type": "message",
    "chat": "c10",
    "sender_slot": 38,
@@ -5409,7 +5409,7 @@
    "heat": "high"
   },
   {
-   "t": 142265,
+   "t": 163855,
    "type": "message",
    "chat": "c04",
    "sender_slot": 14,
@@ -5419,13 +5419,13 @@
    "reading_seconds": 31
   },
   {
-   "t": 142445,
+   "t": 164643,
    "type": "opinion",
    "slot": 36,
    "text": "Eltern brauchen einfache Werkzeuge: verpflichtende Kindersicherungen, die standardmäßig aktiviert sind, nicht versteckt in Menüs."
   },
   {
-   "t": 142818,
+   "t": 165116,
    "type": "message",
    "chat": "c25",
    "sender_slot": 1,
@@ -5435,112 +5435,112 @@
    "reading_seconds": 5
   },
   {
-   "t": 143132,
+   "t": 165904,
    "type": "difference_rating",
    "from_slot": 36,
    "to_slot": 25,
    "disagreement": 6
   },
   {
-   "t": 143227,
+   "t": 165967,
    "type": "difference_rating",
    "from_slot": 12,
    "to_slot": 36,
    "disagreement": 4
   },
   {
-   "t": 143254,
+   "t": 166030,
    "type": "difference_rating",
    "from_slot": 36,
    "to_slot": 27,
    "disagreement": 5
   },
   {
-   "t": 143271,
+   "t": 166094,
    "type": "difference_rating",
    "from_slot": 36,
    "to_slot": 3,
    "disagreement": 6
   },
   {
-   "t": 143291,
+   "t": 166157,
    "type": "difference_rating",
    "from_slot": 36,
    "to_slot": 5,
    "disagreement": 7
   },
   {
-   "t": 143329,
+   "t": 166220,
    "type": "difference_rating",
    "from_slot": 36,
    "to_slot": 19,
    "disagreement": 3
   },
   {
-   "t": 143405,
+   "t": 166283,
    "type": "difference_rating",
    "from_slot": 36,
    "to_slot": 12,
    "disagreement": 4
   },
   {
-   "t": 143454,
+   "t": 166346,
    "type": "difference_rating",
    "from_slot": 36,
    "to_slot": 30,
    "disagreement": 1
   },
   {
-   "t": 143636,
+   "t": 166409,
    "type": "difference_rating",
    "from_slot": 36,
    "to_slot": 14,
    "disagreement": 2
   },
   {
-   "t": 143667,
+   "t": 166472,
    "type": "difference_rating",
    "from_slot": 30,
    "to_slot": 36,
    "disagreement": 1
   },
   {
-   "t": 143868,
+   "t": 166535,
    "type": "difference_rating",
    "from_slot": 36,
    "to_slot": 28,
    "disagreement": 4
   },
   {
-   "t": 143958,
+   "t": 166599,
    "type": "difference_rating",
    "from_slot": 36,
    "to_slot": 24,
    "disagreement": 4
   },
   {
-   "t": 144156,
+   "t": 166662,
    "type": "difference_rating",
    "from_slot": 3,
    "to_slot": 36,
    "disagreement": 7
   },
   {
-   "t": 144226,
+   "t": 166725,
    "type": "difference_rating",
    "from_slot": 36,
    "to_slot": 2,
    "disagreement": 1
   },
   {
-   "t": 144290,
+   "t": 166788,
    "type": "difference_rating",
    "from_slot": 34,
    "to_slot": 36,
    "disagreement": 7
   },
   {
-   "t": 144427,
+   "t": 166851,
    "type": "message",
    "chat": "c03",
    "sender_slot": 18,
@@ -5550,7 +5550,7 @@
    "reading_seconds": 25
   },
   {
-   "t": 144918,
+   "t": 167641,
    "type": "message",
    "chat": "c10",
    "sender_slot": 31,
@@ -5560,131 +5560,131 @@
    "reading_seconds": 15
   },
   {
-   "t": 145799,
+   "t": 168431,
    "type": "opinion",
    "slot": 15,
    "text": "Bei Hass und Hetze brauchen wir schnellere Auskünfte an Ermittlungsbehörden. Die aktuellen Verfahren dauern Monate."
   },
   {
-   "t": 146001,
+   "t": 168905,
    "type": "difference_rating",
    "from_slot": 15,
    "to_slot": 36,
    "disagreement": 5
   },
   {
-   "t": 146216,
+   "t": 168969,
    "type": "difference_rating",
    "from_slot": 15,
    "to_slot": 1,
    "disagreement": 7
   },
   {
-   "t": 146217,
+   "t": 169032,
    "type": "difference_rating",
    "from_slot": 15,
    "to_slot": 13,
    "disagreement": 10
   },
   {
-   "t": 146315,
+   "t": 169095,
    "type": "difference_rating",
    "from_slot": 15,
    "to_slot": 0,
    "disagreement": 1
   },
   {
-   "t": 146316,
+   "t": 169159,
    "type": "difference_rating",
    "from_slot": 15,
    "to_slot": 18,
    "disagreement": 1
   },
   {
-   "t": 146393,
+   "t": 169222,
    "type": "difference_rating",
    "from_slot": 15,
    "to_slot": 25,
    "disagreement": 9
   },
   {
-   "t": 146405,
+   "t": 169285,
    "type": "difference_rating",
    "from_slot": 36,
    "to_slot": 15,
    "disagreement": 4
   },
   {
-   "t": 146476,
+   "t": 169348,
    "type": "difference_rating",
    "from_slot": 15,
    "to_slot": 8,
    "disagreement": 7
   },
   {
-   "t": 146807,
+   "t": 169412,
    "type": "difference_rating",
    "from_slot": 15,
    "to_slot": 20,
    "disagreement": 9
   },
   {
-   "t": 146813,
+   "t": 169475,
    "type": "difference_rating",
    "from_slot": 15,
    "to_slot": 22,
    "disagreement": 4
   },
   {
-   "t": 146820,
+   "t": 169538,
    "type": "difference_rating",
    "from_slot": 15,
    "to_slot": 26,
    "disagreement": 1
   },
   {
-   "t": 146859,
+   "t": 169601,
    "type": "difference_rating",
    "from_slot": 15,
    "to_slot": 34,
    "disagreement": 9
   },
   {
-   "t": 146977,
+   "t": 169665,
    "type": "difference_rating",
    "from_slot": 15,
    "to_slot": 24,
    "disagreement": 6
   },
   {
-   "t": 147176,
+   "t": 169728,
    "type": "difference_rating",
    "from_slot": 32,
    "to_slot": 15,
    "disagreement": 9
   },
   {
-   "t": 147195,
+   "t": 169791,
    "type": "difference_rating",
    "from_slot": 33,
    "to_slot": 15,
    "disagreement": 10
   },
   {
-   "t": 147295,
+   "t": 169855,
    "type": "difference_rating",
    "from_slot": 15,
    "to_slot": 32,
    "disagreement": 9
   },
   {
-   "t": 147427,
+   "t": 169918,
    "type": "opinion",
    "slot": 35,
    "text": "Risiken muss man versicherbar machen: Pflichtversicherung für Plattformen, dann reguliert der Markt einen Teil selbst."
   },
   {
-   "t": 147438,
+   "t": 170393,
    "type": "message",
    "chat": "c10",
    "sender_slot": 38,
@@ -5694,42 +5694,42 @@
    "reading_seconds": 12
   },
   {
-   "t": 147482,
+   "t": 171185,
    "type": "difference_rating",
    "from_slot": 15,
    "to_slot": 33,
    "disagreement": 9
   },
   {
-   "t": 147770,
+   "t": 171248,
    "type": "difference_rating",
    "from_slot": 15,
    "to_slot": 19,
    "disagreement": 6
   },
   {
-   "t": 147907,
+   "t": 171312,
    "type": "difference_rating",
    "from_slot": 15,
    "to_slot": 30,
    "disagreement": 3
   },
   {
-   "t": 147924,
+   "t": 171375,
    "type": "difference_rating",
    "from_slot": 35,
    "to_slot": 25,
    "disagreement": 10
   },
   {
-   "t": 147927,
+   "t": 171438,
    "type": "difference_rating",
    "from_slot": 13,
    "to_slot": 35,
    "disagreement": 10
   },
   {
-   "t": 147982,
+   "t": 171502,
    "type": "chat_open",
    "chat": "c21",
    "from_slot": 0,
@@ -5737,28 +5737,28 @@
    "moment": "organic"
   },
   {
-   "t": 148024,
+   "t": 172294,
    "type": "difference_rating",
    "from_slot": 35,
    "to_slot": 34,
    "disagreement": 9
   },
   {
-   "t": 148050,
+   "t": 172358,
    "type": "difference_rating",
    "from_slot": 35,
    "to_slot": 8,
    "disagreement": 7
   },
   {
-   "t": 148139,
+   "t": 172421,
    "type": "difference_rating",
    "from_slot": 5,
    "to_slot": 15,
    "disagreement": 9
   },
   {
-   "t": 148145,
+   "t": 172484,
    "type": "message",
    "chat": "c04",
    "sender_slot": 21,
@@ -5768,7 +5768,7 @@
    "reading_seconds": 40
   },
   {
-   "t": 148210,
+   "t": 173278,
    "type": "message",
    "chat": "c21",
    "sender_slot": 0,
@@ -5777,42 +5777,42 @@
    "heat": "normal"
   },
   {
-   "t": 148378,
+   "t": 174071,
    "type": "difference_rating",
    "from_slot": 35,
    "to_slot": 14,
    "disagreement": 3
   },
   {
-   "t": 148384,
+   "t": 174135,
    "type": "difference_rating",
    "from_slot": 26,
    "to_slot": 35,
    "disagreement": 1
   },
   {
-   "t": 148574,
+   "t": 174198,
    "type": "difference_rating",
    "from_slot": 35,
    "to_slot": 17,
    "disagreement": 7
   },
   {
-   "t": 148752,
+   "t": 174262,
    "type": "difference_rating",
    "from_slot": 35,
    "to_slot": 19,
    "disagreement": 6
   },
   {
-   "t": 148778,
+   "t": 174325,
    "type": "difference_rating",
    "from_slot": 35,
    "to_slot": 33,
    "disagreement": 10
   },
   {
-   "t": 148826,
+   "t": 174389,
    "type": "rating",
    "chat": "c25",
    "from_slot": 1,
@@ -5822,42 +5822,42 @@
    "bridge": false
   },
   {
-   "t": 148941,
+   "t": 175183,
    "type": "difference_rating",
    "from_slot": 35,
    "to_slot": 5,
    "disagreement": 9
   },
   {
-   "t": 149155,
+   "t": 175247,
    "type": "difference_rating",
    "from_slot": 35,
    "to_slot": 20,
    "disagreement": 9
   },
   {
-   "t": 149425,
+   "t": 175310,
    "type": "difference_rating",
    "from_slot": 35,
    "to_slot": 30,
    "disagreement": 4
   },
   {
-   "t": 149429,
+   "t": 175374,
    "type": "difference_rating",
    "from_slot": 34,
    "to_slot": 35,
    "disagreement": 10
   },
   {
-   "t": 149542,
+   "t": 175437,
    "type": "difference_rating",
    "from_slot": 8,
    "to_slot": 35,
    "disagreement": 7
   },
   {
-   "t": 150427,
+   "t": 175501,
    "type": "message",
    "chat": "c03",
    "sender_slot": 7,
@@ -5867,20 +5867,20 @@
    "reading_seconds": 41
   },
   {
-   "t": 151466,
+   "t": 176296,
    "type": "opinion",
    "slot": 11,
    "text": "Das Problem sind Botnetze, nicht Meinungen. Verifizierte Identität für große Accounts würde mehr bringen als jede Inhaltsregel."
   },
   {
-   "t": 152015,
+   "t": 176773,
    "type": "difference_rating",
    "from_slot": 11,
    "to_slot": 2,
    "disagreement": 4
   },
   {
-   "t": 152050,
+   "t": 176837,
    "type": "message",
    "chat": "c21",
    "sender_slot": 36,
@@ -5890,21 +5890,21 @@
    "reading_seconds": 23
   },
   {
-   "t": 152132,
+   "t": 177632,
    "type": "difference_rating",
    "from_slot": 11,
    "to_slot": 35,
    "disagreement": 7
   },
   {
-   "t": 152178,
+   "t": 177696,
    "type": "difference_rating",
    "from_slot": 11,
    "to_slot": 33,
    "disagreement": 4
   },
   {
-   "t": 152316,
+   "t": 177760,
    "type": "rating",
    "chat": "c25",
    "from_slot": 34,
@@ -5914,7 +5914,7 @@
    "bridge": false
   },
   {
-   "t": 152345,
+   "t": 178556,
    "type": "message",
    "chat": "c04",
    "sender_slot": 14,
@@ -5924,105 +5924,105 @@
    "reading_seconds": 26
   },
   {
-   "t": 152417,
+   "t": 179353,
    "type": "difference_rating",
    "from_slot": 30,
    "to_slot": 11,
    "disagreement": 4
   },
   {
-   "t": 152422,
+   "t": 179416,
    "type": "difference_rating",
    "from_slot": 11,
    "to_slot": 22,
    "disagreement": 4
   },
   {
-   "t": 152422,
+   "t": 179480,
    "type": "difference_rating",
    "from_slot": 11,
    "to_slot": 4,
    "disagreement": 6
   },
   {
-   "t": 152442,
+   "t": 179544,
    "type": "difference_rating",
    "from_slot": 33,
    "to_slot": 11,
    "disagreement": 3
   },
   {
-   "t": 152457,
+   "t": 179608,
    "type": "difference_rating",
    "from_slot": 5,
    "to_slot": 11,
    "disagreement": 4
   },
   {
-   "t": 152467,
+   "t": 179672,
    "type": "difference_rating",
    "from_slot": 11,
    "to_slot": 28,
    "disagreement": 1
   },
   {
-   "t": 152487,
+   "t": 179735,
    "type": "difference_rating",
    "from_slot": 11,
    "to_slot": 7,
    "disagreement": 7
   },
   {
-   "t": 152723,
+   "t": 179799,
    "type": "difference_rating",
    "from_slot": 11,
    "to_slot": 21,
    "disagreement": 1
   },
   {
-   "t": 152733,
+   "t": 179863,
    "type": "difference_rating",
    "from_slot": 11,
    "to_slot": 3,
    "disagreement": 5
   },
   {
-   "t": 152737,
+   "t": 179927,
    "type": "difference_rating",
    "from_slot": 11,
    "to_slot": 14,
    "disagreement": 3
   },
   {
-   "t": 152789,
+   "t": 179990,
    "type": "difference_rating",
    "from_slot": 11,
    "to_slot": 36,
    "disagreement": 3
   },
   {
-   "t": 152869,
+   "t": 180054,
    "type": "difference_rating",
    "from_slot": 11,
    "to_slot": 32,
    "disagreement": 3
   },
   {
-   "t": 153009,
+   "t": 180118,
    "type": "difference_rating",
    "from_slot": 11,
    "to_slot": 18,
    "disagreement": 6
   },
   {
-   "t": 153293,
+   "t": 180182,
    "type": "difference_rating",
    "from_slot": 4,
    "to_slot": 11,
    "disagreement": 6
   },
   {
-   "t": 153678,
+   "t": 180246,
    "type": "message",
    "chat": "c10",
    "sender_slot": 31,
@@ -6032,7 +6032,7 @@
    "reading_seconds": 43
   },
   {
-   "t": 155893,
+   "t": 181043,
    "type": "chat_open",
    "chat": "c19",
    "from_slot": 35,
@@ -6040,7 +6040,7 @@
    "moment": "organic"
   },
   {
-   "t": 156019,
+   "t": 181841,
    "type": "message",
    "chat": "c19",
    "sender_slot": 35,
@@ -6049,13 +6049,13 @@
    "heat": "high"
   },
   {
-   "t": 156093,
+   "t": 182640,
    "type": "opinion",
    "slot": 39,
    "text": "Meinungsfreiheit ist das höchste Gut. Jede Regulierung muss sich am Grundgesetz messen lassen — die meisten Vorschläge bestehen den Test nicht."
   },
   {
-   "t": 156185,
+   "t": 183119,
    "type": "message",
    "chat": "c04",
    "sender_slot": 21,
@@ -6065,70 +6065,70 @@
    "reading_seconds": 23
   },
   {
-   "t": 156489,
+   "t": 183919,
    "type": "difference_rating",
    "from_slot": 39,
    "to_slot": 16,
    "disagreement": 7
   },
   {
-   "t": 156766,
+   "t": 183983,
    "type": "difference_rating",
    "from_slot": 39,
    "to_slot": 11,
    "disagreement": 4
   },
   {
-   "t": 157023,
+   "t": 184047,
    "type": "difference_rating",
    "from_slot": 39,
    "to_slot": 5,
    "disagreement": 2
   },
   {
-   "t": 157249,
+   "t": 184111,
    "type": "difference_rating",
    "from_slot": 39,
    "to_slot": 36,
    "disagreement": 7
   },
   {
-   "t": 157293,
+   "t": 184175,
    "type": "difference_rating",
    "from_slot": 39,
    "to_slot": 19,
    "disagreement": 4
   },
   {
-   "t": 157332,
+   "t": 184239,
    "type": "difference_rating",
    "from_slot": 39,
    "to_slot": 29,
    "disagreement": 6
   },
   {
-   "t": 157351,
+   "t": 184303,
    "type": "difference_rating",
    "from_slot": 36,
    "to_slot": 39,
    "disagreement": 7
   },
   {
-   "t": 157494,
+   "t": 184367,
    "type": "difference_rating",
    "from_slot": 22,
    "to_slot": 39,
    "disagreement": 7
   },
   {
-   "t": 157508,
+   "t": 184431,
    "type": "difference_rating",
    "from_slot": 39,
    "to_slot": 1,
    "disagreement": 3
   },
   {
-   "t": 157570,
+   "t": 184495,
    "type": "message",
    "chat": "c21",
    "sender_slot": 0,
@@ -6138,56 +6138,56 @@
    "reading_seconds": 37
   },
   {
-   "t": 157585,
+   "t": 185295,
    "type": "difference_rating",
    "from_slot": 39,
    "to_slot": 15,
    "disagreement": 9
   },
   {
-   "t": 157624,
+   "t": 185359,
    "type": "difference_rating",
    "from_slot": 39,
    "to_slot": 35,
    "disagreement": 9
   },
   {
-   "t": 157708,
+   "t": 185423,
    "type": "difference_rating",
    "from_slot": 39,
    "to_slot": 23,
    "disagreement": 9
   },
   {
-   "t": 157747,
+   "t": 185487,
    "type": "difference_rating",
    "from_slot": 2,
    "to_slot": 39,
    "disagreement": 7
   },
   {
-   "t": 157760,
+   "t": 185551,
    "type": "difference_rating",
    "from_slot": 35,
    "to_slot": 39,
    "disagreement": 9
   },
   {
-   "t": 157809,
+   "t": 185615,
    "type": "difference_rating",
    "from_slot": 39,
    "to_slot": 3,
    "disagreement": 1
   },
   {
-   "t": 157897,
+   "t": 185679,
    "type": "difference_rating",
    "from_slot": 39,
    "to_slot": 31,
    "disagreement": 7
   },
   {
-   "t": 159859,
+   "t": 185743,
    "type": "message",
    "chat": "c19",
    "sender_slot": 25,
@@ -6197,7 +6197,7 @@
    "reading_seconds": 23
   },
   {
-   "t": 160758,
+   "t": 186544,
    "type": "message",
    "chat": "c10",
    "sender_slot": 38,
@@ -6207,7 +6207,7 @@
    "reading_seconds": 50
   },
   {
-   "t": 160985,
+   "t": 187345,
    "type": "message",
    "chat": "c04",
    "sender_slot": 14,
@@ -6217,7 +6217,7 @@
    "reading_seconds": 31
   },
   {
-   "t": 164059,
+   "t": 188263,
    "type": "message",
    "chat": "c19",
    "sender_slot": 35,
@@ -6227,7 +6227,7 @@
    "reading_seconds": 26
   },
   {
-   "t": 164238,
+   "t": 189064,
    "type": "message",
    "chat": "c10",
    "sender_slot": 31,
@@ -6237,7 +6237,7 @@
    "reading_seconds": 20
   },
   {
-   "t": 165219,
+   "t": 189752,
    "type": "rating",
    "chat": "c10",
    "from_slot": 38,
@@ -6247,7 +6247,7 @@
    "bridge": false
   },
   {
-   "t": 165250,
+   "t": 190555,
    "type": "message",
    "chat": "c21",
    "sender_slot": 36,
@@ -6257,7 +6257,7 @@
    "reading_seconds": 55
   },
   {
-   "t": 166172,
+   "t": 191358,
    "type": "rating",
    "chat": "c21",
    "from_slot": 0,
@@ -6267,7 +6267,7 @@
    "bridge": false
   },
   {
-   "t": 166608,
+   "t": 192162,
    "type": "rating",
    "chat": "c10",
    "from_slot": 31,
@@ -6277,7 +6277,7 @@
    "bridge": false
   },
   {
-   "t": 168619,
+   "t": 192966,
    "type": "message",
    "chat": "c19",
    "sender_slot": 25,
@@ -6287,7 +6287,7 @@
    "reading_seconds": 29
   },
   {
-   "t": 169265,
+   "t": 193771,
    "type": "message",
    "chat": "c04",
    "sender_slot": 21,
@@ -6297,146 +6297,146 @@
    "reading_seconds": 60
   },
   {
-   "t": 170181,
+   "t": 194577,
    "type": "opinion",
    "slot": 10,
    "text": "Ich erkenne Fake News oft nicht mehr. Plattformen sollten Falschmeldungen kennzeichnen müssen, so wie Zutaten auf Lebensmitteln."
   },
   {
-   "t": 170566,
+   "t": 195060,
    "type": "difference_rating",
    "from_slot": 35,
    "to_slot": 10,
    "disagreement": 3
   },
   {
-   "t": 170707,
+   "t": 195124,
    "type": "difference_rating",
    "from_slot": 20,
    "to_slot": 10,
    "disagreement": 6
   },
   {
-   "t": 170737,
+   "t": 195189,
    "type": "difference_rating",
    "from_slot": 10,
    "to_slot": 3,
    "disagreement": 7
   },
   {
-   "t": 170864,
+   "t": 195253,
    "type": "difference_rating",
    "from_slot": 10,
    "to_slot": 29,
    "disagreement": 1
   },
   {
-   "t": 170934,
+   "t": 195318,
    "type": "difference_rating",
    "from_slot": 10,
    "to_slot": 35,
    "disagreement": 5
   },
   {
-   "t": 170944,
+   "t": 195382,
    "type": "difference_rating",
    "from_slot": 10,
    "to_slot": 30,
    "disagreement": 1
   },
   {
-   "t": 170998,
+   "t": 195447,
    "type": "difference_rating",
    "from_slot": 10,
    "to_slot": 31,
    "disagreement": 1
   },
   {
-   "t": 171034,
+   "t": 195511,
    "type": "difference_rating",
    "from_slot": 10,
    "to_slot": 33,
    "disagreement": 7
   },
   {
-   "t": 171271,
+   "t": 195576,
    "type": "difference_rating",
    "from_slot": 10,
    "to_slot": 20,
    "disagreement": 6
   },
   {
-   "t": 171286,
+   "t": 195640,
    "type": "difference_rating",
    "from_slot": 0,
    "to_slot": 10,
    "disagreement": 4
   },
   {
-   "t": 171397,
+   "t": 195705,
    "type": "difference_rating",
    "from_slot": 10,
    "to_slot": 5,
    "disagreement": 7
   },
   {
-   "t": 171461,
+   "t": 195769,
    "type": "difference_rating",
    "from_slot": 10,
    "to_slot": 4,
    "disagreement": 4
   },
   {
-   "t": 171489,
+   "t": 195834,
    "type": "difference_rating",
    "from_slot": 10,
    "to_slot": 28,
    "disagreement": 4
   },
   {
-   "t": 171554,
+   "t": 195898,
    "type": "difference_rating",
    "from_slot": 10,
    "to_slot": 23,
    "disagreement": 4
   },
   {
-   "t": 171638,
+   "t": 195963,
    "type": "difference_rating",
    "from_slot": 10,
    "to_slot": 17,
    "disagreement": 3
   },
   {
-   "t": 171772,
+   "t": 196027,
    "type": "difference_rating",
    "from_slot": 10,
    "to_slot": 13,
    "disagreement": 7
   },
   {
-   "t": 171777,
+   "t": 196092,
    "type": "difference_rating",
    "from_slot": 32,
    "to_slot": 10,
    "disagreement": 6
   },
   {
-   "t": 171791,
+   "t": 196156,
    "type": "difference_rating",
    "from_slot": 10,
    "to_slot": 15,
    "disagreement": 4
   },
   {
-   "t": 172119,
+   "t": 196221,
    "type": "difference_rating",
    "from_slot": 10,
    "to_slot": 11,
    "disagreement": 4
   },
   {
-   "t": 174859,
+   "t": 196285,
    "type": "message",
    "chat": "c19",
    "sender_slot": 35,
@@ -6446,7 +6446,7 @@
    "reading_seconds": 43
   },
   {
-   "t": 175008,
+   "t": 197092,
    "type": "rating",
    "chat": "c19",
    "from_slot": 25,
@@ -6456,7 +6456,7 @@
    "bridge": false
   },
   {
-   "t": 175070,
+   "t": 197899,
    "type": "rating",
    "chat": "c19",
    "from_slot": 35,
@@ -6466,7 +6466,7 @@
    "bridge": false
   },
   {
-   "t": 175478,
+   "t": 198706,
    "type": "rating",
    "chat": "c21",
    "from_slot": 36,
@@ -6476,7 +6476,7 @@
    "bridge": false
   },
   {
-   "t": 175499,
+   "t": 199514,
    "type": "rating",
    "chat": "c04",
    "from_slot": 21,
@@ -6486,7 +6486,7 @@
    "bridge": false
   },
   {
-   "t": 175508,
+   "t": 200322,
    "type": "rating",
    "chat": "c03",
    "from_slot": 18,
@@ -6496,7 +6496,7 @@
    "bridge": false
   },
   {
-   "t": 175566,
+   "t": 201131,
    "type": "chat_open",
    "chat": "c05",
    "from_slot": 39,
@@ -6504,7 +6504,7 @@
    "moment": "bridge"
   },
   {
-   "t": 175637,
+   "t": 201940,
    "type": "message",
    "chat": "c05",
    "sender_slot": 39,
@@ -6513,41 +6513,41 @@
    "heat": "normal"
   },
   {
-   "t": 178045,
+   "t": 202750,
    "type": "opinion",
    "slot": 37,
    "text": "Selbstregulierung funktioniert nur mit Sanktionen im Hintergrund. Freiwillig ja, aber mit scharfem staatlichem Fallback."
   },
   {
-   "t": 178195,
+   "t": 203236,
    "type": "difference_rating",
    "from_slot": 37,
    "to_slot": 26,
    "disagreement": 7
   },
   {
-   "t": 178471,
+   "t": 203301,
    "type": "difference_rating",
    "from_slot": 36,
    "to_slot": 37,
    "disagreement": 4
   },
   {
-   "t": 178513,
+   "t": 203365,
    "type": "difference_rating",
    "from_slot": 37,
    "to_slot": 19,
    "disagreement": 1
   },
   {
-   "t": 178539,
+   "t": 203430,
    "type": "difference_rating",
    "from_slot": 37,
    "to_slot": 17,
    "disagreement": 2
   },
   {
-   "t": 178556,
+   "t": 203495,
    "type": "rating",
    "chat": "c04",
    "from_slot": 14,
@@ -6557,77 +6557,77 @@
    "bridge": false
   },
   {
-   "t": 178566,
+   "t": 204306,
    "type": "difference_rating",
    "from_slot": 37,
    "to_slot": 29,
    "disagreement": 5
   },
   {
-   "t": 178767,
+   "t": 204370,
    "type": "difference_rating",
    "from_slot": 1,
    "to_slot": 37,
    "disagreement": 1
   },
   {
-   "t": 178896,
+   "t": 204435,
    "type": "difference_rating",
    "from_slot": 37,
    "to_slot": 34,
    "disagreement": 4
   },
   {
-   "t": 178920,
+   "t": 204500,
    "type": "difference_rating",
    "from_slot": 37,
    "to_slot": 32,
    "disagreement": 4
   },
   {
-   "t": 178926,
+   "t": 204565,
    "type": "difference_rating",
    "from_slot": 37,
    "to_slot": 4,
    "disagreement": 7
   },
   {
-   "t": 178976,
+   "t": 204630,
    "type": "difference_rating",
    "from_slot": 37,
    "to_slot": 28,
    "disagreement": 2
   },
   {
-   "t": 179079,
+   "t": 204695,
    "type": "difference_rating",
    "from_slot": 20,
    "to_slot": 37,
    "disagreement": 3
   },
   {
-   "t": 179593,
+   "t": 204760,
    "type": "difference_rating",
    "from_slot": 37,
    "to_slot": 21,
    "disagreement": 1
   },
   {
-   "t": 179921,
+   "t": 204824,
    "type": "difference_rating",
    "from_slot": 37,
    "to_slot": 13,
    "disagreement": 4
   },
   {
-   "t": 179930,
+   "t": 204889,
    "type": "difference_rating",
    "from_slot": 0,
    "to_slot": 37,
    "disagreement": 7
   },
   {
-   "t": 180118,
+   "t": 204954,
    "type": "message",
    "chat": "c05",
    "sender_slot": 6,
@@ -6637,7 +6637,7 @@
    "reading_seconds": 16
   },
   {
-   "t": 180739,
+   "t": 205765,
    "type": "message",
    "chat": "c19",
    "sender_slot": 25,
@@ -6647,7 +6647,7 @@
    "reading_seconds": 40
   },
   {
-   "t": 183027,
+   "t": 206577,
    "type": "rating",
    "chat": "c03",
    "from_slot": 7,
@@ -6657,7 +6657,7 @@
    "bridge": false
   },
   {
-   "t": 183532,
+   "t": 207474,
    "type": "message",
    "chat": "c05",
    "sender_slot": 39,
@@ -6667,7 +6667,7 @@
    "reading_seconds": 9
   },
   {
-   "t": 184459,
+   "t": 208285,
    "type": "message",
    "chat": "c19",
    "sender_slot": 35,
@@ -6677,7 +6677,7 @@
    "reading_seconds": 22
   },
   {
-   "t": 184583,
+   "t": 209014,
    "type": "rating",
    "chat": "c19",
    "from_slot": 25,
@@ -6687,7 +6687,7 @@
    "bridge": true
   },
   {
-   "t": 185004,
+   "t": 209827,
    "type": "rating",
    "chat": "c19",
    "from_slot": 35,
@@ -6697,7 +6697,7 @@
    "bridge": false
   },
   {
-   "t": 190972,
+   "t": 210641,
    "type": "message",
    "chat": "c05",
    "sender_slot": 6,
@@ -6707,7 +6707,7 @@
    "reading_seconds": 53
   },
   {
-   "t": 194206,
+   "t": 211455,
    "type": "chat_open",
    "chat": "c06",
    "from_slot": 0,
@@ -6715,7 +6715,7 @@
    "moment": "bridge"
   },
   {
-   "t": 194437,
+   "t": 212269,
    "type": "message",
    "chat": "c06",
    "sender_slot": 0,
@@ -6724,7 +6724,7 @@
    "heat": "normal"
   },
   {
-   "t": 196852,
+   "t": 213161,
    "type": "message",
    "chat": "c05",
    "sender_slot": 39,
@@ -6734,7 +6734,7 @@
    "reading_seconds": 40
   },
   {
-   "t": 198663,
+   "t": 214789,
    "type": "message",
    "chat": "c06",
    "sender_slot": 3,
@@ -6744,7 +6744,7 @@
    "reading_seconds": 26
   },
   {
-   "t": 199132,
+   "t": 215681,
    "type": "message",
    "chat": "c05",
    "sender_slot": 6,
@@ -6754,7 +6754,7 @@
    "reading_seconds": 10
   },
   {
-   "t": 199391,
+   "t": 215711,
    "type": "rating",
    "chat": "c05",
    "from_slot": 39,
@@ -6764,7 +6764,7 @@
    "bridge": false
   },
   {
-   "t": 199603,
+   "t": 216348,
    "type": "rating",
    "chat": "c05",
    "from_slot": 6,
@@ -6774,7 +6774,7 @@
    "bridge": false
   },
   {
-   "t": 202863,
+   "t": 217309,
    "type": "message",
    "chat": "c06",
    "sender_slot": 0,
@@ -6784,41 +6784,41 @@
    "reading_seconds": 26
   },
   {
-   "t": 204209,
+   "t": 217982,
    "type": "opinion",
    "slot": 9,
    "text": "Verbote interessieren niemanden in meinem Alter. Bringt uns lieber Medienkompetenz bei statt uns auszusperren."
   },
   {
-   "t": 204557,
+   "t": 218473,
    "type": "difference_rating",
    "from_slot": 9,
    "to_slot": 23,
    "disagreement": 9
   },
   {
-   "t": 204800,
+   "t": 218538,
    "type": "difference_rating",
    "from_slot": 26,
    "to_slot": 9,
    "disagreement": 10
   },
   {
-   "t": 204849,
+   "t": 218603,
    "type": "difference_rating",
    "from_slot": 9,
    "to_slot": 38,
    "disagreement": 5
   },
   {
-   "t": 204870,
+   "t": 218669,
    "type": "difference_rating",
    "from_slot": 9,
    "to_slot": 8,
    "disagreement": 4
   },
   {
-   "t": 204892,
+   "t": 218734,
    "type": "message",
    "chat": "c05",
    "sender_slot": 39,
@@ -6828,42 +6828,42 @@
    "reading_seconds": 39
   },
   {
-   "t": 204968,
+   "t": 219552,
    "type": "difference_rating",
    "from_slot": 9,
    "to_slot": 28,
    "disagreement": 4
   },
   {
-   "t": 205140,
+   "t": 219618,
    "type": "difference_rating",
    "from_slot": 9,
    "to_slot": 6,
    "disagreement": 7
   },
   {
-   "t": 205178,
+   "t": 219683,
    "type": "difference_rating",
    "from_slot": 9,
    "to_slot": 31,
    "disagreement": 7
   },
   {
-   "t": 205221,
+   "t": 219749,
    "type": "difference_rating",
    "from_slot": 9,
    "to_slot": 36,
    "disagreement": 7
   },
   {
-   "t": 205244,
+   "t": 219814,
    "type": "difference_rating",
    "from_slot": 9,
    "to_slot": 14,
    "disagreement": 6
   },
   {
-   "t": 205263,
+   "t": 219880,
    "type": "message",
    "chat": "c06",
    "sender_slot": 3,
@@ -6873,77 +6873,77 @@
    "reading_seconds": 11
   },
   {
-   "t": 205399,
+   "t": 220698,
    "type": "difference_rating",
    "from_slot": 23,
    "to_slot": 9,
    "disagreement": 9
   },
   {
-   "t": 205422,
+   "t": 220764,
    "type": "difference_rating",
    "from_slot": 19,
    "to_slot": 9,
    "disagreement": 5
   },
   {
-   "t": 205572,
+   "t": 220829,
    "type": "difference_rating",
    "from_slot": 9,
    "to_slot": 2,
    "disagreement": 7
   },
   {
-   "t": 205615,
+   "t": 220895,
    "type": "difference_rating",
    "from_slot": 9,
    "to_slot": 21,
    "disagreement": 4
   },
   {
-   "t": 205690,
+   "t": 220960,
    "type": "difference_rating",
    "from_slot": 9,
    "to_slot": 10,
    "disagreement": 6
   },
   {
-   "t": 205733,
+   "t": 221026,
    "type": "difference_rating",
    "from_slot": 9,
    "to_slot": 15,
    "disagreement": 10
   },
   {
-   "t": 205851,
+   "t": 221091,
    "type": "difference_rating",
    "from_slot": 9,
    "to_slot": 39,
    "disagreement": 2
   },
   {
-   "t": 205862,
+   "t": 221157,
    "type": "difference_rating",
    "from_slot": 9,
    "to_slot": 34,
    "disagreement": 2
   },
   {
-   "t": 205883,
+   "t": 221222,
    "type": "difference_rating",
    "from_slot": 11,
    "to_slot": 9,
    "disagreement": 4
   },
   {
-   "t": 206055,
+   "t": 221288,
    "type": "difference_rating",
    "from_slot": 9,
    "to_slot": 32,
    "disagreement": 1
   },
   {
-   "t": 208646,
+   "t": 221354,
    "type": "chat_open",
    "chat": "c16",
    "from_slot": 14,
@@ -6951,7 +6951,7 @@
    "moment": "organic"
   },
   {
-   "t": 208695,
+   "t": 222173,
    "type": "message",
    "chat": "c16",
    "sender_slot": 14,
@@ -6960,7 +6960,7 @@
    "heat": "normal"
   },
   {
-   "t": 209463,
+   "t": 222993,
    "type": "message",
    "chat": "c06",
    "sender_slot": 0,
@@ -6970,7 +6970,7 @@
    "reading_seconds": 26
   },
   {
-   "t": 209600,
+   "t": 223813,
    "type": "rating",
    "chat": "c06",
    "from_slot": 0,
@@ -6980,7 +6980,7 @@
    "bridge": false
   },
   {
-   "t": 209771,
+   "t": 224633,
    "type": "rating",
    "chat": "c06",
    "from_slot": 3,
@@ -6990,7 +6990,7 @@
    "bridge": false
   },
   {
-   "t": 211972,
+   "t": 225454,
    "type": "message",
    "chat": "c05",
    "sender_slot": 6,
@@ -7000,7 +7000,7 @@
    "reading_seconds": 50
   },
   {
-   "t": 212823,
+   "t": 226275,
    "type": "message",
    "chat": "c06",
    "sender_slot": 3,
@@ -7010,7 +7010,15 @@
    "reading_seconds": 19
   },
   {
-   "t": 214732,
+   "t": 227919,
+   "type": "chat_open",
+   "chat": "c18",
+   "from_slot": 9,
+   "to_slot": 26,
+   "moment": "organic"
+  },
+  {
+   "t": 227974,
    "type": "message",
    "chat": "c05",
    "sender_slot": 39,
@@ -7020,15 +7028,7 @@
    "reading_seconds": 14
   },
   {
-   "t": 215329,
-   "type": "chat_open",
-   "chat": "c18",
-   "from_slot": 9,
-   "to_slot": 26,
-   "moment": "organic"
-  },
-  {
-   "t": 215499,
+   "t": 228742,
    "type": "message",
    "chat": "c18",
    "sender_slot": 9,
@@ -7037,7 +7037,7 @@
    "heat": "normal"
   },
   {
-   "t": 216513,
+   "t": 229564,
    "type": "chat_open",
    "chat": "c07",
    "from_slot": 2,
@@ -7045,7 +7045,7 @@
    "moment": "bridge"
   },
   {
-   "t": 216611,
+   "t": 230388,
    "type": "message",
    "chat": "c07",
    "sender_slot": 2,
@@ -7054,7 +7054,7 @@
    "heat": "normal"
   },
   {
-   "t": 218703,
+   "t": 231211,
    "type": "message",
    "chat": "c06",
    "sender_slot": 0,
@@ -7064,7 +7064,7 @@
    "reading_seconds": 40
   },
   {
-   "t": 220132,
+   "t": 232035,
    "type": "message",
    "chat": "c05",
    "sender_slot": 6,
@@ -7074,7 +7074,7 @@
    "reading_seconds": 36
   },
   {
-   "t": 220256,
+   "t": 232860,
    "type": "rating",
    "chat": "c05",
    "from_slot": 6,
@@ -7084,7 +7084,7 @@
    "bridge": true
   },
   {
-   "t": 220593,
+   "t": 233684,
    "type": "rating",
    "chat": "c05",
    "from_slot": 39,
@@ -7094,7 +7094,7 @@
    "bridge": true
   },
   {
-   "t": 221073,
+   "t": 234510,
    "type": "message",
    "chat": "c16",
    "sender_slot": 9,
@@ -7104,7 +7104,7 @@
    "reading_seconds": 43
   },
   {
-   "t": 222663,
+   "t": 235335,
    "type": "message",
    "chat": "c06",
    "sender_slot": 3,
@@ -7114,7 +7114,7 @@
    "reading_seconds": 24
   },
   {
-   "t": 229496,
+   "t": 236161,
    "type": "message",
    "chat": "c18",
    "sender_slot": 26,
@@ -7124,7 +7124,7 @@
    "reading_seconds": 8
   },
   {
-   "t": 229743,
+   "t": 237855,
    "type": "message",
    "chat": "c06",
    "sender_slot": 0,
@@ -7134,7 +7134,7 @@
    "reading_seconds": 50
   },
   {
-   "t": 230037,
+   "t": 237885,
    "type": "rating",
    "chat": "c06",
    "from_slot": 3,
@@ -7144,7 +7144,7 @@
    "bridge": true
   },
   {
-   "t": 230049,
+   "t": 238641,
    "type": "rating",
    "chat": "c06",
    "from_slot": 0,
@@ -7154,7 +7154,7 @@
    "bridge": true
   },
   {
-   "t": 231000,
+   "t": 239468,
    "type": "message",
    "chat": "c07",
    "sender_slot": 5,
@@ -7164,17 +7164,7 @@
    "reading_seconds": 51
   },
   {
-   "t": 233280,
-   "type": "message",
-   "chat": "c07",
-   "sender_slot": 2,
-   "text": "Mag sein, aber Kinder dürfen kein Geschäftsmodell sein. Wenn die Psyche der Schüler leidet, bringt uns die ganze Technik auch nichts.",
-   "warm": false,
-   "heat": "normal",
-   "reading_seconds": 10
-  },
-  {
-   "t": 233590,
+   "t": 241124,
    "type": "message",
    "chat": "c16",
    "sender_slot": 14,
@@ -7184,7 +7174,7 @@
    "reading_seconds": 11
   },
   {
-   "t": 233669,
+   "t": 241953,
    "type": "rating",
    "chat": "c16",
    "from_slot": 9,
@@ -7194,7 +7184,17 @@
    "bridge": false
   },
   {
-   "t": 237720,
+   "t": 241988,
+   "type": "message",
+   "chat": "c07",
+   "sender_slot": 2,
+   "text": "Mag sein, aber Kinder dürfen kein Geschäftsmodell sein. Wenn die Psyche der Schüler leidet, bringt uns die ganze Technik auch nichts.",
+   "warm": false,
+   "heat": "normal",
+   "reading_seconds": 10
+  },
+  {
+   "t": 244508,
    "type": "message",
    "chat": "c07",
    "sender_slot": 5,
@@ -7204,7 +7204,7 @@
    "reading_seconds": 28
   },
   {
-   "t": 237882,
+   "t": 244538,
    "type": "rating",
    "chat": "c07",
    "from_slot": 2,
@@ -7214,7 +7214,7 @@
    "bridge": false
   },
   {
-   "t": 237994,
+   "t": 244538,
    "type": "rating",
    "chat": "c07",
    "from_slot": 5,
@@ -7224,7 +7224,7 @@
    "bridge": false
   },
   {
-   "t": 240886,
+   "t": 245270,
    "type": "message",
    "chat": "c18",
    "sender_slot": 9,
@@ -7234,7 +7234,7 @@
    "reading_seconds": 23
   },
   {
-   "t": 241030,
+   "t": 246101,
    "type": "message",
    "chat": "c16",
    "sender_slot": 9,
@@ -7244,7 +7244,7 @@
    "reading_seconds": 53
   },
   {
-   "t": 241256,
+   "t": 246932,
    "type": "rating",
    "chat": "c16",
    "from_slot": 14,
@@ -7254,7 +7254,7 @@
    "bridge": false
   },
   {
-   "t": 245640,
+   "t": 247763,
    "type": "message",
    "chat": "c07",
    "sender_slot": 2,
@@ -7264,7 +7264,7 @@
    "reading_seconds": 57
   },
   {
-   "t": 248470,
+   "t": 248621,
    "type": "message",
    "chat": "c16",
    "sender_slot": 14,
@@ -7274,7 +7274,7 @@
    "reading_seconds": 53
   },
   {
-   "t": 248552,
+   "t": 249426,
    "type": "rating",
    "chat": "c16",
    "from_slot": 14,
@@ -7284,7 +7284,7 @@
    "bridge": false
   },
   {
-   "t": 248755,
+   "t": 250258,
    "type": "rating",
    "chat": "c16",
    "from_slot": 9,
@@ -7294,7 +7294,7 @@
    "bridge": true
   },
   {
-   "t": 251880,
+   "t": 251091,
    "type": "message",
    "chat": "c07",
    "sender_slot": 5,
@@ -7304,7 +7304,7 @@
    "reading_seconds": 43
   },
   {
-   "t": 258833,
+   "t": 251923,
    "type": "message",
    "chat": "c18",
    "sender_slot": 26,
@@ -7314,7 +7314,7 @@
    "reading_seconds": 13
   },
   {
-   "t": 259080,
+   "t": 253611,
    "type": "message",
    "chat": "c07",
    "sender_slot": 2,
@@ -7324,7 +7324,7 @@
    "reading_seconds": 51
   },
   {
-   "t": 259140,
+   "t": 253641,
    "type": "rating",
    "chat": "c07",
    "from_slot": 2,
@@ -7334,7 +7334,7 @@
    "bridge": true
   },
   {
-   "t": 259140,
+   "t": 254424,
    "type": "rating",
    "chat": "c07",
    "from_slot": 5,
@@ -7344,7 +7344,7 @@
    "bridge": true
   },
   {
-   "t": 259140,
+   "t": 255259,
    "type": "rating",
    "chat": "c18",
    "from_slot": 9,
@@ -7354,7 +7354,7 @@
    "bridge": false
   },
   {
-   "t": 259140,
+   "t": 256093,
    "type": "rating",
    "chat": "c18",
    "from_slot": 26,
@@ -7364,7 +7364,7 @@
    "bridge": false
   },
   {
-   "t": 259140,
+   "t": 256928,
    "type": "rating",
    "chat": "c18",
    "from_slot": 9,
@@ -7374,7 +7374,7 @@
    "bridge": true
   },
   {
-   "t": 259140,
+   "t": 257764,
    "type": "rating",
    "chat": "c18",
    "from_slot": 26,
@@ -7383,5 +7383,6 @@
    "disagreement": 91,
    "bridge": true
   }
- ]
+ ],
+ "ux_retimed": true
 }

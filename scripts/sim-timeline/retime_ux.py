@@ -18,7 +18,7 @@ LEAD = 60  # first event one sim minute in
 WEIGHT = {'message': 1.0, 'chat_open': 1.0, 'rating': 1.0, 'opinion': 0.6, 'difference_rating': 0.08}
 FILES = {
     'social': ['src/data/sim-timeline.json', 'supabase/functions/_shared/sim-timeline.json'],
-    'august': ['supabase/functions/_shared/sim-august-timeline.json'],
+    'august': ['src/data/sim-august-timeline.json', 'supabase/functions/_shared/sim-august-timeline.json'],
 }
 
 
