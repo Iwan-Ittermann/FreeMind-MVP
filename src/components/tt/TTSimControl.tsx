@@ -23,6 +23,7 @@ export function TTSimControl({ topicId, compact = false, dataset = 'social' }: {
     const tick = () => {
       if (document.visibilityState === 'visible') {
         supabase.functions.invoke('sim-replay', { body: { dataset } }).then(({ data, error }) => {
+          if (alive && data?.busy) { const retry = window.setTimeout(() => { timers.delete(retry); tick(); }, 1500); timers.add(retry); }
            if (alive && !error && !data?.busy && Number.isFinite(data?.frame)) {
             setFrame(data.frame);
             const events = Array.isArray(data?.events) ? data.events as Array<Record<string, unknown>> : [];
