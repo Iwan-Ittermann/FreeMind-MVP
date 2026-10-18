@@ -23,6 +23,7 @@ export function TTSimControl({ topicId, compact = false, dataset = 'social' }: {
     const tick = () => {
       if (document.visibilityState === 'visible') {
         supabase.functions.invoke('sim-replay', { body: { dataset } }).then(({ data, error }) => {
+          if (alive && data?.busy) { const retry = window.setTimeout(() => { timers.delete(retry); tick(); }, 1500); timers.add(retry); }
            if (alive && !error && !data?.busy && Number.isFinite(data?.frame)) {
             setFrame(data.frame);
             const events = Array.isArray(data?.events) ? data.events as Array<Record<string, unknown>> : [];
@@ -47,9 +48,8 @@ export function TTSimControl({ topicId, compact = false, dataset = 'social' }: {
     return () => { alive = false; window.clearInterval(id); timers.forEach(window.clearTimeout); };
   }, [topicId, dataset]);
   const progress = Math.min(1, Math.max(0, (frame ?? 0) / LOOP_SECONDS));
-  const day = Math.floor((frame ?? 0) / 86400) + 1;
-  const hour = Math.floor(((frame ?? 0) % 86400) / 3600);
-  const label = frame === null ? t('replay.loading') : t('replay.simClock', { day, hour });
+  const hour = Math.min(72, Math.floor((frame ?? 0) / 3600) + 1);
+  const label = frame === null ? t('replay.loading') : t('replay.simHour', { hour });
 
   return (
     <div

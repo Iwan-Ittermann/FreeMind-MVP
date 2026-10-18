@@ -148,91 +148,110 @@ Deno.serve(async (req) => {
       last = -1;
       chatMap = {};
     }
-    const msgCount: Record<string, number> = {};
-    let applied = 0;
+    // Batched catch-up: one insert per table and stage instead of one roundtrip per event.
+    const pending = EVENTS.filter((e) => e.t > last && e.t <= frame);
+    const at = (t: number) => new Date(cycleStart + (t / SPEED) * 1000).toISOString();
     const animationEvents: Array<Record<string, unknown>> = [];
-    const deadline = now + 40_000;
+    const chatSpecs = new Map((timeline.chats as Array<{ id: string; a: number; b: number }>).map((c) => [c.id, c]));
 
-    for (const e of EVENTS) {
-      if (e.t <= last || e.t > frame) continue;
-      if (Date.now() > deadline) break;
-      const at = new Date(cycleStart + (e.t / SPEED) * 1000).toISOString();
-      if (e.type === 'opinion') {
-        const p = personas.get(e.slot);
-        const uid = p && await ensureUser(admin, p);
-        if (uid && !p.opinion_id) {
-          const { data } = await admin.from('opinions')
-            .insert({ topic_id: tid, user_id: uid, text: e.text, visible: true, created_at: at }).select('id').single();
-          if (data) {
-            p.opinion_id = data.id;
-            await admin.from('sim_personas').update({ opinion_id: data.id, active: true }).eq('id', p.id);
-            animationEvents.push({ id: `opinion:${cycle}:${e.t}:${data.id}`, type: 'opinion', opinionId: data.id, text: e.text });
-          }
-        }
-      } else if (e.type === 'chat_open') {
-        const a = personas.get(e.from_slot)?.opinion_id, b = personas.get(e.to_slot)?.opinion_id;
-        if (a && b && !chatMap[e.chat]) {
-          const { data } = await admin.from('chats')
-            .insert({ topic_id: tid, opinion_a_id: a, opinion_b_id: b, created_at: at }).select('id').single();
-          if (data) chatMap[e.chat] = data.id;
-        }
-      } else if (e.type === 'message') {
-        const cid = chatMap[e.chat], uid = personas.get(e.sender_slot)?.user_id;
-        if (cid && uid) {
-          const { data: message } = await admin.from('chat_messages')
-            .insert({ chat_id: cid, sender_id: uid, content: e.text, created_at: at, visible: true }).select('id').single();
-          const chatSpec = (timeline.chats as Array<{ id: string; a: number; b: number }>).find((chat) => chat.id === e.chat);
-          const targetSlot = chatSpec ? (chatSpec.a === e.sender_slot ? chatSpec.b : chatSpec.a) : null;
-          const sourceOpinionId = personas.get(e.sender_slot)?.opinion_id;
-          const targetOpinionId = targetSlot == null ? null : personas.get(targetSlot)?.opinion_id;
-          if (message && sourceOpinionId && targetOpinionId) {
-            animationEvents.push({ id: `message:${cycle}:${e.t}:${message.id}`, type: 'message', chatId: cid, sourceOpinionId, targetOpinionId, content: e.text });
-          }
-        }
-      } else if (e.type === 'difference_rating') {
-        const rater = personas.get(e.from_slot), target = personas.get(e.to_slot);
-        if (rater?.user_id && rater.opinion_id && target?.opinion_id) {
-          await admin.from('opinion_ratings').upsert({
-            topic_id: tid, rater_opinion_id: rater.opinion_id, target_opinion_id: target.opinion_id,
-            disagreement: Math.min(10, Math.max(0, Math.round(e.disagreement))), updated_at: at,
-          }, { onConflict: 'rater_opinion_id,target_opinion_id' });
-          await admin.from('rating_events').insert({
-            topic_id: tid, rater_id: rater.user_id, kind: 'difference',
-            target_opinion_id: target.opinion_id,
-            value: Math.min(10, Math.max(0, Math.round(e.disagreement))), created_at: at,
-          });
-        }
-      } else if (e.type === 'rating') {
-        const cid = chatMap[e.chat];
-        const rater = personas.get(e.from_slot), target = personas.get(e.to_slot);
-        if (cid && rater?.user_id && target?.opinion_id && rater.opinion_id) {
-          if (msgCount[cid] === undefined) {
-            const { count } = await admin.from('chat_messages').select('id', { count: 'exact', head: true }).eq('chat_id', cid);
-            msgCount[cid] = count ?? 0;
-          }
-          const dis = Math.round(e.disagreement / 10);
-          await admin.from('chat_ratings').upsert({
-            chat_id: cid, rater_id: rater.user_id, empathy: e.respect, disagreement: dis,
-            message_count: msgCount[cid], created_at: at, updated_at: at,
-          }, { onConflict: 'chat_id,rater_id,message_count', ignoreDuplicates: true });
-          await admin.from('rating_events').insert([
-            { topic_id: tid, rater_id: rater.user_id, kind: 'understanding', target_opinion_id: target.opinion_id, chat_id: cid, value: e.respect, created_at: at },
-            { topic_id: tid, rater_id: rater.user_id, kind: 'difference', target_opinion_id: target.opinion_id, chat_id: cid, value: dis, created_at: at },
-          ]);
-          animationEvents.push({
-            id: `rating:${cycle}:${e.t}:${rater.opinion_id}:${target.opinion_id}`,
-            type: 'rating', chatId: cid, sourceOpinionId: rater.opinion_id,
-            targetOpinionId: target.opinion_id, respect: e.respect,
-          });
-        }
-      }
-      if (e.type === 'message' && chatMap[e.chat] && msgCount[chatMap[e.chat]] !== undefined) msgCount[chatMap[e.chat]]++;
-      last = e.t;
-      applied++;
+    // 1) users + opinions
+    const opEvents = pending.filter((e) => e.type === 'opinion' && personas.get(e.slot) && !personas.get(e.slot).opinion_id);
+    await Promise.all(opEvents.map((e) => ensureUser(admin, personas.get(e.slot))));
+    const opRows = opEvents.filter((e) => personas.get(e.slot)?.user_id);
+    if (opRows.length) {
+      const { data } = await admin.from('opinions').insert(opRows.map((e) => ({
+        topic_id: tid, user_id: personas.get(e.slot).user_id, text: e.text, visible: true, created_at: at(e.t),
+      }))).select('id,user_id');
+      const byUser = new Map((data ?? []).map((r: any) => [r.user_id, r.id]));
+      await Promise.all(opRows.map(async (e) => {
+        const p = personas.get(e.slot); const id = byUser.get(p.user_id);
+        if (!id) return;
+        p.opinion_id = id; p.active = true;
+        animationEvents.push({ id: `opinion:${cycle}:${e.t}:${id}`, type: 'opinion', opinionId: id, text: e.text, t: e.t });
+        await admin.from('sim_personas').update({ opinion_id: id, active: true }).eq('id', p.id);
+      }));
     }
+
+    // 2) chats
+    const chatEvents = pending.filter((e) => e.type === 'chat_open' && !chatMap[e.chat]
+      && personas.get(e.from_slot)?.opinion_id && personas.get(e.to_slot)?.opinion_id);
+    if (chatEvents.length) {
+      const { data } = await admin.from('chats').insert(chatEvents.map((e) => ({
+        topic_id: tid, opinion_a_id: personas.get(e.from_slot).opinion_id, opinion_b_id: personas.get(e.to_slot).opinion_id, created_at: at(e.t),
+      }))).select('id,opinion_a_id,opinion_b_id');
+      for (const e of chatEvents) {
+        const a = personas.get(e.from_slot).opinion_id, b = personas.get(e.to_slot).opinion_id;
+        const row = (data ?? []).find((r: any) => r.opinion_a_id === a && r.opinion_b_id === b);
+        if (row) chatMap[e.chat] = row.id;
+      }
+    }
+
+    // 3) messages (message_count for ratings tracked in memory)
+    const msgCount: Record<string, number> = {};
+    const known = Object.values(chatMap);
+    if (known.length) {
+      const { data } = await admin.from('chat_messages').select('chat_id').in('chat_id', known);
+      for (const r of data ?? []) msgCount[(r as any).chat_id] = (msgCount[(r as any).chat_id] ?? 0) + 1;
+    }
+    const msgRows: any[] = [], msgMeta: Ev[] = [];
+    const ratingCount = new Map<Ev, number>();
+    for (const e of pending) {
+      const cid = chatMap[e.chat];
+      if (e.type === 'message') {
+        const uid = personas.get(e.sender_slot)?.user_id;
+        if (cid && uid) {
+          msgRows.push({ chat_id: cid, sender_id: uid, content: e.text, created_at: at(e.t), visible: true });
+          msgMeta.push(e);
+          msgCount[cid] = (msgCount[cid] ?? 0) + 1;
+        }
+      } else if (e.type === 'rating' && cid) ratingCount.set(e, msgCount[cid] ?? 0);
+    }
+    if (msgRows.length) {
+      const { data } = await admin.from('chat_messages').insert(msgRows).select('id');
+      (data ?? []).forEach((m: any, i: number) => {
+        const e = msgMeta[i]; const spec = chatSpecs.get(e.chat);
+        const targetSlot = spec ? (spec.a === e.sender_slot ? spec.b : spec.a) : null;
+        const src = personas.get(e.sender_slot)?.opinion_id;
+        const tgt = targetSlot == null ? null : personas.get(targetSlot)?.opinion_id;
+        if (src && tgt) animationEvents.push({ id: `message:${cycle}:${e.t}:${m.id}`, type: 'message', chatId: chatMap[e.chat], sourceOpinionId: src, targetOpinionId: tgt, content: e.text, t: e.t });
+      });
+    }
+
+    // 4) ratings
+    const diffRows = new Map<string, any>(), chatRatingRows = new Map<string, any>(), eventRows: any[] = [];
+    for (const e of pending) {
+      if (e.type === 'difference_rating') {
+        const rater = personas.get(e.from_slot), target = personas.get(e.to_slot);
+        if (!(rater?.user_id && rater.opinion_id && target?.opinion_id)) continue;
+        const v = Math.min(10, Math.max(0, Math.round(e.disagreement)));
+        diffRows.set(`${rater.opinion_id}:${target.opinion_id}`, { topic_id: tid, rater_opinion_id: rater.opinion_id, target_opinion_id: target.opinion_id, disagreement: v, updated_at: at(e.t) });
+        eventRows.push({ topic_id: tid, rater_id: rater.user_id, kind: 'difference', target_opinion_id: target.opinion_id, value: v, created_at: at(e.t) });
+      } else if (e.type === 'rating') {
+        const cid = chatMap[e.chat]; const rater = personas.get(e.from_slot), target = personas.get(e.to_slot);
+        if (!(cid && rater?.user_id && target?.opinion_id && rater.opinion_id)) continue;
+        const dis = Math.round(e.disagreement / 10), mc = ratingCount.get(e) ?? 0, key = `${cid}:${rater.user_id}:${mc}`;
+        if (!chatRatingRows.has(key)) chatRatingRows.set(key, { chat_id: cid, rater_id: rater.user_id, empathy: e.respect, disagreement: dis, message_count: mc, created_at: at(e.t), updated_at: at(e.t) });
+        eventRows.push(
+          { topic_id: tid, rater_id: rater.user_id, kind: 'understanding', target_opinion_id: target.opinion_id, chat_id: cid, value: e.respect, created_at: at(e.t) },
+          { topic_id: tid, rater_id: rater.user_id, kind: 'difference', target_opinion_id: target.opinion_id, chat_id: cid, value: dis, created_at: at(e.t) },
+        );
+        animationEvents.push({ id: `rating:${cycle}:${e.t}:${rater.opinion_id}:${target.opinion_id}`, type: 'rating', chatId: cid, sourceOpinionId: rater.opinion_id, targetOpinionId: target.opinion_id, respect: e.respect, t: e.t });
+      }
+    }
+    await Promise.all([
+      diffRows.size ? admin.from('opinion_ratings').upsert([...diffRows.values()], { onConflict: 'rater_opinion_id,target_opinion_id' }) : null,
+      chatRatingRows.size ? admin.from('chat_ratings').upsert([...chatRatingRows.values()], { onConflict: 'chat_id,rater_id,message_count', ignoreDuplicates: true }) : null,
+      eventRows.length ? admin.from('rating_events').insert(eventRows) : null,
+    ]);
+
+    if (pending.length) last = pending[pending.length - 1].t;
+    const applied = pending.length;
+    // Only animate the most recent moments; older catch-up is already state.
+    animationEvents.sort((a, b) => (a.t as number) - (b.t as number));
+    const recent = animationEvents.filter((ev) => (ev.t as number) >= frame - 60 * SPEED);
     await put(admin, 'sim_replay_cursor' + cfg.suffix, `${cycle}:${last}`);
     await put(admin, 'sim_replay_chats' + cfg.suffix, JSON.stringify(chatMap));
-    return json({ cycle, frame, applied, cursor: last, events: animationEvents });
+    return json({ cycle, frame, applied, cursor: last, events: recent });
   } finally {
     await admin.from('sim_state').update({ [cfg.lease]: null }).eq('id', 1);
   }

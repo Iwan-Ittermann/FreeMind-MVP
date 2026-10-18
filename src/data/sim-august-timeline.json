@@ -290,106 +290,106 @@
  ],
  "timeline": [
   {
-   "t": 300,
+   "t": 60,
    "type": "opinion",
    "slot": 0,
    "text": "Ich wähle Volt."
   },
   {
-   "t": 1999,
+   "t": 293,
    "type": "opinion",
    "slot": 1,
    "text": "BSW - Die einzigen die die Probleme im Land mit vernünftigen Lösungen wirklich angehen wollen."
   },
   {
-   "t": 7655,
+   "t": 577,
    "type": "opinion",
    "slot": 2,
    "text": "Wahlweise Grüne, FDP oder Volt. Weil ich liberal-progressive Politik gut finde, bei der Menschen nicht bevormundet werden."
   },
   {
-   "t": 13311,
+   "t": 884,
    "type": "opinion",
    "slot": 3,
    "text": "Die Linke, weil ich sie als die einzige der großen Parteien sehe die wirklich die Machtverhältnisse verändern möchte, wirklich den finanziellen und darüber vermittelten Macht-Ungleichheiten etwas entgegensetzen möchte. Außerdem ist ein Organisierender Ansatz sehr stark in ihr vertreten, der politische Arbeit auf nicht nur die Parlamente beschränkt begreift."
   },
   {
-   "t": 18967,
+   "t": 1208,
    "type": "opinion",
    "slot": 4,
    "text": "Ich wähle meistens strategisch zwisch Grünen, SPD  und auch mal CDU."
   },
   {
-   "t": 19694,
+   "t": 1543,
    "type": "difference_rating",
    "from_slot": 4,
    "to_slot": 1,
    "disagreement": 8
   },
   {
-   "t": 19709,
+   "t": 1589,
    "type": "difference_rating",
    "from_slot": 4,
    "to_slot": 3,
    "disagreement": 5
   },
   {
-   "t": 19719,
+   "t": 1635,
    "type": "difference_rating",
    "from_slot": 4,
    "to_slot": 2,
    "disagreement": 2
   },
   {
-   "t": 19736,
+   "t": 1681,
    "type": "difference_rating",
    "from_slot": 4,
    "to_slot": 0,
    "disagreement": 0
   },
   {
-   "t": 25236,
+   "t": 1727,
    "type": "opinion",
    "slot": 5,
    "text": "Die Grünen"
   },
   {
-   "t": 25277,
+   "t": 2078,
    "type": "difference_rating",
    "from_slot": 5,
    "to_slot": 0,
    "disagreement": 8
   },
   {
-   "t": 25282,
+   "t": 2125,
    "type": "difference_rating",
    "from_slot": 5,
    "to_slot": 1,
    "disagreement": 10
   },
   {
-   "t": 25287,
+   "t": 2173,
    "type": "difference_rating",
    "from_slot": 5,
    "to_slot": 3,
    "disagreement": 2
   },
   {
-   "t": 25297,
+   "t": 2221,
    "type": "difference_rating",
    "from_slot": 5,
    "to_slot": 2,
    "disagreement": 2
   },
   {
-   "t": 25303,
+   "t": 2268,
    "type": "difference_rating",
    "from_slot": 5,
    "to_slot": 4,
    "disagreement": 0
   },
   {
-   "t": 25314,
+   "t": 2316,
    "type": "chat_open",
    "chat": "a00",
    "from_slot": 5,
@@ -397,21 +397,21 @@
    "moment": "real"
   },
   {
-   "t": 25457,
+   "t": 2927,
    "type": "message",
    "chat": "a00",
    "sender_slot": 5,
    "text": "VOLT habe ich auch eine Weile lang gewählt, weil ich die paneuropäische Idee für am wenigsten nationalsozialistisch halte. Dann fand ich raus, wie wenig kompetent sie sind. Hast Du dir vor der letzten Bundestagswahl mal den Podcast von Jung&Naiv mit der VOLT-Chefin angehört. Danach musste jeder wissen, diese Partei ist unwählbar"
   },
   {
-   "t": 27182,
+   "t": 3555,
    "type": "difference_rating",
    "from_slot": 2,
    "to_slot": 4,
    "disagreement": 2
   },
   {
-   "t": 27186,
+   "t": 3606,
    "type": "chat_open",
    "chat": "a01",
    "from_slot": 2,
@@ -419,21 +419,21 @@
    "moment": "real"
   },
   {
-   "t": 27228,
+   "t": 4251,
    "type": "message",
    "chat": "a01",
    "sender_slot": 2,
    "text": "Interessant, wie sind die Positionen — gerade Grün-Schwarz — zu vereinbaren? Vermutlich über die gemeinsame demokratische “Mitte”. "
   },
   {
-   "t": 27247,
+   "t": 4908,
    "type": "difference_rating",
    "from_slot": 2,
    "to_slot": 3,
    "disagreement": 8
   },
   {
-   "t": 27251,
+   "t": 4961,
    "type": "chat_open",
    "chat": "a02",
    "from_slot": 2,
@@ -441,21 +441,21 @@
    "moment": "real"
   },
   {
-   "t": 27320,
+   "t": 5632,
    "type": "message",
    "chat": "a02",
    "sender_slot": 2,
    "text": "Die Linke hat interessante Ansätze und sie holt u.a. die Jugend ab. Jedoch lassen sich keine ihrer Konzepte vernünftig finanzieren und viele programmatische Punkte fördern den wirtschaftlichen Abstieg Deutschland und gefährden unser aller Wohlstand (auch den der “kleinen” Leute). "
   },
   {
-   "t": 28349,
+   "t": 6313,
    "type": "difference_rating",
    "from_slot": 2,
    "to_slot": 0,
    "disagreement": 0
   },
   {
-   "t": 28351,
+   "t": 6368,
    "type": "chat_open",
    "chat": "a03",
    "from_slot": 2,
@@ -463,42 +463,28 @@
    "moment": "real"
   },
   {
-   "t": 28416,
+   "t": 7060,
    "type": "message",
    "chat": "a03",
    "sender_slot": 2,
    "text": "Ich finde Volt ist bei 3%-Hürde, z.B. auf kommunaler Ebene, eine gute Wahl. Oftmals denke ich, dass die Stimme jedoch bei 5%-Klausel (z.B. aktuelle Berliner Senatswahl) “strategisch verschenkt” ist. "
   },
   {
-   "t": 32079,
+   "t": 7761,
    "type": "message",
    "chat": "a01",
    "sender_slot": 4,
    "text": "Ja genau, bei Bundestagswahlen mache ich mir wenig Illusionen, dass es zu großen Veränderungenkommt. "
   },
   {
-   "t": 32139,
-   "type": "message",
-   "chat": "a01",
-   "sender_slot": 4,
-   "text": "Also default ist sozusagen grün und ich bin bereit bis zu schwarz zu gehen, um extremere Ergebnisse zu erschweren."
-  },
-  {
-   "t": 32167,
-   "type": "message",
-   "chat": "a01",
-   "sender_slot": 4,
-   "text": "Bei dir sticht  für mich wiederum die FDP raus. "
-  },
-  {
-   "t": 32186,
+   "t": 9912,
    "type": "difference_rating",
    "from_slot": 4,
    "to_slot": 5,
    "disagreement": 0
   },
   {
-   "t": 32199,
+   "t": 9970,
    "type": "chat_open",
    "chat": "a04",
    "from_slot": 4,
@@ -506,28 +492,28 @@
    "moment": "real"
   },
   {
-   "t": 32228,
+   "t": 10281,
+   "type": "message",
+   "chat": "a01",
+   "sender_slot": 4,
+   "text": "Also default ist sozusagen grün und ich bin bereit bis zu schwarz zu gehen, um extremere Ergebnisse zu erschweren."
+  },
+  {
+   "t": 10702,
    "type": "message",
    "chat": "a04",
    "sender_slot": 4,
    "text": "Hi, wir sind glaube ich relativ weit auseinander. "
   },
   {
-   "t": 32285,
+   "t": 12801,
    "type": "message",
-   "chat": "a04",
+   "chat": "a01",
    "sender_slot": 4,
-   "text": "Was wäre zB ein Vorurteil über BSW und ohre Wähler, dass für ein Gespräch sehr hinderlich wäre? "
+   "text": "Bei dir sticht  für mich wiederum die FDP raus. "
   },
   {
-   "t": 32358,
-   "type": "message",
-   "chat": "a04",
-   "sender_slot": 4,
-   "text": "Oder einfach gesagt: Wie würdest du gerne über das BSW diskutieren? welche punkte sind dir wichtig und  welche nicht? "
-  },
-  {
-   "t": 32367,
+   "t": 12937,
    "type": "chat_open",
    "chat": "a05",
    "from_slot": 4,
@@ -535,21 +521,21 @@
    "moment": "real"
   },
   {
-   "t": 32389,
+   "t": 13222,
+   "type": "message",
+   "chat": "a04",
+   "sender_slot": 4,
+   "text": "Was wäre zB ein Vorurteil über BSW und ohre Wähler, dass für ein Gespräch sehr hinderlich wäre? "
+  },
+  {
+   "t": 13694,
    "type": "message",
    "chat": "a05",
    "sender_slot": 4,
    "text": "Hey, wir scheinen relativ nah beiander zu liegen"
   },
   {
-   "t": 32407,
-   "type": "message",
-   "chat": "a05",
-   "sender_slot": 4,
-   "text": "Auch mal was anderes gewählt?"
-  },
-  {
-   "t": 32412,
+   "t": 15224,
    "type": "chat_open",
    "chat": "a06",
    "from_slot": 4,
@@ -557,28 +543,28 @@
    "moment": "real"
   },
   {
-   "t": 32446,
+   "t": 15742,
+   "type": "message",
+   "chat": "a04",
+   "sender_slot": 4,
+   "text": "Oder einfach gesagt: Wie würdest du gerne über das BSW diskutieren? welche punkte sind dir wichtig und  welche nicht? "
+  },
+  {
+   "t": 15997,
    "type": "message",
    "chat": "a06",
    "sender_slot": 4,
    "text": "Hast du sie schon oft gewählt? Ich weiß relativ wenig über sie. "
   },
   {
-   "t": 32486,
+   "t": 16214,
    "type": "message",
-   "chat": "a06",
+   "chat": "a05",
    "sender_slot": 4,
-   "text": "Hatte überlegt aber bin sozusagen an meiner eigenen 5% Hürde gescheitert. "
+   "text": "Auch mal was anderes gewählt?"
   },
   {
-   "t": 32599,
-   "type": "message",
-   "chat": "a06",
-   "sender_slot": 4,
-   "text": "Vielleicht habe ich Ihnen sogar mal eine Stimme gegeben, wenn der Sieger schon feststand. So um Innovation zu fördern"
-  },
-  {
-   "t": 32628,
+   "t": 18344,
    "type": "chat_open",
    "chat": "a07",
    "from_slot": 4,
@@ -586,56 +572,63 @@
    "moment": "real"
   },
   {
-   "t": 32747,
+   "t": 18517,
+   "type": "message",
+   "chat": "a06",
+   "sender_slot": 4,
+   "text": "Hatte überlegt aber bin sozusagen an meiner eigenen 5% Hürde gescheitert. "
+  },
+  {
+   "t": 19135,
    "type": "message",
    "chat": "a07",
    "sender_slot": 4,
    "text": "Ich finde deinen Beitrag bisher den inspirierensten! Ich kann die Linke nicht wählen (Stichwort Verbohrtheit) aber jetzt verstehe ich besser, wsrum ihre Wählerschaft so treu ist und wächste."
   },
   {
-   "t": 32759,
-   "type": "message",
-   "chat": "a07",
-   "sender_slot": 4,
-   "text": "Wie siehst du die SED-Verbindung?"
-  },
-  {
-   "t": 38415,
+   "t": 20731,
    "type": "difference_rating",
    "from_slot": 3,
    "to_slot": 1,
    "disagreement": 8
   },
   {
-   "t": 38419,
+   "t": 20795,
    "type": "difference_rating",
    "from_slot": 3,
    "to_slot": 5,
    "disagreement": 2
   },
   {
-   "t": 38429,
+   "t": 20859,
    "type": "difference_rating",
    "from_slot": 3,
    "to_slot": 2,
    "disagreement": 5
   },
   {
-   "t": 39576,
+   "t": 20924,
    "type": "difference_rating",
    "from_slot": 3,
    "to_slot": 4,
    "disagreement": 5
   },
   {
-   "t": 39584,
+   "t": 20988,
    "type": "difference_rating",
    "from_slot": 3,
    "to_slot": 0,
    "disagreement": 2
   },
   {
-   "t": 39608,
+   "t": 21037,
+   "type": "message",
+   "chat": "a06",
+   "sender_slot": 4,
+   "text": "Vielleicht habe ich Ihnen sogar mal eine Stimme gegeben, wenn der Sieger schon feststand. So um Innovation zu fördern"
+  },
+  {
+   "t": 21052,
    "type": "chat_open",
    "chat": "a08",
    "from_slot": 3,
@@ -643,56 +636,56 @@
    "moment": "real"
   },
   {
-   "t": 40166,
+   "t": 21655,
    "type": "message",
    "chat": "a07",
-   "sender_slot": 3,
-   "text": "Das freut mich! Um ehrlich zu sein ist die historische SED Verbindung für mich kein so großes Thema. Zum einen muss ich zugeben da gar nicht so viel drüber zu wissen. Ich bin auch erst 1996 geboren, weswegen ich keinen persönlichen Bezug habe. Und zum anderen erlebe ich die heutige Linke als eine Partei in der der demokratische Gedanke stark verankert ist, und die auch thematisch sehr gegen Überwachungstechnologien oder so etwas ist. Trotz der historischen Verbindung bin ich also recht überzeugt dass eine thematische Verbindung mit der SED in den kritischen Aspekten von dieser nicht wirklich besteht. Bevor die Linke sich nach der Abspaltung des BSW neu aufgestellt hat hab ich sie auch noch etwas anders gesehen, aber jetzt habe ich das Gefühl dass die Partei nochmal eine Erneuerung durchmacht hat die ich gut finde. Auch ziemlich jung ist in weiten Teilen, wodurch viele heutige Mitglieder nichts mit der SED Geschichte zu tun haben denk ich. Aber legitime Frage! "
+   "sender_slot": 4,
+   "text": "Wie siehst du die SED-Verbindung?"
   },
   {
-   "t": 40191,
-   "type": "message",
-   "chat": "a07",
-   "sender_slot": 3,
-   "text": "Du meinst du wählst meist strategisch. Wonach richtest du dich da so? "
-  },
-  {
-   "t": 40377,
+   "t": 23481,
    "type": "message",
    "chat": "a02",
    "sender_slot": 3,
    "text": "Die Linke hat mWn tatsächlich besser durchgerechnete Finanzierungsansätze als einige andere Parteien (nicht unbedingt die, die du wählst vermutlich). Im Gegensatz zu anderen Parteien ist sie nämlich explizit bereit Steuern bei Menschen mit sehr viel Geld auch zu erhöhen um Ausgaben für die Allgemeinheit zu finanzieren.\nMich interessiert aber vor allem dein zweiter Punkt, inwiefern die Linke wohlstandsgefährend ist. Magst du das näher erläutern? "
   },
   {
-   "t": 40524,
+   "t": 24175,
+   "type": "message",
+   "chat": "a07",
+   "sender_slot": 3,
+   "text": "Das freut mich! Um ehrlich zu sein ist die historische SED Verbindung für mich kein so großes Thema. Zum einen muss ich zugeben da gar nicht so viel drüber zu wissen. Ich bin auch erst 1996 geboren, weswegen ich keinen persönlichen Bezug habe. Und zum anderen erlebe ich die heutige Linke als eine Partei in der der demokratische Gedanke stark verankert ist, und die auch thematisch sehr gegen Überwachungstechnologien oder so etwas ist. Trotz der historischen Verbindung bin ich also recht überzeugt dass eine thematische Verbindung mit der SED in den kritischen Aspekten von dieser nicht wirklich besteht. Bevor die Linke sich nach der Abspaltung des BSW neu aufgestellt hat hab ich sie auch noch etwas anders gesehen, aber jetzt habe ich das Gefühl dass die Partei nochmal eine Erneuerung durchmacht hat die ich gut finde. Auch ziemlich jung ist in weiten Teilen, wodurch viele heutige Mitglieder nichts mit der SED Geschichte zu tun haben denk ich. Aber legitime Frage! "
+  },
+  {
+   "t": 24298,
    "type": "message",
    "chat": "a08",
    "sender_slot": 3,
    "text": "Hi! Mich interessiert deine Meinung. Hättest du Lust mir zu erklären inwiefern das BSW die einzigen sind, die vernünftige Lösungen anbieten? Mein Eindruck war immer, dass das BSW primär populistische Punkte bedient, und inhaltlich gar nicht so substanziell Lösungen anbietet, die der Komplexität von vielen Dingen angemessen sind. Aber ich lass mich gerne umstimmen :) "
   },
   {
-   "t": 46180,
+   "t": 26001,
    "type": "message",
    "chat": "a02",
    "sender_slot": 2,
    "text": "Danke für deine Gedanken. Ich finde es gut, dass die Linke Kapital und Vermögen stärker besteuern will. Aber allein daraus lassen sich nicht all ihre Konzepte finanzieren. Mein größtes Bedenken bei den LINKEN ist, dass ihr Regierungsbeteiligung oder Konzepte zu einer Kapitalflucht führen und/oder wirtschaftliche Produktivität des Standorts Deutschland nach unten treiben. Wir brauchen Wagniskapital, Unternehmertum, wirtschaftliche Anreize, um international konkurrenzfähig zu bleiben (insb. ggü China und USA). Ich befürchte, dass linke Ideologie den Standort Deutschland schwächt und zu “weniger für alle”"
   },
   {
-   "t": 46298,
+   "t": 26695,
    "type": "message",
-   "chat": "a02",
-   "sender_slot": 2,
-   "text": "… führt. Obwohl die eigentlich Intention “mehr für die Kleinen” ist. Ich glaube, man muss alle Einkommensschichten zu gleichen Teilen abholen bzw. mit einbeziehen. Daher positioniere ich mich in der Mitte (eben am Overlap von FDP/Grünen/CDU/Volt — wenn es den überhaupt gibt). Aber ein zu starker Fokus auf Umverteilung is men nicht zielführend. "
+   "chat": "a07",
+   "sender_slot": 3,
+   "text": "Du meinst du wählst meist strategisch. Wonach richtest du dich da so? "
   },
   {
-   "t": 46423,
+   "t": 26770,
    "type": "message",
    "chat": "a01",
    "sender_slot": 2,
    "text": "Default bei mir auch grün, aber warum sticht deines Erachtens FDP raus? Ich glaube, dass Unternehmertum, Wagniskapital und ignanzielle Anreize essentiell für den Wirtschaftsstandort Deutschland sind. Das fehlt mir bei einigen Parteien. Beispiel Generationenkapital. "
   },
   {
-   "t": 52079,
+   "t": 27601,
    "type": "rating",
    "chat": "a07",
    "from_slot": 4,
@@ -702,14 +695,21 @@
    "bridge": false
   },
   {
-   "t": 52429,
+   "t": 28521,
+   "type": "message",
+   "chat": "a02",
+   "sender_slot": 2,
+   "text": "… führt. Obwohl die eigentlich Intention “mehr für die Kleinen” ist. Ich glaube, man muss alle Einkommensschichten zu gleichen Teilen abholen bzw. mit einbeziehen. Daher positioniere ich mich in der Mitte (eben am Overlap von FDP/Grünen/CDU/Volt — wenn es den überhaupt gibt). Aber ein zu starker Fokus auf Umverteilung is men nicht zielführend. "
+  },
+  {
+   "t": 29290,
    "type": "message",
    "chat": "a01",
    "sender_slot": 4,
    "text": "Naja, ich finde sie pflegen ein Leistungsbezogenes Image aber handeln vorallem im Interesse von Besserverdienenden. Das ist ihre Zielgruppe, sozusagen ihr Geschäftsmodell.  Die Mövenpick Sache hat einfach zu gut zu diesem Bild gepasst. Aber was genau ist das Generationenkapital? Lass uns das gerne genauer anschauen"
   },
   {
-   "t": 52433,
+   "t": 29320,
    "type": "rating",
    "chat": "a01",
    "from_slot": 4,
@@ -719,77 +719,77 @@
    "bridge": true
   },
   {
-   "t": 52891,
+   "t": 30113,
    "type": "message",
    "chat": "a07",
    "sender_slot": 4,
    "text": "Ich weiß auch nicht viel darüber. Glaube halt sie nehmen da einen kleinen Prozentsatz ihrer Stimmen her, dass Menschen im Osten sie als \"unsere Leute\" wahrnehmen. \nVom Image bin ich total bei dir, sie sind medial kompetent. Aber - und jetzt kommt der Klassiker - ich traue ihnen keine Wirtschaft zu. Und ich finde ihren Fokus auf Minderheiten etwas affektiert. Sie wollen zu viel zu schnell. Und im schlimmsten Fall fühlen sich deshalb moralisch überlegen.. "
   },
   {
-   "t": 53044,
-   "type": "message",
-   "chat": "a07",
-   "sender_slot": 4,
-   "text": "Strategisch heißt für mich, dass ich meistens die Partei von den dreien wähle, die den größten Unterschied macht. In Sachsen Anhalt zB würde ich vermutlich aktuell SPD wählen, einfach nur damit sie über 5% kommen.."
-  },
-  {
-   "t": 53866,
+   "t": 31810,
    "type": "message",
    "chat": "a01",
    "sender_slot": 2,
    "text": "Generationenkapital = die Möglichkeit mit einem aktiv gemanagten Staatsfond  (Beispiel Norwegen oder Saudi Arabien) die Rentenkasse aufzubessern. Das war eine FDP-Idee, die beschlossen war, aber in der letzten Legislaturperiode nicht mehr umgesetzt wurde. Es war eine vernünftige (und sehr naheliegende) Idee, die Rentenkasse aufzubessern, sodass alle — auch Geringverdiener — davon profitieren. Ansonsten gebe ich dir recht, dass die FDP eher eine “Klientel”-Partei für Besserverdienende ist. "
   },
   {
-   "t": 59522,
+   "t": 32633,
+   "type": "message",
+   "chat": "a07",
+   "sender_slot": 4,
+   "text": "Strategisch heißt für mich, dass ich meistens die Partei von den dreien wähle, die den größten Unterschied macht. In Sachsen Anhalt zB würde ich vermutlich aktuell SPD wählen, einfach nur damit sie über 5% kommen.."
+  },
+  {
+   "t": 32654,
    "type": "message",
    "chat": "a08",
    "sender_slot": 1,
    "text": "Prinzipiell können wir da gern drüber reden. Ich gehe mit, dass das BSW teilweise populistisch agiert, aber das ist für eine neue Partei auch in gewisser Weise ein Tool, um überhaupt Aufmerksamkeit zu bekommen, und solange es moralisch geschieht, was es mMn tut, ist das kein Problem. Das BSW wird aber oft auf diese Punkte, z.B. Russland reduziert, dabei hat es in der Sozialpolitik viele Linke ansätze, die Sinn ergeben und ist aber gleichzeitig vernünftig, die Wirtschaft nicht kaputt zu regulieren."
   },
   {
-   "t": 59581,
+   "t": 33506,
    "type": "message",
    "chat": "a04",
    "sender_slot": 1,
    "text": "Prinzipiell können wir da gern drüber reden, mir ist wichtig, dass man soch mit dem Programm einer Partei auseinandersetzt und nicht blind der medialen Berichterstattung glaubt."
   },
   {
-   "t": 59603,
+   "t": 34361,
    "type": "difference_rating",
    "from_slot": 1,
    "to_slot": 3,
    "disagreement": 5
   },
   {
-   "t": 59617,
+   "t": 34430,
    "type": "difference_rating",
    "from_slot": 1,
    "to_slot": 4,
    "disagreement": 8
   },
   {
-   "t": 59628,
+   "t": 34499,
    "type": "difference_rating",
    "from_slot": 1,
    "to_slot": 5,
    "disagreement": 8
   },
   {
-   "t": 59654,
+   "t": 34567,
    "type": "difference_rating",
    "from_slot": 1,
    "to_slot": 2,
    "disagreement": 5
   },
   {
-   "t": 59662,
+   "t": 34636,
    "type": "difference_rating",
    "from_slot": 1,
    "to_slot": 0,
    "disagreement": 8
   },
   {
-   "t": 59682,
+   "t": 34704,
    "type": "chat_open",
    "chat": "a09",
    "from_slot": 1,
@@ -797,14 +797,14 @@
    "moment": "real"
   },
   {
-   "t": 59713,
+   "t": 35564,
    "type": "message",
    "chat": "a09",
    "sender_slot": 1,
    "text": "Was macht Volt für dich so gut? Und denkst du dass die Überhaupt ne Chance auf 5% haben? Die torkeln immer irgendwo bei 1-2% rum"
   },
   {
-   "t": 59733,
+   "t": 36426,
    "type": "chat_open",
    "chat": "a10",
    "from_slot": 1,
@@ -812,145 +812,145 @@
    "moment": "real"
   },
   {
-   "t": 59759,
+   "t": 37290,
    "type": "message",
    "chat": "a10",
    "sender_slot": 1,
    "text": "Eine bevormundendere Partei als die Grünen gibt’s doch gar nicht, höchstens die Linke noch auf selbem Niveau"
   },
   {
-   "t": 65415,
+   "t": 38158,
    "type": "message",
    "chat": "a04",
    "sender_slot": 4,
    "text": "Moin"
   },
   {
-   "t": 65487,
+   "t": 40678,
    "type": "message",
    "chat": "a04",
    "sender_slot": 4,
    "text": "Ok, das kann ich verstehen. Allerdings habe ich keins der Programme gelesen. Ich sehe die Wahlplakate und natürlich Videos auf social Media. "
   },
   {
-   "t": 65553,
-   "type": "message",
-   "chat": "a04",
-   "sender_slot": 4,
-   "text": "Was wären den Punkte aus dem Programm, über die wir gut reden könnten?"
-  },
-  {
-   "t": 65827,
+   "t": 40775,
    "type": "message",
    "chat": "a01",
    "sender_slot": 4,
    "text": "Ah, es wurde auch als Aktienbasierte Rente beschrieben, oder? \n\nIch finde halt die Grundannahme der FDP zB \"Aufstieg durch Leistung\" negiert die ungleichen Startchancen. Die Alleinerziehenden leisten viel und steigen trotzdem nicht auf. Und mein Verdacht ist, dass FDP Politiker da eher in Richtung \"Da hättest du vielleicht nicht so schnell Kinder in die Welt setzen sollen\" denken.. Also die individuelle Entscheidung viel stärker gewichten als die sozialen Faktoren."
   },
   {
-   "t": 66025,
+   "t": 41652,
    "type": "message",
    "chat": "a05",
    "sender_slot": 4,
    "text": "Huhu"
   },
   {
-   "t": 71681,
+   "t": 42532,
    "type": "opinion",
    "slot": 6,
    "text": "Ich neige zu Grün, weil Klimapolitik. Bin aber zunehmend unsicher, was strategisch klug ist, um die AfD zu verhindern..."
   },
   {
-   "t": 71736,
+   "t": 43061,
    "type": "difference_rating",
    "from_slot": 6,
    "to_slot": 3,
    "disagreement": 5
   },
   {
-   "t": 71757,
+   "t": 43132,
    "type": "difference_rating",
    "from_slot": 6,
    "to_slot": 2,
    "disagreement": 8
   },
   {
-   "t": 71766,
+   "t": 43198,
+   "type": "message",
+   "chat": "a04",
+   "sender_slot": 4,
+   "text": "Was wären den Punkte aus dem Programm, über die wir gut reden könnten?"
+  },
+  {
+   "t": 43203,
    "type": "difference_rating",
    "from_slot": 6,
    "to_slot": 4,
    "disagreement": 2
   },
   {
-   "t": 71777,
+   "t": 43273,
    "type": "difference_rating",
    "from_slot": 6,
    "to_slot": 1,
    "disagreement": 10
   },
   {
-   "t": 71795,
+   "t": 43344,
    "type": "difference_rating",
    "from_slot": 6,
    "to_slot": 0,
    "disagreement": 5
   },
   {
-   "t": 71812,
+   "t": 43414,
    "type": "difference_rating",
    "from_slot": 6,
    "to_slot": 5,
    "disagreement": 2
   },
   {
-   "t": 77468,
+   "t": 43485,
    "type": "message",
    "chat": "a02",
    "sender_slot": 3,
    "text": "Interessant. Sicherlich hast du da einige gute Punkte, was mich aber diesbezüglich umtreibt ist, dass Wirtschaftskrisen im Kapitalismus (und so die gegenwärtige) tendentiell von Konsumentenseite getrieben werden: Krise, weil Menschen weniger kaufen. Hier halte ich gerade Umverteilung für ein wichtiges Wirtschaftspolitisches Instrument, weil es einer breiteren Gesellschaft Konsum ermöglicht und dadurch die Nachfrage antreibt. Und Geld das \"normale Leute\" ausgeben geht eher in den Mittelstand auch würd ich sagen, von der breite der Gesellschaft in die breite der Gesellschaft zurück, und wirkt damit noch einmal breiter als bspw gezielte Investments. Durch erhöhte Binnennachfrage wird selbstverständlich erstmal nicht der Exportmarkt gestärkt, aber ich halte sie trotzdem für wichtig für den Wirtschaftsstandort Deutschland. Und natürlich ist es nicht nur die Binnennachfrage, die die Krise treibt, aber doch zu substanziellem Anteil denk ich. "
   },
   {
-   "t": 77594,
+   "t": 44370,
    "type": "message",
    "chat": "a08",
    "sender_slot": 3,
    "text": "Ja ich will den Populismus auch gar nicht zu sehr kritisieren, die Linke, wofür ich mich hier ausgesprochen hab, agiert ja durchaus selber so :D\nWas die Sozialpolitik angeht stimm ich dir total zu, was die Wirtschaftspolitik angeht kenn ich mich zu wenig aus.\nHast du Beispiele, wo du das BSW vernünftig findest, und bspw die Linke nicht? "
   },
   {
-   "t": 77881,
+   "t": 45257,
    "type": "message",
    "chat": "a07",
    "sender_slot": 3,
    "text": "Zu den Stimmen aus dem Osten: möglich. Wobei ich befürchte dass da viele inzwischen bei der AfD sind auch...\nWirtschaft: klar, klassiker :)\nHat denke ich seine Richtigkeit auch, ist aber auch kein ganz fairer Vergleich\nAlle anderen Parteien wollen am Kapitalismus festhalten, die Linke setzt sich für einen demokratischen Sozialismus ein\nDa nach kapitalistischen Maßstäben zu beurteilen, bzw wie kompetent ihre kapitalistische Wirtschaftspolitik ist, ist eben nicht ganz fair.\nUnd die Kapitalismus/Sozialismus Diskussion ist dann noch einmal eine andere\nWas die Minderheiten angeht hab ich das Gefühl die Linke hat auch etwas aus der BSW Abspaltung gelernt, und legt den Fokus inzwischen wieder mehr auf die breitere Bevölkerung hab ich das Gefühl."
   },
   {
-   "t": 77934,
-   "type": "message",
-   "chat": "a07",
-   "sender_slot": 3,
-   "text": "Und verstehe mit dem strategisch, das ergibt Sinn.\nWählst du jetzt in Berlin? Wenn ja: magst du sagen wen du da strategisch wählen würdest? "
-  },
-  {
-   "t": 83590,
+   "t": 47038,
    "type": "message",
    "chat": "a10",
    "sender_slot": 2,
    "text": "Ja, grüne noch am meisten. FDP, Volt eher nicht … daher zähle ich sie zum Kern meiner Wahlmöglichkeiten. Bei den Grünen überzeugt mich aber der konsequente Fokus auf neue Mobilitätskonzepte — gerade in Berlin. Ich kann die CDU-Autolobby Politik im 21. Jahrhundert einfach nicht mittragen. "
   },
   {
-   "t": 84228,
+   "t": 47777,
+   "type": "message",
+   "chat": "a07",
+   "sender_slot": 3,
+   "text": "Und verstehe mit dem strategisch, das ergibt Sinn.\nWählst du jetzt in Berlin? Wenn ja: magst du sagen wen du da strategisch wählen würdest? "
+  },
+  {
+   "t": 47932,
    "type": "opinion",
    "slot": 7,
    "text": "Aktuell werde ich gar keine Partei wählen , da ich merke , dass egal was ich wähle es keinen Unterschied macht, es kommt keine wirkliche Veränderung in Deutschland an.\nDaher möchte ich „meine Stimme“ auch nicht länger einer Partei geben, sondern ein Zeichen setzen , dass niemand mehr wählen geht und wir das ganze System neu auflegen.\nIch möchte Parteien und besonders Politiker sehen , die ihr Fach verstehen und Berufs Erfahrung mit bringen (mind. 10jahre) und dann , das  was  sie versprechen auch einhalten müssen , ansonsten gibt es Sanktionen oder sie müssen ihre Gelder zurück zahlen .\nAußerdem möchte ich Gremien sehen , die in ihren Bereichen maximal Entscheidungen treffen können , anstatt darüber hinaus.\nZum bespiel : Bildung sollten von Menschen getroffen werden die in den Bereichen auch arbeiten .\nEine Schule muss differenziert werden zu einem Kindergarten und so weiter .\n\nDa mir das keine Partei geben kann, außer die Piraten mal einen Ansatz , die aber auch nicht klar kommen , möchte ich das gar keiner mehr wählen geht und wir somit das System neu definieren müssen ."
   },
   {
-   "t": 84319,
+   "t": 48469,
    "type": "difference_rating",
    "from_slot": 7,
    "to_slot": 2,
    "disagreement": 5
   },
   {
-   "t": 84347,
+   "t": 48541,
    "type": "chat_open",
    "chat": "a11",
    "from_slot": 7,
@@ -958,21 +958,21 @@
    "moment": "real"
   },
   {
-   "t": 84387,
+   "t": 49438,
    "type": "message",
    "chat": "a11",
    "sender_slot": 7,
    "text": "Ich verstehe nicht ganz den Ansatz in Sachen Bevormundung: Wenn die Grünen mir sagen, sie wollen nur noch 30er Zonen machen, dann ist das doch auch eine Bevormundung."
   },
   {
-   "t": 84408,
+   "t": 50338,
    "type": "difference_rating",
    "from_slot": 7,
    "to_slot": 3,
    "disagreement": 5
   },
   {
-   "t": 84419,
+   "t": 50410,
    "type": "chat_open",
    "chat": "a12",
    "from_slot": 7,
@@ -980,84 +980,77 @@
    "moment": "real"
   },
   {
-   "t": 84432,
+   "t": 51311,
    "type": "message",
    "chat": "a12",
    "sender_slot": 7,
    "text": "[inaudible]"
   },
   {
-   "t": 84459,
-   "type": "message",
-   "chat": "a12",
-   "sender_slot": 7,
-   "text": "Ja, kann ich verstehen. Ich würde die Linken gerne mal wieder sehen, was sie wirklich umsetzen können. Da ich aus einer einem Osthaushalt komme, bin ich dadurch ein bisschen geprägt, wie sehr die Menschen doch auch mit den Linken nicht zufrieden waren und im Endeffekt auch keine Veränderung gekommen sind."
-  },
-  {
-   "t": 84471,
+   "t": 53121,
    "type": "difference_rating",
    "from_slot": 7,
    "to_slot": 4,
    "disagreement": 10
   },
   {
-   "t": 85450,
+   "t": 53194,
    "type": "message",
    "chat": "a01",
    "sender_slot": 2,
    "text": "Ja genau, Aktienrente. Ein super Idee, um das marode System, das durch die Verschiebung der Alterspyramide zunehmend unter Druck gerät und zu scheitern droht, langfristig abzusichern. \n\nUnd ja, ungleiche Startchancen sind für mich genau der Schwachpunkt an „Aufstieg durch Leistung“. Aber daraus folgt für mich nicht, dass Leistung egal sein sollte. Sozialliberal heißt für mich: Startchancen möglichst angleichen und strukturelle Nachteile abfedern – und dann Eigeninitiative und Leistung honorieren. Gerade Alleinerziehende müsste man deshalb viel stärker unterstützen, statt „selbst schuld“ zu sagen."
   },
   {
-   "t": 85652,
+   "t": 53831,
+   "type": "message",
+   "chat": "a12",
+   "sender_slot": 7,
+   "text": "Ja, kann ich verstehen. Ich würde die Linken gerne mal wieder sehen, was sie wirklich umsetzen können. Da ich aus einer einem Osthaushalt komme, bin ich dadurch ein bisschen geprägt, wie sehr die Menschen doch auch mit den Linken nicht zufrieden waren und im Endeffekt auch keine Veränderung gekommen sind."
+  },
+  {
+   "t": 54102,
    "type": "message",
    "chat": "a11",
    "sender_slot": 2,
    "text": "Regulierung ist für mich nicht automatisch Bevormundung. Tempo 30 vor Schulen und Kitas finde ich z.B. sinnvoll – da schützt man andere Verkehrsteilnehmer. Generell darf eine Stadt Individualverkehr steuern, wenn er Sicherheit, Lebensqualität oder Klima beeinträchtigt. Bevormundung beginnt für mich eher dort, wo der Staat ohne guten Grund in private Entscheidungen eingreift, die primär mich selbst betreffen."
   },
   {
-   "t": 85821,
+   "t": 55012,
    "type": "message",
    "chat": "a02",
    "sender_slot": 2,
    "text": "Da bin ich gar nicht so weit weg von dir. Gerade in einer Krise kann Umverteilung bzw. Entlastung niedriger und mittlerer Einkommen sinnvoll sein, weil dort die Konsumquote höher ist und das Geld schneller wieder in der Wirtschaft landet.\n\nMir reicht das aber nicht als langfristige Wachstumsstrategie. Deutschlands Problem ist ja nicht nur zu wenig Binnennachfrage, sondern auch schwaches Produktivitätswachstum, Investitionsstau, Demografie, Bürokratie und internationale Wettbewerbsfähigkeit. Wohlstand kann man dauerhaft nur verteilen, wenn er auch geschaffen wird.\n\nDeshalb bin ich für beides: einen starken Sozialstaat und eine vernünftige progressive Besteuerung plus Bedingungen, unter denen Investitionen, Innovation und Unternehmertum attraktiv bleiben. Bei der Linken sehe ich die Balance zu stark Richtung Verteilung und zu wenig Richtung Wachstum des Kuchens."
   },
   {
-   "t": 89403,
+   "t": 55924,
    "type": "difference_rating",
    "from_slot": 3,
    "to_slot": 6,
    "disagreement": 2
   },
   {
-   "t": 89417,
+   "t": 55997,
    "type": "difference_rating",
    "from_slot": 3,
    "to_slot": 7,
    "disagreement": 2
   },
   {
-   "t": 89594,
+   "t": 56351,
    "type": "message",
    "chat": "a12",
    "sender_slot": 3,
    "text": "Also zunächst mal: mir gefällt deine Meinung sehr! Ich kanns total verstehen. Ich finde nichtwählen nicht die zielführendste Art und Weise grade, vA weil ich die AfD für sehr gefährlich halte, aber ich stimme dir total zu, ich bin auch mit dem allgemeinen Parlamentarischen System ziemlich unzufrieden. Die Linke finde ich noch gut, auch weil sie Sachen außerhalb des Parlaments machen, aber grundsätzlich halte ich die repräsentative Parteienpolitik auch für ein riesen Problem. Ich bin ja großer Freund von Bürgerräten, kennst du das? "
   },
   {
-   "t": 89679,
-   "type": "message",
-   "chat": "a12",
-   "sender_slot": 3,
-   "text": "Und dann die Linken: schwer, grade auf Landesebene ist einfach echt nicht viel möglich weil kein Geld da und viel über Bundesgesetze geregelt...\nDass da Unzufriedenheit entsteht kann ich mir vorstellen"
-  },
-  {
-   "t": 89889,
+   "t": 57901,
    "type": "message",
    "chat": "a02",
    "sender_slot": 3,
    "text": "Das ist fair. Da ist glaube ich dann ein anderer Knackpunkt, und zwar dass ich aus ökologischer Perspektive, Klimakrise und so, eigentlich davon Überzeugt bin dass wir die Wachstumslogik irgendwie hinter uns lassen müssen. Also ich bin absolut nicht gegen Wachstum, bringt ja großartige Dinge, aber halt nicht als oberste Maxime. Bin da also mehr auf Seiten von Umverteilung als Wachstum des Kuchens. Ich würde dir aber durchaus recht geben dass die Linke sicherlich nicht die besten Konzepte hat für die Dinge die du ansprichst,der Fokus liegt klar wo anders. "
   },
   {
-   "t": 89922,
+   "t": 58819,
    "type": "chat_open",
    "chat": "a13",
    "from_slot": 3,
@@ -1065,21 +1058,28 @@
    "moment": "real"
   },
   {
-   "t": 90185,
+   "t": 58871,
+   "type": "message",
+   "chat": "a12",
+   "sender_slot": 3,
+   "text": "Und dann die Linken: schwer, grade auf Landesebene ist einfach echt nicht viel möglich weil kein Geld da und viel über Bundesgesetze geregelt...\nDass da Unzufriedenheit entsteht kann ich mir vorstellen"
+  },
+  {
+   "t": 59739,
    "type": "message",
    "chat": "a13",
    "sender_slot": 3,
    "text": "Ich hab auch lange Grün gewählt, auch wg Klima. Bzgl AfD seh ich momentan (neben dem BSW, aber die wollen ja evtl zusammenarbeiten mit denen...) bei der Linken am meisten Potential, AfD Wähler:innen zu gewinnen. Bei allen anderen seh ich irgendwie schwarz..."
   },
   {
-   "t": 90804,
+   "t": 60661,
    "type": "message",
    "chat": "a02",
    "sender_slot": 2,
    "text": "Ich glaube, da liegt tatsächlich unser Knackpunkt 🙂 Ich sehe Wachstum und Ökologie nicht als grundsätzlichen Widerspruch. Wachstum muss ja nicht bedeuten, immer mehr Ressourcen zu verbrauchen. Wenn wir durch Innovation, erneuerbare Energien, Digitalisierung oder höhere Produktivität mehr Wert mit weniger Ressourcen schaffen, kann Wachstum sogar Teil der ökologischen Transformation sein.\n\nDass Wachstum heute global oft noch mit mehr Ressourcenverbrauch und Emissionen einhergeht, sehe ich auch kritisch. Für mich wäre die Konsequenz aber eher, Wachstum ökologisch zu gestalten statt Wachstum aufzugeben. Und ganz ohne Wachstum wird Verteilung politisch auch schwieriger, weil Verbesserungen für die einen dann viel schneller Verluste für andere bedeuten. Du musst ja Wachstum sicherstellen bzw. zulassen, um vom wachsenden Kuchen etwas wegzunehmen und fairer zu verteilen. "
   },
   {
-   "t": 90812,
+   "t": 61585,
    "type": "rating",
    "chat": "a02",
    "from_slot": 2,
@@ -1089,7 +1089,7 @@
    "bridge": false
   },
   {
-   "t": 90863,
+   "t": 62511,
    "type": "rating",
    "chat": "a11",
    "from_slot": 2,
@@ -1099,7 +1099,7 @@
    "bridge": false
   },
   {
-   "t": 90882,
+   "t": 63438,
    "type": "rating",
    "chat": "a01",
    "from_slot": 2,
@@ -1109,14 +1109,14 @@
    "bridge": false
   },
   {
-   "t": 92086,
+   "t": 64367,
    "type": "message",
    "chat": "a10",
    "sender_slot": 1,
    "text": "Und was sagst du zum BSW? Die finde ich auch nicht bevormundend. Die haben die meisten positionen, wo ich dahinter stehe, bis auf PKV abschaffen, aber man muss ja nicht mit Allem konform gehen."
   },
   {
-   "t": 92089,
+   "t": 65298,
    "type": "rating",
    "chat": "a10",
    "from_slot": 1,
@@ -1126,14 +1126,14 @@
    "bridge": true
   },
   {
-   "t": 92215,
+   "t": 66230,
    "type": "message",
    "chat": "a08",
    "sender_slot": 1,
    "text": "Linke haben den Fokus oft zu sehr auf anderen Nischenthemen und schreien zu laut nach Sozialismus, dem ich kritisch gegenüberstehe, also die Maßnahmen sind mir teilweise zu hart die die fordern. BSW tritt auch für soziale Gerechtigkeit ein, aber ist bei Entscheidungen, deren wirtschaftliche Folgen noch nicht absehbar sind, etwas gemäßigter."
   },
   {
-   "t": 92245,
+   "t": 67165,
    "type": "rating",
    "chat": "a04",
    "from_slot": 1,
@@ -1143,28 +1143,28 @@
    "bridge": true
   },
   {
-   "t": 92695,
+   "t": 68101,
    "type": "difference_rating",
    "from_slot": 2,
    "to_slot": 7,
    "disagreement": 10
   },
   {
-   "t": 92731,
+   "t": 68176,
    "type": "message",
    "chat": "a11",
    "sender_slot": 2,
    "text": "Deine Kritik an Parteien und fehlender Fachkompetenz kann ich teilweise nachvollziehen, aber die Konsequenz überhaupt nicht. Nichtwählen ist kein wirksames „Zeichen“ für ein neues System, sondern überlässt die Entscheidung schlicht denjenigen, die wählen gehen – und erhöht damit relativ auch das Gewicht radikaler Parteien wie der AfD. Demokratie lebt außerdem von Interessenausgleich; politische Entscheidungen können deshalb nicht ausschließlich von Fachleuten eines einzelnen Bereichs getroffen werden. Veränderung erreicht man für mich durch Wählen und politische Beteiligung, nicht durch Rückzug."
   },
   {
-   "t": 92848,
+   "t": 69114,
    "type": "message",
    "chat": "a10",
    "sender_slot": 2,
    "text": "Einzelne wirtschaftspolitische Punkte des BSW kann ich nachvollziehen, aber insgesamt ist es für mich keine Option. Mir ist es gesellschaftspolitisch zu konservativ und außenpolitisch gerade mit Blick auf Russland/Ukraine viel zu weit von meiner Position entfernt. Ich sehe mich eher liberal-progressiv und proeuropäisch – da passen Grüne, Volt oder Teile der FDP deutlich besser zu mir. Dass das BSW weniger „bevormundend“ wirkt, reicht mir als gemeinsamer Nenner nicht."
   },
   {
-   "t": 92849,
+   "t": 70053,
    "type": "rating",
    "chat": "a10",
    "from_slot": 2,
@@ -1174,14 +1174,14 @@
    "bridge": false
   },
   {
-   "t": 93236,
+   "t": 70994,
    "type": "difference_rating",
    "from_slot": 4,
    "to_slot": 6,
    "disagreement": 0
   },
   {
-   "t": 93237,
+   "t": 71070,
    "type": "chat_open",
    "chat": "a14",
    "from_slot": 4,
@@ -1189,21 +1189,14 @@
    "moment": "real"
   },
   {
-   "t": 93367,
+   "t": 72013,
    "type": "message",
    "chat": "a14",
    "sender_slot": 4,
    "text": "Das Gefühl kenne ich gut. Sozusagen der einzige wirkliche Geund, warum ich die SPD wählen würde. Es muss da noch mehr Zusammenarbeit gebrn."
   },
   {
-   "t": 93482,
-   "type": "message",
-   "chat": "a14",
-   "sender_slot": 4,
-   "text": "Um die AfD zu verhindern müssen die sozialen Medien reguliert werden (zB Werbeeinnahmen effektiv und drastisch besteuern, damit sich Hass nicht lohnt) Ohne die wäre die AfD nichts.."
-  },
-  {
-   "t": 93506,
+   "t": 73903,
    "type": "rating",
    "chat": "a01",
    "from_slot": 4,
@@ -1213,21 +1206,21 @@
    "bridge": true
   },
   {
-   "t": 93689,
+   "t": 74533,
+   "type": "message",
+   "chat": "a14",
+   "sender_slot": 4,
+   "text": "Um die AfD zu verhindern müssen die sozialen Medien reguliert werden (zB Werbeeinnahmen effektiv und drastisch besteuern, damit sich Hass nicht lohnt) Ohne die wäre die AfD nichts.."
+  },
+  {
+   "t": 74851,
    "type": "message",
    "chat": "a01",
    "sender_slot": 4,
    "text": "Sind die Gelben denn sozialliberal? Ich nehme die wirklich als schon fast verlogen dar. Wenn es um Immobilienbesitz, Erbschaft, Spitzensteuersatz, dicke Autos  you  name it geht, schämen die sich nicht jahrzehntealte Narrative und Argumente aufzutischen."
   },
   {
-   "t": 93945,
-   "type": "message",
-   "chat": "a01",
-   "sender_slot": 4,
-   "text": "Aber vermutlich macht die SPD dass bei Rente, Gewerkschaft und soziale Absicherung genau so"
-  },
-  {
-   "t": 93972,
+   "t": 76751,
    "type": "rating",
    "chat": "a07",
    "from_slot": 4,
@@ -1237,21 +1230,21 @@
    "bridge": false
   },
   {
-   "t": 94132,
+   "t": 77371,
+   "type": "message",
+   "chat": "a01",
+   "sender_slot": 4,
+   "text": "Aber vermutlich macht die SPD dass bei Rente, Gewerkschaft und soziale Absicherung genau so"
+  },
+  {
+   "t": 77703,
    "type": "message",
    "chat": "a07",
    "sender_slot": 4,
    "text": "Tja, vielleicht sogar schweren Herzens die CDU, damit sich mehr Leute mitgenommen fühlen. "
   },
   {
-   "t": 94309,
-   "type": "message",
-   "chat": "a07",
-   "sender_slot": 4,
-   "text": "interessanter Punkt, dass die Linke gar keine kapitalistische Wirtschaftskompetenz haben kann. Von welchen Ansatz von ihnen um Wohlstand zu schaffen bist du am meisten überzeugt? Also sozusagen wo Geld effizient einsetzen oder einsparen würden."
-  },
-  {
-   "t": 94336,
+   "t": 79613,
    "type": "rating",
    "chat": "a04",
    "from_slot": 4,
@@ -1261,7 +1254,14 @@
    "bridge": false
   },
   {
-   "t": 94389,
+   "t": 80223,
+   "type": "message",
+   "chat": "a07",
+   "sender_slot": 4,
+   "text": "interessanter Punkt, dass die Linke gar keine kapitalistische Wirtschaftskompetenz haben kann. Von welchen Ansatz von ihnen um Wohlstand zu schaffen bist du am meisten überzeugt? Also sozusagen wo Geld effizient einsetzen oder einsparen würden."
+  },
+  {
+   "t": 80570,
    "type": "chat_open",
    "chat": "a15",
    "from_slot": 4,
@@ -1269,42 +1269,42 @@
    "moment": "real"
   },
   {
-   "t": 94421,
+   "t": 81528,
    "type": "message",
    "chat": "a15",
    "sender_slot": 4,
    "text": "Ich hab früher auch mal die Piraten gewählt, war eine spannende Zeit"
   },
   {
-   "t": 94562,
-   "type": "message",
-   "chat": "a15",
-   "sender_slot": 4,
-   "text": "Das Problem ist, finde ich, dass die Parteien Sachen in ihr Programm schreiben, wo sie wissen.. das wird später noch verhandelt, also schreib ich es jetzt lieber etwas stärker  rein, dann hab ich später mehr Verhandlungsspielraum. Das nervt mich umgemein."
-  },
-  {
-   "t": 100218,
+   "t": 83449,
    "type": "message",
    "chat": "a01",
    "sender_slot": 2,
    "text": "Nee, die FDP ist für mich allein genommen auch nicht sozialliberal – und deshalb nicht meine präferierte Wahl. Ich teile Teile ihres Freiheits-, Wirtschafts- und Leistungsverständnisses, aber mir fehlt oft der soziale Ausgleich und echte Chancengerechtigkeit. Bei der SPD ist es teilweise genau andersherum. Mein politischer Sweet Spot liegt irgendwo dazwischen – deshalb lande ich je nach Wahl eher bei Grünen, Volt, FDP oder (manchmal) SPD."
   },
   {
-   "t": 104278,
+   "t": 84048,
+   "type": "message",
+   "chat": "a15",
+   "sender_slot": 4,
+   "text": "Das Problem ist, finde ich, dass die Parteien Sachen in ihr Programm schreiben, wo sie wissen.. das wird später noch verhandelt, also schreib ich es jetzt lieber etwas stärker  rein, dann hab ich später mehr Verhandlungsspielraum. Das nervt mich umgemein."
+  },
+  {
+   "t": 84412,
    "type": "message",
    "chat": "a07",
    "sender_slot": 3,
    "text": "Magst du das näher erläutern, wieso du das Gefühl hast dass die CDU mehr Leute mitnimmt? Einfach weil sie in der Mitte stehen? "
   },
   {
-   "t": 104602,
+   "t": 86932,
    "type": "message",
    "chat": "a07",
    "sender_slot": 3,
    "text": "Ich glaube überzeugen tut mich, dass sie vA Zugang zu Wohlstand schaffen wollen. Und damit auch eine gewisse Form von effizienz zu erreichen: dass erwirtschafteter Wohlstand direkter und damit effizienter der Allgemeinheit zugute kommt, dass weniger Geld und Wohlstand in die Taschen von sehr wohlhabenden Menschen abfließen. Also Umverteilung, Ausbau öffentlicher Infrastruktur, etc: ist zwar klassisch nicht unbedingt als effizient und einsparend verstanden, aber wenn der Wohlstandszugang besser verteilt ist, dann ist weniger Aufwand und Arbeit nötig, um allen einen mindeststandard zu gewährleisten. Insofern halte ich es durchaus (auf andere Weise vllt als typischerweise) für effizient. "
   },
   {
-   "t": 104643,
+   "t": 86962,
    "type": "rating",
    "chat": "a07",
    "from_slot": 3,
@@ -1314,14 +1314,14 @@
    "bridge": true
   },
   {
-   "t": 104774,
+   "t": 87309,
    "type": "message",
    "chat": "a08",
    "sender_slot": 3,
    "text": "Versteh ich, ja. Was Sozialismus angeht: hab ich lange kritisch gesehen, so wie du.\nDann hab ich aber begriffen dass es demokratischen und vA marktorientierten Sozialismus geben kann. Also Sozialismus heißt nicht, dass es keine Märkte gibt. Planwirtschaft und Diktatur finde ich natürlich auch ganz schön mies, aber Sozialismus kann verschiedene Formen haben."
   },
   {
-   "t": 104779,
+   "t": 88277,
    "type": "rating",
    "chat": "a08",
    "from_slot": 3,
@@ -1331,7 +1331,7 @@
    "bridge": false
   },
   {
-   "t": 104814,
+   "t": 89247,
    "type": "rating",
    "chat": "a02",
    "from_slot": 3,
@@ -1341,83 +1341,76 @@
    "bridge": true
   },
   {
-   "t": 104969,
+   "t": 90219,
    "type": "message",
    "chat": "a02",
    "sender_slot": 3,
    "text": "Da stimme ich dir total zu,ich bin überhaupt nicht gegen Wachstum an sich. Nur das Wirtschaftssystem was wir gegenwärtig haben muss immer wachsen, und das um jeden Preis. Wenn es kein Wachstum gibt gibt es Krise und Chaos. Dementsprechend denke ich dass es innerhalb dessen immer automatisch passiert, dass ökologische etc Aspekte dem untergeordnet werden, wenn es hart auf hart kommt.\nAlso Wachstum: wichtig, gerne, grade in anderen Teilen der Welt! Aber nicht als Maxime. "
   },
   {
-   "t": 110625,
+   "t": 92165,
+   "type": "opinion",
+   "slot": 8,
+   "text": "I don't vote in Germany because I have no right to.\n\nIf I did, I would probably support Die Partei, because I am a bit of a misanthropic cynic."
+  },
+  {
+   "t": 92739,
    "type": "message",
    "chat": "a02",
    "sender_slot": 2,
    "text": "Beim ersten Teil bin ich ziemlich bei dir. Den letzten Punkt würde ich aber gern besser verstehen: Was meinst du mit „Wachstum gerne, gerade in anderen Teilen der Welt“? Dass Wachstum für ärmere Länder eine höhere Priorität haben sollte als für Deutschland? Das würde ich mitgehen. Wenn du aber meinst, dass wir Wachstum hier bewusst nachrangig behandeln können, sehe ich das schwieriger – weil wir international um Investitionen, Innovation und Wertschöpfung konkurrieren und uns dauerhafte Stagnation irgendwann auch weniger Spielraum für Soziales und ökologische Transformation lässt. Dass Wachstum nur um des Wachstums Willen nicht oberste Maxime sein sollte, gehe ich zu 100% mit. "
   },
   {
-   "t": 115072,
-   "type": "opinion",
-   "slot": 8,
-   "text": "I don't vote in Germany because I have no right to.\n\nIf I did, I would probably support Die Partei, because I am a bit of a misanthropic cynic."
-  },
-  {
-   "t": 120728,
+   "t": 92750,
    "type": "opinion",
    "slot": 9,
    "text": "Das ist gar nicht so einfach zu beantworten. Es macht wahrscheinlich keinen Sinn strategisch zu wählen, um die AfD zu verhindern. Dann zählen doch nur Werte. Also die einzige Partei, die unsere gegenwärtigen Probleme nicht ignoriert oder wegpolemisiert, sondern Konzepte für die Zukunft entwickelt: grün."
   },
   {
-   "t": 126384,
+   "t": 93336,
    "type": "message",
    "chat": "a07",
    "sender_slot": 4,
    "text": "Wahrscheinlich fühlen sich die meisten von gar keiner Psrtei mehr mitgenommen. Social Media sei dank.. CDU ist für mich die Rentnerpartei, die haben feste Bilder von deren Kompetenz und vorallem Moral. (Hab mal Wahlhelfer gemacht und die ganzen zittrigen Kreuze bei der Stimmauszählung gesehen, immer beide Stimmen) Ich meinte damit wohl eher, dass sie weniger Feindbild sind, als die Grünen. Aber viel nimmt es sich nicht, wenn man es sich genauer überlehgt."
   },
   {
-   "t": 126622,
+   "t": 95291,
+   "type": "difference_rating",
+   "from_slot": 4,
+   "to_slot": 8,
+   "disagreement": 5
+  },
+  {
+   "t": 95369,
+   "type": "difference_rating",
+   "from_slot": 4,
+   "to_slot": 9,
+   "disagreement": 2
+  },
+  {
+   "t": 95447,
+   "type": "chat_open",
+   "chat": "a16",
+   "from_slot": 4,
+   "to_slot": 8,
+   "moment": "real"
+  },
+  {
+   "t": 95856,
    "type": "message",
    "chat": "a07",
    "sender_slot": 4,
    "text": "Ich wäre total dabei, Reichtum zu begrenzen. Glaube auch nicht, dass dann \"niemand mehr arbeiten will\". Aber meine Frage ist eher, wie die Linke Geld verdienen will. Ein Autokonzern zB muss ja Profit machen. Ich verstehe ihren Ansatz da immer nur holistisch. Höhere Löhne würden ja dazu führen, dass auch mehr Geld zum Autos kaufen da ist. Das wär mir als Strategie zu riskant."
   },
   {
-   "t": 126673,
-   "type": "difference_rating",
-   "from_slot": 4,
-   "to_slot": 8,
-   "disagreement": 5
-  },
-  {
-   "t": 126687,
-   "type": "difference_rating",
-   "from_slot": 4,
-   "to_slot": 9,
-   "disagreement": 2
-  },
-  {
-   "t": 126692,
-   "type": "chat_open",
-   "chat": "a16",
-   "from_slot": 4,
-   "to_slot": 8,
-   "moment": "real"
-  },
-  {
-   "t": 126842,
+   "t": 96427,
    "type": "message",
    "chat": "a16",
    "sender_slot": 4,
    "text": "I readvTitanic Magszin all my youth. Sonneborn is highly talented in voicing merviless and explicit critism. See their bashing of the FDP as spineless opportunists.. Also they revealed some underlyingbpolitical communication strstegies!"
   },
   {
-   "t": 126950,
-   "type": "message",
-   "chat": "a16",
-   "sender_slot": 4,
-   "text": "If I assume correctly that you see the world as deeply corrupt, why not vote for the left party?"
-  },
-  {
-   "t": 126957,
+   "t": 98390,
    "type": "chat_open",
    "chat": "a17",
    "from_slot": 4,
@@ -1425,69 +1418,69 @@
    "moment": "real"
   },
   {
-   "t": 127018,
+   "t": 98947,
+   "type": "message",
+   "chat": "a16",
+   "sender_slot": 4,
+   "text": "If I assume correctly that you see the world as deeply corrupt, why not vote for the left party?"
+  },
+  {
+   "t": 99374,
    "type": "message",
    "chat": "a17",
    "sender_slot": 4,
    "text": "Also ich finde grade jevstärker die AfDist, umso mehr machtvstrategisches Wählen Sinn."
   },
   {
-   "t": 127228,
+   "t": 101894,
    "type": "message",
    "chat": "a17",
    "sender_slot": 4,
    "text": "Ich bin manchmal so enttäuscht, dass die anderen Parteien ihre ewigen Tricks (Merz >Unsympath, Drogen>Kinder, Erneuerbare>Licht aus, Autos, oh die Autos) nicht endlich sein lassen und lieber gegenseitig den besten Gegenkandidaten gegen die Barbarei supporten.."
   },
   {
-   "t": 127269,
-   "type": "message",
-   "chat": "a17",
-   "sender_slot": 4,
-   "text": "Ich finde die kommunikationsweise dervGrünen auch super. "
-  },
-  {
-   "t": 132852,
+   "t": 102332,
    "type": "opinion",
    "slot": 10,
    "text": "Ich wähle AfD - Sie ist die einzige Partei die meine Interessen ernsthaft vertritt."
   },
   {
-   "t": 136294,
+   "t": 102925,
    "type": "difference_rating",
    "from_slot": 10,
    "to_slot": 5,
    "disagreement": 10
   },
   {
-   "t": 136301,
+   "t": 103005,
    "type": "difference_rating",
    "from_slot": 10,
    "to_slot": 6,
    "disagreement": 10
   },
   {
-   "t": 136368,
+   "t": 103084,
    "type": "difference_rating",
    "from_slot": 10,
    "to_slot": 3,
    "disagreement": 10
   },
   {
-   "t": 136377,
+   "t": 103163,
    "type": "difference_rating",
    "from_slot": 10,
    "to_slot": 4,
    "disagreement": 10
   },
   {
-   "t": 136392,
+   "t": 103242,
    "type": "difference_rating",
    "from_slot": 10,
    "to_slot": 2,
    "disagreement": 10
   },
   {
-   "t": 136394,
+   "t": 103321,
    "type": "chat_open",
    "chat": "a18",
    "from_slot": 10,
@@ -1495,14 +1488,21 @@
    "moment": "real"
   },
   {
-   "t": 136550,
+   "t": 104311,
    "type": "message",
    "chat": "a18",
    "sender_slot": 10,
    "text": "Zumindest die Grüne ist doch eine DER Parteien die die Bürger bevormunden wollen. (Beispiele u.a. Heizungsgesetz, Tempolimit, Verbrenner-Aus)"
   },
   {
-   "t": 136562,
+   "t": 104414,
+   "type": "message",
+   "chat": "a17",
+   "sender_slot": 4,
+   "text": "Ich finde die kommunikationsweise dervGrünen auch super. "
+  },
+  {
+   "t": 105302,
    "type": "chat_open",
    "chat": "a19",
    "from_slot": 10,
@@ -1510,42 +1510,42 @@
    "moment": "real"
   },
   {
-   "t": 136573,
+   "t": 106294,
    "type": "message",
    "chat": "a19",
    "sender_slot": 10,
    "text": "Welche Strategie verfolgst du?"
   },
   {
-   "t": 136606,
+   "t": 107288,
    "type": "difference_rating",
    "from_slot": 10,
    "to_slot": 8,
    "disagreement": 8
   },
   {
-   "t": 136610,
+   "t": 107367,
    "type": "difference_rating",
    "from_slot": 10,
    "to_slot": 0,
    "disagreement": 10
   },
   {
-   "t": 136625,
+   "t": 107447,
    "type": "difference_rating",
    "from_slot": 10,
    "to_slot": 9,
    "disagreement": 10
   },
   {
-   "t": 136637,
+   "t": 107526,
    "type": "difference_rating",
    "from_slot": 10,
    "to_slot": 1,
    "disagreement": 8
   },
   {
-   "t": 141561,
+   "t": 107606,
    "type": "chat_open",
    "chat": "a20",
    "from_slot": 10,
@@ -1553,7 +1553,7 @@
    "moment": "real"
   },
   {
-   "t": 142200,
+   "t": 108601,
    "type": "chat_open",
    "chat": "a21",
    "from_slot": 10,
@@ -1561,7 +1561,7 @@
    "moment": "real"
   },
   {
-   "t": 142252,
+   "t": 109597,
    "type": "chat_open",
    "chat": "a22",
    "from_slot": 10,
@@ -1569,14 +1569,14 @@
    "moment": "real"
   },
   {
-   "t": 142329,
+   "t": 110595,
    "type": "message",
    "chat": "a22",
    "sender_slot": 10,
    "text": "Ich denke die AfD lässt sich nicht verhindern. Die Brandmauer hat sie immer stärker gemacht und sie ist längst Volkspartei (besonders im Osten)"
   },
   {
-   "t": 142339,
+   "t": 111594,
    "type": "chat_open",
    "chat": "a23",
    "from_slot": 10,
@@ -1584,21 +1584,21 @@
    "moment": "real"
   },
   {
-   "t": 142386,
+   "t": 112593,
    "type": "message",
    "chat": "a23",
    "sender_slot": 10,
    "text": "Was sind für dich die ausschlaggebenden Punkte Volt zu wählen? MmN ist es eine verschwendete Stimme, weil sie keine 5% erreichen werden."
   },
   {
-   "t": 145471,
+   "t": 113594,
    "type": "difference_rating",
    "from_slot": 10,
    "to_slot": 7,
    "disagreement": 8
   },
   {
-   "t": 145531,
+   "t": 113675,
    "type": "chat_open",
    "chat": "a24",
    "from_slot": 10,
@@ -1606,14 +1606,14 @@
    "moment": "real"
   },
   {
-   "t": 145571,
+   "t": 114677,
    "type": "message",
    "chat": "a24",
    "sender_slot": 10,
    "text": "Das wäre eine verschenkte Stimme, da die Partei höchstwahrscheinlich überall unter 5% bleibt."
   },
   {
-   "t": 145590,
+   "t": 115680,
    "type": "chat_open",
    "chat": "a25",
    "from_slot": 10,
@@ -1621,14 +1621,14 @@
    "moment": "real"
   },
   {
-   "t": 145602,
+   "t": 116685,
    "type": "message",
    "chat": "a25",
    "sender_slot": 10,
    "text": "Was sind deine Gründe?"
   },
   {
-   "t": 145614,
+   "t": 117690,
    "type": "chat_open",
    "chat": "a26",
    "from_slot": 10,
@@ -1636,28 +1636,21 @@
    "moment": "real"
   },
   {
-   "t": 145663,
+   "t": 118697,
    "type": "message",
    "chat": "a26",
    "sender_slot": 10,
    "text": "Eines unserer Hauptprobleme sehe ich in den Herausforderungen die Massenmigration mit sich bringen. Ich sehe dort keinen Lösungsansatz der Grünen, im Gegenteil."
   },
   {
-   "t": 145729,
+   "t": 119705,
    "type": "message",
    "chat": "a21",
    "sender_slot": 10,
    "text": "Das BSW ist gegen Abschiebungen, wir haben in Deutschland über 200.000 ausreisepflichtige Personen."
   },
   {
-   "t": 145748,
-   "type": "message",
-   "chat": "a21",
-   "sender_slot": 10,
-   "text": "Ich sehe darin keine Lösung des Problems."
-  },
-  {
-   "t": 145757,
+   "t": 121724,
    "type": "chat_open",
    "chat": "a27",
    "from_slot": 10,
@@ -1665,56 +1658,63 @@
    "moment": "real"
   },
   {
-   "t": 145813,
+   "t": 122225,
+   "type": "message",
+   "chat": "a21",
+   "sender_slot": 10,
+   "text": "Ich sehe darin keine Lösung des Problems."
+  },
+  {
+   "t": 122735,
    "type": "message",
    "chat": "a27",
    "sender_slot": 10,
    "text": "Nichtwählen bringt nichts. Die Politikwelt dreht sich trotzdem weiter."
   },
   {
-   "t": 148821,
+   "t": 124745,
    "type": "message",
    "chat": "a21",
    "sender_slot": 1,
    "text": "Endlich jemand von der Afd. Ich gehe mit einigen ihrer Punkte mit. Meines Wissens nach betont das BSW aber auch ihre Interessen im Thema Migrationswende und fordert ebenfalls konsequente Abschiebungen. Allerdings ist es beim Thema Wirtschaft und Finanzen etwas sozialer angelegt, heißt reiche sollten eine Extra-Steuer bezahlen, damit kritische Punkte in unserem Land besser finanziert werden können. Die Berechnungen und Nachfragen dazu  zeigen bei der Afd, dass sie selbst nicht konkret benennen und berechnen können, wie ihre Sozialpolitik finanziert werden soll."
   },
   {
-   "t": 148884,
+   "t": 124761,
    "type": "message",
    "chat": "a08",
    "sender_slot": 1,
    "text": "Welche staaten haben/hatten einen Marktorientierten Sozialismus, wie würde der aussehen? Und ging es gut? Anscheinend ja bisher nicht weil ich behaupte mal, dass ich das wüsste."
   },
   {
-   "t": 148950,
-   "type": "message",
-   "chat": "a08",
-   "sender_slot": 1,
-   "text": "Ich finde ebenfalls man sollte innerhalb der Marktwirtschaft einiges fairer gestalten und neue Anreize schaffen, aber sie bleibt schließlich der Motor des Wohlstands."
-  },
-  {
-   "t": 149089,
+   "t": 126791,
    "type": "message",
    "chat": "a10",
    "sender_slot": 1,
    "text": "Natürlich, ich respektiere deine Meinung. Ich bin dann wohl eher gesellschaftspolitisch konservativ :)"
   },
   {
-   "t": 149134,
+   "t": 127281,
+   "type": "message",
+   "chat": "a08",
+   "sender_slot": 1,
+   "text": "Ich finde ebenfalls man sollte innerhalb der Marktwirtschaft einiges fairer gestalten und neue Anreize schaffen, aber sie bleibt schließlich der Motor des Wohlstands."
+  },
+  {
+   "t": 127808,
    "type": "difference_rating",
    "from_slot": 1,
    "to_slot": 8,
    "disagreement": 2
   },
   {
-   "t": 149164,
+   "t": 127889,
    "type": "difference_rating",
    "from_slot": 1,
    "to_slot": 9,
    "disagreement": 8
   },
   {
-   "t": 149165,
+   "t": 127970,
    "type": "chat_open",
    "chat": "a28",
    "from_slot": 1,
@@ -1722,14 +1722,14 @@
    "moment": "real"
   },
   {
-   "t": 149326,
+   "t": 128988,
    "type": "message",
    "chat": "a28",
    "sender_slot": 1,
    "text": "Wie will die Grüne unsere Wirtschaft retten? Ich sehe keine vernünftigen Antworten, die mich nachhaltig überzeugen, dass sie funktionieren. Stattdessen haben das schwächeln der deutschen Wirtschaft eher mitzuverantworten mit zu viel Regulierung, im im Endeffekt nicht viel nützt, da Dtl. nur  1,5% der globalen Emissionen beiträgt."
   },
   {
-   "t": 149355,
+   "t": 130007,
    "type": "chat_open",
    "chat": "a29",
    "from_slot": 1,
@@ -1737,21 +1737,21 @@
    "moment": "real"
   },
   {
-   "t": 149366,
+   "t": 131027,
    "type": "message",
    "chat": "a29",
    "sender_slot": 1,
    "text": "Da fehlt dein Warum für die Diskussionsgrundlage"
   },
   {
-   "t": 149396,
+   "t": 132048,
    "type": "difference_rating",
    "from_slot": 1,
    "to_slot": 6,
    "disagreement": 8
   },
   {
-   "t": 149397,
+   "t": 132129,
    "type": "chat_open",
    "chat": "a30",
    "from_slot": 1,
@@ -1759,14 +1759,14 @@
    "moment": "real"
   },
   {
-   "t": 149424,
+   "t": 133152,
    "type": "message",
    "chat": "a30",
    "sender_slot": 1,
    "text": "Was denkst du, kann Deutschland mit Klimapolitik den globalen Klimawandel stoppen?"
   },
   {
-   "t": 149447,
+   "t": 134175,
    "type": "chat_open",
    "chat": "a31",
    "from_slot": 1,
@@ -1774,56 +1774,56 @@
    "moment": "real"
   },
   {
-   "t": 149454,
+   "t": 135199,
    "type": "message",
    "chat": "a31",
    "sender_slot": 1,
    "text": "I feel u used to vote them once too."
   },
   {
-   "t": 149724,
+   "t": 136224,
    "type": "message",
    "chat": "a18",
    "sender_slot": 2,
    "text": "Ich unterscheide zwischen Bevormundung und legitimer Regulierung, wenn individuelle Entscheidungen erhebliche Auswirkungen auf andere haben. Beim Verkehr, Klima oder Energie ist das offensichtlich der Fall. Ein Tempolimit ist für mich genauso wenig Bevormundung wie Promillegrenzen oder Umweltauflagen — und die haben ja auch ihre Berechtigung. Beim Heizungsgesetz kann man über die konkrete Ausgestaltung und Kommunikation definitiv streiten. Und das Verbrenner-Aus ist ja auch europäische Regulierung, nicht einfach ein grünes Verbot.\n\nInteressanter finde ich aber deine Ausgangsaussage: Welche deiner Interessen vertritt denn ausschließlich die AfD? Gerade bei persönlicher Freiheit sehe ich die AfD nämlich keineswegs als besonders liberale Partei. Aber bin gespannt auf deine Einschätzung. "
   },
   {
-   "t": 149853,
+   "t": 137250,
    "type": "message",
    "chat": "a10",
    "sender_slot": 2,
    "text": "Haha, das ist ja auch völlig legitim :D Konservativ ist für mich ja auch kein Schimpfwort. Ich bin gesellschaftspolitisch wahrscheinlich einfach deutlich liberaler/progressiver. Spannender ist doch, wo wir trotz unterschiedlicher Ausgangspunkte Überschneidungen haben – Freiheit und möglichst wenig unnötige staatliche Bevormundung scheinen ja schon mal zwei davon zu sein. Bei der Frage, was unnötig ist, werden wir uns vermutlich hervorragend streiten können (;"
   },
   {
-   "t": 149900,
+   "t": 138277,
    "type": "difference_rating",
    "from_slot": 2,
    "to_slot": 6,
    "disagreement": 2
   },
   {
-   "t": 149906,
+   "t": 138359,
    "type": "difference_rating",
    "from_slot": 2,
    "to_slot": 10,
    "disagreement": 10
   },
   {
-   "t": 149924,
+   "t": 138441,
    "type": "difference_rating",
    "from_slot": 2,
    "to_slot": 9,
    "disagreement": 5
   },
   {
-   "t": 149929,
+   "t": 138524,
    "type": "difference_rating",
    "from_slot": 2,
    "to_slot": 5,
    "disagreement": 2
   },
   {
-   "t": 149937,
+   "t": 138606,
    "type": "chat_open",
    "chat": "a32",
    "from_slot": 2,
@@ -1831,14 +1831,14 @@
    "moment": "real"
   },
   {
-   "t": 149969,
+   "t": 139634,
    "type": "message",
    "chat": "a32",
    "sender_slot": 2,
    "text": "Da sind wir ziemlich nah beieinander. Klimapolitik ist für mich auch ein wesentlicher Grund für Grün – gerade in Berlin zusätzlich die Verkehrs- und Stadtentwicklungspolitik. Und strategisches Wählen gegen die AfD kann ich gut nachvollziehen. Was lässt dich denn zweifeln, ob Grün dafür die richtige Wahl ist bzw. welche Alternative überlegst du?"
   },
   {
-   "t": 149978,
+   "t": 140664,
    "type": "chat_open",
    "chat": "a33",
    "from_slot": 2,
@@ -1846,14 +1846,14 @@
    "moment": "real"
   },
   {
-   "t": 150019,
+   "t": 141694,
    "type": "message",
    "chat": "a33",
    "sender_slot": 2,
    "text": "Da bin ich ziemlich bei dir. Grün ist für mich auch die Partei, die viele Zukunftsthemen am konsequentesten adressiert. Ich finde strategisches Wählen trotzdem legitim, solange es innerhalb des eigenen Wertespektrums stattfindet. Wenn ich z.B. zwischen Grün, Volt und SPD schwanke, darf für mich schon eine Rolle spielen, mit welcher Stimme ich realpolitisch am meisten von meinen Zielen erreiche. Gegen die eigenen Überzeugungen nur taktisch zu wählen, würde ich aber auch nicht."
   },
   {
-   "t": 150025,
+   "t": 142725,
    "type": "chat_open",
    "chat": "a34",
    "from_slot": 2,
@@ -1861,42 +1861,42 @@
    "moment": "real"
   },
   {
-   "t": 150037,
+   "t": 143758,
    "type": "message",
    "chat": "a21",
    "sender_slot": 10,
    "text": "Warum ehrlich gesagt auch etwas überrascht, aber fällst mit dem BSW ja auch aus dem Rahmen hier.\n\nEin nicht unerheblicher Teil der Politiker des BSW haben die aktuellen Zustände mindestens passiv unterstützt, deshalb sehe ich die Äußerungen die während des Wahlkampfes gemacht werden kritisch. Das gilt natürlich für alle Parteien, aber solange das BSW oder die AfD keine Regierungsverantwortung haben genießen sie meiner Meinung nach da so etwas wie Welpenschutz.\n\nZum Thema Steuern: Ich verstehe deinen Punkt, bin persönlich aber gegen weitere Steuern. Ich bin bereit einen Teil zu zahlen, wenn ich sehe dass damit etwas sinnvolles gemacht wird. Dann opfere ich gerne etwas. Warum die Reichen mehr Geld abdrücken sollen obwohl der Staat mit Rekordsteuereinnahmen nicht Haushalten kann verstehe ich nicht.\n\n"
   },
   {
-   "t": 150058,
+   "t": 144791,
    "type": "message",
    "chat": "a34",
    "sender_slot": 2,
    "text": "Okay, das ist erfreulich eindeutig 😄 Dann liegen wir da ziemlich nah beieinander. Was ist für dich der wichtigste Grund für Grün – Klima/Umwelt, Gesellschaftspolitik oder etwas anderes?"
   },
   {
-   "t": 150064,
+   "t": 146278,
    "type": "message",
    "chat": "a21",
    "sender_slot": 10,
    "text": "Warum = war "
   },
   {
-   "t": 150068,
+   "t": 146861,
    "type": "difference_rating",
    "from_slot": 2,
    "to_slot": 1,
    "disagreement": 8
   },
   {
-   "t": 150081,
+   "t": 146943,
    "type": "difference_rating",
    "from_slot": 2,
    "to_slot": 8,
    "disagreement": 5
   },
   {
-   "t": 150088,
+   "t": 147026,
    "type": "chat_open",
    "chat": "a35",
    "from_slot": 2,
@@ -1904,105 +1904,112 @@
    "moment": "real"
   },
   {
-   "t": 150130,
+   "t": 148063,
    "type": "message",
    "chat": "a35",
    "sender_slot": 2,
    "text": "😂 That might actually be the most convincing argument for Die PARTEI I’ve heard so far. At least refreshingly honest. What would you vote for if you had to choose a party that might actually govern? 😁"
   },
   {
-   "t": 155786,
+   "t": 149100,
    "type": "message",
    "chat": "a18",
    "sender_slot": 10,
    "text": "Genau diese Grenze zwischen Bevormundung und legitimer Regulierung ziehen Grüne und Co. extrem weit und ideologisch finde ich. Sie unterschätzen die Kosten und den Freiheitsverlust der Betroffenen und überschätzen die Effekte.\nEin generelles Tempolimit ist eben nicht dasselbe wie eine Promillegrenze. Bei Alkohol am Steuer gibt es einen klaren, unmittelbaren Kausalzusammenhang zu schweren Unfällen mit Dritten. Beim Tempolimit sind die Effekte auf Sicherheit und Klima umstritten und gering. Autobahnen gehören bereits zu den sichersten Straßen Deutschlands. Die CO2-Einsparung bei Tempo 130 liegt laut Umweltbundesamt im niedrigen einstelligen Prozentbereich des Verkehrs. Das GEG unter Habeck kam faktisch einem Technologieverbot für neue Öl- und Gasheizungen gleich. Dass es „europäische Regulierung“ ist, entlastet die Grünen nicht. Sie waren in Deutschland und auf EU-Ebene treibende Kraft hinter dem Ausstieg."
   },
   {
-   "t": 155840,
+   "t": 151620,
    "type": "message",
    "chat": "a18",
    "sender_slot": 10,
    "text": "Technologieoffenheit (E-Fuels, synthetische Kraftstoffe, hocheffiziente Verbrenner) wurde lange abgelehnt oder nur widerwillig akzeptiert.\n\n"
   },
   {
-   "t": 156029,
+   "t": 154140,
    "type": "message",
    "chat": "a18",
    "sender_slot": 10,
    "text": "Welche Punkte in Bezug auf die persönliche Freiheit kritisierst du bei der AfD?\n\nDie Interessen die nur sie vertreten:\n- Begrenzung der irregulären Migration und Schutz der inneren Sicherheit sowie des Sozialstaats\n- Weniger Eingriffe in Alltag und Eigentum\n\n \n\n"
   },
   {
-   "t": 156265,
-   "type": "message",
-   "chat": "a18",
-   "sender_slot": 10,
-   "text": "- Bezahlbare, verlässliche Energie (Atomkraft)\n- Meinungsfreiheit (hier sehe ich starke Defizite, wobei es schon wieder besser zu werden scheint, mal so mal so)\n\n"
-  },
-  {
-   "t": 156325,
-   "type": "message",
-   "chat": "a18",
-   "sender_slot": 10,
-   "text": "Wenn du möchtest reden wir über das Thema, dass dir oder jeweils dem anderen am wichtigsten ist. So bekommen wir hoffentlich eine Diskussion hin oder ständig thematisch zu springen und an der Oberfläche zu bleiben."
-  },
-  {
-   "t": 156434,
+   "t": 154300,
    "type": "message",
    "chat": "a20",
    "sender_slot": 10,
    "text": "Könntest du näher definieren welche Machtverhältnisse und Ungleichheiten du meinst? LG"
   },
   {
-   "t": 160989,
+   "t": 156660,
+   "type": "message",
+   "chat": "a18",
+   "sender_slot": 10,
+   "text": "- Bezahlbare, verlässliche Energie (Atomkraft)\n- Meinungsfreiheit (hier sehe ich starke Defizite, wobei es schon wieder besser zu werden scheint, mal so mal so)\n\n"
+  },
+  {
+   "t": 156820,
    "type": "message",
    "chat": "a20",
    "sender_slot": 3,
    "text": "Hi! :)\nIch meine beispielsweise finanzielle Ungleichheiten und Besitzverhältnisse. Wenn wenige Menschen sehr viel besitzen und viele Menschen sehr wenig, dann erzeugt das ein Machtungleichgewicht das mit demokratischem zusammenleben nicht kompatibel ist. "
   },
   {
-   "t": 161016,
-   "type": "message",
-   "chat": "a20",
-   "sender_slot": 3,
-   "text": "Und magst du näher definieren welche Interessen es sind, die die AfD für dich vertritt und andere Parteien nicht? "
-  },
-  {
-   "t": 161451,
+   "t": 157432,
    "type": "message",
    "chat": "a08",
    "sender_slot": 3,
    "text": "Von Staaten die diesen hatten weiß ich nicht viel. Aber in dem Buch \"After Capitalism\" vom Ökonom David Schweickhardt ist das finde ich sehr gut dargelegt, wie das aussehen könnte.\nIm Grunde geht es darum dass Unternehmen Genossenschaftlich in Arbeiterhand sind, und dass Kapitalmärkte demokratisch kontrolliert werden. Den freien Markt gäbe es weiterhin\nWäre das denn kompatibel mit \"innerhalb der Marktwirtschaft einiges fairer zu gestalten\"? Die Marktwirtschaft ist ja kein Problem, nur den Kapitalismus sehe ich als Problem, und das ist nicht das gleiche. "
   },
   {
-   "t": 161512,
+   "t": 158477,
    "type": "message",
    "chat": "a07",
    "sender_slot": 3,
    "text": "Ja das mit dem grünen Feindbild ist echt schlimm... :/"
   },
   {
-   "t": 161847,
+   "t": 159180,
+   "type": "message",
+   "chat": "a18",
+   "sender_slot": 10,
+   "text": "Wenn du möchtest reden wir über das Thema, dass dir oder jeweils dem anderen am wichtigsten ist. So bekommen wir hoffentlich eine Diskussion hin oder ständig thematisch zu springen und an der Oberfläche zu bleiben."
+  },
+  {
+   "t": 159340,
+   "type": "message",
+   "chat": "a20",
+   "sender_slot": 3,
+   "text": "Und magst du näher definieren welche Interessen es sind, die die AfD für dich vertritt und andere Parteien nicht? "
+  },
+  {
+   "t": 160997,
    "type": "message",
    "chat": "a07",
    "sender_slot": 3,
    "text": "Ein Autokonzern muss keinen Profit machen notwendigerweise. Ein Autokonzern muss seine Arbeiter:innen entlohnen und seinen Kund:innen Autos verkaufen, und schauen dass sich das ausgeht und er keinen Verlust macht. Was mehr erwirtschaft wird kann auch entweder unter den Menschen im Unternehmen verteilt werden, im Preis runtergenommen werden, oder in die Zukunft investiert werden (neues Gerät zb). Anstatt dass dauerhaft Kapital in Form von Profit aus dem Unternehmen in die Hände von einigen wenigen, die es besitzen, fließt.\nWenn kein Profit gemacht wird kann dennoch der gleiche Wert erwirtschaftet werden, er wird nur anders verteilt. Und die Menschen die im Unternehmen arbeiten haben durchaus die gleiche Motivation gute Autos zu bauen, oder sogar höher wenn sie nicht \"für jmd anderes profit\" arbeiten.\nDie höhere Löhne -> Inflation Schleife kann es natürlich geben, aber wenn die Wirtschaft nicht ausgelastet ist dann muss das nicht so sein"
   },
   {
-   "t": 164210,
+   "t": 161700,
    "type": "message",
    "chat": "a18",
    "sender_slot": 2,
    "text": "Fair enough – bei Technologieoffenheit und teilweise auch beim GEG kann ich deine Kritik sogar nachvollziehen. Ich glaube, unser Unterschied liegt weniger bei „Freiheit vs. Bevormundung“, sondern darin, wo wir die Grenze legitimer Regulierung ziehen. Für mich endet individuelle Freiheit dort nicht erst, wo unmittelbar jemand geschädigt wird, sondern auch dort, wo relevante Kosten auf andere bzw. die Allgemeinheit ausgelagert werden. Gleichzeitig sollte jeder Eingriff verhältnismäßig und möglichst effizient sein – da haben die Grünen aus meiner Sicht definitiv nicht immer alles richtig gemacht."
   },
   {
-   "t": 164236,
+   "t": 163719,
+   "type": "message",
+   "chat": "a33",
+   "sender_slot": 9,
+   "text": "Da sind wir uns wohl ziemlich einig. :-)\nWozu entscheidest du dich dann?"
+  },
+  {
+   "t": 164220,
    "type": "message",
    "chat": "a18",
    "sender_slot": 2,
    "text": "Aber lass uns tatsächlich mal ein Thema vertiefen statt zehn gleichzeitig 😄 Mich würde gesellschaftliche Freiheit interessieren, weil ich da bei der AfD einen ziemlich fundamentalen Widerspruch zu deiner Argumentation sehe: Du kritisierst die Grünen wegen Eingriffen in individuelle Freiheit – gleichzeitig vertrittst du eine Partei, bei der ich gerade bei gesellschaftlicher Liberalität, Minderheitenrechten, Migration und teilweise auch dem Verhältnis zu pluralistischer Demokratie erhebliche Probleme sehe. Wie passt das für dich zusammen?"
   },
   {
-   "t": 164238,
+   "t": 164250,
    "type": "rating",
    "chat": "a18",
    "from_slot": 2,
@@ -2012,14 +2019,7 @@
    "bridge": false
   },
   {
-   "t": 169894,
-   "type": "message",
-   "chat": "a33",
-   "sender_slot": 9,
-   "text": "Da sind wir uns wohl ziemlich einig. :-)\nWozu entscheidest du dich dann?"
-  },
-  {
-   "t": 169898,
+   "t": 164770,
    "type": "rating",
    "chat": "a33",
    "from_slot": 9,
@@ -2029,14 +2029,14 @@
    "bridge": true
   },
   {
-   "t": 170081,
+   "t": 165822,
    "type": "message",
    "chat": "a26",
    "sender_slot": 9,
    "text": "Ok, das ist eine Meinung. Was mich da interessieren würde, ist wieso dieses Thema für Dich eine so große Rolle spielt? Ich meine im Vergleich zu anderen drängenden Themen, wie Wirtschaft, Bildung, Klima, Energie,Krieg, etc. Ich meine alles hängt immer irgendwie miteinander zusammen. Aber warum gerade Migration ein Schlüssel sein sollte, erschließt sich mir nicht. Die wurde in den letzten Jahren massiv zurückgefahren und hat überhaupt nicht zu Entspannung auf irgendeinem anderen Gebiet beigetragen. "
   },
   {
-   "t": 170084,
+   "t": 166874,
    "type": "rating",
    "chat": "a26",
    "from_slot": 9,
@@ -2046,14 +2046,14 @@
    "bridge": false
   },
   {
-   "t": 175463,
+   "t": 167928,
    "type": "message",
    "chat": "a33",
    "sender_slot": 2,
    "text": "Diesmal ziemlich klar Grün. In Berlin vor allem wegen Verkehrs-/Stadtentwicklung, Klima und weil sie aktuell die realistischste Chance haben, eine progressive Regierung anzuführen. Volt finde ich programmatisch oft spannend, aber strategisch (5% Hürde) ist Grün für mich hier die wirksamere Stimme. "
   },
   {
-   "t": 175466,
+   "t": 168982,
    "type": "rating",
    "chat": "a33",
    "from_slot": 2,
@@ -2063,118 +2063,104 @@
    "bridge": true
   },
   {
-   "t": 181122,
+   "t": 170038,
    "type": "message",
    "chat": "a26",
    "sender_slot": 10,
    "text": "Wir sind uns auf jeden Fall einig das viele Themen Hand in Hand gehen. Wollen wir uns vielleicht auf eins fokussieren?\n\n"
   },
   {
-   "t": 181645,
+   "t": 172558,
    "type": "message",
    "chat": "a26",
    "sender_slot": 10,
    "text": "Die Zahlen haben in der Tat abgenommen, aber ich sehe folgende Probleme mit dem Ist-Zustand. Wir leben in einem Sozialstaat, der beruht auf Vertrauen und Solidarität, dass ist mit Masseneinwanderung aber nicht vereinbar. "
   },
   {
-   "t": 181719,
-   "type": "message",
-   "chat": "a26",
-   "sender_slot": 10,
-   "text": "Es ist nur eine Frage der Zeit (es kommen ja vorwiegend junge Männer) bis die demographischen Verhältnisse kippen, mit Folgen für Demokratie, „Vielfalt“ etc."
-  },
-  {
-   "t": 181848,
-   "type": "message",
-   "chat": "a26",
-   "sender_slot": 10,
-   "text": "Lass uns gerne spezifischer werden bei einem Thema, um nicht nur an der Oberfläche zu kratzen."
-  },
-  {
-   "t": 184849,
+   "t": 174267,
    "type": "message",
    "chat": "a20",
    "sender_slot": 10,
    "text": "In Ordnung, ein grundlegendes Problem was ich dabei sehe: Ab wann besitzt man zu viel? Wer bestimmt das?\nWenn nicht gewählte Akteure direkten Einfluss auf die Politik nehmen sehe ich das auch kritisch."
   },
   {
-   "t": 184946,
+   "t": 175078,
+   "type": "message",
+   "chat": "a26",
+   "sender_slot": 10,
+   "text": "Es ist nur eine Frage der Zeit (es kommen ja vorwiegend junge Männer) bis die demographischen Verhältnisse kippen, mit Folgen für Demokratie, „Vielfalt“ etc."
+  },
+  {
+   "t": 176787,
    "type": "message",
    "chat": "a20",
    "sender_slot": 10,
    "text": "Ich glaube aber Menschen sind sehr unterschiedlich und das sollte nicht - auch wenn du das bisher nicht direkt angesprochen hast - durch extra Steuern, Enteignung oder ähnliche Mechanismen probiert werden zu ändern."
   },
   {
-   "t": 185170,
+   "t": 177598,
+   "type": "message",
+   "chat": "a26",
+   "sender_slot": 10,
+   "text": "Lass uns gerne spezifischer werden bei einem Thema, um nicht nur an der Oberfläche zu kratzen."
+  },
+  {
+   "t": 179307,
    "type": "message",
    "chat": "a20",
    "sender_slot": 10,
    "text": "Ich würde mich selbst als rechts-progressiv bezeichnen. Es bringt nichts alte Zustände wiederherstellen zu wollen, die Welt dreht sich nunmal weiter. Aber besonders in puncto Migration wird die Demografie mittelfristig ganz andere Verhältnisse schaffen, die eine Gefahr für das Leben sein werden oder schon sind wie wir es lieben und leben wollen. Dazu zählen z.B. demokratische Verhältnisse und unsere Freiheit."
   },
   {
-   "t": 190826,
-   "type": "message",
-   "chat": "a20",
-   "sender_slot": 3,
-   "text": "Das kann ich dir auch nicht sagen, und ich glaube es ist auch nicht die richtige Frage. Die Frage ist, wie wir darüber entscheiden, wie wir die Ressourcen die wir haben verteilen. Und ich denke es ist einfacher zu sagen \"wann besitzt jemand zu wenig\" -- wenn sie kein Leben in Würde leben können obwohl die Gesellschaft genug Ressourcen hätte, dies zu ermöglichen oder zumindest zu verbessern. Und solange es Menschen gibt die zu wenig haben denke ich sollte ein Fokus darauf liegen die Ressourcen die wir haben auch diesen Menschen zugänglich zu machen."
-  },
-  {
-   "t": 190954,
-   "type": "message",
-   "chat": "a20",
-   "sender_slot": 3,
-   "text": "Magst du das näher erläutern? In meiner Wahrnehmung erlaubt, sich nicht um seine Wohnung sorgen zu müssen zb, die Entfaltung der individuellen Freiheit, und unserer Unterschiede. Ich sehe das also gar nicht entgegengesetzt. Kommt natürlich drauf an was und wie genau gemacht wird, Steuern, Enteignungen etc sind ja erstmal nur Instrumente "
-  },
-  {
-   "t": 191169,
-   "type": "message",
-   "chat": "a20",
-   "sender_slot": 3,
-   "text": "Interessant, da wollen wir wahrscheinlich ähnliche Dinge. Nur nehme ich es so wahr, dass die momentan größte Gefahr für unsere Freiheit und demokratische Verhältnisse von innen, genauer von der AfD und ihrem Umfeld kommen. Hast du zb das Gutachten der Gesellschaft für Freiheitsrechte gelesen?\nIch sage auch nicht dass sie die einzige Gefahr für diese Dinge ist, aber ich sehe es doch als recht klar an dass sie eine sehr große Gefahr dafür darstellt.\nWie passt das zusammen, dass du Freiheit und Demokratie möchtest, aber eine Partei wählst von der verschiedenste Gutachten belegen dass sie dem entgegengesetzt agiert? "
-  },
-  {
-   "t": 196825,
+   "t": 180637,
    "type": "opinion",
    "slot": 11,
    "text": "Hallo, ich werde die Grünen wählen, weil sie eine Dimension für die Entscheidungen im Parlament vertreten, welche in der Gesamtkonstellation wichtig sind und dadurch das Gleichgewicht zu nachhaltigen,  demokratischen und fairen hin verschieben. Ich verspreche mir davon weniger Lobbyismus im fossilen Bereich sowie zukunftsfähige Optionen, die uns unabhängiger von gewissen Staaten und Rohstoffen machen."
   },
   {
-   "t": 196886,
+   "t": 181275,
    "type": "difference_rating",
    "from_slot": 11,
    "to_slot": 10,
    "disagreement": 10
   },
   {
-   "t": 196896,
+   "t": 181361,
    "type": "difference_rating",
    "from_slot": 11,
    "to_slot": 2,
    "disagreement": 0
   },
   {
-   "t": 196920,
+   "t": 181446,
    "type": "difference_rating",
    "from_slot": 11,
    "to_slot": 3,
    "disagreement": 5
   },
   {
-   "t": 197007,
+   "t": 181531,
    "type": "difference_rating",
    "from_slot": 11,
    "to_slot": 6,
    "disagreement": 2
   },
   {
-   "t": 197099,
+   "t": 181616,
    "type": "message",
    "chat": "a24",
    "sender_slot": 8,
    "text": "If the aim is to consolidate votes to push through or block certain parties, then yes, it's a waste; but if my aim is to back something for symbolic purposes, then it's a success."
   },
   {
-   "t": 197344,
+   "t": 181827,
+   "type": "message",
+   "chat": "a20",
+   "sender_slot": 3,
+   "text": "Das kann ich dir auch nicht sagen, und ich glaube es ist auch nicht die richtige Frage. Die Frage ist, wie wir darüber entscheiden, wie wir die Ressourcen die wir haben verteilen. Und ich denke es ist einfacher zu sagen \"wann besitzt jemand zu wenig\" -- wenn sie kein Leben in Würde leben können obwohl die Gesellschaft genug Ressourcen hätte, dies zu ermöglichen oder zumindest zu verbessern. Und solange es Menschen gibt die zu wenig haben denke ich sollte ein Fokus darauf liegen die Ressourcen die wir haben auch diesen Menschen zugänglich zu machen."
+  },
+  {
+   "t": 182681,
    "type": "rating",
    "chat": "a24",
    "from_slot": 8,
@@ -2184,91 +2170,105 @@
    "bridge": false
   },
   {
-   "t": 197349,
+   "t": 184136,
    "type": "message",
    "chat": "a24",
    "sender_slot": 8,
    "text": "If I'm not mistaken the afd had been around for several years before meeting the five percent threshold requirement in federal elections"
   },
   {
-   "t": 197550,
+   "t": 184347,
    "type": "message",
-   "chat": "a24",
-   "sender_slot": 8,
-   "text": "Do you feel the sub-five percent supporters  of the afd back then where mistaken in that their votes went to 'waste'?"
+   "chat": "a20",
+   "sender_slot": 3,
+   "text": "Magst du das näher erläutern? In meiner Wahrnehmung erlaubt, sich nicht um seine Wohnung sorgen zu müssen zb, die Entfaltung der individuellen Freiheit, und unserer Unterschiede. Ich sehe das also gar nicht entgegengesetzt. Kommt natürlich drauf an was und wie genau gemacht wird, Steuern, Enteignungen etc sind ja erstmal nur Instrumente "
   },
   {
-   "t": 197632,
+   "t": 185882,
    "type": "difference_rating",
    "from_slot": 6,
    "to_slot": 10,
    "disagreement": 10
   },
   {
-   "t": 197824,
+   "t": 185967,
    "type": "message",
    "chat": "a22",
    "sender_slot": 6,
    "text": "Wenn du meinst, dass die AFD deine Interessen tatsächlich vertritt, dann habe ich das zu respektieren. Ich halte die AFD jenseits von politischer Meinung für extrem gefährlich, weil sie, käme sie an ausreichend Macht, die demokratische und rechtsstaatliche verfasstheit dieses Landes zu zerstören droht. Das macht mir viel Angst"
   },
   {
-   "t": 198419,
+   "t": 186656,
+   "type": "message",
+   "chat": "a24",
+   "sender_slot": 8,
+   "text": "Do you feel the sub-five percent supporters  of the afd back then where mistaken in that their votes went to 'waste'?"
+  },
+  {
+   "t": 186867,
+   "type": "message",
+   "chat": "a20",
+   "sender_slot": 3,
+   "text": "Interessant, da wollen wir wahrscheinlich ähnliche Dinge. Nur nehme ich es so wahr, dass die momentan größte Gefahr für unsere Freiheit und demokratische Verhältnisse von innen, genauer von der AfD und ihrem Umfeld kommen. Hast du zb das Gutachten der Gesellschaft für Freiheitsrechte gelesen?\nIch sage auch nicht dass sie die einzige Gefahr für diese Dinge ist, aber ich sehe es doch als recht klar an dass sie eine sehr große Gefahr dafür darstellt.\nWie passt das zusammen, dass du Freiheit und Demokratie möchtest, aber eine Partei wählst von der verschiedenste Gutachten belegen dass sie dem entgegengesetzt agiert? "
+  },
+  {
+   "t": 187036,
    "type": "message",
    "chat": "a35",
    "sender_slot": 8,
    "text": "Well, I suppose I lean towards the Green Party, as I see their stance on climate change mitigation as critically important, and I do approve of their stance towards authoritarian governments.\n​I mean, who doesn't want eco-friendly missile defense platforms?\n​Though, big disclaimer: as mentioned, I'm not German. But I do see the importance of Germany maintaining and evolving its position as a global power; thus, my viewpoint is not as parochial as I'm sure many Germans see things."
   },
   {
-   "t": 198559,
+   "t": 188105,
    "type": "difference_rating",
    "from_slot": 9,
    "to_slot": 1,
    "disagreement": 8
   },
   {
-   "t": 198868,
-   "type": "message",
-   "chat": "a35",
-   "sender_slot": 8,
-   "text": "But that being said, many big-ticket German parties that today garner tons of support were once sub-5% threshold parties, and I stand by the validity of supporting a party through its infancy."
-  },
-  {
-   "t": 198971,
+   "t": 189261,
    "type": "message",
    "chat": "a28",
    "sender_slot": 9,
    "text": "Nee, aber weil die das Thema nicht komplett ignorieren und allen alles versprechen. Die Dinge hängen halt miteinander zusammen. Man kann schön polemisieren, aber dadurch wird nichts einfacher. \nDas Argument, dass wir keine Mitverantwortung für das Klima tragen, weil Amerika oder China mehr Emissionen ausstoßen, teile ich nicht. Die Chinesen zeigen gerade wie man Wirtschaft und Energieeffizienz vereinen kann. Das ist bei uns so schwer, weil alle - und hier meine ich nicht nur die Politik - ihre Pfründe so erfolgreich verteidigen. Das ist vielleicht etwas komplexer, aber da macht es sich BSW m.E. zu einfach. "
   },
   {
-   "t": 199049,
+   "t": 189556,
+   "type": "message",
+   "chat": "a35",
+   "sender_slot": 8,
+   "text": "But that being said, many big-ticket German parties that today garner tons of support were once sub-5% threshold parties, and I stand by the validity of supporting a party through its infancy."
+  },
+  {
+   "t": 190332,
    "type": "message",
    "chat": "a33",
    "sender_slot": 9,
    "text": "Kann ich gut nachvollziehen. Würde ich genauso machen, wenn ich in Berlin noch wählen dürfte. "
   },
   {
-   "t": 199073,
+   "t": 191404,
    "type": "difference_rating",
    "from_slot": 9,
    "to_slot": 2,
    "disagreement": 5
   },
   {
-   "t": 199622,
+   "t": 191489,
    "type": "message",
    "chat": "a16",
    "sender_slot": 8,
    "text": "It does indeed seem that our world produces heaps of wisdom out of its most satirical minds.\n​As for a hypothetical vote for The Left party, I feel they would do wonders for national social justice, though I'm not completely sold on their parochial tendency. Perhaps this stems from me not being German, though valuing what I see Germany as standing for on the global stage.\n"
   },
   {
-   "t": 199917,
+   "t": 192562,
    "type": "message",
    "chat": "a31",
    "sender_slot": 8,
    "text": "I will save my vote for the agi elections but by then it won't matter "
   },
   {
-   "t": 199921,
+   "t": 193635,
    "type": "rating",
    "chat": "a31",
    "from_slot": 8,
@@ -2278,7 +2278,7 @@
    "bridge": false
   },
   {
-   "t": 199938,
+   "t": 194709,
    "type": "rating",
    "chat": "a16",
    "from_slot": 8,
@@ -2288,7 +2288,7 @@
    "bridge": true
   },
   {
-   "t": 199981,
+   "t": 195784,
    "type": "rating",
    "chat": "a35",
    "from_slot": 8,
@@ -2298,14 +2298,14 @@
    "bridge": true
   },
   {
-   "t": 200164,
+   "t": 196860,
    "type": "difference_rating",
    "from_slot": 8,
    "to_slot": 3,
    "disagreement": 2
   },
   {
-   "t": 200169,
+   "t": 196946,
    "type": "chat_open",
    "chat": "a36",
    "from_slot": 8,
@@ -2313,7 +2313,7 @@
    "moment": "real"
   },
   {
-   "t": 200582,
+   "t": 198023,
    "type": "chat_open",
    "chat": "a37",
    "from_slot": 11,
@@ -2321,35 +2321,35 @@
    "moment": "real"
   },
   {
-   "t": 200597,
+   "t": 199100,
    "type": "message",
    "chat": "a36",
    "sender_slot": 8,
    "text": "Your outlook for the Left Party sounds optimistic, and I respect that. However, I struggle to see the efficacy of the party's strategy in projecting its philosophies into policies on the global stage.\n​Nationally, I'm sure they will be able to make changes that I would agree with; however, as a non-German, I value what Germany stands for—and could evolve to stand for—within the context of geopolitics.\n​Am I missing something when it comes to the Left Party's strategy in dealing with international issues?"
   },
   {
-   "t": 200670,
+   "t": 200178,
    "type": "message",
    "chat": "a37",
    "sender_slot": 11,
    "text": "Mich würde interessieren, wie genau diese Interessen aussehen bzw. wie die AfD es schafft, diese zu bedienen. Also welche Teile des Wahlprogramms wirklich konkret darauf einzahlen."
   },
   {
-   "t": 200878,
+   "t": 201257,
    "type": "difference_rating",
    "from_slot": 11,
    "to_slot": 7,
    "disagreement": 5
   },
   {
-   "t": 200886,
+   "t": 201343,
    "type": "difference_rating",
    "from_slot": 11,
    "to_slot": 1,
    "disagreement": 8
   },
   {
-   "t": 200889,
+   "t": 201429,
    "type": "chat_open",
    "chat": "a38",
    "from_slot": 11,
@@ -2357,14 +2357,14 @@
    "moment": "real"
   },
   {
-   "t": 200939,
+   "t": 202509,
    "type": "message",
    "chat": "a38",
    "sender_slot": 11,
    "text": "Ich bin mir bei BSW immer noch unsicher, wo die Reise dann genau hingeht, was die übergeordnete und realistische Vision für das Land ist.\n\nDie Russland-Affinität macht mir auch Sorgen und die Verklärung einiger Themen. "
   },
   {
-   "t": 200955,
+   "t": 203590,
    "type": "chat_open",
    "chat": "a39",
    "from_slot": 11,
@@ -2372,28 +2372,28 @@
    "moment": "real"
   },
   {
-   "t": 201030,
+   "t": 204671,
    "type": "message",
    "chat": "a39",
    "sender_slot": 11,
    "text": "Ich mag viele der Ideen und Ansätze der Politik der Linken. Würde sie gerne mal als Teil einer funktionierenden Regierung sehen. Habe aber auch einige Fragezeichen bei Wirtschaftspolitik und ob sie generell ein Parlament Zusammenhalten können gerade bei streitbaren Themen  "
   },
   {
-   "t": 202082,
+   "t": 205753,
    "type": "difference_rating",
    "from_slot": 8,
    "to_slot": 10,
    "disagreement": 10
   },
   {
-   "t": 202088,
+   "t": 205839,
    "type": "difference_rating",
    "from_slot": 8,
    "to_slot": 2,
    "disagreement": 0
   },
   {
-   "t": 207744,
+   "t": 205926,
    "type": "chat_open",
    "chat": "a40",
    "from_slot": 11,
@@ -2401,105 +2401,105 @@
    "moment": "real"
   },
   {
-   "t": 207932,
+   "t": 207009,
    "type": "message",
    "chat": "a22",
    "sender_slot": 10,
    "text": "Welches ist dein bestes Argument, dass die These stützt, sie würde die demokratische und rechtsstaatliche Verfasstheit dieses Landes möglicherweise zerstören? Damit wir was handfestes haben."
   },
   {
-   "t": 208346,
+   "t": 208092,
    "type": "message",
    "chat": "a20",
    "sender_slot": 10,
    "text": "Wie viel % der Bevölkerung würdest du sagen leben hierzulande in unwürdigen Verhältnissen? Ich orientiere mich an der Geschichte und die hat gezeigt, dass alle Versuche die Ungleichheiten und Unterschiede zu beseitigen zu noch mehr Leid geführt haben."
   },
   {
-   "t": 208727,
+   "t": 210612,
    "type": "message",
    "chat": "a20",
    "sender_slot": 10,
    "text": "Ich kannte das Gutachten nicht, habe aber 10 Minuten auf der Website etwas reingelesen. Ich bin da kritisch, es ist normativ extrem aufgeladen, schließlich geht es ja um das Parteiverbot. Kannst du mir sagen, welche Punkte konkret dort für dich eine Gefahr darstellen?\n\nEs gibt eine Studie nach der die AfD die Partei mit der höchsten innerparteilichen Demokratie ist: Anna-Sophie Heinze, Benjamin Höhne und Felix Wortmann Callejon (2023): „What Drives the Intra-party Democracy of the ‘Alternative for Germany’: Populist Ideology, Low Institutionalisation or Lacking Party Unity?\n\nIst natürlich ein anderer Punkt, aber ich vermute trotzdem das du nicht damit gerechnet hast und die Studie ist sogar \"neutraler\"."
   },
   {
-   "t": 209082,
-   "type": "message",
-   "chat": "a20",
-   "sender_slot": 10,
-   "text": "Wenn du dich nicht um deine Wohnung sorgen willst dann a) erwirtschafte genug und b) wähle keine Parteien die durch massenhaften Zustrom neuer Menschen das Problem verschärfen. Ich weiß das ist etwas populistisch, aber ich wollte es einfach halten. Wir haben in Deutschland auch über 300.000 geplante Neubauten, die aufgrund der teuren Rohstoffe aktuell nicht umgesetzt werden."
-  },
-  {
-   "t": 209144,
+   "t": 211347,
    "type": "message",
    "chat": "a24",
    "sender_slot": 10,
    "text": "That's wrong, the AfD missed the 5% barely by her first election 2013."
   },
   {
-   "t": 209220,
+   "t": 213132,
    "type": "message",
-   "chat": "a24",
+   "chat": "a20",
    "sender_slot": 10,
-   "text": "No, there was a real chance to join the parlament."
+   "text": "Wenn du dich nicht um deine Wohnung sorgen willst dann a) erwirtschafte genug und b) wähle keine Parteien die durch massenhaften Zustrom neuer Menschen das Problem verschärfen. Ich weiß das ist etwas populistisch, aber ich wollte es einfach halten. Wir haben in Deutschland auch über 300.000 geplante Neubauten, die aufgrund der teuren Rohstoffe aktuell nicht umgesetzt werden."
   },
   {
-   "t": 211236,
+   "t": 213521,
    "type": "message",
    "chat": "a38",
    "sender_slot": 1,
    "text": "Ich stimme dir zu, dass die Partei noch jung ist und sich in einigen Punkten erst noch einig werden muss, jedoch halte ich es für wichtig, dass wir eine Partei im Bundestag und Landtagen haben, die sich dem Kriegswahn entgegenstellt, ohne dabei die Wirtschaft auszuhebeln. Regierungsverantwortung auf Bundesebene ist hier noch weit weg aber in der Opposition will ich gern sehen wie sich die Partei entwickelt, da ich hinter den meisten ihrer forderungen stehe."
   },
   {
-   "t": 211262,
+   "t": 213867,
    "type": "message",
-   "chat": "a38",
-   "sender_slot": 1,
-   "text": "Welche Themen werden verklärt deiner Meinung nach?"
+   "chat": "a24",
+   "sender_slot": 10,
+   "text": "No, there was a real chance to join the parlament."
   },
   {
-   "t": 211458,
+   "t": 215697,
    "type": "message",
    "chat": "a31",
    "sender_slot": 1,
    "text": "AGI elections? You mean if we choose OpenAI, Meta, Grok, Gemini, Copilot or  Claude to reign us?😂😭 "
   },
   {
-   "t": 211928,
+   "t": 216041,
+   "type": "message",
+   "chat": "a38",
+   "sender_slot": 1,
+   "text": "Welche Themen werden verklärt deiner Meinung nach?"
+  },
+  {
+   "t": 216787,
    "type": "message",
    "chat": "a28",
    "sender_slot": 1,
    "text": "Inwiefern zu einfach? Das BSW steht meiner Auffassung nach für technologieoffenheit, hat sehr wohl den Klimawandel im Blick, aber will wirtschaftlich Effiziente Maßnahmen nicht komplett blockieren. Du sagst China sei effizient, und ja sie bauen viele Elektroautos und bauen Energieeffizient und Experimentieren viel, trotzdem sind sie der global größte Emmitent und bauen neue Kohlekraftwerke. Die wollen Klimamaßnahmen da wo es effizient ist und nicht auf teufel komm raus. Im Endeffekt fährt das BSW diesen Pfad auch."
   },
   {
-   "t": 212151,
+   "t": 217877,
    "type": "message",
    "chat": "a08",
    "sender_slot": 1,
    "text": "Ich sehe den ausufernden  Kapitalismus auch als Problem, das haben wir gemeinsam. Allerdings müsste ich das Buch lesen um die Diskussion weiter zu führen, prinzipiell halte ich solche „Experimente“ aber für heikel, vor allem wenn man sie gleich auf ein ganzes Land anwenden will und es vorher noch kein Land so versucht hat. Kann funktionieren, oder brutal schiefgehen, ich bezweifle aber, dass sich momentan eine demooratische Mehrheit dafür finden würde, vor Allem unter denen, die wirtschaftlich die größte Leistung bringen, also Unternehmer."
   },
   {
-   "t": 212502,
+   "t": 218968,
    "type": "message",
    "chat": "a21",
    "sender_slot": 1,
    "text": "Gehe ich prinzipiell mit. Warum reiche? Weil das lt. berechnungen mehrere Milliarden bringen würde. Wie will man die Haushaltslücke sonst schließen? Natürlich kann man bei Punkten wie Entwicklungshilfe, Klimasubventionen, Flüchtlingshilfe etc etwas einsparen, aber es sollte mmn. immer menschlich bleiben und man sollte das Klima Thema nicht komplett ignorieren. Aber selbst mit den 3 Punkten reicht es lt. Modellen nicht, die Politik der Afd zu finanzieren. \n\n\nDes Weiteren gibt es viele unabhängige Youtube  Videos die ich in letzter Zeit geschaut habe, die die gefährlichen Rechtsextremen Netzwerke hinter Weidel, Chrupalla und Siegmund aufzeigen - fast 60% der Leute die was zu sagen haben waren teilweise in führenden Positionen von Neonazi-Organisationen. Das finde ich schon besorgniserregend."
   },
   {
-   "t": 212571,
+   "t": 220059,
    "type": "message",
    "chat": "a10",
    "sender_slot": 1,
    "text": "Absolut, danke für die Diskussion und tolle Zusammenfassung :D"
   },
   {
-   "t": 212620,
+   "t": 221151,
    "type": "difference_rating",
    "from_slot": 1,
    "to_slot": 7,
    "disagreement": 10
   },
   {
-   "t": 212621,
+   "t": 221239,
    "type": "chat_open",
    "chat": "a41",
    "from_slot": 1,
@@ -2507,35 +2507,35 @@
    "moment": "real"
   },
   {
-   "t": 212741,
+   "t": 222332,
    "type": "message",
    "chat": "a41",
    "sender_slot": 1,
    "text": "Alles valide Punkte, aber der Verdruss sollte nicht dazu führen, dass man nicht mehr wählt. Ja, wir müssen die Demokratie neu gestalten und es läuft einiges schief, aber ich sehe es als unrealistisch an, dass keiner mehr wählen geht und sich dann was ändert. Sinnvolle Maßnahmen wären, selbst aktiv zu werden, organisationen zu Gründen/beizutreten, Große Demos zu organisieren, mit Rhetorik zu überzeugen. Demokratische Mittel eben."
   },
   {
-   "t": 212773,
+   "t": 223425,
    "type": "difference_rating",
    "from_slot": 1,
    "to_slot": 11,
    "disagreement": 5
   },
   {
-   "t": 213482,
+   "t": 223513,
    "type": "message",
    "chat": "a35",
    "sender_slot": 2,
    "text": "I think we’re actually quite aligned.  Climate policy and a clear stance towards authoritarian regimes are two of the strongest arguments for the Greens for me as well. And yes, Germany should absolutely think beyond purely domestic concerns — economically, politically and in terms of security.\n\nI also agree with your point on smaller parties. I don’t think voting for a party below 5% is inherently a wasted vote. Parties only grow if people are willing to support them before they’re “safe” — which is one reason I find Volt interesting. My only caveat is that, depending on the election, I sometimes weigh that against the immediate strategic impact of my vote (e.g. tactically avoiding an unfavorable party or coalition). "
   },
   {
-   "t": 213502,
+   "t": 226033,
    "type": "message",
    "chat": "a35",
    "sender_slot": 2,
    "text": "Also, “eco-friendly missile defence platforms” might be the most Green foreign-policy slogan imaginable 😄"
   },
   {
-   "t": 213503,
+   "t": 226063,
    "type": "rating",
    "chat": "a35",
    "from_slot": 2,
@@ -2545,28 +2545,28 @@
    "bridge": true
   },
   {
-   "t": 217674,
+   "t": 226798,
    "type": "message",
    "chat": "a21",
    "sender_slot": 10,
    "text": "Ich muss mich leider entschuldigen, ich glaube heute ist der letzte Tag zum diskutieren und ich habe leider zu wenig Zeit um in einen fairen, sinnvollen Austausch hier zu gehen. Trotzdem danke für deine Zeit und vielleicht ergibt sich hier ja nochmal was. Falls es morgen noch möglich ist, versuche ich dir zu antworten!"
   },
   {
-   "t": 217705,
+   "t": 227894,
    "type": "message",
    "chat": "a37",
    "sender_slot": 10,
    "text": "Ich muss mich leider entschuldigen, ich glaube heute ist der letzte Tag zum diskutieren und ich habe leider zu wenig Zeit um in einen fairen, sinnvollen Austausch hier zu gehen.  Falls es morgen noch möglich ist, versuche ich dir zu antworten!"
   },
   {
-   "t": 217714,
+   "t": 228992,
    "type": "message",
    "chat": "a18",
    "sender_slot": 10,
    "text": "Ich muss mich leider entschuldigen, ich glaube heute ist der letzte Tag zum diskutieren und ich habe leider zu wenig Zeit um in einen fairen, sinnvollen Austausch hier zu gehen. Trotzdem danke für deine Zeit und vielleicht ergibt sich hier ja nochmal was. Falls es morgen noch möglich ist, versuche ich dir zu antworten!"
   },
   {
-   "t": 218564,
+   "t": 230090,
    "type": "rating",
    "chat": "a16",
    "from_slot": 4,
@@ -2576,105 +2576,91 @@
    "bridge": false
   },
   {
-   "t": 218624,
+   "t": 231188,
    "type": "difference_rating",
    "from_slot": 4,
    "to_slot": 11,
    "disagreement": 0
   },
   {
-   "t": 224280,
+   "t": 231512,
    "type": "message",
    "chat": "a18",
    "sender_slot": 2,
    "text": "Alles gut, und danke dir ebenfalls für den fairen Austausch! Gerade weil wir politisch offensichtlich ziemlich weit auseinanderliegen, fand ich es spannend, mal jenseits der üblichen Schlagworte miteinander zu diskutieren. Meine letzte Frage war auch wirklich als Frage gemeint. Falls du noch dazu kommst, würde mich deine Sicht tatsächlich interessieren. Ansonsten: schönen Endspurt!"
   },
   {
-   "t": 224589,
+   "t": 232375,
    "type": "message",
    "chat": "a32",
    "sender_slot": 6,
    "text": "Das kommt auf die Konstellation an. Bei der Berlinwahl könnte es strategisch sein, die SPD zu wählen, damit eine regierungsfähige Mehrheit bei rauskommt"
   },
   {
-   "t": 224704,
+   "t": 233475,
    "type": "message",
    "chat": "a08",
    "sender_slot": 3,
    "text": "Also zum einen kommt es ja zum Glück in der Demokratie eigentlich nicht drauf an, wer die größte wirtschaftliche Leistung erbringt (wobei ich da auch nicht unbedingt der Meinung bin, dass das ausschließlich Unternehmer sind), zum anderen verstehe ich natürlich was du meinst. Aber es gibt durchaus viele funktionierende lokale Versuche von Gemeinwohl Ökonomie. Und ich denke auch nicht dass ein Systemwandel von heute auf morgen so einfach ist, aber es gibt ja durchaus Schritte die sich gehen lassen. Erbschaftssteuerreformen, Stärkung von Selbstverwaltung in Wohnraum oder Unternehmen, Messung des \"Fortschritts\" nicht anhand des BIPs sondern anhand gemeinwohlorientierter Aspekte, stärkere Umverteilung und Stärkung demokratischer Strukturen,... \nAll das ist denke ich möglich, nicht unbedingt revolutionär und hoch-risiko (wenn gut gemacht) und sind Schritte in die richtige Richtung "
   },
   {
-   "t": 224777,
+   "t": 234576,
    "type": "message",
    "chat": "a39",
    "sender_slot": 3,
    "text": "Würd ich dir voll zustimmen! Ich denk auch nicht dass die Linken perfekt sind, sehe aber viele gute Aspekte und denke sie sind allgemein momentan ein wichtiger Gegenpol zur nach Rechts driftenden Politik. "
   },
   {
-   "t": 224815,
-   "type": "message",
-   "chat": "a39",
-   "sender_slot": 3,
-   "text": "(und über die Grünen denk ich das auch, geh voll mit bei den Punkten die du sagst! Ich hab sie auch oft gewählt) "
-  },
-  {
-   "t": 224952,
+   "t": 236779,
    "type": "message",
    "chat": "a22",
    "sender_slot": 6,
    "text": "Sie propagiert u.a. die strafrechtliche Verfolgung politischer Gegner (Demokratieprinzip, Meinungsfreiheit), die Ausbürgerung von Deutschen mit Migrationshintergrund und die finanzielle Förderung nur \"ethnisch deutscher\" Kinder (Gleichheitsgrundsatz )."
   },
   {
-   "t": 225065,
+   "t": 237096,
+   "type": "message",
+   "chat": "a39",
+   "sender_slot": 3,
+   "text": "(und über die Grünen denk ich das auch, geh voll mit bei den Punkten die du sagst! Ich hab sie auch oft gewählt) "
+  },
+  {
+   "t": 237882,
    "type": "message",
    "chat": "a36",
    "sender_slot": 3,
    "text": "About foreign politics I also don't like every position of the left party I think...\nAnd even though for example I am not sure what I think about their position on Ukraine, I value it that they have a general antimilitarist position, a general ambition against the massive export of german weapons, and a strong position against the Gaza Genozide, which I miss in other parties. Also I would believe they would be financing international help well, and not with such a colonial mindset, maybe could be open for dept cancellation of the global south and fighting other neo-colonial dependencies. But I don't know a lot about their positions there and it's certainly not top of the agenda, I agree"
   },
   {
-   "t": 225309,
+   "t": 238985,
    "type": "message",
    "chat": "a20",
    "sender_slot": 3,
    "text": "Mehr als drei Millionen Kinder in Deutschland leben in Armut und sozialer Ausgrenzung\nDas finde ich sehr viel zu viel in einem reichen Land wie Deutschland.\nUnd was für Beispiele meinst du? UdSSR/DDR/Kuba/Nordkorea/... ? Das denke ich ist etwas sehr anderes, als sozialpolitische Umverteilungsmaßnahmen in einem demokratischen Land und lässt sich nicht vergleichen. Im Gegenteil: ich denke dass sich historisch seit den Anfängen der industriellen Revolution sehr viel verändert hat durch das Erkämpfen des Sozialstaats"
   },
   {
-   "t": 225536,
+   "t": 241505,
    "type": "message",
    "chat": "a20",
    "sender_slot": 3,
    "text": "\"Würden die Ziele der Partei Realität, hätte das weitreichende Folgen: Der demokratische Wettbewerb würde erheblich beeinträchtigt, und es wären systematische Verletzungen der Menschenwürde zu erwarten.\n\nDie Partei will ihre politischen Gegner*innen strafrechtlich verfolgen. Und ihr Politikkonzept ist auf die Ausgrenzung, Verächtlichmachung und weitgehende rechtliche Abwertung von Ausländer*innen, Deutschen mit Migrationsgeschichte, Muslim*innen und weiteren gesellschaftlichen Gruppen gerichtet.\"\nIch verstehe dass dich die normative Aufladung der Aufmachung stört, aber die Zusammengetragenen Punkte halte ich für sehr valide. Denkst du denn dass das nicht so ist? Es basiert ja auch Äußerungen und Dokumenten der Partei selber.\nUm als Beispiel das Ungarn unter Victor Orban anzuführen (eins von mehreren Beispielen von aushöhlungen der Demokratie von rechtsnationalen Kräften, die der AfD sehr ähnlich sind): freie Wahlen eingeschränkt durch Propaganda, freie Medien eingeschränkt, "
   },
   {
-   "t": 225596,
+   "t": 244025,
    "type": "message",
    "chat": "a20",
    "sender_slot": 3,
    "text": "Minderheitenrechte eingeschränkt, politische Gegner verfolgt, etc.\nAlleine das Konzept \"Remigration\" auch...\nDiese Dinge machen mir Angst und stehen Freiheit und Demokratie direkt entgegen "
   },
   {
-   "t": 225724,
-   "type": "message",
-   "chat": "a20",
-   "sender_slot": 3,
-   "text": "Die Studie klingt interessant, werde ich mal reinschauen. Ist 2023 veröffentlicht, also die Recherche war noch früher, und die AfD ist eine junge und sich wandelnde Partei. Was in NRW neulich passiert ist wirkt mir als stünde es dem entgegen. Aber kann ich mir schon vorstellen dass da was dran ist, ist eben auch einfach eine junge Partei.\nAber demokratisch nach innen sagt noch nichts über demokratisch nach außen. Finde die anderen Parteien aber durchaus kritisierenswert, klar! "
-  },
-  {
-   "t": 225949,
-   "type": "message",
-   "chat": "a20",
-   "sender_slot": 3,
-   "text": "a) ist unser Wirtschaftssystem so ausgelegt, dass systemisch nie alle \"reich\" sein können, sondern viele arm bleiben müssen damit es funktioniert, bspw ist es ja auf Arbeitslosigkeit angewiesen\nUnd b) geht es mir nicht um eine Wohnung für mich, sondern um ein Leben in Würde für möglichst alle Menschen, egal wo sie herkommen. Und wenn Menschen vor Krieg und Krisen fliehen dann ist es geboten ihnen zu helfen soweit wir können. Und wir können, wenn wir wollen, und gleichzeitig unsere lokalen sozialen Probleme lösen: wenn wir allgemein sozialere und inklusivere Politik machen und die Ressourcen die wir haben besser verteilen."
-  },
-  {
-   "t": 231605,
+   "t": 244512,
    "type": "message",
    "chat": "a32",
    "sender_slot": 2,
    "text": "Interessant – ich sehe es in Berlin eher umgekehrt: Wenn Grün vor SPD liegt, stärkt eine Stimme für Grün die Chance auf eine progressive regierungsfähige Mehrheit und auf eine grüne Regierende Bürgermeisterin (vs. Linke Regierende). Was wäre dein strategisches Argument für die SPD? Ich sehe die nach aktuellen Umfragen keine Regierung anführen. Es sei denn, Steffen Krach legt einen phänomenalen Endspurt hin. "
   },
   {
-   "t": 231608,
+   "t": 245619,
    "type": "rating",
    "chat": "a32",
    "from_slot": 2,
@@ -2684,33 +2670,40 @@
    "bridge": false
   },
   {
-   "t": 231874,
+   "t": 246545,
    "type": "message",
    "chat": "a20",
    "sender_slot": 3,
-   "text": "Also die Studie die du zitierst stützt sich ja auf Daten von vor der BTW 2017, als die Partei in großen Umbrüchen war, keine 5 Jahre alt war auch\nSehr interessant, aber inwieweit das jetzt, 9 Jahre später, immer noch der Fall ist, darüber sagt die Studie nichts\nAber danke für den Lesetipp"
+   "text": "Die Studie klingt interessant, werde ich mal reinschauen. Ist 2023 veröffentlicht, also die Recherche war noch früher, und die AfD ist eine junge und sich wandelnde Partei. Was in NRW neulich passiert ist wirkt mir als stünde es dem entgegen. Aber kann ich mir schon vorstellen dass da was dran ist, ist eben auch einfach eine junge Partei.\nAber demokratisch nach innen sagt noch nichts über demokratisch nach außen. Finde die anderen Parteien aber durchaus kritisierenswert, klar! "
   },
   {
-   "t": 237530,
+   "t": 247835,
    "type": "opinion",
    "slot": 12,
    "text": "I am not sure yet. I want to understand better"
   },
   {
-   "t": 237537,
+   "t": 248501,
    "type": "opinion",
    "slot": 13,
    "text": "Spd - redistribution of wealth"
   },
   {
-   "t": 237580,
+   "t": 249065,
+   "type": "message",
+   "chat": "a20",
+   "sender_slot": 3,
+   "text": "a) ist unser Wirtschaftssystem so ausgelegt, dass systemisch nie alle \"reich\" sein können, sondern viele arm bleiben müssen damit es funktioniert, bspw ist es ja auf Arbeitslosigkeit angewiesen\nUnd b) geht es mir nicht um eine Wohnung für mich, sondern um ein Leben in Würde für möglichst alle Menschen, egal wo sie herkommen. Und wenn Menschen vor Krieg und Krisen fliehen dann ist es geboten ihnen zu helfen soweit wir können. Und wir können, wenn wir wollen, und gleichzeitig unsere lokalen sozialen Probleme lösen: wenn wir allgemein sozialere und inklusivere Politik machen und die Ressourcen die wir haben besser verteilen."
+  },
+  {
+   "t": 249167,
    "type": "difference_rating",
    "from_slot": 13,
    "to_slot": 8,
    "disagreement": 8
   },
   {
-   "t": 237584,
+   "t": 249255,
    "type": "chat_open",
    "chat": "a42",
    "from_slot": 13,
@@ -2718,21 +2711,21 @@
    "moment": "real"
   },
   {
-   "t": 237594,
+   "t": 250365,
    "type": "difference_rating",
    "from_slot": 4,
    "to_slot": 7,
    "disagreement": 10
   },
   {
-   "t": 237607,
+   "t": 250454,
    "type": "difference_rating",
    "from_slot": 12,
    "to_slot": 0,
    "disagreement": 8
   },
   {
-   "t": 237614,
+   "t": 250543,
    "type": "chat_open",
    "chat": "a43",
    "from_slot": 12,
@@ -2740,14 +2733,21 @@
    "moment": "real"
   },
   {
-   "t": 237632,
+   "t": 251585,
+   "type": "message",
+   "chat": "a20",
+   "sender_slot": 3,
+   "text": "Also die Studie die du zitierst stützt sich ja auf Daten von vor der BTW 2017, als die Partei in großen Umbrüchen war, keine 5 Jahre alt war auch\nSehr interessant, aber inwieweit das jetzt, 9 Jahre später, immer noch der Fall ist, darüber sagt die Studie nichts\nAber danke für den Lesetipp"
+  },
+  {
+   "t": 251654,
    "type": "difference_rating",
    "from_slot": 12,
    "to_slot": 4,
    "disagreement": 2
   },
   {
-   "t": 237633,
+   "t": 251743,
    "type": "chat_open",
    "chat": "a44",
    "from_slot": 12,
@@ -2755,21 +2755,21 @@
    "moment": "real"
   },
   {
-   "t": 237638,
+   "t": 252854,
    "type": "message",
    "chat": "a44",
    "sender_slot": 12,
    "text": "Tell me more"
   },
   {
-   "t": 237654,
+   "t": 253966,
    "type": "difference_rating",
    "from_slot": 13,
    "to_slot": 4,
    "disagreement": 5
   },
   {
-   "t": 237659,
+   "t": 254055,
    "type": "chat_open",
    "chat": "a45",
    "from_slot": 13,
@@ -2777,14 +2777,14 @@
    "moment": "real"
   },
   {
-   "t": 243315,
+   "t": 255168,
    "type": "difference_rating",
    "from_slot": 13,
    "to_slot": 10,
    "disagreement": 10
   },
   {
-   "t": 243336,
+   "t": 255257,
    "type": "chat_open",
    "chat": "a46",
    "from_slot": 13,
@@ -2792,83 +2792,83 @@
    "moment": "real"
   },
   {
-   "t": 245882,
+   "t": 256371,
    "type": "difference_rating",
    "from_slot": 4,
    "to_slot": 10,
    "disagreement": 0
   },
   {
-   "t": 251538,
+   "t": 256460,
    "type": "opinion",
    "slot": 14,
    "text": "Ich wähle die linke, weil sie am ehesten Menschenrechte vertritt."
   },
   {
-   "t": 251569,
+   "t": 257128,
    "type": "difference_rating",
    "from_slot": 14,
    "to_slot": 9,
    "disagreement": 2
   },
   {
-   "t": 251594,
+   "t": 257217,
    "type": "difference_rating",
    "from_slot": 14,
    "to_slot": 3,
    "disagreement": 0
   },
   {
-   "t": 251617,
+   "t": 257306,
    "type": "difference_rating",
    "from_slot": 14,
    "to_slot": 10,
    "disagreement": 10
   },
   {
-   "t": 251631,
+   "t": 257396,
    "type": "difference_rating",
    "from_slot": 14,
    "to_slot": 5,
    "disagreement": 2
   },
   {
-   "t": 251645,
+   "t": 257485,
    "type": "difference_rating",
    "from_slot": 14,
    "to_slot": 11,
    "disagreement": 2
   },
   {
-   "t": 251663,
+   "t": 257574,
    "type": "difference_rating",
    "from_slot": 14,
    "to_slot": 6,
    "disagreement": 2
   },
   {
-   "t": 251709,
+   "t": 257663,
    "type": "difference_rating",
    "from_slot": 14,
    "to_slot": 7,
    "disagreement": 0
   },
   {
-   "t": 251727,
+   "t": 257752,
    "type": "difference_rating",
    "from_slot": 14,
    "to_slot": 8,
    "disagreement": 8
   },
   {
-   "t": 251743,
+   "t": 257841,
    "type": "difference_rating",
    "from_slot": 14,
    "to_slot": 2,
    "disagreement": 5
   },
   {
-   "t": 257400,
+   "t": 257931,
    "type": "opinion",
    "slot": 15,
    "text": "Afd, weil wir mehr sicherheit brauchen, männer die in deren ländern Frauen schlagen dürfen und minderjährige heiraten können, werden hierher geholt. Steuergelder sollen für unsere gesellschaft ausgegeben werden nicht für die Grüne Politik und mehr Co2 Steuern."
@@ -2955,5 +2955,6 @@
    "name": "Teilnehmer:in 16",
    "opinion": "Afd, weil wir mehr sicherheit brauchen, männer die in deren ländern Frauen schlagen dürfen und minderjährige heiraten können, werden hierher geholt. Steuergelder sollen für unsere gesellschaft ausgegeben werden nicht für die Grüne Politik und mehr Co2 Steuern."
   }
- ]
+ ],
+ "ux_retimed": true
 }
