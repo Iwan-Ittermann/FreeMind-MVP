@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { Send, Mic, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { shouldSendOnEnter } from '@/lib/chat-enter';
 
 interface ChatComposerProps {
   value: string;
@@ -11,6 +12,7 @@ interface ChatComposerProps {
   disabled?: boolean;
   placeholder?: string;
   maxLength?: number;
+  simulation?: boolean;
   /** Optional voice recording toggle — shown while the field is empty. */
   onVoiceToggle?: () => void;
   /** Called whenever the composer changes height (e.g. to keep the transcript pinned). */
@@ -33,6 +35,7 @@ export function ChatComposer({
   disabled = false,
   placeholder,
   maxLength = 1000,
+  simulation = false,
   onVoiceToggle,
   onHeightChange,
 }: ChatComposerProps) {
@@ -55,10 +58,10 @@ export function ChatComposer({
   }, [value, resize]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key !== 'Enter') return;
-    // Mobile keyboards: Enter inserts a newline, sending happens via the button.
-    if (isMobile || e.shiftKey) return;
+    if (!shouldSendOnEnter({ key: e.key, shiftKey: e.shiftKey,
+      isComposing: e.nativeEvent.isComposing, isMobile, simulation })) return;
     e.preventDefault();
+    if (disabled || isSending || !value.trim()) return;
     onSend();
   };
 

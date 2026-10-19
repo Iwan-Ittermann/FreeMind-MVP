@@ -4,7 +4,7 @@ import type { MouseEvent } from 'react';
 import { GraphNode } from '@/types/graph';
 import { ChatArrow } from '@/hooks/useChatArrows';
 import type { MessageAnimationData } from '@/hooks/useTopicData';
-import { bridgePointTone, respectTone } from '@/lib/graph-animation';
+import { chatRespectTone } from '@/lib/graph-animation';
 
 interface SignalChatArrowsProps {
   arrows: readonly ChatArrow[];
@@ -29,13 +29,13 @@ function arrowLength(messageCount: number, distance: number): number {
   return Math.max(5, Math.min(raw, distance * 0.25));
 }
 
-/** Absolute scale: received points derive from respect × 0–10 disagreement. */
-function arrowColor(points: number | null): string {
-  const tone = bridgePointTone(points);
+/** Respect only; disagreement never changes an arrow's color. */
+function arrowColor(respect: number | null | undefined): string {
+  const tone = chatRespectTone(respect);
   if (tone === 'unrated') return 'hsl(var(--muted-foreground))';
   if (tone === 'low') return 'hsl(var(--destructive))';
   if (tone === 'high') return 'hsl(var(--success))';
-  return 'hsl(var(--accent-warm))';
+  return 'hsl(var(--chat-respect-neutral))';
 }
 
 export function SignalChatArrows({
@@ -74,9 +74,8 @@ export function SignalChatArrows({
           a.toOpinionId === highlightedNode;
         const isHighlighted = !!highlightedNode && involved;
         const opacity = involved ? (isHighlighted ? 1 : 0.75) : 0.15;
-        const ratingEvent = liveRatings.get(`${a.toOpinionId}|${a.fromOpinionId}`);
-        const tone = respectTone(ratingEvent?.respect);
-        const color = ratingEvent ? (tone === 'low' ? 'hsl(var(--destructive))' : tone === 'high' ? 'hsl(var(--success))' : 'hsl(var(--accent-warm))') : arrowColor(a.receivedPoints);
+        const ratingEvent = liveRatings.get(`${a.fromOpinionId}|${a.toOpinionId}`);
+        const color = arrowColor(ratingEvent?.respect ?? a.givenRespect);
         const width = isHighlighted ? 2.2 : 1.4;
 
         // arrow head

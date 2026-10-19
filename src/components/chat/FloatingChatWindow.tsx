@@ -37,7 +37,7 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
   } = useChatSession(theirOpinionId, readOnly ? readOnlySourceId : undefined);
 
   const topicId = theirOpinion?.topic_id ?? null;
-  const { messages: dbMessages, sendMessage, isSending, isBotTyping } = useChatMessages(
+  const { messages: dbMessages, sendMessage, isSending, isBotTyping, isSimulation } = useChatMessages(
     chatId,
     isBotChat,
     topicId && myOpinion && theirOpinion
@@ -281,6 +281,7 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
                   onChange={handleInputChange}
                   onSend={handleSend}
                   isSending={isSending}
+                  simulation={isSimulation}
                   disabled={isRatingOpen}
                   placeholder={t('floatingChat.typeMessage')}
                   onHeightChange={scrollToEnd}

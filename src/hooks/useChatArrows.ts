@@ -4,8 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 /**
  * One directed chat arrow: drawn at `fromOpinionId`, pointing towards
  * `toOpinionId`. Length encodes the chat length (messages of both sides),
- * color encodes the bridging points this node RECEIVED in that chat
- * (understanding rated by the counterpart × own difference rating).
+ * color encodes the respect this node GAVE to its counterpart (0–100).
  */
 export interface ChatArrow {
   fromOpinionId: string;
@@ -15,6 +14,7 @@ export interface ChatArrow {
   receivedPoints: number | null;
   /** The opinion difference rated by this arrow's source, on the 0–10 scale. */
   givenDifference?: number;
+  givenRespect: number | null;
 }
 
 /**
@@ -64,6 +64,7 @@ export function useChatArrows(topicId: string, enabled = true) {
           messageCount: count,
           receivedPoints: receivedPoints(a, b),
           givenDifference: disagreement.get(`${a}|${b}`),
+          givenRespect: empathy.has(`${a}|${b}`) ? Number(empathy.get(`${a}|${b}`)) * 10 : null,
         });
         arrows.push({
           fromOpinionId: b,
@@ -71,6 +72,7 @@ export function useChatArrows(topicId: string, enabled = true) {
           messageCount: count,
           receivedPoints: receivedPoints(b, a),
           givenDifference: disagreement.get(`${b}|${a}`),
+          givenRespect: empathy.has(`${b}|${a}`) ? Number(empathy.get(`${b}|${a}`)) * 10 : null,
         });
       }
       return arrows;
