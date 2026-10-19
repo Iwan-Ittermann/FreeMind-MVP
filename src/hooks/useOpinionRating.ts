@@ -86,11 +86,14 @@ export function useDisagreementRating(
         if (evError) console.error('Failed to log rating event:', evError);
       }
     },
-    onSuccess: () => {
+    onSuccess: (_, disagreement) => {
       queryClient.invalidateQueries({ queryKey });
       queryClient.invalidateQueries({ queryKey: ['myOpinionRatings'] });
       if (topicId) {
         queryClient.invalidateQueries({ queryKey: ['topic', topicId] });
+        window.dispatchEvent(new CustomEvent('tt:sim-events', { detail: {
+          topicId, events: [{ id: `difference:${myOpinionId}:${targetOpinionId}:${Date.now()}`, type: 'difference_rating', sourceOpinionId: myOpinionId, targetOpinionId, disagreement }],
+        } }));
       }
     },
   });

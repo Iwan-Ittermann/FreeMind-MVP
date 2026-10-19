@@ -8,6 +8,7 @@
 - Scope Wedium discussion visuals through presentation context and semantic CSS tokens; reuse the existing graph and interactions instead of maintaining a separate renderer.
 - Display simulation progress from the last successful replay response, not a running client clock, so the indicator cannot advance beyond confirmed replay state.
 - Feed replay and user activity through one deduplicated graph-animation event path, so visual behavior cannot diverge between simulation and live use.
+- Standalone opinion-rating events carry their own difference value through the shared animation path and never mark a chat active; badges must work for pairs with no chat.
 - Chat arrows encode giver-to-recipient respect, converting the directed-pair RPC's 0–10 respect to 0–100; bridge products remain separate so disagreement cannot change arrow color. Keep opinion-difference icons separate from respect smileys and use the existing animation path for giver reactions.
 - Reuse the message hook's simulation-topic detection for Enter-to-send overrides in both chat layouts, so real-topic mobile keyboard behavior stays unchanged.
 - Generate reading pauses in presentation seconds mapped to replay time, and serialize queued message flights per chat so catch-up batches cannot animate both sides simultaneously.

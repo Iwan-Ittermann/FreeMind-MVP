@@ -226,6 +226,7 @@ Deno.serve(async (req) => {
         const v = Math.min(10, Math.max(0, Math.round(e.disagreement)));
         diffRows.set(`${rater.opinion_id}:${target.opinion_id}`, { topic_id: tid, rater_opinion_id: rater.opinion_id, target_opinion_id: target.opinion_id, disagreement: v, updated_at: at(e.t) });
         eventRows.push({ topic_id: tid, rater_id: rater.user_id, kind: 'difference', target_opinion_id: target.opinion_id, value: v, created_at: at(e.t) });
+        animationEvents.push({ id: `difference:${cycle}:${e.t}:${rater.opinion_id}:${target.opinion_id}`, type: 'difference_rating', sourceOpinionId: rater.opinion_id, targetOpinionId: target.opinion_id, disagreement: v, t: e.t });
       } else if (e.type === 'rating') {
         const cid = chatMap[e.chat]; const rater = personas.get(e.from_slot), target = personas.get(e.to_slot);
         if (!(cid && rater?.user_id && target?.opinion_id && rater.opinion_id)) continue;

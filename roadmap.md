@@ -1,5 +1,11 @@
 # Roadmap
 
+## Eigenständige Meinungsbewertungen
+- [x] Timing und Verhältnis geprüft: KI 571 unabhängige Bewertungen / 26 Chats; August 88 / 47
+- [x] Dis/agreement-Badges unabhängig von Chat-Respekt anzeigen; eigene Werte auch ohne Chat weitergeben
+- [x] Keine KI-Ergänzung erforderlich: jede Node gibt bereits 10–20 Bewertungen, bei 0–5 Chats; echte August-Daten unverändert lassen
+- [x] 14 Tests bestanden; Zustimmung/Widerspruch und automatische Badge aus echter Replay-Antwort im Browser geprüft; Build OK
+
 ## Respekt-Pfeile und Enter-Versand
 - [x] Aktuelle Brückenpunkteberechnung anhand aktiver Datenbankfunktion und Graph-Pfad geprüft
 - [x] Pfeilfarben nur aus gegebenem Respekt ableiten: bis 30 rot, bis 55 gelb, darüber grün; Grenzwerttests bestanden
