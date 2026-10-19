@@ -1,9 +1,9 @@
 # Roadmap
 
 ## Sichtbare Bewertungsreaktionen und sichere Nachrichtenflüge
-- [ ] Meinungsbewertungen beim Rater nacheinander anzeigen, ohne Gruppen abzuschneiden; Verbindung kurz aufblitzen lassen
-- [ ] Dieselben fünf Icons wie in der Bewertungsskala verwenden
-- [ ] Nachrichtenblasen entlang des gesamten Flugwegs im sichtbaren Graphbereich halten und prüfen
+- [x] Meinungsbewertungen beim Rater nacheinander anzeigen, ohne Gruppen abzuschneiden; Verbindung kurz aufblitzen lassen
+- [x] Dieselben fünf Icons wie in der Bewertungsskala verwenden; alle fünf nacheinander im Browser geprüft
+- [x] Nachrichtenblasen entlang des gesamten Flugwegs im sichtbaren Graphbereich halten; Desktop/Mobil geprüft, 24 Tests bestanden
 
 ## Meinungsbewertungen in Gruppen
 - [x] 571 KI-Bewertungen deterministisch in 151 gleichzeitige Gruppen von 3–5 gelegt
