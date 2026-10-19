@@ -4,7 +4,7 @@ import type { MouseEvent } from 'react';
 import { GraphNode } from '@/types/graph';
 import { ChatArrow } from '@/hooks/useChatArrows';
 import type { MessageAnimationData } from '@/hooks/useTopicData';
-import { respectTone } from '@/lib/graph-animation';
+import { bridgePointTone, respectTone } from '@/lib/graph-animation';
 
 interface SignalChatArrowsProps {
   arrows: readonly ChatArrow[];
@@ -31,9 +31,10 @@ function arrowLength(messageCount: number, distance: number): number {
 
 /** Absolute scale: received points derive from respect × 0–10 disagreement. */
 function arrowColor(points: number | null): string {
-  if (points == null) return 'hsl(var(--muted-foreground))';
-  if (points < 300) return 'hsl(var(--destructive))';
-  if (points >= 650) return 'hsl(var(--success))';
+  const tone = bridgePointTone(points);
+  if (tone === 'unrated') return 'hsl(var(--muted-foreground))';
+  if (tone === 'low') return 'hsl(var(--destructive))';
+  if (tone === 'high') return 'hsl(var(--success))';
   return 'hsl(var(--accent-warm))';
 }
 
@@ -106,9 +107,9 @@ export function SignalChatArrows({
             {ratingEvent && (
               <motion.line
                 x1={x1} y1={y1} x2={x2} y2={y2}
-                stroke={color} strokeWidth={width * 5} strokeLinecap="round"
-                initial={{ opacity: 0.95 }} animate={{ opacity: [0.95, 0.25, 0.8] }}
-                transition={{ duration: 1.2, repeat: 2 }}
+                stroke={color} strokeWidth={width * 2} strokeLinecap="round"
+                initial={{ opacity: 0 }} animate={{ opacity: [0, 0.35, 0] }}
+                transition={{ duration: 2.4 }}
               />
             )}
             <line
