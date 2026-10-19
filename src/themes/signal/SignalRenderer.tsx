@@ -155,6 +155,7 @@ export function SignalRenderer({
     () => new Map(opinionAnimations.map(event => [event.opinionId, event])),
     [opinionAnimations],
   );
+  const differences = useMemo(() => new Map((chatArrows ?? []).flatMap(arrow => arrow.givenDifference == null ? [] : [[`${arrow.fromOpinionId}|${arrow.toOpinionId}`, arrow.givenDifference] as const])), [chatArrows]);
 
   return (
     <svg
@@ -282,7 +283,7 @@ export function SignalRenderer({
           />
         ))}
       </g>
-      <SignalEventMarker events={eventTokens} messageAnimations={messageAnimations} />
+      <SignalEventMarker events={eventTokens} messageAnimations={messageAnimations} differences={differences} width={width} height={height} />
     </svg>
   );
 }
