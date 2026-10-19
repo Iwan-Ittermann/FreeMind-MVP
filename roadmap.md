@@ -1,5 +1,10 @@
 # Roadmap
 
+## Respekt-Pfeile und Enter-Versand
+- [ ] Aktuelle Brückenpunkteberechnung erklären
+- [ ] Pfeilfarben nur aus Respekt ableiten: bis 30 rot, bis 55 gelb, darüber grün
+- [ ] Enter-Versand in Sim-Chats aktivieren und prüfen
+
 ## Sim-Anzeigen und Bewertungsreaktionen
 - [x] Hinweisbanner mit kleinem X schließen können (Browser geprüft)
 - [x] Eigene Sim-Node nur rot mit lokalisierter YOU/DU-Innenmarkierung; redundanten Ring und Label entfernen (Meinung mobil veröffentlicht)
