@@ -37,7 +37,7 @@ export interface MessageAnimationData {
   sourceOpinionId: string;
   targetOpinionId: string;
   timestamp: number;
-  kind?: 'message' | 'rating';
+  kind?: 'message' | 'rating' | 'difference_rating';
   content?: string;
   respect?: number;
   disagreement?: number;
@@ -301,16 +301,18 @@ export function useTopicData(topicId: string) {
         const sourceOpinionId = String(item.sourceOpinionId ?? '');
         const targetOpinionId = String(item.targetOpinionId ?? '');
         if (!sourceOpinionId || !targetOpinionId) continue;
-        const isRating = item.type === 'rating';
+        const isDifference = item.type === 'difference_rating';
+        const isRating = item.type === 'rating' || isDifference;
         const content = typeof item.content === 'string' ? item.content : undefined;
         const animation: MessageAnimationData = {
           id, chatId: String(item.chatId ?? ''), sourceOpinionId, targetOpinionId, timestamp,
-          kind: isRating ? 'rating' : 'message', content,
+          kind: isDifference ? 'difference_rating' : isRating ? 'rating' : 'message', content,
           respect: typeof item.respect === 'number' ? item.respect : undefined,
+          disagreement: typeof item.disagreement === 'number' ? item.disagreement : undefined,
           durationMs: isRating ? GRAPH_ANIMATION.ratingMs : readingDuration(content ?? '', GRAPH_ANIMATION.messageMinMs, GRAPH_ANIMATION.messageMaxMs),
         };
         setMessageAnimations(prev => [...prev, animation].slice(-GRAPH_ANIMATION.maxVisibleEvents));
-        setActiveChats(prev => [...prev.filter(chat => chat.chatId !== String(item.chatId ?? '')), {
+        if (!isDifference) setActiveChats(prev => [...prev.filter(chat => chat.chatId !== String(item.chatId ?? '')), {
           chatId: String(item.chatId ?? ''), opinionAId: sourceOpinionId, opinionBId: targetOpinionId, lastActivity: timestamp,
         }]);
       }
