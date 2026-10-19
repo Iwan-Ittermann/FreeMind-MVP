@@ -42,3 +42,17 @@ export function chatRespectTone(value: number | null | undefined) {
   if (value > 55) return 'high' as const;
   return 'neutral' as const;
 }
+
+/** Keep independent opinion reactions separate from respect and chat activity. */
+export function graphActivityFields(item: Record<string, unknown>) {
+  const kind = item.type === 'difference_rating' ? 'difference_rating' as const
+    : item.type === 'rating' ? 'rating' as const : 'message' as const;
+  const content = typeof item.content === 'string' ? item.content : undefined;
+  return {
+    kind, content,
+    respect: typeof item.respect === 'number' ? item.respect : undefined,
+    disagreement: typeof item.disagreement === 'number' ? item.disagreement : undefined,
+    durationMs: kind === 'message' ? readingDuration(content ?? '', GRAPH_ANIMATION.messageMinMs, GRAPH_ANIMATION.messageMaxMs) : GRAPH_ANIMATION.ratingMs,
+    activatesChat: kind !== 'difference_rating',
+  };
+}
