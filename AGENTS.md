@@ -19,3 +19,4 @@
 - Replay datasets (AI simulation, real August discussion) share one renderer and one sim-replay function, separated only by topic setting, persona slot range, cursor and lease, so a new dataset never needs a second player.
 - Generate canned simulation replies through the authenticated message-ID RPC; validate topic, participants and persona server-side and lock the chat for idempotent rotation, so retries never double-reply or affect real discussions.
 - Sim replay catch-up writes pending events in batched per-table inserts and only animates the last real minute, so page views reach the current frame in one fast call; dataset timing is retimed for visitor UX (scripts/sim-timeline/retime_ux.py), not simulated daytimes.
+- Apply the AI-only opinion-rating batch scheduler after UX retiming; preserve rating values and all non-rating events, and never rewrite historical August records with synthetic scheduling.
