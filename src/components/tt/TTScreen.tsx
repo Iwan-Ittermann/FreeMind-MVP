@@ -168,7 +168,7 @@ function TTScreenInnerImpl({
                 opinions={data?.opinions ?? []}
                 ratings={data?.ratings ?? []}
                 activeChats={activeChats}
-                messageAnimations={messageAnimations}
+                messageAnimations={ratedAnimations}
                  opinionAnimations={opinionAnimations}
                 currentUserId={user?.id}
                 currentUserOpinionId={ownOpinionId}

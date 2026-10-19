@@ -243,6 +243,13 @@ export function useChatSession(theirOpinionId: string | null, sourceOpinionId?: 
         });
         if (evError) console.error('Failed to log rating event:', evError);
       }
+      if (effectiveMyOpinion?.user_id === user.id && theirOpinion?.topic_id) {
+        window.dispatchEvent(new CustomEvent('tt:sim-events', { detail: {
+          topicId: theirOpinion.topic_id,
+          events: [{ id: `rating:${chatId}:${user.id}:${Date.now()}`, type: 'rating', chatId,
+            sourceOpinionId: effectiveMyOpinion.id, targetOpinionId: theirOpinion.id, respect: empathy }],
+        } }));
+      }
     },
     onSuccess: () => {
       // Invalidate ratings so average updates
@@ -250,6 +257,7 @@ export function useChatSession(theirOpinionId: string | null, sourceOpinionId?: 
       // Invalidate topic data so the graph updates when user goes back
       if (theirOpinion?.topic_id) {
         queryClient.invalidateQueries({ queryKey: ['topic', theirOpinion.topic_id] });
+        queryClient.invalidateQueries({ queryKey: ['chat-arrows', theirOpinion.topic_id] });
       }
     },
   });
