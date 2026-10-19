@@ -1,9 +1,9 @@
 # Roadmap
 
 ## Meinungsbewertungen in Gruppen
-- [ ] KI-Bewertungen deterministisch in gleichzeitige Gruppen von 3–5 legen
-- [ ] Erste Bewertungsgruppe jeder Node vor deren Chats platzieren
-- [ ] Datensatz prüfen, Tests ausführen und Replay aktualisieren; August unverändert lassen
+- [x] 571 KI-Bewertungen deterministisch in 151 gleichzeitige Gruppen von 3–5 gelegt
+- [x] Erste Bewertungsgruppe jeder Node vor deren Chats platziert; sichtbare Ziele und Grenzen getestet
+- [x] 12 Tests bestanden, Replay aktualisiert und echte Bewertungsgruppen mit Badge im Browser geprüft; Chats, Werte und August unverändert
 
 ## Eigenständige Meinungsbewertungen
 - [x] Timing und Verhältnis geprüft: KI 571 unabhängige Bewertungen / 26 Chats; August 88 / 47
