@@ -39,7 +39,7 @@ export function EmbeddedChatView({ theirOpinionId, readOnly: readOnlyProp = fals
   } = useChatSession(theirOpinionId, readOnly ? sourceOpinionId : undefined);
 
   const topicId = theirOpinion?.topic_id ?? null;
-  const { messages: dbMessages, sendMessage, sendVoiceMessage, isSending, isBotTyping } = useChatMessages(
+  const { messages: dbMessages, sendMessage, sendVoiceMessage, isSending, isBotTyping, isSimulation } = useChatMessages(
     chatId,
     isBotChat,
     topicId && myOpinion && theirOpinion
@@ -365,6 +365,7 @@ export function EmbeddedChatView({ theirOpinionId, readOnly: readOnlyProp = fals
             onChange={handleInputChange}
             onSend={handleSend}
             isSending={isSending}
+            simulation={isSimulation}
             placeholder={t('floatingChat.typeMessage')}
             onVoiceToggle={handleVoiceToggle}
             onHeightChange={scrollToEnd}

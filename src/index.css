@@ -59,6 +59,7 @@
     /* Success/Positive: Moderate Green - #14B866 -> HSL: 153 80% 40% */
     --success: 153 80% 40%;
     --success-foreground: 0 0% 100%;
+    --chat-respect-neutral: 48 95% 55%;
     
     /* Destructive: Red */
     --destructive: 0 84% 60%;

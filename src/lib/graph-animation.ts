@@ -34,3 +34,11 @@ export function bridgePointTone(points: number | null) {
   if (points >= 65) return 'high' as const;
   return 'neutral' as const;
 }
+
+/** Chat arrows encode the giver's respect, independently from bridge points. */
+export function chatRespectTone(value: number | null | undefined) {
+  if (value == null) return 'unrated' as const;
+  if (value <= 30) return 'low' as const;
+  if (value > 55) return 'high' as const;
+  return 'neutral' as const;
+}

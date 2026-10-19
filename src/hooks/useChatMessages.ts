@@ -64,6 +64,7 @@ interface UseChatMessagesResult {
   sendVoiceMessage: (audioBlob: Blob) => Promise<void>;
   isSending: boolean;
   isBotTyping: boolean;
+  isSimulation: boolean;
 }
 
 export function useChatMessages(
@@ -386,5 +387,6 @@ export function useChatMessages(
     sendVoiceMessage,
     isSending: sendMutation.isPending,
     isBotTyping,
+    isSimulation,
   };
 }
