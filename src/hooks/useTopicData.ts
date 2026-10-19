@@ -243,7 +243,7 @@ export function useTopicData(topicId: string) {
           content: data.content,
           durationMs: readingDuration(data.content ?? '', GRAPH_ANIMATION.messageMinMs, GRAPH_ANIMATION.messageMaxMs),
         };
-        setMessageAnimations(prev => [...prev, animation].slice(-GRAPH_ANIMATION.maxVisibleEvents));
+        setMessageAnimations(prev => [...prev.filter(event => event.kind === 'difference_rating'), ...prev.filter(event => event.kind !== 'difference_rating').slice(-(GRAPH_ANIMATION.maxVisibleEvents - 1)), animation]);
 
         // Update active chats
         setActiveChats(prev => {
