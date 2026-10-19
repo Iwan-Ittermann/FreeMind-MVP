@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Opinion, ChatRating } from '@/types/graph';
 import { setAnimationChannel, removeAnimationChannel } from '@/lib/animation-channel';
 import { useAppSetting } from '@/hooks/useAppSettings';
-import { GRAPH_ANIMATION, graphActivityFields, readingDuration } from '@/lib/graph-animation';
+import { GRAPH_ANIMATION, graphActivityFields, readingDuration, scheduleOpinionReaction } from '@/lib/graph-animation';
 
 export interface TopicData {
   id: string;
@@ -243,7 +243,7 @@ export function useTopicData(topicId: string) {
           content: data.content,
           durationMs: readingDuration(data.content ?? '', GRAPH_ANIMATION.messageMinMs, GRAPH_ANIMATION.messageMaxMs),
         };
-        setMessageAnimations(prev => [...prev, animation].slice(-GRAPH_ANIMATION.maxVisibleEvents));
+        setMessageAnimations(prev => [...prev.filter(event => event.kind === 'difference_rating'), ...prev.filter(event => event.kind !== 'difference_rating').slice(-(GRAPH_ANIMATION.maxVisibleEvents - 1)), animation]);
 
         // Update active chats
         setActiveChats(prev => {
@@ -283,6 +283,9 @@ export function useTopicData(topicId: string) {
   useEffect(() => {
     if (!topicId) return;
     const seen = new Set<string>();
+    const giverEnds = new Map<string, number>();
+    const laneEnds = Array<number>(GRAPH_ANIMATION.maxVisibleEvents).fill(0);
+    const timers = new Set<ReturnType<typeof setTimeout>>();
     const onSimEvents = (event: Event) => {
       const detail = (event as CustomEvent<{ topicId?: string; events?: Array<Record<string, unknown>> }>).detail;
       if (detail?.topicId && detail.topicId !== topicId) return;
@@ -306,14 +309,27 @@ export function useTopicData(topicId: string) {
           id, chatId: String(item.chatId ?? ''), sourceOpinionId, targetOpinionId, timestamp,
           ...fields,
         };
-        setMessageAnimations(prev => [...prev, animation].slice(-GRAPH_ANIMATION.maxVisibleEvents));
+        if (fields.kind === 'difference_rating') {
+          const start = scheduleOpinionReaction(sourceOpinionId, timestamp, giverEnds, laneEnds);
+          const timer = setTimeout(() => {
+            timers.delete(timer);
+            setMessageAnimations(prev => [...prev, { ...animation, timestamp: Date.now() }]);
+          }, start - timestamp);
+          timers.add(timer);
+        } else {
+          setMessageAnimations(prev => [...prev.filter(event => event.kind === 'difference_rating'), ...prev.filter(event => event.kind !== 'difference_rating').slice(-(GRAPH_ANIMATION.maxVisibleEvents - 1)), animation]);
+        }
         if (activatesChat) setActiveChats(prev => [...prev.filter(chat => chat.chatId !== String(item.chatId ?? '')), {
           chatId: String(item.chatId ?? ''), opinionAId: sourceOpinionId, opinionBId: targetOpinionId, lastActivity: timestamp,
         }]);
       }
     };
     window.addEventListener('tt:sim-events', onSimEvents);
-    return () => window.removeEventListener('tt:sim-events', onSimEvents);
+    return () => {
+      window.removeEventListener('tt:sim-events', onSimEvents);
+      timers.forEach(timer => clearTimeout(timer));
+      setMessageAnimations([]);
+    };
   }, [topicId]);
 
   const query = useQuery({

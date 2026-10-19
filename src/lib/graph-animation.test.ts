@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { bridgePointTone, chatRespectTone, graphActivityFields, GRAPH_ANIMATION } from './graph-animation';
+import { bridgePointTone, chatRespectTone, graphActivityFields, GRAPH_ANIMATION, scheduleOpinionReaction, messageBubblePosition } from './graph-animation';
+import { opinionDifferenceIndex } from './opinion-difference';
 
 describe('directed arrow point scale', () => {
   it('shows high bridge scores on the RPC 0–100 scale as positive', () => {
@@ -41,7 +42,7 @@ describe('independent opinion reactions', () => {
     expect(result.disagreement).toBe(0);
     expect(result.respect).toBeUndefined();
     expect(result.activatesChat).toBe(false);
-    expect(result.durationMs).toBe(GRAPH_ANIMATION.ratingMs);
+    expect(result.durationMs).toBe(GRAPH_ANIMATION.differenceRatingMs);
   });
   it('preserves disagreement ten independently from chat respect', () => {
     expect(graphActivityFields({ type: 'difference_rating', disagreement: 10 }).disagreement).toBe(10);
@@ -49,5 +50,43 @@ describe('independent opinion reactions', () => {
     expect(respect.kind).toBe('rating');
     expect(respect.respect).toBe(80);
     expect(respect.activatesChat).toBe(true);
+  });
+});
+
+describe('sequential opinion reactions', () => {
+  it.each([3, 4, 5])('keeps all %i ratings in a giver batch sequential', count => {
+    const ends = new Map<string, number>();
+    const lanes = [0, 0, 0, 0];
+    const starts = Array.from({ length: count }, () => scheduleOpinionReaction('rater', 1000, ends, lanes));
+    expect(starts).toHaveLength(count);
+    expect(starts[0]).toBe(1000);
+    for (let i = 1; i < starts.length; i++) expect(starts[i] - starts[i - 1]).toBe(1980);
+  });
+  it('limits concurrent reactions without discarding additional givers', () => {
+    const ends = new Map<string, number>();
+    const lanes = [0, 0, 0, 0];
+    const starts = Array.from({ length: 5 }, (_, i) => scheduleOpinionReaction(String(i), 1000, ends, lanes));
+    expect(starts).toEqual([1000, 1000, 1000, 1000, 2980]);
+  });
+});
+
+describe('flight bounds', () => {
+  it.each([240, 360, 480])('contains the full message throughout a %i pixel graph flight', width => {
+    const from = messageBubblePosition(-20, -20, width, width);
+    const to = messageBubblePosition(width + 20, width + 20, width, width);
+    for (let i = 0; i <= 20; i++) {
+      const x = from.x + (to.x - from.x) * i / 20;
+      const y = from.y + (to.y - from.y) * i / 20;
+      expect(x - from.maxWidth / 2).toBeGreaterThanOrEqual(4);
+      expect(x + from.maxWidth / 2).toBeLessThanOrEqual(width - 4);
+      expect(y).toBeGreaterThanOrEqual(4);
+      expect(y + 54).toBeLessThanOrEqual(width - 4);
+    }
+  });
+});
+
+describe('shared five-step opinion values', () => {
+  it.each([[0, 0], [2, 1], [5, 2], [8, 3], [10, 4]])('maps difference %i to step %i', (value, index) => {
+    expect(opinionDifferenceIndex(value)).toBe(index);
   });
 });

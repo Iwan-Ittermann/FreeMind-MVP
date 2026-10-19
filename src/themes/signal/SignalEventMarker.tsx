@@ -1,10 +1,11 @@
 import { memo } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Handshake, Swords, Minus, Smile, Meh, Frown } from 'lucide-react';
+import { Smile, Meh, Frown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { SemanticEventToken } from '../types';
 import type { MessageAnimationData } from '@/hooks/useTopicData';
-import { GRAPH_ANIMATION, respectTone, truncateAtWord } from '@/lib/graph-animation';
+import { GRAPH_ANIMATION, respectTone, truncateAtWord, messageBubblePosition } from '@/lib/graph-animation';
+import { OPINION_DIFFERENCE_STEPS, opinionDifferenceIndex } from '@/lib/opinion-difference';
 import { SignalTextBubble } from './SignalTextBubble';
 
 interface SignalEventMarkerProps {
@@ -18,7 +19,7 @@ interface SignalEventMarkerProps {
 export const SignalEventMarker = memo(function SignalEventMarker({ events, messageAnimations = [], differences, width, height }: SignalEventMarkerProps) {
   const { t } = useTranslation();
   const reducedMotion = useReducedMotion();
-  const visible = events.slice(-GRAPH_ANIMATION.maxVisibleEvents);
+  const visible = events;
   const dataByKey = new Map(messageAnimations.map(item => [`${item.sourceOpinionId}-${item.targetOpinionId}-${item.timestamp}`, item]));
 
   return (
@@ -33,18 +34,21 @@ export const SignalEventMarker = memo(function SignalEventMarker({ events, messa
           const color = tone === 'low' ? 'hsl(var(--destructive))' : tone === 'high' ? 'hsl(var(--success))' : 'hsl(var(--accent-warm))';
           const duration = (item?.durationMs ?? GRAPH_ANIMATION.messageMinMs) / 1000;
           const text = item?.content ? truncateAtWord(item.content, 92) : '';
-          const anchor = evt.targetX >= evt.sourceX ? 'left' : 'right';
+           const from = messageBubblePosition(evt.sourceX, evt.sourceY, width ?? 600, height ?? 600);
+           const to = messageBubblePosition(evt.targetX, evt.targetY, width ?? 600, height ?? 600);
           const difference = item?.disagreement ?? differences?.get(`${evt.sourceId}|${evt.targetId}`);
-          const DifferenceIcon = difference == null ? null : difference <= 2 ? Handshake : difference >= 8 ? Swords : Minus;
+           const differenceStep = difference == null ? null : OPINION_DIFFERENCE_STEPS[opinionDifferenceIndex(difference)];
+           const DifferenceIcon = differenceStep?.Icon;
           const RespectIcon = tone === 'high' ? Smile : tone === 'low' ? Frown : Meh;
-          const differenceColor = difference != null && difference >= 8 ? 'hsl(var(--destructive))' : difference != null && difference <= 2 ? 'hsl(var(--success))' : 'hsl(var(--muted-foreground))';
+           const differenceColor = differenceStep?.tone === 'disagree' ? 'hsl(var(--destructive))' : differenceStep?.tone === 'agree' ? 'hsl(var(--accent))' : 'hsl(var(--muted-foreground))';
           const chipWidth = opinionRating || !DifferenceIcon ? 26 : 44;
           const reactionX = Math.max(chipWidth / 2 + 4, Math.min((width ?? Infinity) - chipWidth / 2 - 4, evt.sourceX));
           const reactionY = Math.max(16, Math.min((height ?? Infinity) - 16, evt.sourceY + (evt.sourceY < 60 ? 34 : -34)));
-          return <motion.g key={`${key}-${i}`} pointerEvents="none">
+           return <motion.g key={item?.id ?? `${key}-${i}`} pointerEvents="none">
           <motion.line x1={evt.sourceX} y1={evt.sourceY} x2={evt.targetX} y2={evt.targetY}
             stroke={opinionRating ? differenceColor : rating ? color : 'hsl(var(--foreground) / 0.7)'} strokeWidth={rating ? 1.5 : 2} strokeLinecap="round"
-            initial={{ opacity: 0 }} animate={{ opacity: [0, rating ? 0.45 : 0.9, 0] }} transition={{ duration }} />
+             data-rating-edge={opinionRating ? evt.sourceId : undefined}
+             initial={{ opacity: 0 }} animate={{ opacity: [0, opinionRating ? 0.85 : rating ? 0.45 : 0.9, 0] }} transition={{ duration: opinionRating ? 0.55 : duration }} />
           {rating && <motion.g
             data-rating-reaction={evt.sourceId}
             data-rating-kind={opinionRating ? 'difference' : 'respect'}
@@ -75,11 +79,12 @@ export const SignalEventMarker = memo(function SignalEventMarker({ events, messa
           />}
           {!rating && text && (
             <motion.g
-              initial={{ x: evt.sourceX, y: evt.sourceY, opacity: 0 }}
-              animate={{ x: evt.targetX, y: evt.targetY, opacity: [0, 1, 1, 0] }}
+               data-message-flight={item?.id}
+               initial={{ x: from.x, y: from.y, opacity: 0 }}
+               animate={{ x: to.x, y: to.y, opacity: [0, 1, 1, 0] }}
               transition={{ duration, ease: 'easeInOut' }}
             >
-              <SignalTextBubble text={text} maxWidth={150} anchor={anchor} />
+               <SignalTextBubble text={text} maxWidth={from.maxWidth} anchor="center" below />
             </motion.g>
           )}
           </motion.g>;
