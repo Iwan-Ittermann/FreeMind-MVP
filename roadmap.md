@@ -1,5 +1,11 @@
 # Roadmap
 
+## Eigenständige Meinungsbewertungen
+- [ ] Timing und Bewertungs-/Chat-Verhältnis beider Datensätze prüfen
+- [ ] Dis/agreement-Badges unabhängig von Chat-Respekt anzeigen
+- [ ] KI-Datensatz mit deutlich mehr unabhängigen Meinungsbewertungen pro Node ergänzen, falls erforderlich
+- [ ] Regeln testen und sichtbare Bewertungsreaktionen im Browser prüfen
+
 ## Respekt-Pfeile und Enter-Versand
 - [x] Aktuelle Brückenpunkteberechnung anhand aktiver Datenbankfunktion und Graph-Pfad geprüft
 - [x] Pfeilfarben nur aus gegebenem Respekt ableiten: bis 30 rot, bis 55 gelb, darüber grün; Grenzwerttests bestanden
