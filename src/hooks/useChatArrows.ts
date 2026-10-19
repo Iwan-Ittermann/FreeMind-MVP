@@ -13,6 +13,8 @@ export interface ChatArrow {
   messageCount: number;
   /** null when the pair has no rating yet. */
   receivedPoints: number | null;
+  /** The opinion difference rated by this arrow's source, on the 0–10 scale. */
+  givenDifference?: number;
 }
 
 /**
@@ -61,12 +63,14 @@ export function useChatArrows(topicId: string, enabled = true) {
           toOpinionId: b,
           messageCount: count,
           receivedPoints: receivedPoints(a, b),
+          givenDifference: disagreement.get(`${a}|${b}`),
         });
         arrows.push({
           fromOpinionId: b,
           toOpinionId: a,
           messageCount: count,
           receivedPoints: receivedPoints(b, a),
+          givenDifference: disagreement.get(`${b}|${a}`),
         });
       }
       return arrows;

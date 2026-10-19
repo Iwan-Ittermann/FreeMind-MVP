@@ -8,6 +8,7 @@
 - Scope Wedium discussion visuals through presentation context and semantic CSS tokens; reuse the existing graph and interactions instead of maintaining a separate renderer.
 - Display simulation progress from the last successful replay response, not a running client clock, so the indicator cannot advance beyond confirmed replay state.
 - Feed replay and user activity through one deduplicated graph-animation event path, so visual behavior cannot diverge between simulation and live use.
+- Interpret directed-pair arrow points on the RPC's normalized 0–100 product scale; keep opinion-difference icons separate from respect smileys and use the existing animation path for giver reactions.
 - Generate reading pauses in presentation seconds mapped to replay time, and serialize queued message flights per chat so catch-up batches cannot animate both sides simultaneously.
 - Resolve /go from the shared event phase and remount the existing discussion when switching from interactive simulation to the real topic, so preview conversations cannot leak into event state.
 - Render /wedium/go through the shared EventGo discussion in simulation-only presentation mode and pass route-specific background overrides without changing device preferences, so standalone and embedded views reuse one renderer.

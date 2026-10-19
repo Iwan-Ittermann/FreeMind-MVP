@@ -253,48 +253,36 @@ export const SignalNode = memo(function SignalNode({
         <SharedDefs />
         <circle cx="20" cy="20" r="22" fill="transparent" />
 
-        {token.isCurrentUser && ttMode && (
-          <circle cx="20" cy="20" r="23" fill="hsl(var(--primary) / 0.18)" stroke="hsl(var(--primary))" strokeWidth={2.5} />
-        )}
-
         {/* Active (already discussing) — soft halo so it reads brighter than inactive nodes */}
-        {!wedium && ttMode && !showInactive && !token.isBot && !isDimmed && (
+        {!wedium && ttMode && !token.isCurrentUser && !showInactive && !token.isBot && !isDimmed && (
           <circle cx="20" cy="20" r="13" fill="none" stroke="#FFFFFF" strokeOpacity={0.22} strokeWidth={1} />
         )}
         {/* Selection highlight — gold to match warm earth palette */}
         {(highlightForTour || (isHighlighted && !isDimmed)) && (
           <circle cx="20" cy="20" r="18" fill="none" stroke="#00e5ff" strokeWidth={2} filter="url(#signal-select-glow)" />
         )}
-        {wedium ? <>
+        {token.isCurrentUser && ttMode ? <circle cx="20" cy="20" r="14" fill="hsl(var(--destructive))" /> : wedium ? <>
           <circle cx="20" cy="20" r="18" fill="hsl(var(--card))" stroke={token.isCurrentUser || isHighlighted ? 'hsl(var(--primary))' : 'hsl(var(--foreground))'} strokeOpacity={token.isCurrentUser ? 1 : showInactive ? 0.3 : 0.65} strokeWidth={token.isCurrentUser ? 2 : 1} />
           <image href={wediumNode.url} x="12" y="6" width="16" height="25" opacity={showInactive ? 0.5 : 1} />
         </> : <Shape />}
 
-        {!wedium && ttMode && token.isCurrentUser && (
+        {ttMode && token.isCurrentUser && (
           <text
             x="20"
             y="20"
             textAnchor="middle"
             dominantBaseline="middle"
             alignmentBaseline="middle"
-            fill="#FFFFFF"
-            fontSize="7"
+            fill="hsl(var(--destructive-foreground))"
+            fontSize="9"
             fontWeight="bold"
             fontFamily="ui-sans-serif, system-ui, sans-serif"
-            letterSpacing="-0.2"
             style={{ pointerEvents: 'none' }}
           >
             {t('common.you')}
           </text>
         )}
       </svg>
-
-      {token.isCurrentUser && ttMode && (
-        <g transform={`translate(${graphWidth ? Math.max(32, Math.min(graphWidth - 32, token.x)) - token.x : 0}, ${graphHeight && token.y + scaledHalf + 25 > graphHeight ? -scaledHalf - 16 : scaledHalf + 16})`} pointerEvents="none">
-          <rect x={-28} y={-9} width={56} height={18} rx={9} fill="hsl(var(--primary))" />
-          <text textAnchor="middle" dominantBaseline="central" fontSize={10} fontWeight={700} fill="hsl(var(--primary-foreground))">{t('common.you')}</text>
-        </g>
-      )}
 
       {/* "YOU" badge — hidden in TT mode where red color suffices */}
       {token.isCurrentUser && !ttMode && (

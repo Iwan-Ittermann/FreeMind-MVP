@@ -1,5 +1,11 @@
 # Roadmap
 
+## Sim-Anzeigen und Bewertungsreaktionen
+- [x] Hinweisbanner mit kleinem X schließen können (Browser geprüft)
+- [x] Eigene Sim-Node nur rot mit lokalisierter YOU/DU-Innenmarkierung; redundanten Ring und Label entfernen (Meinung mobil veröffentlicht)
+- [x] Bewertende Node mit kompakter Icon-/Smiley-Reaktion anzeigen; Kantenwirkung dezenter machen
+- [x] Farbskalenfehler bei dauerhaften Pfeilen korrigiert; positive Bewertungen in beiden Datensets bestätigt; Tests und Browserprüfung bestanden
+
 ## Wedium-Logo und Kopfzeile
 - [x] Hochgeladenes Wedium-Logo prüfen: identisch mit dem bereits eingebundenen (kein Austausch nötig)
 - [x] Sim-Kopfzeile: beide Wortmarken auf gemeinsame Grundlinie gesetzt, Logo-Proportion verkleinert; Desktop und Mobil nachgemessen

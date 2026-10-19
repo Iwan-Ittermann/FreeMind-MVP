@@ -52,7 +52,11 @@ function TTScreenInnerImpl({
   const wedium = useWediumPresentation();
   const { user } = useAuth();
   const { data, activeChats, messageAnimations, opinionAnimations } = useTopicData(topicId);
-  const { data: chatArrows } = useChatArrows(topicId, arrowMode);
+  const { data: chatArrows } = useChatArrows(topicId);
+  const ratedAnimations = useMemo(() => messageAnimations.map(event => ({
+    ...event,
+    disagreement: chatArrows?.find(arrow => arrow.fromOpinionId === event.sourceOpinionId && arrow.toOpinionId === event.targetOpinionId)?.givenDifference,
+  })), [messageAnimations, chatArrows]);
   const { bgStyle } = useBackgroundPref();
   const stream = useStreamFocus(topicId);
   const { showStreamSpiral } = useStreamSpiralPref();
@@ -164,7 +168,7 @@ function TTScreenInnerImpl({
                 opinions={data?.opinions ?? []}
                 ratings={data?.ratings ?? []}
                 activeChats={activeChats}
-                messageAnimations={messageAnimations}
+                messageAnimations={ratedAnimations}
                  opinionAnimations={opinionAnimations}
                 currentUserId={user?.id}
                 currentUserOpinionId={ownOpinionId}

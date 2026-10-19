@@ -40,6 +40,7 @@ export interface MessageAnimationData {
   kind?: 'message' | 'rating';
   content?: string;
   respect?: number;
+  disagreement?: number;
   durationMs?: number;
 }
 

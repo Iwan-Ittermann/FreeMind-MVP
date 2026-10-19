@@ -26,3 +26,11 @@ export function respectTone(value: number | null | undefined) {
   if (value >= 65) return 'high' as const;
   return 'neutral' as const;
 }
+
+/** Directed-pair RPC uses respect 0–10 × difference 0–10: max 100, not 1000. */
+export function bridgePointTone(points: number | null) {
+  if (points == null) return 'unrated' as const;
+  if (points < 30) return 'low' as const;
+  if (points >= 65) return 'high' as const;
+  return 'neutral' as const;
+}
