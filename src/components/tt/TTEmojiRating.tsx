@@ -1,18 +1,11 @@
 import { useTranslation } from 'react-i18next';
-import { CheckCheck, Check, Minus, X, XCircle } from 'lucide-react';
+import { OPINION_DIFFERENCE_STEPS as STEPS, opinionDifferenceIndex } from '@/lib/opinion-difference';
 import { cn } from '@/lib/utils';
 
 /**
  * 5-step opinion-difference meter on the 0–10 scale (0, 2, 5, 8, 10),
  * labelled from strong agreement to strong disagreement.
  */
-const STEPS = [
-  { value: 0, key: 'tt.diffStep.strongAgree', Icon: CheckCheck, tone: 'agree' },
-  { value: 2, key: 'tt.diffStep.agree', Icon: Check, tone: 'agree' },
-  { value: 5, key: 'tt.diffStep.neutral', Icon: Minus, tone: 'neutral' },
-  { value: 8, key: 'tt.diffStep.disagree', Icon: X, tone: 'disagree' },
-  { value: 10, key: 'tt.diffStep.strongDisagree', Icon: XCircle, tone: 'disagree' },
-] as const;
 
 const TONE_ACTIVE: Record<string, string> = {
   agree: 'bg-accent text-accent-foreground border-accent',
@@ -28,22 +21,9 @@ interface TTEmojiRatingProps {
   unset?: boolean;
 }
 
-function nearestIndex(value: number): number {
-  let best = 0;
-  let bestDist = Infinity;
-  STEPS.forEach((step, i) => {
-    const d = Math.abs(step.value - value);
-    if (d < bestDist) {
-      bestDist = d;
-      best = i;
-    }
-  });
-  return best;
-}
-
 export function TTEmojiRating({ value, onChange, disabled, unset = false }: TTEmojiRatingProps) {
   const { t } = useTranslation();
-  const activeIdx = unset ? -1 : nearestIndex(value);
+  const activeIdx = unset ? -1 : opinionDifferenceIndex(value);
 
   return (
     <div className="grid w-full grid-cols-5 gap-1.5" role="radiogroup" aria-label={t('tt.opinionDifferenceLabel')}>
