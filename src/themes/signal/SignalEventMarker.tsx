@@ -33,7 +33,7 @@ export const SignalEventMarker = memo(function SignalEventMarker({ events, messa
           const duration = (item?.durationMs ?? GRAPH_ANIMATION.messageMinMs) / 1000;
           const text = item?.content ? truncateAtWord(item.content, 92) : '';
           const anchor = evt.targetX >= evt.sourceX ? 'left' : 'right';
-          const difference = differences?.get(`${evt.sourceId}|${evt.targetId}`);
+          const difference = item?.disagreement ?? differences?.get(`${evt.sourceId}|${evt.targetId}`);
           const DifferenceIcon = difference == null ? null : difference <= 2 ? Check : difference >= 8 ? X : Minus;
           const RespectIcon = tone === 'high' ? Smile : tone === 'low' ? Frown : Meh;
           const chipWidth = DifferenceIcon ? 44 : 26;

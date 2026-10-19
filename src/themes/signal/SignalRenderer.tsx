@@ -10,7 +10,7 @@ import { SignalEventMarker } from './SignalEventMarker';
 import { useHidePendingEdges } from '../ThemeContext';
 import { TTLandmarks, getTTLevelRadii } from '@/lib/tt-layout';
 import { SignalChatArrows } from './SignalChatArrows';
-import { useChatArrows, type ChatArrow } from '@/hooks/useChatArrows';
+import type { ChatArrow } from '@/hooks/useChatArrows';
 import { useBackgroundPref } from '@/hooks/useBackgroundPref';
 import type { SpiralPoint } from '@/lib/stream-spiral';
 import { SPIRAL_MAX_R, STREAM_ARM_COUNT, STREAM_ARM_TURNS, spiralArmPosition } from '@/lib/stream-spiral';
@@ -70,7 +70,6 @@ export function SignalRenderer({
   streamSpiral,
 }: SignalRendererProps) {
   const wedium = useWediumPresentation();
-  const topicId = messageAnimations[0]?.chatId;
   const nodeMap = useMemo(() => new Map(nodes.map(n => [n.id, n])), [nodes]);
   const { bgStyle } = useBackgroundPref();
   const [hidePendingEdges] = useHidePendingEdges();
