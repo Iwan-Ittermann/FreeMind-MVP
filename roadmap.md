@@ -135,3 +135,6 @@
 ## Später (während des Events)
 - [ ] Push-Option: auf Desktop "im Browser" statt "aufs Handy" anzeigen
 - [ ] Mobil: zuerst "Shortcut installieren" anbieten
+
+## Sicherheitsbefund Umfrage-Antworten
+- [ ] Entscheidung zu Einträgen in Umfrage-Antworten (test_diskussion_replies)
