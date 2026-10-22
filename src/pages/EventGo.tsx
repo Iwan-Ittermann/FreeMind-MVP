@@ -14,6 +14,11 @@ export default function EventGo({ standaloneWedium = false }: { standaloneWedium
   const { i18n } = useTranslation();
   const lang = params.get('lang');
   const [embedInteractive, setEmbedInteractive] = useState(false);
+  // /go defaults to the eye artwork, but the gear-menu toggle must keep working.
+  useState(() => {
+    if (embedded || standaloneWedium) return;
+    try { if (!localStorage.getItem('tt-bg-style')) localStorage.setItem('tt-bg-style', 'eye'); } catch { /* ignore */ }
+  });
   useEffect(() => {
     if (!embedded) return;
     const receive = (event: MessageEvent) => {
@@ -30,5 +35,5 @@ export default function EventGo({ standaloneWedium = false }: { standaloneWedium
   const { phase } = useEventPhase(config);
   if (isLoading || !config) return <div className="fixed inset-0 bg-background" aria-busy="true" />;
   const preview = standaloneWedium || embedded || !config.realShortCode || phase === 'prelaunch';
-  return <Discussion key={preview ? `event-preview-${dataset}` : 'event-live'} simDataset={dataset} mode={preview ? 'sim' : 'real'} eventPreview={preview} embedded={embedded} embedInteractive={embedInteractive} wediumPresentation={wediumPresentation} graphBackground={!embedded && !standaloneWedium ? 'eye' : undefined} />;
+  return <Discussion key={preview ? `event-preview-${dataset}` : 'event-live'} simDataset={dataset} mode={preview ? 'sim' : 'real'} eventPreview={preview} embedded={embedded} embedInteractive={embedInteractive} wediumPresentation={wediumPresentation} />;
 }
