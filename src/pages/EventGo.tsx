@@ -35,5 +35,5 @@ export default function EventGo({ standaloneWedium = false }: { standaloneWedium
   const { phase } = useEventPhase(config);
   if (isLoading || !config) return <div className="fixed inset-0 bg-background" aria-busy="true" />;
   const preview = standaloneWedium || embedded || !config.realShortCode || phase === 'prelaunch';
-  return <Discussion key={preview ? `event-preview-${dataset}` : 'event-live'} simDataset={dataset} mode={preview ? 'sim' : 'real'} eventPreview={preview} embedded={embedded} embedInteractive={embedInteractive} wediumPresentation={wediumPresentation} graphBackground={!embedded && !standaloneWedium ? 'eye' : undefined} />;
+  return <Discussion key={preview ? `event-preview-${dataset}` : 'event-live'} simDataset={dataset} mode={preview ? 'sim' : 'real'} eventPreview={preview} embedded={embedded} embedInteractive={embedInteractive} wediumPresentation={wediumPresentation} />;
 }
