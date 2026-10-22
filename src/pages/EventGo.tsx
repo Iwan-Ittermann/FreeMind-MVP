@@ -14,6 +14,11 @@ export default function EventGo({ standaloneWedium = false }: { standaloneWedium
   const { i18n } = useTranslation();
   const lang = params.get('lang');
   const [embedInteractive, setEmbedInteractive] = useState(false);
+  // /go defaults to the eye artwork, but the gear-menu toggle must keep working.
+  useState(() => {
+    if (embedded || standaloneWedium) return;
+    try { if (!localStorage.getItem('tt-bg-style')) localStorage.setItem('tt-bg-style', 'eye'); } catch { /* ignore */ }
+  });
   useEffect(() => {
     if (!embedded) return;
     const receive = (event: MessageEvent) => {
