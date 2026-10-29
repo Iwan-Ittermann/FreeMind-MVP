@@ -26,7 +26,7 @@ const copy = {
     metaTitle: "wedium x freemind — Live-Event 28.–31. Oktober 2026",
     metaDesc:
       "wedium-Creator und ihre Communities diskutieren vier Tage lang eine Frage: Welche Gesetze wünschst du dir für soziale Medien?",
-    heroEyebrow: "WEDIUM X FREEMIND · 28.–31. OKTOBER 2026",
+    heroEyebrow: "WEDIUM X FREEMIND · 12.–15. NOVEMBER 2026",
     heroTitle: "VIER TAGE. EINE FRAGE. 100 MEINUNGEN.",
     heroSub1: "wedium steht für echte Menschen.",
     heroSub2a: "freemind gibt euch den Raum für ",
@@ -69,7 +69,7 @@ const copy = {
     creatorQuote: "„Zitat folgt.“",
 
     ctaTitle: "SEI DABEI!",
-    ctaLine1: "28.–31. OKTOBER 2026 · ",
+    ctaLine1: "12.– 15. NOVEMBER 2026 · ",
     ctaLine2: "HILF UNS ZU BEWEISEN, DASS ECHTE GESPRÄCHE IM INTERNET MÖGLICH SIND. ",
     emailPlaceholder: "E-Mail",
     btnLoading: "Wird gesendet…",
