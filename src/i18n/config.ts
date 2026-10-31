@@ -12,16 +12,12 @@ i18n.use(initReactI18next).init({
     en: { translation: { ...en, replay: replayTime.en } },
     de: { translation: { ...de, replay: replayTime.de } },
   },
-  // English-first globally; wedium and sim start in German unless a language was chosen before.
+  // German-first everywhere unless a language was chosen before.
   lng: (() => {
-    const germanFirst = () =>
-       window.location.pathname === '/go' || window.location.pathname.startsWith('/wedium') || window.location.pathname.startsWith('/sim');
     try {
-      const storedLanguage = localStorage.getItem('freemind_lang');
-      if (storedLanguage) return storedLanguage;
-      return germanFirst() ? 'de' : 'en';
+      return localStorage.getItem('freemind_lang') || 'de';
     } catch {
-      return germanFirst() ? 'de' : 'en';
+      return 'de';
     }
   })(),
   fallbackLng: 'en',
