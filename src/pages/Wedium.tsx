@@ -23,7 +23,7 @@ type Lang = "en" | "de";
 
 const copy = {
   de: {
-    metaTitle: "wedium x freemind — Live-Event 28.–31. Oktober 2026",
+    metaTitle: "wedium x freemind — Live-Event 12.–15. November 2026",
     metaDesc:
       "wedium-Creator und ihre Communities diskutieren vier Tage lang eine Frage: Welche Gesetze wünschst du dir für soziale Medien?",
     heroEyebrow: "WEDIUM X FREEMIND · 12.–15. NOVEMBER 2026",
@@ -90,10 +90,10 @@ const copy = {
     errGeneric: "Etwas ist schiefgelaufen. Bitte versuch es erneut.",
   },
   en: {
-    metaTitle: "wedium x freemind — live event 28–31 October 2026",
+    metaTitle: "wedium x freemind — live event 12–15 November 2026",
     metaDesc:
       "wedium creators and their communities discuss one question for four days: which laws do you want for social media?",
-    heroEyebrow: "WEDIUM X FREEMIND · 28–31 OCTOBER 2026",
+    heroEyebrow: "WEDIUM X FREEMIND · 12–15 NOVEMBER 2026",
     heroTitle: "FOUR DAYS. ONE QUESTION. ONE PROOF.",
     heroSub1: "wedium creators bring their communities together.",
     heroSub2a: "freemind makes sure it turns into ",
@@ -136,7 +136,7 @@ const copy = {
     creatorQuote: "“Quote to follow.”",
 
     ctaTitle: "BE THERE WHEN WE TRY IT AGAIN.",
-    ctaLine1: "28–31 OCTOBER 2026 · ",
+    ctaLine1: "12–15 NOVEMBER 2026 · ",
     ctaLine2: "ONE PROOF.",
     emailPlaceholder: "Email",
     btnLoading: "Sending…",

@@ -47,7 +47,7 @@ export async function sendWediumWelcome(to: string, passphrase: string, idempote
     subject: "Willkommen beim wedium-Event!",
     heading: "Willkommen!",
     body:
-      `Schön, dass du dabei bist! Vom 10.–14. Oktober diskutieren wir gemeinsam.\n\nDeine Passphrase: \`${passphrase}\`\n\n[Zur Diskussion](${SITE_URL}/wedium/go)`,
+      `Schön, dass du dabei bist! Vom 12.–15. November diskutieren wir gemeinsam.\n\nDeine Passphrase: \`${passphrase}\`\n\n[Zur Diskussion](${SITE_URL}/wedium/go)`,
   });
   const res = await fetch(`${SUPABASE_URL}/functions/v1/send-transactional-email`, {
     method: "POST",
