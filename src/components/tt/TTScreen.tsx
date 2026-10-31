@@ -29,6 +29,8 @@ interface TTScreenInnerProps {
   /** Hide the node-state legend (e.g. on /sim). */
   hideLegend?: boolean;
   hideEmptyBridgingHint?: boolean;
+  /** Shrinks rings and graph together (e.g. small embeds) so outer faces and counters stay on screen. */
+  fitScale?: number;
   /** Called from parent so it can read opinions for the side panel. */
   onDataReady?: (data: ReturnType<typeof useTopicData>['data']) => void;
 }
@@ -47,6 +49,7 @@ function TTScreenInnerImpl({
   hideLegend = false,
   hideEmptyBridgingHint = false,
   backgroundVariant,
+  fitScale = 1,
 }: TTScreenInnerProps) {
   const { t } = useTranslation();
   const wedium = useWediumPresentation();
@@ -113,12 +116,13 @@ function TTScreenInnerImpl({
   // Rwhite = 360 → 60vw → (360/600) × viewportW
   const ttLandmarks = useMemo(() => {
     if (!phoneViewportW) return undefined;
+    const w = phoneViewportW * fitScale;
     return {
-      coreR: (140 / 600) * phoneViewportW,
-      blueR: (300 / 600) * phoneViewportW,
-      whiteR: (360 / 600) * phoneViewportW,
+      coreR: (140 / 600) * w,
+      blueR: (300 / 600) * w,
+      whiteR: (360 / 600) * w,
     };
-  }, [phoneViewportW]);
+  }, [phoneViewportW, fitScale]);
 
   const ownOpinionId = user
     ? data?.opinions.find((o) => o.authorId === user.id)?.id ?? null
@@ -144,7 +148,7 @@ function TTScreenInnerImpl({
     >
       {/* Full-bleed background, sized so the blue ring spans the viewport width.
           Lives outside the graph wrapper so it isn't clipped. */}
-      {wedium ? <div className="wedium-graph-background absolute inset-0" aria-hidden /> : <TTBackground hue={hue} viewportWidth={phoneViewportW} variant={backgroundVariant ?? bgStyle} />}
+      {wedium ? <div className="wedium-graph-background absolute inset-0" style={{ '--wedium-disc-scale': fitScale } as React.CSSProperties} aria-hidden /> : <TTBackground hue={hue} viewportWidth={phoneViewportW * fitScale} variant={backgroundVariant ?? bgStyle} />}
 
       {/* Zone labels are intentionally hidden in the Helsinki event build (introduced via help overlay). */}
 

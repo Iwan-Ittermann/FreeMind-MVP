@@ -164,7 +164,7 @@ export function TTCenterCTA({
   return (
     <div
       ref={wrapperRef}
-      className={`absolute left-1/2 ${lowered ? 'bottom-[88px]' : 'bottom-[125px]'} -translate-x-1/2 z-30 pointer-events-none`}
+      className={`absolute left-1/2 ${lowered ? 'bottom-[76px]' : 'bottom-[125px]'} -translate-x-1/2 z-30 pointer-events-none`}
     >
       <AnimatePresence mode="wait" initial={false}>
         {state === 'collapsed' && (
@@ -177,7 +177,7 @@ export function TTCenterCTA({
             transition={{ type: 'spring', stiffness: 400, damping: 28 }}
             onClick={handleClick}
             aria-label={t('tt.post')}
-            className={`pointer-events-auto h-12 w-12 rounded-full bg-background/95 backdrop-blur-md border border-border/40 shadow-lg flex items-center justify-center text-foreground hover:bg-background transition-colors ${ringHighlight}`}
+            className={`pointer-events-auto ${lowered ? 'h-10 w-10' : 'h-12 w-12'} rounded-full bg-background/95 backdrop-blur-md border border-border/40 shadow-lg flex items-center justify-center text-foreground hover:bg-background transition-colors ${ringHighlight}`}
           >
             <Plus className="w-5 h-5" />
           </motion.button>
@@ -192,10 +192,10 @@ export function TTCenterCTA({
             exit={{ scale: 0.9, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 360, damping: 28 }}
             onClick={handleClick}
-            className={`pointer-events-auto flex items-center gap-2 h-12 px-4 rounded-full bg-background/95 backdrop-blur-md border border-border/40 shadow-lg text-foreground hover:bg-background transition-colors max-w-[80vw] ${ringHighlight}`}
+            className={`pointer-events-auto flex items-center gap-2 ${lowered ? 'h-10 px-3.5' : 'h-12 px-4'} rounded-full bg-background/95 backdrop-blur-md border border-border/40 shadow-lg text-foreground hover:bg-background transition-colors max-w-[80vw] ${ringHighlight}`}
           >
             <Plus className="w-4 h-4 shrink-0" />
-            <span className="text-sm whitespace-nowrap truncate">
+            <span className={`${lowered ? 'text-[13px]' : 'text-sm'} whitespace-nowrap truncate`}>
               {t('tt.opinionPlaceholder')}
             </span>
           </motion.button>
