@@ -7,7 +7,7 @@ export function TTPreEventNotice({ startsAt, now, registered, embedded = false, 
   const { t } = useTranslation();
   const [dismissed, setDismissed] = useState(false);
   const remaining = Math.max(0, (startsAt?.getTime() ?? now) - now);
-  const countdown = startsAt ? t('replay.startsIn', {
+  const countdown = startsAt ? t(embedded ? 'replay.startsInShort' : 'replay.startsIn', {
     days: Math.floor(remaining / 86400000), hours: Math.floor(remaining % 86400000 / 3600000), minutes: Math.floor(remaining % 3600000 / 60000),
   }) : t('replay.startPending');
   if (dismissed) return null;

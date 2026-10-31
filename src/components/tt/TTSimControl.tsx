@@ -76,9 +76,10 @@ function RollingNumber({ value }: { value: number }) {
   const [shown, setShown] = useState(1);
   useEffect(() => {
     if (shown === value) return;
-    const step = value > shown ? 1 : -1;
-    const distance = Math.abs(value - shown);
-    const id = window.setTimeout(() => setShown((current) => current + step), Math.max(40, Math.min(160, 900 / distance)));
+    // About a dozen visible ticks for long catch-ups, single steps afterwards.
+    const distance = value - shown;
+    const step = Math.sign(distance) * Math.max(1, Math.ceil(Math.abs(distance) / 12));
+    const id = window.setTimeout(() => setShown((current) => (Math.abs(value - current) <= Math.abs(step) ? value : current + step)), 90);
     return () => window.clearTimeout(id);
   }, [shown, value]);
   return (
@@ -87,7 +88,7 @@ function RollingNumber({ value }: { value: number }) {
         key={shown}
         initial={{ y: '70%', opacity: 0.35 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.1, ease: 'easeOut' }}
+        transition={{ duration: 0.07, ease: 'easeOut' }}
         className="inline-block"
       >
         {shown}
