@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { GRAPH_ANIMATION } from '@/lib/graph-animation';
 import { Clock3 } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 
 const LOOP_SECONDS = 72 * 60 * 60;
 
@@ -47,29 +48,53 @@ export function TTSimControl({ topicId, compact = false, dataset = 'social' }: {
     const id = window.setInterval(tick, 10_000);
     return () => { alive = false; window.clearInterval(id); timers.forEach(window.clearTimeout); };
   }, [topicId, dataset]);
-  const progress = Math.min(1, Math.max(0, (frame ?? 0) / LOOP_SECONDS));
   const hour = Math.min(72, Math.floor((frame ?? 0) / 3600) + 1);
   const label = frame === null ? t('replay.loading') : t('replay.simHour', { hour });
+  const [before, after = ''] = t('replay.simHour', { hour: '\u0001' }).split('\u0001');
 
   return (
     <div
       className={`absolute inset-x-4 ${compact ? 'bottom-[8px]' : 'bottom-[55px]'} z-[41] h-7 pointer-events-none`}
       data-sim-frame={frame ?? undefined}
-      role="progressbar"
+      data-sim-loop={LOOP_SECONDS}
+      role="status"
       aria-label={label}
-      aria-valuemin={0}
-      aria-valuemax={LOOP_SECONDS}
-      aria-valuenow={frame ?? undefined}
-      aria-valuetext={label}
       aria-busy={frame === null}
       title={label}
     >
-      <span className="absolute right-0 top-0 inline-flex items-center gap-1 text-[10px] leading-3 text-foreground/75 tabular-nums"><Clock3 className="h-3 w-3" />{label}</span>
-      <div className="absolute inset-x-0 bottom-1 h-px bg-foreground/75" />
-      {frame !== null && <div
-        className="absolute bottom-1 h-2.5 w-2.5 -translate-x-1/2 translate-y-1/2 rounded-full bg-destructive shadow-sm"
-        style={{ left: `${progress * 100}%` }}
-      />}
+      <span className="absolute right-0 bottom-1 inline-flex items-center gap-1 text-[10px] leading-3 text-foreground/75 tabular-nums">
+        <Clock3 className="h-3 w-3" />
+        {frame === null ? label : <span aria-hidden>{before}<RollingNumber value={hour} />{after}</span>}
+      </span>
     </div>
+  );
+}
+
+/** Counts through every hour between the shown and the confirmed value, each digit sliding in. */
+function RollingNumber({ value }: { value: number }) {
+  // Starts at hour 1 so the counter visibly runs up to the confirmed hour on load.
+  const [shown, setShown] = useState(1);
+  useEffect(() => {
+    if (shown === value) return;
+    const step = value > shown ? 1 : -1;
+    const distance = Math.abs(value - shown);
+    const id = window.setTimeout(() => setShown((current) => current + step), Math.max(40, Math.min(160, 900 / distance)));
+    return () => window.clearTimeout(id);
+  }, [shown, value]);
+  return (
+    <span className="relative inline-flex overflow-hidden align-bottom" data-sim-hour={shown}>
+      <AnimatePresence initial={false} mode="popLayout">
+        <motion.span
+          key={shown}
+          initial={{ y: '100%', opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: '-100%', opacity: 0 }}
+          transition={{ duration: 0.12, ease: 'easeOut' }}
+          className="inline-block"
+        >
+          {shown}
+        </motion.span>
+      </AnimatePresence>
+    </span>
   );
 }

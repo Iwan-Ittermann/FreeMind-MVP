@@ -8,9 +8,9 @@ import Discussion from './Discussion';
 export default function EventGo({ standaloneWedium = false }: { standaloneWedium?: boolean }) {
   const [params] = useSearchParams();
   const embedded = params.get('embed') === '1';
-  // Dataset choice only applies to the embedded player; /go itself always shows the AI simulation.
-  const dataset = embedded && params.get('dataset') === 'august' ? 'august' : 'social';
   const wediumPresentation = standaloneWedium || (embedded && params.get('presentation') === 'wedium');
+  // Dataset choice only applies to the embedded freemind player; /go and every Wedium view show the AI simulation.
+  const dataset = embedded && !wediumPresentation && params.get('dataset') === 'august' ? 'august' : 'social';
   const { i18n } = useTranslation();
   const lang = params.get('lang');
   const [embedInteractive, setEmbedInteractive] = useState(false);

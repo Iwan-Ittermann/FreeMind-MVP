@@ -13,7 +13,9 @@ export function EventSimulationEmbed({ wedium = false }: { wedium?: boolean }) {
   const frameRef = useRef<HTMLIFrameElement>(null);
   const [preload, setPreload] = useState(false);
   const [interactive, setInteractive] = useState(false);
-  const [dataset, setDataset] = useSimDataset();
+  const [chosenDataset, setDataset] = useSimDataset();
+  // Wedium only ever shows the AI simulation, never the August discussion.
+  const dataset = wedium ? 'social' : chosenDataset;
   const sendInteraction = () => frameRef.current?.contentWindow?.postMessage({ type: 'freemind:embed-interaction', active: interactive }, window.location.origin);
   useEffect(() => {
     const main = sectionRef.current?.closest('main');
@@ -39,7 +41,7 @@ export function EventSimulationEmbed({ wedium = false }: { wedium?: boolean }) {
         <p className="text-xs text-muted-foreground">{t('replay.sessionNote')}</p>
       </div>
       <div className="flex w-full min-w-0 flex-col items-center gap-4">
-      <SimDatasetSwitch value={dataset} onChange={setDataset} />
+      {!wedium && <SimDatasetSwitch value={dataset} onChange={setDataset} />}
       <div id="simulation-frame" className={cn('simulation-stage relative w-full overflow-hidden', interactive && 'simulation-stage-active')}>
       {preload ? <iframe
         ref={frameRef}
