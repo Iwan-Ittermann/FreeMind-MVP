@@ -38,6 +38,8 @@ export interface TemplateEntry {
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'signup-confirm': signupConfirm,
   'gutefrage-signup-confirm': signupConfirm,
+  'wedium-signup-confirm': signupConfirm,
+  'wedium-signup-welcome': welcomeTemplate,
   'gutefrage-admin-notify': gutefrageAdminNotify,
   'signup-admin-notify': signupAdminNotify,
   'signup-passphrase': signupPassphrase,
