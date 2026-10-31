@@ -261,7 +261,8 @@ export function SignalRenderer({
       )}
 
       <g className="signal-nodes">
-        {nodeTokens.map(nt => (
+        {/* Own node paints last so neighbours never cover it. */}
+        {[...nodeTokens.filter(nt => !nt.isCurrentUser), ...nodeTokens.filter(nt => nt.isCurrentUser)].map(nt => (
           <SignalNode
             key={nt.id}
             token={nt}
