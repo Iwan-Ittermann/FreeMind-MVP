@@ -311,7 +311,7 @@
 .wedium-graph-background::after {
   content: '';
   position: absolute;
-  width: 112%;
+  width: calc(112% * var(--wedium-disc-scale, 1));
   aspect-ratio: 1;
   left: 50%;
   top: 50%;
