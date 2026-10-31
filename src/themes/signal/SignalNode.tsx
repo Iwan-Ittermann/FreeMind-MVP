@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { SemanticNodeToken, SemanticZone } from '../types';
 import { useWediumPresentation } from '@/contexts/WediumPresentationContext';
 import wediumNode from '@/assets/wedium-node.png.asset.json';
+import { wediumPersonUrl } from '@/lib/wedium-people';
 import type { OpinionAnimationData } from '@/hooks/useTopicData';
 import { truncateAtWord } from '@/lib/graph-animation';
 import { SignalTextBubble } from './SignalTextBubble';
@@ -261,12 +262,26 @@ export const SignalNode = memo(function SignalNode({
         {(highlightForTour || (isHighlighted && !isDimmed)) && (
           <circle cx="20" cy="20" r="18" fill="none" stroke="#00e5ff" strokeWidth={2} filter="url(#signal-select-glow)" />
         )}
-        {token.isCurrentUser && ttMode ? <circle cx="20" cy="20" r="14" fill="hsl(var(--destructive))" /> : wedium ? <>
-          <circle cx="20" cy="20" r="18" fill="hsl(var(--card))" stroke={token.isCurrentUser || isHighlighted ? 'hsl(var(--primary))' : 'hsl(var(--foreground))'} strokeOpacity={token.isCurrentUser ? 1 : showInactive ? 0.3 : 0.65} strokeWidth={token.isCurrentUser ? 2 : 1} />
-          <image href={wediumNode.url} x="12" y="6" width="16" height="25" opacity={showInactive ? 0.5 : 1} />
-        </> : <Shape />}
+        {wedium && !token.isBot ? <>
+          {token.isCurrentUser && (
+            <circle cx="20" cy="20" r="22.5" fill="none" stroke="hsl(var(--secondary))" strokeOpacity={0.35} strokeWidth={3} />
+          )}
+          <circle
+            cx="20" cy="20" r="18"
+            fill="hsl(var(--wedium-node))"
+            stroke={token.isCurrentUser ? 'hsl(var(--secondary))' : isHighlighted ? 'hsl(var(--primary))' : 'hsl(var(--foreground))'}
+            strokeOpacity={token.isCurrentUser || isHighlighted ? 1 : showInactive ? 0.25 : 0.55}
+            strokeWidth={token.isCurrentUser ? 2.5 : 1}
+          />
+          <image
+            href={token.id ? wediumPersonUrl(token.id) : wediumNode.url}
+            x="5" y="4" width="30" height="30"
+            opacity={showInactive ? 0.55 : 1}
+            data-wedium-person
+          />
+        </> : token.isCurrentUser && ttMode ? <circle cx="20" cy="20" r="14" fill="hsl(var(--destructive))" /> : <Shape />}
 
-        {ttMode && token.isCurrentUser && (
+        {ttMode && token.isCurrentUser && !wedium && (
           <text
             x="20"
             y="20"
@@ -281,6 +296,16 @@ export const SignalNode = memo(function SignalNode({
           >
             {t('common.you')}
           </text>
+        )}
+
+        {/* Wedium: own node keeps its face and gets a small coral badge below. */}
+        {wedium && token.isCurrentUser && (
+          <g transform="translate(20 38)" style={{ pointerEvents: 'none' }} data-wedium-you-badge>
+            <rect x={-11} y={-5.5} width={22} height={11} rx={5.5} fill="hsl(var(--secondary))" stroke="hsl(var(--wedium-node))" strokeWidth={1} />
+            <text x={0} y={0.5} textAnchor="middle" dominantBaseline="central" fill="hsl(var(--secondary-foreground))" fontSize={6.5} fontWeight={800} letterSpacing={0.4}>
+              {t('common.you')}
+            </text>
+          </g>
         )}
       </svg>
 
