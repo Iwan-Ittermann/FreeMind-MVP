@@ -1,8 +1,10 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 
 /** Measure the HTML text itself so SVG bubbles never clip lines or reserve empty space. */
-export function SignalTextBubble({ text, maxWidth, anchor = 'center', below = false }: {
+export function SignalTextBubble({ text, maxWidth, anchor = 'center', below = false, lines = 3 }: {
   text: string;
+  /** Maximum visible text lines; flying chat messages use two. */
+  lines?: 2 | 3;
   maxWidth: number;
   anchor?: 'center' | 'left' | 'right';
   below?: boolean;
@@ -26,7 +28,7 @@ export function SignalTextBubble({ text, maxWidth, anchor = 'center', below = fa
   return (
     <foreignObject x={x} y={below ? 0 : -size.height} width={maxWidth} height={size.height + 2} overflow="visible">
       <div ref={ref} data-graph-text-bubble className="inline-block max-w-full align-top rounded-md border border-primary/50 bg-card px-2 py-1 text-center text-[10px] leading-[14px] text-card-foreground shadow-md">
-        <div className="line-clamp-3 break-words">{text}</div>
+        <div className={`${lines === 2 ? 'line-clamp-2' : 'line-clamp-3'} break-words`} data-bubble-lines={lines}>{text}</div>
       </div>
     </foreignObject>
   );
