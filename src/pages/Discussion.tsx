@@ -49,7 +49,6 @@ import { cn } from '@/lib/utils';
 import { WediumPresentationContext } from '@/contexts/WediumPresentationContext';
 import wediumScreenBg from '@/assets/wedium-screen-bg.webp.asset.json';
 import wediumGraphDisc from '@/assets/wedium-graph-disc.webp.asset.json';
-import { TTPreEventNotice } from '@/components/tt/TTPreEventNotice';
 import type { TTBackgroundStyle } from '@/hooks/useBackgroundPref';
 
 
@@ -522,7 +521,6 @@ export default function TT({ mode = 'real', eventPreview = false, embedded = fal
           />
         )}
         {isSim && <TTSimControl dataset={simDataset} topicId={activeTopicId} compact={!controlsVisible} />}
-        {eventPreview && graphActive && !streamActive && !selectedNode && <TTPreEventNotice startsAt={eventConfig?.opinionsOpenAt ?? eventConfig?.discussionOpenAt ?? null} now={now} registered={isVerified} embedded={embedded} compact={!controlsVisible} august={simDataset === 'august'} />}
 
       </div>
     </div>
