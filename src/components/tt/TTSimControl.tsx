@@ -72,7 +72,8 @@ export function TTSimControl({ topicId, compact = false, dataset = 'social' }: {
 
 /** Counts through every hour between the shown and the confirmed value, each digit sliding in. */
 function RollingNumber({ value }: { value: number }) {
-  const [shown, setShown] = useState(value);
+  // Starts at hour 1 so the counter visibly runs up to the confirmed hour on load.
+  const [shown, setShown] = useState(1);
   useEffect(() => {
     if (shown === value) return;
     const step = value > shown ? 1 : -1;
