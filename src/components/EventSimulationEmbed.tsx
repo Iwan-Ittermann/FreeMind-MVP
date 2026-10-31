@@ -56,7 +56,7 @@ export function EventSimulationEmbed({ wedium = false }: { wedium?: boolean }) {
       </div>
       {!interactive && <ChevronDown className="h-4 w-4 text-muted-foreground" aria-hidden />}
       <Button asChild variant="link" className="h-auto text-xs text-foreground underline underline-offset-4">
-        <a href={`/sim?dataset=${dataset}`} target="_blank" rel="noopener noreferrer">{t('replay.openDiscussion')}<ArrowUpRight /></a>
+        <a href={wedium ? `/wedium/go?lang=${lang}` : `/sim?dataset=${dataset}`} target="_blank" rel="noopener noreferrer">{t('replay.openDiscussion')}<ArrowUpRight /></a>
       </Button>
       </div>
     </div>
