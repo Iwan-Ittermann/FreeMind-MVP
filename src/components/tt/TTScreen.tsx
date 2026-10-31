@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { MotionValue } from 'framer-motion';
 import { useTopicData } from '@/hooks/useTopicData';
 import { useAuth } from '@/hooks/useAuth';
@@ -148,7 +148,7 @@ function TTScreenInnerImpl({
     >
       {/* Full-bleed background, sized so the blue ring spans the viewport width.
           Lives outside the graph wrapper so it isn't clipped. */}
-      {wedium ? <div className="wedium-graph-background absolute inset-0" style={{ '--wedium-disc-scale': fitScale } as React.CSSProperties} aria-hidden /> : <TTBackground hue={hue} viewportWidth={phoneViewportW * fitScale} variant={backgroundVariant ?? bgStyle} />}
+      {wedium ? <div className="wedium-graph-background absolute inset-0" style={{ '--wedium-disc-scale': fitScale } as CSSProperties} aria-hidden /> : <TTBackground hue={hue} viewportWidth={phoneViewportW * fitScale} variant={backgroundVariant ?? bgStyle} />}
 
       {/* Zone labels are intentionally hidden in the Helsinki event build (introduced via help overlay). */}
 
