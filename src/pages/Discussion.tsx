@@ -47,6 +47,8 @@ import { TTSimControl } from '@/components/tt/TTSimControl';
 import type { SimDataset } from '@/hooks/useSimDataset';
 import { cn } from '@/lib/utils';
 import { WediumPresentationContext } from '@/contexts/WediumPresentationContext';
+import wediumScreenBg from '@/assets/wedium-screen-bg.webp.asset.json';
+import wediumGraphDisc from '@/assets/wedium-graph-disc.webp.asset.json';
 import { TTPreEventNotice } from '@/components/tt/TTPreEventNotice';
 import type { TTBackgroundStyle } from '@/hooks/useBackgroundPref';
 
@@ -279,7 +281,13 @@ export default function TT({ mode = 'real', eventPreview = false, embedded = fal
   return (
     <ReadOnlyProvider value={readOnly}>
     <WediumPresentationContext.Provider value={wediumPresentation}>
-    <div className={cn('fixed inset-0 discussion-surround flex items-center justify-center', wediumPresentation && 'wedium-discussion')}>
+    <div
+      className={cn('fixed inset-0 discussion-surround flex items-center justify-center', wediumPresentation && 'wedium-discussion')}
+      style={wediumPresentation ? ({
+        '--wedium-screen-bg': `url("${wediumScreenBg.url}")`,
+        '--wedium-disc': `url("${wediumGraphDisc.url}")`,
+      } as React.CSSProperties) : undefined}
+    >
       <div
         data-tt-phone-viewport
         className={cn(

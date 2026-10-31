@@ -260,7 +260,9 @@ export const SignalNode = memo(function SignalNode({
         )}
         {/* Selection highlight — gold to match warm earth palette */}
         {(highlightForTour || (isHighlighted && !isDimmed)) && (
-          <circle cx="20" cy="20" r="18" fill="none" stroke="#00e5ff" strokeWidth={2} filter="url(#signal-select-glow)" />
+          wedium
+            ? <circle cx="20" cy="20" r="21" fill="none" stroke="hsl(var(--primary))" strokeWidth={2} strokeOpacity={0.9} />
+            : <circle cx="20" cy="20" r="18" fill="none" stroke="#00e5ff" strokeWidth={2} filter="url(#signal-select-glow)" />
         )}
         {wedium && !token.isBot ? <>
           {token.isCurrentUser && (
