@@ -1,4 +1,4 @@
-// Mails of the wedium x freemind live event (28.–31.10.2026).
+// Mails of the wedium x freemind live event (12.–15.11.2026).
 // Separate from the old freemind campaigns: recipients live in
 // public.wedium_signups, sends are logged in public.wedium_campaign_sends.
 
@@ -14,14 +14,14 @@ export interface WediumCampaignDef {
 }
 
 export const WEDIUM_CAMPAIGNS: WediumCampaignDef[] = [
-  { key: "campaign-wedium-sogehts", label: "wedium: So geht's (26.10.2026, 00:01)", dueAt: "2026-10-25T23:01:00Z" },
-  { key: "campaign-wedium-start", label: "wedium: Es startet heute (28.10.2026, 00:01)", dueAt: "2026-10-27T23:01:00Z" },
-  { key: "campaign-wedium-final-day", label: "wedium: Letzter Tag (31.10.2026, 00:01)", dueAt: "2026-10-30T23:01:00Z" },
-  { key: "campaign-wedium-result", label: "wedium: Ergebnis & Danke (01.11.2026, 09:00)", dueAt: "2026-11-01T08:00:00Z" },
+  { key: "campaign-wedium-sogehts", label: "wedium: So geht's (10.11.2026, 00:01)", dueAt: "2026-11-09T23:01:00Z" },
+  { key: "campaign-wedium-start", label: "wedium: Es startet heute (12.11.2026, 00:01)", dueAt: "2026-11-11T23:01:00Z" },
+  { key: "campaign-wedium-final-day", label: "wedium: Letzter Tag (15.11.2026, 00:01)", dueAt: "2026-11-14T23:01:00Z" },
+  { key: "campaign-wedium-result", label: "wedium: Ergebnis & Danke (16.11.2026, 09:00)", dueAt: "2026-11-16T08:00:00Z" },
 
-  { key: "wedium-nudge-opinion", label: "wedium Nudge: Meinung posten", nudge: "opinion", startAt: "2026-10-29T06:30:00Z" },
-  { key: "wedium-nudge-rate", label: "wedium Nudge: Bewerten", nudge: "rate", startAt: "2026-10-29T06:30:00Z" },
-  { key: "wedium-nudge-chat", label: "wedium Nudge: Diskutieren", nudge: "chat", startAt: "2026-10-29T06:30:00Z" },
+  { key: "wedium-nudge-opinion", label: "wedium Nudge: Meinung posten", nudge: "opinion", startAt: "2026-11-13T06:30:00Z" },
+  { key: "wedium-nudge-rate", label: "wedium Nudge: Bewerten", nudge: "rate", startAt: "2026-11-13T06:30:00Z" },
+  { key: "wedium-nudge-chat", label: "wedium Nudge: Diskutieren", nudge: "chat", startAt: "2026-11-13T06:30:00Z" },
 ];
 
 export const WEDIUM_NUDGE_KEYS = WEDIUM_CAMPAIGNS.filter((c) => c.nudge).map((c) => c.key);
