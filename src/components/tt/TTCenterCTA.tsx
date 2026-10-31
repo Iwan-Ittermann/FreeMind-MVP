@@ -21,6 +21,8 @@ interface TTCenterCTAProps {
   onOpinionSubmitted?: () => void;
   onOpinionCommitted?: () => void;
   disableNotificationPrompt?: boolean;
+  /** Embedded simulation: sit lower so the pill covers less of the graph. */
+  lowered?: boolean;
 }
 
 /**
@@ -36,6 +38,7 @@ export function TTCenterCTA({
   onOpinionSubmitted,
   onOpinionCommitted,
   disableNotificationPrompt = false,
+  lowered = false,
 }: TTCenterCTAProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -161,7 +164,7 @@ export function TTCenterCTA({
   return (
     <div
       ref={wrapperRef}
-      className="absolute left-1/2 bottom-[125px] -translate-x-1/2 z-30 pointer-events-none"
+      className={`absolute left-1/2 ${lowered ? 'bottom-[88px]' : 'bottom-[125px]'} -translate-x-1/2 z-30 pointer-events-none`}
     >
       <AnimatePresence mode="wait" initial={false}>
         {state === 'collapsed' && (
