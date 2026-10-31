@@ -313,6 +313,12 @@ export default function TT({ mode = 'real', eventPreview = false, embedded = fal
         </div>
 
 
+        {isSim && !embedded && graphActive && !streamActive && (
+          <div className={cn('pointer-events-none absolute left-3 z-20 max-w-[calc(100%-1.5rem)] rounded-full border border-border/60 bg-background/90 px-3 py-1 text-[10px] font-medium text-foreground', controlsVisible ? 'top-[108px]' : 'top-[84px]')}>
+            {t(simDataset === 'august' ? 'replay.datasetAugust' : 'replay.preview')}
+          </div>
+        )}
+
         <FloatingChatManager
           ref={chatManagerRef}
           topicId={activeTopicId}
