@@ -182,8 +182,8 @@ export function SignalRenderer({
               r={r}
               fill="none"
                stroke="hsl(var(--foreground))"
-              strokeOpacity={wedium ? 0.25 : 0.2}
-              strokeWidth={wedium ? 1 : 0.75}
+              strokeOpacity={wedium ? 0.14 : 0.2}
+              strokeWidth={wedium ? 0.8 : 0.75}
             />
           ))}
         </g>
