@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { GRAPH_ANIMATION } from '@/lib/graph-animation';
 import { Clock3 } from 'lucide-react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 const LOOP_SECONDS = 72 * 60 * 60;
 
@@ -76,25 +76,23 @@ function RollingNumber({ value }: { value: number }) {
   const [shown, setShown] = useState(1);
   useEffect(() => {
     if (shown === value) return;
-    const step = value > shown ? 1 : -1;
-    const distance = Math.abs(value - shown);
-    const id = window.setTimeout(() => setShown((current) => current + step), Math.max(40, Math.min(160, 900 / distance)));
+    // About a dozen visible ticks for long catch-ups, single steps afterwards.
+    const distance = value - shown;
+    const step = Math.sign(distance) * Math.max(1, Math.ceil(Math.abs(distance) / 12));
+    const id = window.setTimeout(() => setShown((current) => (Math.abs(value - current) <= Math.abs(step) ? value : current + step)), 90);
     return () => window.clearTimeout(id);
   }, [shown, value]);
   return (
     <span className="relative inline-flex overflow-hidden align-bottom" data-sim-hour={shown}>
-      <AnimatePresence initial={false} mode="popLayout">
-        <motion.span
-          key={shown}
-          initial={{ y: '100%', opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: '-100%', opacity: 0 }}
-          transition={{ duration: 0.12, ease: 'easeOut' }}
-          className="inline-block"
-        >
-          {shown}
-        </motion.span>
-      </AnimatePresence>
+      <motion.span
+        key={shown}
+        initial={{ y: '70%', opacity: 0.35 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.07, ease: 'easeOut' }}
+        className="inline-block"
+      >
+        {shown}
+      </motion.span>
     </span>
   );
 }

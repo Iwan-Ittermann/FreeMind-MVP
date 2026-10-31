@@ -84,7 +84,7 @@ export const SignalEventMarker = memo(function SignalEventMarker({ events, messa
                animate={{ x: to.x, y: to.y, opacity: [0, 1, 1, 0] }}
               transition={{ duration, ease: 'easeInOut' }}
             >
-               <SignalTextBubble text={text} maxWidth={from.maxWidth} anchor="center" below />
+               <SignalTextBubble text={text} maxWidth={from.maxWidth} anchor="center" below lines={2} />
             </motion.g>
           )}
           </motion.g>;

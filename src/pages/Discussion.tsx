@@ -377,6 +377,7 @@ export default function TT({ mode = 'real', eventPreview = false, embedded = fal
               topicTitle={activeTopicTitle}
               highlight={false}
               disableNotificationPrompt={eventPreview}
+              lowered={embedded}
               onOpinionCommitted={() => {
                 queryClient.invalidateQueries({ queryKey: ['tt-own-opinion', activeTopicId, user?.id] });
                 queryClient.invalidateQueries({ queryKey: ['topic', activeTopicId] });
