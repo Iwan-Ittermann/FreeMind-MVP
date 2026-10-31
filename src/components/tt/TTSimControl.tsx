@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { GRAPH_ANIMATION } from '@/lib/graph-animation';
 import { Clock3 } from 'lucide-react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 const LOOP_SECONDS = 72 * 60 * 60;
 
@@ -83,18 +83,15 @@ function RollingNumber({ value }: { value: number }) {
   }, [shown, value]);
   return (
     <span className="relative inline-flex overflow-hidden align-bottom" data-sim-hour={shown}>
-      <AnimatePresence initial={false} mode="popLayout">
-        <motion.span
-          key={shown}
-          initial={{ y: '100%', opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: '-100%', opacity: 0 }}
-          transition={{ duration: 0.12, ease: 'easeOut' }}
-          className="inline-block"
-        >
-          {shown}
-        </motion.span>
-      </AnimatePresence>
+      <motion.span
+        key={shown}
+        initial={{ y: '70%', opacity: 0.35 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.1, ease: 'easeOut' }}
+        className="inline-block"
+      >
+        {shown}
+      </motion.span>
     </span>
   );
 }
