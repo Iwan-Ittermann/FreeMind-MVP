@@ -324,6 +324,19 @@
 .wedium-wordmark { display: inline-flex; align-items: center; }
 .wedium-discussion .signal-edges line { stroke: hsl(var(--foreground)); }
 .wedium-discussion .signal-nodes svg > circle[filter] { stroke: hsl(var(--primary)); filter: none; }
+/* Flying messages travel along an animated stream line (wedium look only). */
+.signal-flow-line { display: none; }
+.wedium-discussion .signal-flow-line {
+  display: inline;
+  stroke: hsl(var(--primary));
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 2 10;
+  filter: drop-shadow(0 0 3px hsl(var(--accent)));
+  animation: signal-flow 0.6s linear infinite;
+}
+@keyframes signal-flow { to { stroke-dashoffset: -12; } }
+@media (prefers-reduced-motion: reduce) { .wedium-discussion .signal-flow-line { animation: none; } }
 
 /* The landing invitation unfolds around the existing, already loaded discussion. */
 .simulation-stage { height: 560px; max-width: 440px; border-radius: 8px; transition: height 400ms ease; }

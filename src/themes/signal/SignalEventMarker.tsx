@@ -49,6 +49,10 @@ export const SignalEventMarker = memo(function SignalEventMarker({ events, messa
             stroke={opinionRating ? differenceColor : rating ? color : 'hsl(var(--foreground) / 0.7)'} strokeWidth={rating ? 1.5 : 2} strokeLinecap="round"
              data-rating-edge={opinionRating ? evt.sourceId : undefined}
              initial={{ opacity: 0 }} animate={{ opacity: [0, opinionRating ? 0.85 : rating ? 0.45 : 0.9, 0] }} transition={{ duration: opinionRating ? 0.55 : duration }} />
+          {!rating && <motion.line className="signal-flow-line" data-message-flow={item?.id}
+            x1={evt.sourceX} y1={evt.sourceY} x2={evt.targetX} y2={evt.targetY}
+            initial={{ opacity: 0 }} animate={{ opacity: [0, 1, 1, 0] }}
+            transition={{ duration, times: [0, 0.1, 0.85, 1] }} />}
           {rating && <motion.g
             data-rating-reaction={evt.sourceId}
             data-rating-kind={opinionRating ? 'difference' : 'respect'}
