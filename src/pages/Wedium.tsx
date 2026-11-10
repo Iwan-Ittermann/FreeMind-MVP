@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { trackEvent } from "@/lib/analytics";
 import { EventSimulationEmbed } from "@/components/EventSimulationEmbed";
 import { Button } from "@/components/ui/button";
+import { useEventTexts } from "@/hooks/useEventTexts";
 // Dark (navy) wordmark: the /wedium top bar is a pale blush surface, so the white
 // variant's "dium" half disappears there. The white one stays for /wedium/go and the sim.
 import wediumLogo from "@/assets/wedium-logo-rgb-pos.png.asset.json";
@@ -172,7 +173,20 @@ function WediumMark() {
 export default function Wedium() {
   const { t, i18n } = useTranslation();
   const lang: Lang = i18n.language?.startsWith("en") ? "en" : "de";
-  const c = copy[lang];
+  const ev = useEventTexts("wedium", lang);
+  const base = copy[lang];
+  const c = {
+    ...base,
+    metaTitle: ev.date ? `wedium x freemind — ${lang === "de" ? "Live-Event" : "live event"} ${ev.date}` : base.metaTitle,
+    metaDesc: ev.question
+      ? (lang === "de"
+          ? `wedium-Creator und ihre Communities diskutieren vier Tage lang eine Frage: ${ev.question}`
+          : `wedium creators and their communities discuss one question for four days: ${ev.question}`)
+      : base.metaDesc,
+    heroEyebrow: ev.date ? `WEDIUM X FREEMIND · ${ev.date.toUpperCase()}` : base.heroEyebrow,
+    questionTitle: ev.question ? ev.question.toUpperCase() : base.questionTitle,
+    ctaLine1: ev.date ? `${ev.date.toUpperCase()} · ` : base.ctaLine1,
+  };
   const setLang = (next: Lang) => {
     i18n.changeLanguage(next);
     try {

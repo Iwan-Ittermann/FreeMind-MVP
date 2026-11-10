@@ -46,6 +46,7 @@ async function overview() {
     signups: rows,
     stats: { total: rows.length, confirmed, pending: rows.length - confirmed, goal: GOAL },
     eventDate: (setting?.value ?? "").trim() || null,
+    question: ((await supabase.from("app_settings").select("value").eq("key", "gutefrage_question").maybeSingle()).data?.value ?? "").trim(),
   };
 }
 
@@ -110,6 +111,13 @@ Deno.serve(async (req) => {
         }, { onConflict: "key" });
         if (error) throw error;
         return Response.json({ ok: true }, { headers: corsHeaders });
+      }
+
+      case "set_question": {
+        const value = String(body?.value ?? "").trim().slice(0, 300);
+        const { error } = await supabase.from("app_settings").upsert({ key: "gutefrage_question", value }, { onConflict: "key" });
+        if (error) throw error;
+        return Response.json({ ok: true, question: value }, { headers: corsHeaders });
       }
 
       case "set_event_date": {

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
+import { useEventTexts } from "@/hooks/useEventTexts";
 import { supabase } from "@/integrations/supabase/client";
 import { trackEvent } from "@/lib/analytics";
 import { useLocation } from "react-router-dom";
@@ -29,6 +30,7 @@ function GutefrageMark() {
 }
 
 export default function Gutefrage() {
+  const gfTexts = useEventTexts("gutefrage", "de");
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "sent" | "already">("idle");
   const [stats, setStats] = useState<Stats | null>(null);
@@ -178,7 +180,7 @@ export default function Gutefrage() {
         <div className={`${panelInner} flex flex-col gap-8`}>
           <p className={eyebrowClass}>Die Frage</p>
           <h2 className={displayClass} style={{ fontSize: "clamp(1.75rem, 5.5vw, 4rem)" }}>
-            WIE KANN DIE MODERATION AUF GUTEFRAGE.NET VERBESSERT WERDEN?
+            {(gfTexts.question || "Wie kann die Moderation auf Gutefrage.net verbessert werden?").toUpperCase()}
           </h2>
           <div className={bodyProseClass}>
             <p>

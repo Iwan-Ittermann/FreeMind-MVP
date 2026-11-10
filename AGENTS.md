@@ -22,3 +22,4 @@
 - Sim replay catch-up writes pending events in batched per-table inserts and only animates the last real minute, so page views reach the current frame in one fast call; dataset timing is retimed for visitor UX (scripts/sim-timeline/retime_ux.py), not simulated daytimes.
 - Apply the AI-only opinion-rating batch scheduler after UX retiming; preserve rating values and all non-rating events, and never rewrite historical August records with synthetic scheduling.
 - Assign wedium person icons by hashing the node id and paint the own node last, so every participant keeps one face across sim and live views and the own highlight is never covered.
+- Event question/date are app_settings tokens scoped per context (main_*, wedium_*, gutefrage_*), edited only in that context's admin panel and injected into mails as {{eventQuestion}}/{{eventDate}} by template key, so /, /wedium and /gutefrage never share copy.

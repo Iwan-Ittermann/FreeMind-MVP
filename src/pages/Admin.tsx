@@ -10,6 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { ReportCard } from '@/components/moderation/ReportCard';
 import { AuditLogTable } from '@/components/moderation/AuditLogTable';
 import { TopicPanel } from '@/components/admin/TopicPanel';
+import { EventTextsEditor } from '@/components/admin/EventTextsEditor';
+import { supabase as sbClient } from '@/integrations/supabase/client';
 import { EventPhasePanel } from '@/components/admin/EventPhasePanel';
 import { TutorialSettingsPanel } from '@/components/admin/TutorialSettingsPanel';
 import { FakeNodesPanel } from '@/components/admin/FakeNodesPanel';
@@ -239,6 +241,19 @@ export default function Admin() {
                   <div className="mb-6">
                     <EventPhasePanel />
                   </div>
+                  <EventTextsEditor
+                    scope="main"
+                    hint="Gilt nur für die Startseite / und allgemeine freemind-Mails ({{eventQuestion}}, {{eventDate}}). wedium und Gutefrage haben eigene Admin-Seiten."
+                    load={async () => {
+                      const { data } = await sbClient.from('app_settings').select('key, value').like('key', 'main_%');
+                      return Object.fromEntries((data ?? []).map((r) => [r.key, r.value]));
+                    }}
+                    save={async (values) => {
+                      const rows = Object.entries(values).map(([key, value]) => ({ key, value: value.trim() }));
+                      const { error } = await sbClient.from('app_settings').upsert(rows, { onConflict: 'key' });
+                      return !error;
+                    }}
+                  />
                   <TopicPanel />
                 </TabsContent>
 

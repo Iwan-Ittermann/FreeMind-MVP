@@ -38,7 +38,7 @@ export async function sendWediumConfirmEmail(to: string, confirmUrl: string, ide
     subject: "Bestätige deine Anmeldung — wedium x freemind",
     heading: "Bestätige deine Anmeldung",
     body:
-      `Klick auf den Button, um deine Anmeldung zum wedium-Event (12.–15. November) abzuschließen.\n\n[Anmeldung bestätigen](${confirmUrl})`,
+      `Klick auf den Button, um deine Anmeldung zum wedium-Event ({{eventDate}}) abzuschließen.\n\n[Anmeldung bestätigen](${confirmUrl})`,
   });
   const res = await fetch(`${SUPABASE_URL}/functions/v1/send-transactional-email`, {
     method: "POST",

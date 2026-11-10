@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { EventTextsEditor } from "@/components/admin/EventTextsEditor";
 
 type Signup = {
   id: string;
@@ -316,6 +317,13 @@ export default function Admin3() {
         {msg && (
           <div style={{ background: "#fff", border: "1px solid #0f1b3d", padding: "8px 12px", marginBottom: 12, fontSize: 13 }}>{msg}</div>
         )}
+
+        <EventTextsEditor
+          scope="wedium"
+          hint="Gilt nur für /wedium, /wedium/go (Graph-Titel des echten Events) und die wedium-Mails ({{eventQuestion}}, {{eventDate}})."
+          load={async () => (await invoke({ action: "get_event_texts" })).data?.values ?? {}}
+          save={async (values) => !!(await invoke({ action: "save_event_texts", values })).data?.ok}
+        />
 
         {/* Email templates */}
         <h2 style={sectionTitle}>E-Mail-Vorlagen (wedium)</h2>

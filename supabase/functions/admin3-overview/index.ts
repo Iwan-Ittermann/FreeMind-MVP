@@ -271,6 +271,27 @@ Deno.serve(async (req) => {
       return Response.json({ ok: false, error: "invalid_password" }, { status: 401, headers: corsHeaders });
     }
 
+    if (action === "get_event_texts" || action === "save_event_texts") {
+      const KEYS = ["wedium_question_de", "wedium_question_en", "wedium_date_de", "wedium_date_en"];
+      if (action === "save_event_texts") {
+        const values = (body?.values ?? {}) as Record<string, unknown>;
+        for (const k of KEYS) {
+          if (typeof values[k] !== "string") continue;
+          const value = String(values[k]).trim().slice(0, 300);
+          const { error } = await supabase.from("app_settings").upsert({ key: k, value }, { onConflict: "key" });
+          if (error) throw error;
+        }
+        // Graph title of the real wedium topic follows the German question.
+        const q = typeof values.wedium_question_de === "string" ? String(values.wedium_question_de).trim() : "";
+        if (q) {
+          const { data: code } = await supabase.from("app_settings").select("value").eq("key", "real_topic_short_code").maybeSingle();
+          if (code?.value) await supabase.from("topics").update({ title: q }).eq("short_code", code.value);
+        }
+      }
+      const { data } = await supabase.from("app_settings").select("key, value").in("key", KEYS);
+      return Response.json({ ok: true, values: Object.fromEntries((data ?? []).map((r) => [r.key, r.value])) }, { headers: corsHeaders });
+    }
+
     if (action === "resend_signup") {
       if (typeof signupId !== "string") return Response.json({ ok: false, error: "invalid_signup_id" }, { status: 400, headers: corsHeaders });
       return Response.json({ ok: true, ...(await resendSignupConfirm(signupId)) }, { headers: corsHeaders });

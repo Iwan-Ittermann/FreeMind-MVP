@@ -42,6 +42,7 @@ export default function GutefrageAdmin() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [eventDate, setEventDate] = useState("");
   const [dateDraft, setDateDraft] = useState("");
+  const [questionDraft, setQuestionDraft] = useState("");
   const [template, setTemplate] = useState<Template | null>(null);
   const [bans, setBans] = useState<Ban[]>([]);
   const [msg, setMsg] = useState<string | null>(null);
@@ -75,6 +76,7 @@ export default function GutefrageAdmin() {
     setStats(ov.data.stats ?? null);
     setEventDate(ov.data.eventDate ?? "");
     setDateDraft(ov.data.eventDate ?? "");
+    setQuestionDraft(ov.data.question ?? "");
     setTemplate(tpl.data?.template ?? null);
     setBans(bn.data?.bans ?? []);
     return true;
@@ -211,6 +213,30 @@ export default function GutefrageAdmin() {
               Ziel erreicht — jetzt das Datum festlegen.
             </p>
           )}
+        </div>
+
+        {/* Discussion question */}
+        <div style={{ ...box, display: "grid", gap: 10 }}>
+          <strong>Diskussionsfrage</strong>
+          <p style={{ margin: 0, fontSize: 13, color: "#5b6b7f" }}>
+            Erscheint auf /gutefrage und in den Gutefrage-Mails als {"{{eventQuestion}}"} (Datum: {"{{eventDate}}"}).
+          </p>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <input
+              value={questionDraft}
+              onChange={(e) => setQuestionDraft(e.target.value)}
+              style={{ flex: "1 1 260px", padding: 9, border: "1px solid #cfd8e3", borderRadius: 6 }}
+            />
+            <button
+              onClick={async () => {
+                const { data, error } = await invoke({ action: "set_question", value: questionDraft });
+                flash(error || !data?.ok ? "Speichern fehlgeschlagen" : "Frage gespeichert");
+              }}
+              style={{ padding: "9px 14px", borderRadius: 6, border: 0, background: "#2f7a2f", color: "#fff", fontWeight: 700 }}
+            >
+              Speichern
+            </button>
+          </div>
         </div>
 
         {/* Event date */}

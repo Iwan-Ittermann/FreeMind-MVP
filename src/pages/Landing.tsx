@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
+import { useEventTexts } from "@/hooks/useEventTexts";
 import { supabase } from "@/integrations/supabase/client";
 import { trackEvent } from "@/lib/analytics";
 import { EventSimulationEmbed } from "@/components/EventSimulationEmbed";
@@ -175,7 +176,8 @@ function EmText({ children }: { children: string }) {
 export default function Landing() {
   const { t, i18n } = useTranslation();
   const lang: Lang = i18n.language?.startsWith("de") ? "de" : "en";
-  const c = copy[lang];
+  const ev = useEventTexts("main", lang);
+  const c = { ...copy[lang], ctaLine1: ev.date ? `WEDIUM × FREEMIND · ${ev.date.toUpperCase()} · ` : copy[lang].ctaLine1 };
   const setLang = (next: Lang) => {
     i18n.changeLanguage(next);
     try {
