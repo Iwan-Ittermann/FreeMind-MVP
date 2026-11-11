@@ -34,11 +34,15 @@ export function EventSimulationEmbed({ wedium = false }: { wedium?: boolean }) {
         <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-alert">{t(wedium ? 'replay.wediumTransition' : 'replay.transition')}</p>
         <h2 className="font-display text-5xl sm:text-6xl lg:text-7xl font-black uppercase leading-[0.9]">{t('replay.tryTitle')}</h2>
         <p className="max-w-md text-xl sm:text-2xl leading-snug">{t('replay.tryBody')}</p>
-        <p className="max-w-md text-base sm:text-lg leading-snug text-muted-foreground">{t('replay.tryInvitation')}</p>
-        <Button onClick={() => { setPreload(true); setInteractive((value) => !value); }} aria-expanded={interactive} aria-controls="simulation-frame" className="h-auto max-w-full rounded-none whitespace-normal bg-foreground text-background px-6 py-4 text-sm font-bold uppercase hover:bg-alert">
-          {t(interactive ? 'replay.watch' : 'replay.join')} {interactive ? <ChevronUp /> : <ArrowRight />}
-        </Button>
-        <p className="text-xs text-muted-foreground">{t('replay.sessionNote')}</p>
+        {!wedium && <p className="max-w-md text-base sm:text-lg leading-snug text-muted-foreground">{t('replay.tryInvitation')}</p>}
+        {!wedium && (
+          <>
+            <Button onClick={() => { setPreload(true); setInteractive((value) => !value); }} aria-expanded={interactive} aria-controls="simulation-frame" className="h-auto max-w-full rounded-none whitespace-normal bg-foreground text-background px-6 py-4 text-sm font-bold uppercase hover:bg-alert">
+              {t(interactive ? 'replay.watch' : 'replay.join')} {interactive ? <ChevronUp /> : <ArrowRight />}
+            </Button>
+            <p className="text-xs text-muted-foreground">{t('replay.sessionNote')}</p>
+          </>
+        )}
       </div>
       <div className="flex w-full min-w-0 flex-col items-center gap-4">
       {!wedium && <SimDatasetSwitch value={dataset} onChange={setDataset} />}
@@ -54,10 +58,12 @@ export function EventSimulationEmbed({ wedium = false }: { wedium?: boolean }) {
         className={cn('absolute inset-0 h-full w-full border-0', !interactive && 'pointer-events-none')}
       /> : <div className="simulation-placeholder absolute inset-0 flex items-center justify-center" aria-hidden><div className="aspect-square w-4/5 rounded-full border border-foreground/20" /></div>}
       </div>
-      {!interactive && <ChevronDown className="h-4 w-4 text-muted-foreground" aria-hidden />}
-      <Button asChild variant="link" className="h-auto text-xs text-foreground underline underline-offset-4">
-        <a href={wedium ? `/wedium/go?lang=${lang}` : `/sim?dataset=${dataset}`} target="_blank" rel="noopener noreferrer">{t('replay.openDiscussion')}<ArrowUpRight /></a>
-      </Button>
+      {!wedium && !interactive && <ChevronDown className="h-4 w-4 text-muted-foreground" aria-hidden />}
+      {!wedium && (
+        <Button asChild variant="link" className="h-auto text-xs text-foreground underline underline-offset-4">
+          <a href={`/sim?dataset=${dataset}`} target="_blank" rel="noopener noreferrer">{t('replay.openDiscussion')}<ArrowUpRight /></a>
+        </Button>
+      )}
       </div>
     </div>
   );
