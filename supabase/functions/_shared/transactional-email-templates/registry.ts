@@ -20,6 +20,7 @@ import {
   notificationDigestTemplate,
   wediumSogehtsTemplate,
   wediumStartTemplate,
+  wediumSoftLaunchTemplate,
   wediumFinalDayTemplate,
   wediumResultTemplate,
 } from './campaign.tsx'
@@ -59,6 +60,7 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'notification-digest': notificationDigestTemplate,
   'campaign-wedium-sogehts': wediumSogehtsTemplate,
   'campaign-wedium-start': wediumStartTemplate,
+  'campaign-wedium-softlaunch': wediumSoftLaunchTemplate,
   'campaign-wedium-final-day': wediumFinalDayTemplate,
   'campaign-wedium-result': wediumResultTemplate,
 }

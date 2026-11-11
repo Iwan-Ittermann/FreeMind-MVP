@@ -15,6 +15,7 @@ export interface WediumCampaignDef {
 
 export const WEDIUM_CAMPAIGNS: WediumCampaignDef[] = [
   { key: "campaign-wedium-sogehts", label: "wedium: So geht's (10.11.2026, 00:01)", dueAt: "2026-11-09T23:01:00Z" },
+  { key: "campaign-wedium-softlaunch", label: "wedium: Soft Launch (11.11.2026, 19:00)", dueAt: "2026-11-11T18:00:00Z" },
   { key: "campaign-wedium-start", label: "wedium: Es startet heute (12.11.2026, 00:01)", dueAt: "2026-11-11T23:01:00Z" },
   { key: "campaign-wedium-final-day", label: "wedium: Letzter Tag (15.11.2026, 00:01)", dueAt: "2026-11-14T23:01:00Z" },
   { key: "campaign-wedium-result", label: "wedium: Ergebnis & Danke (16.11.2026, 09:00)", dueAt: "2026-11-16T08:00:00Z" },

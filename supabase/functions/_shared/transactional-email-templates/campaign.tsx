@@ -121,6 +121,11 @@ export const wediumStartTemplate = makeTemplate(
   'Heute startet es!',
   'wedium x freemind',
 )
+export const wediumSoftLaunchTemplate = makeTemplate(
+  'wedium: Soft Launch',
+  'Heute Abend: Probelauf',
+  'wedium x freemind',
+)
 export const wediumFinalDayTemplate = makeTemplate(
   'wedium: Letzter Tag',
   'Letzter Tag',
