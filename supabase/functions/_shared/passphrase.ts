@@ -22,7 +22,7 @@ const verbs = [
 ];
 
 function pick<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)];
+  return arr[secureInt(arr.length)];
 }
 
 /** Strictly separated account spaces per event. */
@@ -34,7 +34,7 @@ const SCOPE_DOMAINS: Record<PassphraseScope, string> = {
 };
 
 export function generatePassphrase(): string {
-  return `${pick(adjectives)}-${pick(nouns)}-${pick(verbs)}-${Math.floor(Math.random() * 100)}`;
+  return `${pick(adjectives)}-${pick(nouns)}-${pick(verbs)}-${secureInt(100)}`;
 }
 
 export function passphraseToEmail(p: string, scope: PassphraseScope = 'freemind'): string {
@@ -43,4 +43,12 @@ export function passphraseToEmail(p: string, scope: PassphraseScope = 'freemind'
 
 export function passphraseToPassword(p: string): string {
   return p.toLowerCase().trim().split('').reverse().join('') + '_FM2024';
+}
+
+/** Unbiased cryptographically secure integer in [0, max). */
+function secureInt(max: number): number {
+  const limit = Math.floor(0x100000000 / max) * max;
+  const buf = new Uint32Array(1);
+  do { crypto.getRandomValues(buf); } while (buf[0] >= limit);
+  return buf[0] % max;
 }

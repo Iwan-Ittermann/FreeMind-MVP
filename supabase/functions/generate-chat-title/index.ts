@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4';
+import { requireUser } from '../_shared/require-user.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -11,8 +12,11 @@ Deno.serve(async (req) => {
   }
 
   try {
+    if (!(await requireUser(req))) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
     const { chatId } = await req.json();
-    if (!chatId) {
+    if (typeof chatId !== 'string' || !/^[0-9a-f-]{36}$/i.test(chatId)) {
       return new Response(JSON.stringify({ error: 'chatId required' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

@@ -453,7 +453,7 @@ async function run(date: string, resend: boolean, onlySignupId?: string) {
 
     if (!res.ok) {
       failed++;
-      console.error("daily-brief send failed:", email, res.status, await res.text());
+      console.error("daily-brief send failed:", res.status, await res.text());
       continue;
     }
     sent++;

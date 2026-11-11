@@ -88,10 +88,9 @@ Deno.serve(async (req) => {
     let created = false;
     let row: any = null;
     if (existing) {
-      // Keep existing attribution; only fill it if the row was unattributed.
-      const patch: Record<string, unknown> = { confirm_token: token, confirm_token_expires_at: expires, signup_ip: clientIp };
-      const { data: cur } = await supabase.from("gutefrage_signups").select("post_id").eq("id", existing.id).single();
-      if (cur?.post_id === "unattributed" && attr.post_id !== "unattributed") Object.assign(patch, attr);
+      // Resend only refreshes the token; attribution and IP of the original signup stay untouched,
+      // so a third party who knows the address cannot rewrite them.
+      const patch: Record<string, unknown> = { confirm_token: token, confirm_token_expires_at: expires };
       const { error } = await supabase.from("gutefrage_signups").update(patch).eq("id", existing.id);
       if (error) throw error;
     } else {

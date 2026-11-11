@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { requireUser } from "../_shared/require-user.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -13,8 +14,10 @@ serve(async (req) => {
   }
 
   try {
+    const uid = await requireUser(req);
+    if (!uid) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     const { messageId } = await req.json();
-    if (!messageId) throw new Error("messageId is required");
+    if (typeof messageId !== "string" || !/^[0-9a-f-]{36}$/i.test(messageId)) throw new Error("messageId is required");
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
@@ -26,13 +29,15 @@ serve(async (req) => {
     // 1. Get the message with audio_url
     const { data: message, error: msgError } = await supabase
       .from("chat_messages")
-      .select("audio_url")
+      .select("audio_url, sender_id, transcript")
       .eq("id", messageId)
       .single();
 
     if (msgError || !message?.audio_url) {
       throw new Error("Message not found or no audio URL");
     }
+    // Only the sender may transcribe their own voice message, and only once.
+    if (message.sender_id !== uid || message.transcript) return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
     // 2. Download the audio file via storage API (bucket is private)
     const marker = "/voice-messages/";
@@ -119,7 +124,9 @@ serve(async (req) => {
     const { error: updateError } = await supabase
       .from("chat_messages")
       .update({ transcript, content: transcript })
-      .eq("id", messageId);
+      .eq("id", messageId)
+      .eq("sender_id", uid)
+      .is("transcript", null);
 
     if (updateError) {
       console.error("Failed to update transcript:", updateError);
@@ -133,7 +140,7 @@ serve(async (req) => {
     console.error("transcribe-voice error:", e);
     return new Response(
       JSON.stringify({
-        error: e instanceof Error ? e.message : "Unknown error",
+        error: "Request failed",
       }),
       {
         status: 500,

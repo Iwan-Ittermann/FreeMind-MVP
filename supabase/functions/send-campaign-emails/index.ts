@@ -363,7 +363,7 @@ async function sendCampaign(campaignKey: string, onlySignupId?: string, resend =
 
     if (!res.ok) {
       failed++;
-      console.error(`campaign ${campaignKey} failed for ${r.email}:`, res.status, await res.text());
+      console.error(`campaign ${campaignKey} failed for signup ${r.id}:`, res.status, await res.text());
       continue;
     }
 

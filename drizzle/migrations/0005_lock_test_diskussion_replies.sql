@@ -1,0 +1,2 @@
+DROP POLICY IF EXISTS "Authenticated users can insert replies" ON public.test_diskussion_replies;
+COMMENT ON TABLE public.test_diskussion_replies IS 'DEPRECATED: old survey form, no longer written by the app';

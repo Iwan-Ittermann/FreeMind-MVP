@@ -151,7 +151,7 @@ async function run(resend: boolean, onlySignupId?: string) {
 
     if (!res.ok) {
       failed++;
-      console.error("notification-digest send failed:", email, res.status, await res.text());
+      console.error("notification-digest send failed:", res.status, await res.text());
       continue;
     }
     sent++;
