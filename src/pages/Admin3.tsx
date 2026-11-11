@@ -509,7 +509,7 @@ export default function Admin3() {
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
             <thead>
               <tr style={{ borderBottom: "1px solid #0f1b3d", textAlign: "left" }}>
-                <th style={th}>Welle</th><th style={th}>Antworten</th><th style={th}>Ø unliebste Partei</th><th style={th}>Ø liebste Partei</th>
+                <th style={th}>Welle</th><th style={th}>Antworten</th><th style={th}>Ø andere Haltung (Out-Group)</th><th style={th}>Ø ähnliche Haltung (In-Group)</th>
               </tr>
             </thead>
             <tbody>

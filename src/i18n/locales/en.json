@@ -779,11 +779,11 @@
     "understandingQuestion": "How well does the other person understand you?",
     "polarization": {
       "title": "Anonymous survey",
-      "intro": "Two questions about how you feel towards political parties. Your answers are anonymous and help us measure the impact of freemind.",
-      "leastLiked": "How do you feel about the party you like the least?",
-      "mostLiked": "How do you feel about the party you like the most?",
-      "veryNegative": "very negative",
-      "veryPositive": "very positive",
+      "intro": "Two short questions about your impression of other participants. Your answers are anonymous and help us measure how the discussion works.",
+      "leastLiked": "How do you feel about people who hold a completely different view than you on the discussion topic?",
+      "mostLiked": "How do you feel about people who hold a similar view to yours on the discussion topic?",
+      "veryNegative": "very cold / unfavorable",
+      "veryPositive": "very warm / favorable",
       "submit": "Submit",
       "noAnswer": "no answer",
       "saveError": "Could not save. Please try again."
