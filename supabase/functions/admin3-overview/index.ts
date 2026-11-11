@@ -36,6 +36,7 @@ const TEMPLATE_KEYS = [
   "wedium-signup-confirm",
   "wedium-signup-welcome",
   "campaign-wedium-sogehts",
+  "campaign-wedium-softlaunch",
   "campaign-wedium-start",
   "campaign-wedium-final-day",
   "campaign-wedium-result",

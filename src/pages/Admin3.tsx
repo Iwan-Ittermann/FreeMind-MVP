@@ -44,6 +44,12 @@ const TEMPLATE_META: Record<string, TemplateMeta> = {
     placeholders: "{{sogehtsUrl}}, {{goUrl}}, {{appUrl}}, {{faqUrl}}, {{passphrase}}",
     campaign: true,
   },
+  "campaign-wedium-softlaunch": {
+    label: "3b. Soft Launch (Probelauf)",
+    trigger: "11.11.2026, 19:00",
+    placeholders: "{{goUrl}}, {{appUrl}}, {{passphrase}}",
+    campaign: true,
+  },
   "campaign-wedium-start": {
     label: "4. Es startet heute",
     trigger: "12.11.2026, 00:01",
@@ -88,6 +94,7 @@ const MAIL_COLUMNS: Array<{ key: string; short: string; title: string }> = [
   { key: "wedium-signup-confirm", short: "Verif", title: "Verifizierung (Bestätigungslink)" },
   { key: "wedium-signup-welcome", short: "Willk", title: "Willkommen (mit Passphrase)" },
   { key: "campaign-wedium-sogehts", short: "Geht's", title: "So geht's, 10.11." },
+  { key: "campaign-wedium-softlaunch", short: "Soft", title: "Soft Launch (Probelauf), 11.11." },
   { key: "campaign-wedium-start", short: "Start", title: "Es startet heute, 12.11." },
   { key: "campaign-wedium-final-day", short: "Final", title: "Letzter Tag, 15.11." },
   { key: "campaign-wedium-result", short: "Erg", title: "Ergebnis & Danke, 16.11." },
@@ -101,6 +108,7 @@ const RESENDABLE = [
   { key: "resend_welcome", label: "Willkommen" },
   { key: "resend_passphrase", label: "Passphrase" },
   { key: "campaign-wedium-sogehts", label: "So geht's" },
+  { key: "campaign-wedium-softlaunch", label: "Soft Launch" },
   { key: "campaign-wedium-start", label: "Start" },
   { key: "campaign-wedium-final-day", label: "Letzter Tag" },
   { key: "campaign-wedium-result", label: "Ergebnis" },
@@ -426,7 +434,17 @@ export default function Admin3() {
                 <th style={th}>Passphrase</th>
                 <th style={th}>IP</th>
                 {MAIL_COLUMNS.map((c) => (
-                  <th key={c.key} style={{ ...th, textAlign: "center", padding: "8px 4px" }} title={c.title}>{c.short}</th>
+                  <th key={c.key} style={{ ...th, textAlign: "center", padding: "8px 4px" }} title={c.title}>
+                    {c.short}
+                    <div style={{ fontSize: 10, fontWeight: 400, whiteSpace: "nowrap" }}>
+                      {(() => {
+                        const v = signups.map((s) => mailMatrix[s.id]?.[c.key]);
+                        const sent = v.filter((x) => x === "sent" || x === "opened").length;
+                        const opened = v.filter((x) => x === "opened").length;
+                        return `${sent} (${opened})`;
+                      })()}
+                    </div>
+                  </th>
                 ))}
                 <th style={th}>Aktionen</th>
               </tr>
