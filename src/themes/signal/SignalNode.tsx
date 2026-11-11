@@ -364,9 +364,12 @@ export const SignalNode = memo(function SignalNode({
 
       {/* Total-points count — tiny label to the lower-right of each real node. */}
       {ttMode && !token.isBot && (
-        <g transform={`translate(${scaledHalf * 0.72}, ${scaledHalf * 0.62})`} style={{ pointerEvents: 'none' }}>
+        <g transform={`translate(${scaledHalf * 0.72}, ${scaledHalf * 0.62})`} style={{ pointerEvents: 'none' }} data-points-label>
+          {/* Small bridge icon marks the number as bridging points, not an ID. */}
+          <path d="M0.5 9.5 Q5 1.5 9.5 9.5 M0.5 9.5 H9.5 M3 6.2 V9.5 M7 6.2 V9.5" fill="none" stroke="rgba(10,10,20,0.85)" strokeWidth={3} strokeLinecap="round" />
+          <path d="M0.5 9.5 Q5 1.5 9.5 9.5 M0.5 9.5 H9.5 M3 6.2 V9.5 M7 6.2 V9.5" fill="none" stroke="#FFFFFF" strokeWidth={1.3} strokeLinecap="round" />
           <text
-            x={0}
+            x={12}
             y={0}
             textAnchor="start"
             dominantBaseline="hanging"

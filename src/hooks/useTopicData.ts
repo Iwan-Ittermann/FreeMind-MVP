@@ -223,6 +223,10 @@ export function useTopicData(topicId: string) {
       .channel(animChannelName, {
         config: { broadcast: { self: true } },
       })
+      .on('broadcast', { event: 'graph-event' }, (payload) => {
+        // Live rating badges reuse the deduplicated simulation event path.
+        window.dispatchEvent(new CustomEvent('tt:sim-events', { detail: payload.payload }));
+      })
       .on('broadcast', { event: 'message-animation' }, (payload) => {
         const data = payload.payload as {
           sourceOpinionId: string;

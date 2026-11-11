@@ -90,3 +90,11 @@ describe('shared five-step opinion values', () => {
     expect(opinionDifferenceIndex(value)).toBe(index);
   });
 });
+describe('live opinion-rating events', () => {
+  it('produce a difference badge without activating a chat', () => {
+    const f = graphActivityFields({ type: 'difference_rating', sourceOpinionId: 'a', targetOpinionId: 'b', disagreement: 70 });
+    expect(f.kind).toBe('difference_rating');
+    expect(f.disagreement).toBe(70);
+    expect(f.activatesChat).toBe(false);
+  });
+});

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
+import { getAnimationChannel } from '@/lib/animation-channel';
 
 /**
  * Hook for standalone disagreement ratings on opinions.
@@ -91,9 +92,11 @@ export function useDisagreementRating(
       queryClient.invalidateQueries({ queryKey: ['myOpinionRatings'] });
       if (topicId) {
         queryClient.invalidateQueries({ queryKey: ['topic', topicId] });
-        window.dispatchEvent(new CustomEvent('tt:sim-events', { detail: {
-          topicId, events: [{ id: `difference:${myOpinionId}:${targetOpinionId}:${Date.now()}`, type: 'difference_rating', sourceOpinionId: myOpinionId, targetOpinionId, disagreement }],
-        } }));
+        const detail = { topicId, events: [{ id: `difference:${myOpinionId}:${targetOpinionId}:${Date.now()}`, type: 'difference_rating', sourceOpinionId: myOpinionId, targetOpinionId, disagreement }] };
+        // Broadcast so every viewer sees the badge (self:true echoes it back to us).
+        const channel = getAnimationChannel(topicId);
+        if (channel) void channel.send({ type: 'broadcast', event: 'graph-event', payload: detail });
+        else window.dispatchEvent(new CustomEvent('tt:sim-events', { detail }));
       }
     },
   });
