@@ -33,7 +33,8 @@ const copy = {
     heroSub2a: "freemind gibt euch den Raum für ",
     heroSub2b: "echte Gespräche.",
     ctaPrimary: "MITMACHEN",
-    ctaSecondary: "Wie funktioniert's? ",
+    ctaSecondary: "Wie funktioniert's? ",
+    ctaLive: "Zur Live-Diskussion",
     questionEyebrow: "Die Frage",
     questionTitle: "WAS WÜRDEST DU AN SOCIAL MEDIA ÄNDERN? ",
     questionNote: "\n",
@@ -101,6 +102,7 @@ const copy = {
     heroSub2b: "a real conversation.",
     ctaPrimary: "Save your spot",
     ctaSecondary: "Try it beforehand",
+    ctaLive: "Join the live discussion",
     questionEyebrow: "The question",
     questionTitle: "WHICH LAWS DO YOU WANT FOR SOCIAL MEDIA?",
     questionNote: "Working title — the final wording follows.",
@@ -301,7 +303,7 @@ export default function Wedium() {
               <span className="transition-transform group-hover:translate-x-1">→</span>
             </a>
             <Button asChild variant="link" className="text-foreground underline underline-offset-4">
-              <a href="#simulation">{c.ctaSecondary} →</a>
+              <a href="/wedium/go">{c.ctaLive} →</a>
             </Button>
           </div>
         </div>
