@@ -338,9 +338,9 @@ export default function TT({ mode = 'real', eventPreview = false, embedded = fal
           onDeleteOpinion={isPlayground && hasOwnOpinion ? handleDeleteOwnOpinion : undefined}
           passphraseSwitch={isSim && !eventPreview}
           hideEventChannels={eventPreview}
-          onOpenStream={() => sideTabsRef.current?.openPanel('stream')}
-
         />}
+        {/* Stream auskommentiert — Konzept noch nicht ausgereift (Stand 2026-11-11, auf Wunsch von Iwan).
+            Wieder aktivieren: TTHeader das onOpenStream-Prop uebergeben, das sideTabsRef.current.openPanel mit 'stream' aufruft. */}
         {controlsVisible && <TTSideTabs
           ref={sideTabsRef}
           opinions={activeData?.opinions ?? []}

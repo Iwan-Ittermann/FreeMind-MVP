@@ -584,6 +584,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                 </div>
               </button>
 
+              {!wedium && (
               <button
                 onClick={() => setBgStyle(bgStyle === 'eye' ? 'cosmos' : 'eye')}
                 className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left text-xs transition-colors ${
@@ -606,8 +607,10 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                   )}
                 </div>
               </button>
+              )}
 
-              <button
+              {!wedium && (
+               <button
                 onClick={toggleStreamSpiral}
                 className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left text-xs transition-colors ${
                   showStreamSpiral ? 'bg-primary/10 text-foreground' : 'text-muted-foreground hover:bg-muted/50'
@@ -627,6 +630,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                   )}
                 </div>
               </button>
+              )}
 
               {onRestartTour && (
 
