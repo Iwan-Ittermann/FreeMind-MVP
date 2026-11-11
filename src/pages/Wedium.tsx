@@ -78,7 +78,7 @@ const copy = {
     btnAlready: "Schon dabei ✓",
     btnIdle: "REGISTRIEREN",
     fine1:
-      "Bitte bestätige deine E-Mail, schau auch im Spam nach. Wir schicken dir alle Informationen vor dem Start. \nAbmelden jederzeit mit einem Klick.",
+      "Bitte bestätige deine E-Mail, schau auch im Spam nach. Danach bekommst du sofort deinen Zugang per Mail – auch wenn die Diskussion schon läuft. \nAbmelden jederzeit mit einem Klick.",
     sentNote:
       "📬 Bestätigungs-E-Mail unterwegs — klick den Link darin, um die Anmeldung abzuschließen.",
     alreadyNote: "Du bist bereits bestätigt — danke!",
@@ -145,7 +145,7 @@ const copy = {
     btnAlready: "Already in ✓",
     btnIdle: "Reserve my place",
     fine1:
-      "Confirm your email to reserve your place. You will receive your access before the start and a short evening email during the event. Unsubscribe any time with one click.",
+      "Confirm your email to reserve your place. You will get your access by email right away – even if the discussion has already started – and a short evening email during the event. Unsubscribe any time with one click.",
     sentNote:
       "📬 Confirmation email on its way — click the link inside to complete your registration.",
     alreadyNote: "You are already confirmed — thank you!",

@@ -22,6 +22,7 @@ interface Recipient {
   id: string;
   email: string;
   passphrase: string | null;
+  confirmed_at?: string | null;
 }
 
 function parseJwtRole(token: string): string | null {
@@ -118,6 +119,8 @@ async function nudgeAudience(stage: "opinion" | "rate" | "chat"): Promise<Set<st
   return allowed;
 }
 
+const LATE_SIGNUP_GRACE_MS = 2 * 60 * 60 * 1000;
+
 async function loadRecipients(campaignKey: string, onlySignupId?: string, resend = false): Promise<Recipient[]> {
   let query = supabase
     .from("wedium_signups")
@@ -158,8 +161,13 @@ async function loadRecipients(campaignKey: string, onlySignupId?: string, resend
       id: s.id as string,
       email: String(s.email).toLowerCase(),
       passphrase: (s.passphrase as string | null) ?? null,
+      confirmed_at: (s.confirmed_at as string | null) ?? null,
     }))
     .filter((s) => !blocked.has(s.email) && (resend || !sentIds.has(s.id)))
+    // Late signups (confirmed well after a dated campaign was due) only get the
+    // welcome mail with their passphrase, never stale pre-start campaigns.
+    .filter((s) => onlySignupId || resend || !def?.dueAt || !s.confirmed_at
+      || new Date(s.confirmed_at).getTime() <= new Date(def.dueAt).getTime() + LATE_SIGNUP_GRACE_MS)
     .filter((s) => !stageAllowed || stageAllowed.has(s.id))
     .filter((s) => resend || !recentlyNudged.has(s.id));
 }
