@@ -34,6 +34,6 @@ export default function EventGo({ standaloneWedium = false }: { standaloneWedium
   const { data: config, isLoading } = useEventConfig();
   const { phase } = useEventPhase(config);
   if (isLoading || !config) return <div className="fixed inset-0 bg-background" aria-busy="true" />;
-  const preview = embedded || !config.realShortCode || phase === 'prelaunch';
+  const preview = embedded || !config.realShortCode || phase !== 'discussion';
   return <Discussion key={preview ? `event-preview-${dataset}` : 'event-live'} simDataset={dataset} mode={preview ? 'sim' : 'real'} eventPreview={preview} embedded={embedded} embedInteractive={embedInteractive} wediumPresentation={wediumPresentation} />;
 }
