@@ -22,6 +22,7 @@ import {
   wediumStartTemplate,
   wediumSoftLaunchTemplate,
   wediumFinalDayTemplate,
+  wediumAccessTemplate,
   wediumResultTemplate,
 } from './campaign.tsx'
 
@@ -61,6 +62,7 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'campaign-wedium-sogehts': wediumSogehtsTemplate,
   'campaign-wedium-start': wediumStartTemplate,
   'campaign-wedium-softlaunch': wediumSoftLaunchTemplate,
+  'campaign-wedium-access': wediumAccessTemplate,
   'campaign-wedium-final-day': wediumFinalDayTemplate,
   'campaign-wedium-result': wediumResultTemplate,
 }

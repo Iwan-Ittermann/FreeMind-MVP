@@ -126,6 +126,11 @@ export const wediumSoftLaunchTemplate = makeTemplate(
   'Heute Abend: Probelauf',
   'wedium x freemind',
 )
+export const wediumAccessTemplate = makeTemplate(
+  'wedium: 1-Klick-Zugang',
+  'Dein 1-Klick-Zugang',
+  'wedium x freemind',
+)
 export const wediumFinalDayTemplate = makeTemplate(
   'wedium: Letzter Tag',
   'Letzter Tag',

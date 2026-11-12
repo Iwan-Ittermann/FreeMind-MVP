@@ -38,6 +38,7 @@ const TEMPLATE_KEYS = [
   "campaign-wedium-sogehts",
   "campaign-wedium-softlaunch",
   "campaign-wedium-start",
+  "campaign-wedium-access",
   "campaign-wedium-final-day",
   "campaign-wedium-result",
   "wedium-nudge-opinion",

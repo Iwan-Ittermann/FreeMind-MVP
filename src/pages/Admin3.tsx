@@ -56,6 +56,12 @@ const TEMPLATE_META: Record<string, TemplateMeta> = {
     placeholders: "{{passphrase}}, {{goUrl}}, {{appUrl}}, {{faqUrl}}",
     campaign: true,
   },
+  "campaign-wedium-access": {
+    label: "4b. 1-Klick-Zugang",
+    trigger: "Manuell aus diesem Panel",
+    placeholders: "{{goUrl}}, {{passphrase}}, {{eventQuestion}}, {{eventDate}}",
+    campaign: true,
+  },
   "campaign-wedium-final-day": {
     label: "5. Letzter Tag",
     trigger: "15.11.2026, 00:01",
@@ -96,6 +102,7 @@ const MAIL_COLUMNS: Array<{ key: string; short: string; title: string }> = [
   { key: "campaign-wedium-sogehts", short: "Geht's", title: "So geht's, 10.11." },
   { key: "campaign-wedium-softlaunch", short: "Soft", title: "Soft Launch (Probelauf), 11.11." },
   { key: "campaign-wedium-start", short: "Start", title: "Es startet heute, 12.11." },
+  { key: "campaign-wedium-access", short: "1-Klick", title: "1-Klick-Zugang (manuell)" },
   { key: "campaign-wedium-final-day", short: "Final", title: "Letzter Tag, 15.11." },
   { key: "campaign-wedium-result", short: "Erg", title: "Ergebnis & Danke, 16.11." },
   { key: "wedium-nudge-opinion", short: "N-Mein", title: "Nudge: Meinung posten" },
@@ -110,6 +117,7 @@ const RESENDABLE = [
   { key: "campaign-wedium-sogehts", label: "So geht's" },
   { key: "campaign-wedium-softlaunch", label: "Soft Launch" },
   { key: "campaign-wedium-start", label: "Start" },
+  { key: "campaign-wedium-access", label: "1-Klick-Zugang" },
   { key: "campaign-wedium-final-day", label: "Letzter Tag" },
   { key: "campaign-wedium-result", label: "Ergebnis" },
   { key: "wedium-nudge-opinion", label: "Nudge: Meinung" },
