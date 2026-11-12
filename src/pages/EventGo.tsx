@@ -3,6 +3,9 @@ import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Discussion from './Discussion';
+import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { loginWithPassphrase } from '@/lib/passphrase-login';
 
 /** Switch entire discussion instances, never their topic IDs in place. */
 export default function EventGo({ standaloneWedium = false }: { standaloneWedium?: boolean }) {
@@ -31,9 +34,28 @@ export default function EventGo({ standaloneWedium = false }: { standaloneWedium
   useEffect(() => {
     if (embedded && (lang === 'de' || lang === 'en')) void i18n.changeLanguage(lang);
   }, [embedded, lang, i18n]);
+  // One-click login from mail links (?p=passphrase); the parameter is removed right away.
+  const queryClient = useQueryClient();
+  const magicPhrase = embedded ? null : params.get('p');
+  const [magicBusy, setMagicBusy] = useState(!!magicPhrase);
+  useEffect(() => {
+    if (!magicPhrase) return;
+    const url = new URL(window.location.href);
+    url.searchParams.delete('p');
+    window.history.replaceState(null, '', url.pathname + url.search + url.hash);
+    void loginWithPassphrase(magicPhrase).then((res) => {
+      if (res.ok) {
+        void queryClient.invalidateQueries();
+        toast.success(i18n.language === 'en' ? 'You are signed in.' : 'Du bist eingeloggt.');
+      } else {
+        toast.error(i18n.language === 'en' ? 'Login link invalid. Enter your passphrase via the gear menu.' : 'Login-Link ungültig. Gib deine Passphrase über das Zahnrad ein.');
+      }
+      setMagicBusy(false);
+    });
+  }, [magicPhrase, queryClient, i18n]);
   const { data: config, isLoading } = useEventConfig();
   const { phase } = useEventPhase(config);
-  if (isLoading || !config) return <div className="fixed inset-0 bg-background" aria-busy="true" />;
+  if (isLoading || !config || magicBusy) return <div className="fixed inset-0 bg-background" aria-busy="true" />;
   const preview = embedded || !config.realShortCode || phase !== 'discussion';
   return <Discussion key={preview ? `event-preview-${dataset}` : 'event-live'} simDataset={dataset} mode={preview ? 'sim' : 'real'} eventPreview={preview} embedded={embedded} embedInteractive={embedInteractive} wediumPresentation={wediumPresentation} />;
 }

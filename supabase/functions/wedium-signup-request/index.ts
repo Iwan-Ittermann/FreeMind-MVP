@@ -3,6 +3,7 @@
 // confirmation mail. Completely independent of the old /go and /aug-test lists.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { loadTemplate } from "../_shared/email-template-store.ts";
+import { sendWediumWelcome } from "../_shared/wedium-welcome.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -72,11 +73,17 @@ Deno.serve(async (req) => {
 
     const { data: existing } = await supabase
       .from("wedium_signups")
-      .select("id, confirmed_at")
+      .select("id, confirmed_at, passphrase, last_passphrase_sent_at")
       .ilike("email", cleaned)
       .maybeSingle();
 
     if (existing?.confirmed_at) {
+      // Confirmed again → resend the access mail (throttled to 5 min).
+      const last = existing.last_passphrase_sent_at ? new Date(existing.last_passphrase_sent_at).getTime() : 0;
+      if (existing.passphrase && Date.now() - last > 5 * 60 * 1000) {
+        await sendWediumWelcome(supabase, cleaned, existing.passphrase, `wedium-welcome-resend-${existing.id}-${Math.floor(Date.now() / 300000)}`);
+        await supabase.from("wedium_signups").update({ last_passphrase_sent_at: new Date().toISOString() }).eq("id", existing.id);
+      }
       return Response.json({ status: "already_confirmed" }, { headers: corsHeaders });
     }
 

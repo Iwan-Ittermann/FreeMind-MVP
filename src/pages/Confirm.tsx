@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { trackEvent } from "@/lib/analytics";
+import { loginWithPassphrase } from "@/lib/passphrase-login";
 
 type Status = "loading" | "ok" | "already_confirmed" | "expired" | "invalid" | "error";
 
@@ -17,6 +18,7 @@ export default function Confirm({
   const [email, setEmail] = useState<string | undefined>();
   const [resendEmail, setResendEmail] = useState("");
   const [resendBusy, setResendBusy] = useState(false);
+  const [phrase, setPhrase] = useState<string | undefined>();
 
   const scope = gutefrage ? "gutefrage" : wedium ? "wedium" : "freemind";
   const confirmFn =
@@ -55,6 +57,10 @@ export default function Confirm({
         setStatus(s);
         trackEvent("signup_confirmed", { page: scope, result: s });
         if (data.email) setEmail(data.email);
+        if (scope === "wedium" && typeof data.passphrase === "string") {
+          setPhrase(data.passphrase);
+          void loginWithPassphrase(data.passphrase, "wedium");
+        }
       })
       .catch(() => {
         if (!cancelled) {
@@ -107,8 +113,21 @@ export default function Confirm({
               </h1>
               <p>
                 {email ? <>Wir haben <strong>{email}</strong> bestätigt. </> : null}
-                Du bekommst rechtzeitig vor dem Event alle Infos per Mail.
+                {scope === "wedium"
+                  ? "Deine Passphrase kommt auch per Mail. Du kannst sofort mitdiskutieren."
+                  : "Du bekommst rechtzeitig vor dem Event alle Infos per Mail."}
               </p>
+              {scope === "wedium" && phrase && (
+                <p>Deine Passphrase: <strong className="font-mono select-all">{phrase}</strong></p>
+              )}
+              {scope === "wedium" && (
+                <a
+                  href={phrase ? `/wedium/go?p=${encodeURIComponent(phrase)}` : "/wedium/go"}
+                  className="inline-block bg-foreground text-background px-6 py-3 text-sm font-bold uppercase tracking-wider hover:bg-alert transition-colors"
+                >
+                  Direkt zur Diskussion →
+                </a>
+              )}
               <Link
                 to="/"
                 className="inline-block border-b-2 border-foreground pb-1 text-sm font-bold uppercase tracking-wider hover:text-alert hover:border-alert transition-colors"

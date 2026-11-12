@@ -6,7 +6,7 @@ import {
   passphraseToEmail,
   passphraseToPassword,
 } from "../_shared/passphrase.ts";
-import { loadTemplate } from "../_shared/email-template-store.ts";
+import { sendWediumWelcome } from "../_shared/wedium-welcome.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -33,33 +33,6 @@ async function notifyAdmin(signupEmail: string, confirmedAt: string) {
     }),
   });
   if (!res.ok) console.error("Admin notify failed:", res.status, await res.text());
-}
-
-export async function sendWediumWelcome(to: string, passphrase: string, idempotencyKey: string) {
-  const data = {
-    passphrase,
-    appUrl: SITE_URL,
-    goUrl: `${SITE_URL}/wedium/go`,
-    weduimUrl: `${SITE_URL}/wedium`,
-    faqUrl: `${SITE_URL}/fragen`,
-  };
-  const tpl = await loadTemplate(supabase, "wedium-signup-welcome", data, {
-    subject: "Willkommen beim wedium-Event!",
-    heading: "Willkommen!",
-    body:
-      `Schön, dass du dabei bist! Vom {{eventDate}} diskutieren wir gemeinsam.\n\nDeine Passphrase: \`${passphrase}\`\n\n[Zur Diskussion](${SITE_URL}/wedium/go)`,
-  });
-  const res = await fetch(`${SUPABASE_URL}/functions/v1/send-transactional-email`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_ROLE}` },
-    body: JSON.stringify({
-      templateName: "wedium-signup-welcome",
-      recipientEmail: to,
-      idempotencyKey,
-      templateData: { ...tpl, ...data },
-    }),
-  });
-  if (!res.ok) console.error("wedium welcome mail failed:", res.status, await res.text());
 }
 
 /** Creates a wedium-scoped auth account. */
@@ -121,10 +94,10 @@ Deno.serve(async (req) => {
       .upsert({ user_id: provisioned.userId, signup_id: row.id }, { onConflict: "user_id" });
     if (vpErr) console.error("wedium_verified_participants:", vpErr.message);
 
-    await sendWediumWelcome(String(row.email), provisioned.passphrase, `wedium-signup-welcome-${row.id}-${confirmedAt}`);
+    await sendWediumWelcome(supabase, String(row.email), provisioned.passphrase, `wedium-signup-welcome-${row.id}-${confirmedAt}`);
     await notifyAdmin(String(row.email), confirmedAt);
 
-    return Response.json({ status: "ok", email: row.email }, { headers: corsHeaders });
+    return Response.json({ status: "ok", email: row.email, passphrase: provisioned.passphrase }, { headers: corsHeaders });
   } catch (err) {
     console.error("wedium-signup-confirm error:", err);
     return Response.json({ status: "error" }, { status: 500, headers: corsHeaders });

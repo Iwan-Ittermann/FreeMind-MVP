@@ -146,7 +146,7 @@ async function sendWelcome(signupId: string) {
   const data = {
     passphrase: row.passphrase,
     appUrl: SITE_URL,
-    goUrl: `${SITE_URL}/wedium/go`,
+    goUrl: row.passphrase ? `${SITE_URL}/wedium/go?p=${encodeURIComponent(String(row.passphrase))}` : `${SITE_URL}/wedium/go`,
     wediumUrl: `${SITE_URL}/wedium`,
     faqUrl: `${SITE_URL}/fragen`,
   };
@@ -163,7 +163,7 @@ async function resendPassphrase(signupId: string) {
     .from("wedium_signups").select("id, email, confirmed_at, passphrase").eq("id", signupId).maybeSingle();
   if (!row) throw new Error("signup_not_found");
   if (!row.confirmed_at || !row.passphrase) return { skipped: "no_passphrase" };
-  const data = { passphrase: row.passphrase, appUrl: SITE_URL, goUrl: `${SITE_URL}/wedium/go` };
+  const data = { passphrase: row.passphrase, appUrl: SITE_URL, goUrl: `${SITE_URL}/wedium/go?p=${encodeURIComponent(String(row.passphrase))}` };
   await sendTransactional("wedium-signup-welcome", String(row.email), `wedium-passphrase-admin-${row.id}-${Date.now()}`, data, {
     subject: "Deine Passphrase für das wedium-Event",
     heading: "Deine Passphrase",

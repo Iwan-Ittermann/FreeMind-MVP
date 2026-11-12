@@ -32,4 +32,4 @@ export const HELSINKI_TOPIC_SHORT_CODE = '7mm9';
  * Passphrase login is switched off for the wedium phase: partners use the
  * password-gated demo accounts instead, so no passphrase UI is shown.
  */
-export const PASSPHRASE_LOGIN_ENABLED = false;
+export const PASSPHRASE_LOGIN_ENABLED = true;

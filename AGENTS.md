@@ -24,3 +24,4 @@
 - Assign wedium person icons by hashing the node id and paint the own node last, so every participant keeps one face across sim and live views and the own highlight is never covered.
 - Event question/date are app_settings tokens scoped per context (main_*, wedium_*, gutefrage_*), edited only in that context's admin panel and injected into mails as {{eventQuestion}}/{{eventDate}} by template key, so /, /wedium and /gutefrage never share copy.
 - Every new automatic wedium mail must be added to the admin3-overview tracked template list and to the /wedium/admin template, mail-column and resend lists, so the admin dashboard always shows all mails.
+- Wedium access mails link /wedium/go?p=<passphrase> (consumed and stripped by EventGo) and the passphrase login stays visible to unverified visitors, so confirmed participants can always get in with one click or the emailed passphrase.

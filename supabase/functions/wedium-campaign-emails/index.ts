@@ -186,7 +186,7 @@ async function sendCampaign(campaignKey: string, onlySignupId?: string, resend =
     const data = {
       passphrase: r.passphrase ?? "",
       appUrl: SITE_URL,
-      goUrl: `${SITE_URL}/wedium/go`,
+      goUrl: r.passphrase ? `${SITE_URL}/wedium/go?p=${encodeURIComponent(r.passphrase)}` : `${SITE_URL}/wedium/go`,
       wediumUrl: `${SITE_URL}/wedium`,
       faqUrl: `${SITE_URL}/fragen`,
       sogehtsUrl: `${SITE_URL}/sogehts`,

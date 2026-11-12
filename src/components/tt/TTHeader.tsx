@@ -692,7 +692,7 @@ export function TTHeader({ topicTitle, notifications = [], onMarkAllRead, onRest
                   {t('common.signOut', 'Logout')}
                 </button>
               )}
-              {!hideEventChannels && (passphraseSwitch || (!user && PASSPHRASE_LOGIN_ENABLED)) && (
+              {(passphraseSwitch || PASSPHRASE_LOGIN_ENABLED) && (
                 <>
                   <button
                     onClick={() => setShowLogin((s) => !s)}
