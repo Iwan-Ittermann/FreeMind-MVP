@@ -1,5 +1,10 @@
 # Roadmap
 
+## Wedium-Versand am 14. November
+- [x] Zeitplan auf authentifizierte stündliche Aufrufe ohne 5-Sekunden-Abbruch umgestellt; Zugriff und Ablehnung unberechtigter Aufrufe live geprüft
+- [x] Letzter-Tag-Mail deaktiviert; auch erzwungener Versand bleibt gesperrt
+- [x] Persönliche Einzel-Erinnerung mit Admin-Vorlage und Tracking eingebaut; 11 Mails versandt, Doppelversand verhindert, 5 Tests und Admin-Browserprüfung bestanden
+
 ## Sichtbare Bewertungsreaktionen und sichere Nachrichtenflüge
 - [x] Meinungsbewertungen beim Rater nacheinander anzeigen, ohne Gruppen abzuschneiden; Verbindung kurz aufblitzen lassen
 - [x] Dieselben fünf Icons wie in der Bewertungsskala verwenden; alle fünf nacheinander im Browser geprüft

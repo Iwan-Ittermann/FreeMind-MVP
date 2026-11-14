@@ -64,7 +64,7 @@ const TEMPLATE_META: Record<string, TemplateMeta> = {
   },
   "campaign-wedium-final-day": {
     label: "5. Letzter Tag",
-    trigger: "15.11.2026, 00:01",
+    trigger: "Deaktiviert – kein automatischer Versand",
     placeholders: "{{passphrase}}, {{goUrl}}, {{appUrl}}",
     campaign: true,
   },
@@ -92,6 +92,12 @@ const TEMPLATE_META: Record<string, TemplateMeta> = {
     placeholders: "{{goUrl}}, {{appUrl}}, {{sogehtsUrl}}, {{passphrase}}",
     campaign: true,
   },
+  "wedium-reply-reminder": {
+    label: "10. Persönliche Antwort-Erinnerung",
+    trigger: "Einzeln: letzte Chat-Nachricht vom Gegenüber, noch unbeantwortet",
+    placeholders: "{{ownOpinion}}, {{partnerOpinion}}, {{messageExcerpt}}, {{unansweredCount}}, {{goUrl}}",
+    campaign: true,
+  },
 };
 
 const TEMPLATE_ORDER = Object.keys(TEMPLATE_META);
@@ -108,6 +114,7 @@ const MAIL_COLUMNS: Array<{ key: string; short: string; title: string }> = [
   { key: "wedium-nudge-opinion", short: "N-Mein", title: "Nudge: Meinung posten" },
   { key: "wedium-nudge-rate", short: "N-Bew", title: "Nudge: Bewerten" },
   { key: "wedium-nudge-chat", short: "N-Disk", title: "Nudge: Diskutieren" },
+  { key: "wedium-reply-reminder", short: "Antwort", title: "Persönliche Antwort-Erinnerung" },
 ];
 
 const RESENDABLE = [
@@ -118,11 +125,11 @@ const RESENDABLE = [
   { key: "campaign-wedium-softlaunch", label: "Soft Launch" },
   { key: "campaign-wedium-start", label: "Start" },
   { key: "campaign-wedium-access", label: "1-Klick-Zugang" },
-  { key: "campaign-wedium-final-day", label: "Letzter Tag" },
   { key: "campaign-wedium-result", label: "Ergebnis" },
   { key: "wedium-nudge-opinion", label: "Nudge: Meinung" },
   { key: "wedium-nudge-rate", label: "Nudge: Bewerten" },
   { key: "wedium-nudge-chat", label: "Nudge: Diskutieren" },
+  { key: "wedium-reply-reminder", label: "Persönliche Antwort-Erinnerung" },
 ];
 
 function MailMark({ status }: { status?: string }) {
@@ -265,7 +272,7 @@ export default function Admin3() {
     const choice = resendChoice[signup.id];
     if (!choice) { flash("Bitte erst eine E-Mail auswählen."); return; }
     const label = RESENDABLE.find((r) => r.key === choice)?.label ?? choice;
-    if (choice.startsWith("campaign-") || choice.startsWith("wedium-nudge-")) {
+    if (choice.startsWith("campaign-") || choice.startsWith("wedium-nudge-") || choice === "wedium-reply-reminder") {
       await rowAction(signup, "resend_campaign", `"${label}" an ${signup.email} senden?`, { key: choice });
     } else {
       await rowAction(signup, choice, `"${label}" an ${signup.email} senden?`);
@@ -390,7 +397,7 @@ export default function Admin3() {
                         style={{ padding: "8px 14px", background: "#0f1b3d", color: "#fff", border: 0, fontSize: 12, cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                         Speichern
                       </button>
-                      {meta?.campaign && (
+                      {meta?.campaign && t.key !== "wedium-reply-reminder" && t.key !== "campaign-wedium-final-day" && (
                         <>
                           <button onClick={() => sendCampaignNow(t.key)} style={ghostBtn}>Jetzt an alle senden</button>
                           <button onClick={() => sendCampaignNow(t.key, true)} style={ghostBtn}>Erneut an alle senden</button>

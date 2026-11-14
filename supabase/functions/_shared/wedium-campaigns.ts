@@ -11,6 +11,7 @@ export interface WediumCampaignDef {
   nudge?: "opinion" | "rate" | "chat";
   /** Nudges only start going out at this instant. */
   startAt?: string;
+  disabled?: boolean;
 }
 
 export const WEDIUM_CAMPAIGNS: WediumCampaignDef[] = [
@@ -19,7 +20,8 @@ export const WEDIUM_CAMPAIGNS: WediumCampaignDef[] = [
   { key: "campaign-wedium-start", label: "wedium: Es startet heute (12.11.2026, 00:01)", dueAt: "2026-11-11T23:01:00Z" },
   // Manual only (no dueAt): sent from /wedium/admin.
   { key: "campaign-wedium-access", label: "wedium: 1-Klick-Zugang (manuell)" },
-  { key: "campaign-wedium-final-day", label: "wedium: Letzter Tag (15.11.2026, 00:01)", dueAt: "2026-11-14T23:01:00Z" },
+  { key: "campaign-wedium-final-day", label: "wedium: Letzter Tag (deaktiviert)", disabled: true },
+  { key: "wedium-reply-reminder", label: "wedium: Persönliche Antwort-Erinnerung (einzeln)" },
   { key: "campaign-wedium-result", label: "wedium: Ergebnis & Danke (16.11.2026, 09:00)", dueAt: "2026-11-16T08:00:00Z" },
 
   { key: "wedium-nudge-opinion", label: "wedium Nudge: Meinung posten", nudge: "opinion", startAt: "2026-11-13T06:30:00Z" },

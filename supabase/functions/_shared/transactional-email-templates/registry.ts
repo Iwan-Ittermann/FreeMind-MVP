@@ -5,6 +5,7 @@ import { template as signupAdminNotify } from './signup-admin-notify.tsx'
 import { template as gutefrageAdminNotify } from './gutefrage-admin-notify.tsx'
 import { template as signupPassphrase } from './signup-passphrase.tsx'
 import { template as questionSubmitted } from './question-submitted.tsx'
+import { template as wediumReplyReminder } from './wedium-reply-reminder.tsx'
 import {
   welcomeTemplate,
   softLaunchTemplate,
@@ -42,6 +43,10 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'gutefrage-signup-confirm': signupConfirm,
   'wedium-signup-confirm': signupConfirm,
   'wedium-signup-welcome': welcomeTemplate,
+  'wedium-reply-reminder': wediumReplyReminder,
+  'wedium-nudge-opinion': nudgeOpinionTemplate,
+  'wedium-nudge-rate': nudgeRateTemplate,
+  'wedium-nudge-chat': nudgeChatTemplate,
   'gutefrage-admin-notify': gutefrageAdminNotify,
   'signup-admin-notify': signupAdminNotify,
   'signup-passphrase': signupPassphrase,

@@ -5,6 +5,8 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { loadTemplate } from "../_shared/email-template-store.ts";
 import { getWediumCampaign, WEDIUM_CAMPAIGNS, WEDIUM_NUDGE_KEYS } from "../_shared/wedium-campaigns.ts";
+import { authenticateCronRequest } from "../_shared/cron-auth.ts";
+import { unansweredChats } from "../_shared/unanswered-chat.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -25,15 +27,45 @@ interface Recipient {
   confirmed_at?: string | null;
 }
 
-function parseJwtRole(token: string): string | null {
-  try {
-    const [, payload] = token.split(".");
-    if (!payload) return null;
-    const json = atob(payload.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(payload.length / 4) * 4, "="));
-    return (JSON.parse(json) as { role?: string }).role ?? null;
-  } catch {
-    return null;
-  }
+async function sendReplyReminder(signupId: string, dryRun = false) {
+  const key = "wedium-reply-reminder";
+  if (!(await discussionOpen())) return { campaign: key, sent: 0, failed: 0, skipped: "discussion_closed" };
+  const { data: signup, error } = await supabase.from("wedium_signups").select("id, auth_user_id, confirmed_at").eq("id", signupId).maybeSingle();
+  if (error) throw error;
+  if (!signup?.auth_user_id || !signup.confirmed_at) return { campaign: key, sent: 0, failed: 0, skipped: "not_confirmed" };
+  const [recipient] = await loadRecipients(key, signupId);
+  if (!recipient) return { campaign: key, sent: 0, failed: 0, skipped: "already_sent_or_suppressed" };
+  const topicId = await eventTopicId();
+  if (!topicId) throw new Error("missing_event_topic");
+  const { data: opinions, error: opinionError } = await supabase.from("opinions").select("id, user_id, text").eq("topic_id", topicId).eq("visible", true);
+  if (opinionError) throw opinionError;
+  const users = new Map((opinions ?? []).map(o => [o.id, o.user_id]));
+  const { data: chats, error: chatError } = await supabase.from("chats").select("id, opinion_a_id, opinion_b_id").eq("topic_id", topicId);
+  if (chatError) throw chatError;
+  const ownChats = (chats ?? []).filter(c => users.get(c.opinion_a_id) === signup.auth_user_id || users.get(c.opinion_b_id) === signup.auth_user_id);
+  if (!ownChats.length) return { campaign: key, sent: 0, failed: 0, skipped: "no_chats" };
+  const { data: messages, error: messageError } = await supabase.from("chat_messages").select("id, chat_id, sender_id, content, created_at").in("chat_id", ownChats.map(c => c.id)).eq("visible", true).eq("status", "Visible");
+  if (messageError) throw messageError;
+  const pending = unansweredChats(signup.auth_user_id, ownChats.map(c => ({ id: c.id, a: users.get(c.opinion_a_id) ?? "", b: users.get(c.opinion_b_id) ?? "" })), messages ?? []);
+  const message = pending[0];
+  if (!message) return { campaign: key, sent: 0, failed: 0, skipped: "already_answered" };
+  const ownOpinion = (opinions ?? []).find(o => o.user_id === signup.auth_user_id)?.text ?? "";
+  const partnerOpinion = (opinions ?? []).find(o => o.user_id === message.sender_id)?.text ?? "";
+  if (dryRun) return { campaign: key, candidates: 1, unanswered: pending.length, sent: 0, failed: 0 };
+  const data = {
+    ownOpinion: String(ownOpinion).slice(0, 400), partnerOpinion: String(partnerOpinion).slice(0, 400),
+    messageExcerpt: message.content.slice(0, 600), unansweredCount: String(pending.length),
+    goUrl: recipient.passphrase ? `${SITE_URL}/wedium/go?p=${encodeURIComponent(recipient.passphrase)}` : `${SITE_URL}/wedium/go`,
+    trackingUrl: `${SUPABASE_URL}/functions/v1/email-open?c=${key}&s=${signupId}&w=1`,
+  };
+  const tpl = await loadTemplate(supabase, key, data, { subject: "Eine Nachricht wartet auf deine Antwort", heading: "Dein Gegenüber hat dir geschrieben", body: "" });
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/send-transactional-email`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_ROLE}` }, body: JSON.stringify({ templateName: key, recipientEmail: recipient.email, idempotencyKey: `w-${key}-${signupId}`, templateData: { ...tpl, ...data } }) });
+  if (!res.ok) throw new Error(`reply_reminder_failed_${res.status}`);
+  const outcome = await res.json();
+  if (!outcome.success) return { campaign: key, sent: 0, failed: 0, skipped: outcome.reason ?? "not_sent" };
+  const { error: logError } = await supabase.from("wedium_campaign_sends").upsert({ campaign_key: key, signup_id: signupId, recipient_email: recipient.email }, { onConflict: "campaign_key,signup_id" });
+  if (logError) throw logError;
+  return { campaign: key, sent: 1, failed: 0, queued: true, unanswered: pending.length };
 }
 
 /** True while the event discussion phase is running (nudges only go out then). */
@@ -175,6 +207,7 @@ async function loadRecipients(campaignKey: string, onlySignupId?: string, resend
 async function sendCampaign(campaignKey: string, onlySignupId?: string, resend = false) {
   const def = getWediumCampaign(campaignKey);
   if (!def) throw new Error("unknown_campaign");
+  if (def.disabled) return { campaign: campaignKey, sent: 0, failed: 0, skipped: "disabled" };
 
   const recipients = await loadRecipients(campaignKey, onlySignupId, resend);
   const attempt = Date.now();
@@ -235,7 +268,7 @@ Deno.serve(async (req) => {
 
   const auth = req.headers.get("Authorization") ?? "";
   const token = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
-  if (token !== SERVICE_ROLE && parseJwtRole(token) !== "service_role") {
+  if (token !== SERVICE_ROLE && authenticateCronRequest(req) !== null) {
     return Response.json({ ok: false, error: "unauthorized" }, { status: 401, headers: corsHeaders });
   }
 
@@ -251,6 +284,11 @@ Deno.serve(async (req) => {
     const force = payload.force === true;
     const resend = payload.resend === true;
 
+    if (campaignKey === "wedium-reply-reminder") {
+      if (!signupId || !/^[0-9a-f-]{36}$/i.test(signupId)) return Response.json({ ok: false, error: "single_signup_required" }, { status: 400, headers: corsHeaders });
+      return Response.json({ ok: true, results: [await sendReplyReminder(signupId, payload.dryRun === true)] }, { headers: corsHeaders });
+    }
+
     const results: unknown[] = [];
 
     if (campaignKey) {
@@ -263,7 +301,7 @@ Deno.serve(async (req) => {
     } else {
       const now = new Date();
       for (const def of WEDIUM_CAMPAIGNS) {
-        if (def.dueAt && new Date(def.dueAt) <= now) results.push(await sendCampaign(def.key));
+        if (!def.disabled && def.dueAt && new Date(def.dueAt) <= now) results.push(await sendCampaign(def.key));
       }
       if (await discussionOpen()) {
         for (const key of WEDIUM_NUDGE_KEYS) {

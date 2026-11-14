@@ -44,6 +44,7 @@ const TEMPLATE_KEYS = [
   "wedium-nudge-opinion",
   "wedium-nudge-rate",
   "wedium-nudge-chat",
+  "wedium-reply-reminder",
 ] as const;
 
 const TRACKED_TEMPLATES = [...TEMPLATE_KEYS] as string[];

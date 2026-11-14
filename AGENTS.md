@@ -25,3 +25,5 @@
 - Event question/date are app_settings tokens scoped per context (main_*, wedium_*, gutefrage_*), edited only in that context's admin panel and injected into mails as {{eventQuestion}}/{{eventDate}} by template key, so /, /wedium and /gutefrage never share copy.
 - Every new automatic wedium mail must be added to the admin3-overview tracked template list and to the /wedium/admin template, mail-column and resend lists, so the admin dashboard always shows all mails.
 - Wedium access mails link /wedium/go?p=<passphrase> (consumed and stripped by EventGo) and the passphrase login stays visible to unverified visitors, so confirmed participants can always get in with one click or the emailed passphrase.
+- Wedium reply reminders require one signup per request, recheck the latest visible message and suppression at send time, and use a stable per-signup idempotency key; never broadcast reminders to the signup list.
+- Use managed authenticated HTTP schedules for Wedium callbacks, accepting the generated cron authentication helper alongside exact service-role credentials, so legacy five-second HTTP timeouts do not abort scheduled sends.
