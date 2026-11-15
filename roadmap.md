@@ -149,3 +149,8 @@
 - [x] Individuelle Endspurt-Mail mit Fokus-Hierarchie (Verständnis › Antworten › Chat › Meinung)
 - [x] Im /wedium/admin: Vorlage, Spalte, Fokus-Badge, Einzel- und Sammelversand
 - [ ] Versand durch Iwan aus dem Admin
+- [x] P.S.-Reminder Verständnisbewertung in jeder wedium-Mail; Hinweis im Text bei wartender Nachricht
+- [x] Sonderzeichen in Mails reparieren
+- [x] Original-Skala (Screenshot /sogehts) in Mails
+- [x] Fokus-Inhalte verschlanken (Fokus 1 nur letzte Nachricht + Frage)
+- [x] Magic Link öffnet direkt den wartenden Chat

@@ -29,3 +29,4 @@
 - Use managed authenticated HTTP schedules for Wedium callbacks, accepting the generated cron authentication helper alongside exact service-role credentials, so legacy five-second HTTP timeouts do not abort scheduled sends.
 - New wedium mails build on `_shared/transactional-email-templates/wedium-layout.tsx` (shell, opinion card, chat bubbles, scale picture, button) and keep user text as escaped plain text, so all event mails share one look without raw HTML injection.
 - The Endspurt mail picks exactly one CTA per person via `_shared/endspurt-segment.ts` (understanding rating › reply › start chat › post opinion); the admin focus badge uses the same dry run, so preview and send never disagree.
+- Wedium mail links may carry ?chat=<partner opinion id>; Discussion opens that chat after login and strips the parameter, so mails can land in the waiting conversation.

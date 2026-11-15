@@ -3,11 +3,11 @@ import { Body, Container, Head, Heading, Html, Preview, Text, Button, Img } from
 import type { TemplateEntry } from './registry.ts';
 interface Props { subject?: string; heading?: string; body?: string; goUrl?: string; trackingUrl?: string }
 const Email = ({ subject = 'Eine Nachricht wartet auf deine Antwort', heading = 'Dein Gegenüber hat dir geschrieben', body = '', goUrl = 'https://freemind.chat/wedium/go', trackingUrl }: Props) => (
-  <Html lang="de"><Head /><Preview>{subject}</Preview><Body style={{ backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }}><Container style={{ padding: '32px 24px', maxWidth: '560px', color: '#27255c' }}>
+  <Html lang="de"><Head><meta httpEquiv="Content-Type" content="text/html; charset=UTF-8" /><meta charSet="UTF-8" /></Head><Preview>{subject}</Preview><Body style={{ backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }}><Container style={{ padding: '32px 24px', maxWidth: '560px', color: '#27255c' }}>
     <Text>freemind x wedium</Text><Heading>{heading}</Heading>
     <Text style={{ whiteSpace: 'pre-wrap', lineHeight: '24px' }}>{body}</Text>
     <Button href={goUrl} style={{ backgroundColor: '#27255c', color: '#ffffff', padding: '12px 20px' }}>Nachricht öffnen und antworten</Button>
-    <Text>Dein persönlicher Link meldet dich direkt an. Öffne anschließend im Chats-Tab den Chat mit der oben zitierten Nachricht.</Text>
+    <Text>Dein persönlicher Link meldet dich direkt an. Er öffnet direkt den Chat mit der oben zitierten Nachricht. Nach deiner Antwort: Wer hat dich gut verstanden? Wer hat dich beeindruckt? Ganz unten im Chat, direkt über dem Eingabefeld, bewertest du mit einem Klick, wie gut dich dein Gegenüber verstanden hat.</Text>
     {trackingUrl ? <Img src={trackingUrl} width="1" height="1" alt="" /> : null}
   </Container></Body></Html>
 );

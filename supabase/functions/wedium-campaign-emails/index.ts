@@ -28,6 +28,22 @@ interface Recipient {
   confirmed_at?: string | null;
 }
 
+/** Personal login link; with a partner opinion id the discussion opens that chat directly. */
+function goLink(passphrase: string | null, partnerOpinionId?: string | null) {
+  const q = new URLSearchParams();
+  if (passphrase) q.set("p", passphrase);
+  if (partnerOpinionId) q.set("chat", partnerOpinionId);
+  const qs = q.toString();
+  return `${SITE_URL}/wedium/go${qs ? `?${qs}` : ""}`;
+}
+
+function partnerOpinionIdOf(chat: { opinion_a_id: string; opinion_b_id: string } | undefined, userOf: Map<string, string>, userId: string) {
+  if (!chat) return null;
+  return userOf.get(chat.opinion_a_id) === userId ? chat.opinion_b_id : chat.opinion_a_id;
+}
+
+const PS_TEXT = "Wer hat dich gut verstanden? Wer hat dich beeindruckt? Sag es ihnen mit einem Klick: Ganz unten im Chat, direkt über dem Eingabefeld, bewertest du, wie gut dich dein Gegenüber verstanden hat. Nur so entstehen Brückenpunkte.";
+
 async function sendReplyReminder(signupId: string, dryRun = false) {
   const key = "wedium-reply-reminder";
   if (!(await discussionOpen())) return { campaign: key, sent: 0, failed: 0, skipped: "discussion_closed" };
@@ -56,7 +72,7 @@ async function sendReplyReminder(signupId: string, dryRun = false) {
   const data = {
     ownOpinion: String(ownOpinion).slice(0, 400), partnerOpinion: String(partnerOpinion).slice(0, 400),
     messageExcerpt: message.content.slice(0, 600), unansweredCount: String(pending.length),
-    goUrl: recipient.passphrase ? `${SITE_URL}/wedium/go?p=${encodeURIComponent(recipient.passphrase)}` : `${SITE_URL}/wedium/go`,
+    goUrl: goLink(recipient.passphrase, partnerOpinionIdOf(ownChats.find(c => c.id === message.chat_id), users, signup.auth_user_id)),
     trackingUrl: `${SUPABASE_URL}/functions/v1/email-open?c=${key}&s=${signupId}&w=1`,
   };
   const tpl = await loadTemplate(supabase, key, data, { subject: "Eine Nachricht wartet auf deine Antwort", heading: "Dein Gegenüber hat dir geschrieben", body: "" });
@@ -108,16 +124,13 @@ async function sendEndspurt(onlySignupId: string | undefined, resend: boolean, d
     });
     segments[r.id] = res.segment;
     if (dryRun) continue;
-    const focus = own.find((c) => c.id === res.chatId);
-    const partnerId = focus ? (focus.a === userId ? focus.b : focus.a) : null;
+    const focusRow = (chats ?? []).find((c) => c.id === res.chatId);
     const data = {
       segment: res.segment,
-      ownOpinion: smartTruncate((opinions ?? []).find((o) => o.user_id === userId)?.text ?? "", 200),
-      partnerOpinion: partnerId ? smartTruncate((opinions ?? []).find((o) => o.user_id === partnerId)?.text ?? "", 140) : "",
-      partnerMessage: res.partnerMessage ? smartTruncate(res.partnerMessage.content, 220) : "",
-      ownMessage: res.ownMessage ? smartTruncate(res.ownMessage.content, 160) : "",
+      ownOpinion: smartTruncate((opinions ?? []).find((o) => o.user_id === userId)?.text ?? "", 160),
+      partnerMessage: res.partnerMessage ? smartTruncate(res.partnerMessage.content, 160) : "",
       unratedCount: String(res.unratedCount), unansweredCount: String(res.unansweredCount),
-      goUrl: r.passphrase ? `${SITE_URL}/wedium/go?p=${encodeURIComponent(r.passphrase)}` : `${SITE_URL}/wedium/go`,
+      goUrl: goLink(r.passphrase, partnerOpinionIdOf(focusRow as never, userOf, userId)),
       trackingUrl: `${SUPABASE_URL}/functions/v1/email-open?c=${key}&s=${r.id}&w=1`,
     };
     const tpl = await loadTemplate(supabase, key, data, { subject: "Endspurt: Heute bis 23:59 Uhr", heading: "Endspurt! Ein letzter Schritt zählt", body: "Heute um 23:59 Uhr endet die Diskussion zu „{{eventQuestion}}“. Ein letzter Besuch lohnt sich: Unten siehst du, was bei dir noch offen ist." });
@@ -301,7 +314,7 @@ async function sendCampaign(campaignKey: string, onlySignupId?: string, resend =
         templateName: campaignKey,
         recipientEmail: r.email,
         idempotencyKey: resend ? `w-${campaignKey}-${r.id}-${attempt}` : `w-${campaignKey}-${r.id}`,
-        templateData: { ...tpl, ...data },
+        templateData: { ...tpl, ...data, ps: PS_TEXT },
       }),
     });
 

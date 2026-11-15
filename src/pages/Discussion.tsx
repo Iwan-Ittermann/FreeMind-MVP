@@ -126,6 +126,22 @@ export default function TT({ mode = 'real', eventPreview = false, embedded = fal
   });
   const ownOpinionId = visibleOwnOpinionId ?? directOwnOpinionId;
   const hasOwnOpinion = !!ownOpinionId;
+  // Mail deep link (?chat=<partner opinion id>): open that chat once the own opinion is known.
+  const [deepLinkChat, setDeepLinkChat] = useState<string | null>(() => {
+    try { return new URLSearchParams(window.location.search).get('chat'); } catch { return null; }
+  });
+  useEffect(() => {
+    if (!deepLinkChat || mode !== 'real' || !hasOwnOpinion) return;
+    const timer = window.setTimeout(() => {
+      if (!sideTabsRef.current) return;
+      sideTabsRef.current.openChat(deepLinkChat);
+      const url = new URL(window.location.href);
+      url.searchParams.delete('chat');
+      window.history.replaceState(null, '', url.pathname + url.search + url.hash);
+      setDeepLinkChat(null);
+    }, 300);
+    return () => window.clearTimeout(timer);
+  }, [deepLinkChat, mode, hasOwnOpinion]);
   const ownOpinionResolved =
     !authLoading && !topicLoading && !activeDataLoading && (!user || !directOwnOpinionLoading);
   // Latch: once resolved, never fall back to "unknown" (transient refetch/error

@@ -21,6 +21,7 @@ interface Props {
   body?: string
   eyebrow?: string
   trackingUrl?: string
+  ps?: string
 }
 
 const Email = ({
@@ -29,15 +30,17 @@ const Email = ({
   body = '',
   eyebrow = 'freemind',
   trackingUrl = '',
+  ps = '',
 }: Props) => (
   <Html lang="de" dir="ltr">
-    <Head />
+    <Head><meta httpEquiv="Content-Type" content="text/html; charset=UTF-8" /><meta charSet="UTF-8" /></Head>
     <Preview>{subject}</Preview>
     <Body style={main}>
       <Container style={container}>
         <Text style={eyebrowStyle}>{eyebrow}</Text>
         <Heading style={h1}>{heading}</Heading>
         {renderBlocks(body)}
+        {ps ? <Text style={{ fontSize: '14px', lineHeight: '21px', margin: '18px 0 0' }}><strong>P.S.</strong> {ps}</Text> : null}
         <Hr style={hr} />
         <Text style={footerStyle}>
           E-Mail-Einstellungen (Tagesbericht und Benachrichtigungen) änderst du in freemind über das

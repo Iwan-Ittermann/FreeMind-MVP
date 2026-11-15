@@ -9,7 +9,7 @@ const font = "'Albert Sans', Arial, Helvetica, sans-serif"
 
 export function WediumShell({ preview, badge, heading, children, trackingUrl }: { preview: string; badge?: string; heading: string; children: React.ReactNode; trackingUrl?: string }) {
   return (
-    <Html lang="de" dir="ltr"><Head /><Preview>{preview}</Preview>
+    <Html lang="de" dir="ltr"><Head><meta httpEquiv="Content-Type" content="text/html; charset=UTF-8" /><meta charSet="UTF-8" /></Head><Preview>{preview}</Preview>
       <Body style={{ backgroundColor: '#ffffff', fontFamily: font, color: W.navy, margin: 0 }}>
         <Container style={{ maxWidth: '560px', margin: '0 auto', padding: '28px 20px 32px' }}>
           <Text style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: W.navy, margin: '0 0 18px' }}>
@@ -55,20 +55,21 @@ export function Bubble({ own, text, caption }: { own?: boolean; text: string; ca
   )
 }
 
-/** Static picture of the understanding scale at the bottom of the chat. */
-export function UnderstandingScale({ question }: { question: string }) {
-  const steps = ['Gar nicht', 'Wenig', 'Teils/Teils', 'Gut', 'Sehr gut']
+export const SCALE_IMG = 'https://freemind.chat/__l5e/assets-v1/0fdb912f-a973-4631-9151-9c471badbecd/sogehts-scale-understanding.png'
+export const PS_TEXT = 'Wer hat dich gut verstanden? Wer hat dich beeindruckt? Sag es ihnen mit einem Klick: Ganz unten im Chat, direkt über dem Eingabefeld, bewertest du, wie gut dich dein Gegenüber verstanden hat. Nur so entstehen Brückenpunkte.'
+
+/** Original screenshot of the understanding scale (same picture as /sogehts). */
+export function UnderstandingScale() {
   return (
-    <Section style={{ border: `1px solid ${W.line}`, borderRadius: '10px', padding: '12px', margin: '6px 0 18px', backgroundColor: '#fafbff' }}>
-      <Text style={{ fontSize: '12px', textAlign: 'center', color: W.muted, margin: '0 0 8px' }}>{question}</Text>
-      <table role="presentation" width="100%" cellPadding={0} cellSpacing={4}><tbody><tr>
-        {steps.map((s, i) => (
-          <td key={s} align="center" style={{ border: `1px solid ${i === 3 ? W.coral : W.line}`, borderRadius: '6px', padding: '8px 2px', fontSize: '11px', fontWeight: i === 3 ? 700 : 400, color: i === 3 ? W.coral : W.navy, width: '20%' }}>{s}</td>
-        ))}
-      </tr></tbody></table>
-      <Text style={{ fontSize: '11px', textAlign: 'center', color: W.muted, margin: '8px 0 0' }}>So sieht die Skala aus: ganz unten im Chat, direkt über dem Eingabefeld</Text>
+    <Section style={{ border: `1px solid ${W.line}`, borderRadius: '10px', padding: '10px', margin: '6px 0 18px', backgroundColor: '#ffffff' }}>
+      <Img src={SCALE_IMG} width="480" alt="Skala: Wie gut versteht der/die andere dich? Gar nicht bis Sehr gut" style={{ display: 'block', width: '100%', maxWidth: '480px', height: 'auto', margin: '0 auto' }} />
+      <Text style={{ fontSize: '11px', textAlign: 'center', color: W.muted, margin: '8px 0 0' }}>Ganz unten im Chat, direkt über dem Eingabefeld</Text>
     </Section>
   )
+}
+
+export function PostScript({ text = PS_TEXT }: { text?: string }) {
+  return <Text style={{ fontSize: '14px', lineHeight: '21px', margin: '18px 0 0', color: W.navy }}><strong>P.S.</strong> {text}</Text>
 }
 
 export function PrimaryButton({ href, children }: { href: string; children: React.ReactNode }) {
