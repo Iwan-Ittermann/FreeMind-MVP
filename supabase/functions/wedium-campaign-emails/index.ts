@@ -7,6 +7,7 @@ import { loadTemplate } from "../_shared/email-template-store.ts";
 import { getWediumCampaign, WEDIUM_CAMPAIGNS, WEDIUM_NUDGE_KEYS } from "../_shared/wedium-campaigns.ts";
 import { authenticateCronRequest } from "../_shared/cron-auth.ts";
 import { unansweredChats } from "../_shared/unanswered-chat.ts";
+import { endspurtSegment, smartTruncate } from "../_shared/endspurt-segment.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -66,6 +67,67 @@ async function sendReplyReminder(signupId: string, dryRun = false) {
   const { error: logError } = await supabase.from("wedium_campaign_sends").upsert({ campaign_key: key, signup_id: signupId, recipient_email: recipient.email }, { onConflict: "campaign_key,signup_id" });
   if (logError) throw logError;
   return { campaign: key, sent: 1, failed: 0, queued: true, unanswered: pending.length };
+}
+
+const ENDSPURT = "campaign-wedium-endspurt";
+
+/** Personalised final-sprint mail: one CTA per person (see endspurt-segment.ts). */
+async function sendEndspurt(onlySignupId: string | undefined, resend: boolean, dryRun: boolean) {
+  const key = ENDSPURT;
+  if (!dryRun && !(await discussionOpen())) return { campaign: key, sent: 0, failed: 0, skipped: "discussion_closed" };
+  const topicId = await eventTopicId();
+  if (!topicId) throw new Error("missing_event_topic");
+  const recipients = await loadRecipients(key, onlySignupId, resend || dryRun);
+  const { data: signups } = await supabase.from("wedium_signups").select("id, auth_user_id").not("confirmed_at", "is", null);
+  const userBySignup = new Map((signups ?? []).map((s) => [s.id as string, s.auth_user_id as string | null]));
+  const [{ data: opinions }, { data: chats }] = await Promise.all([
+    supabase.from("opinions").select("id, user_id, text").eq("topic_id", topicId).eq("visible", true),
+    supabase.from("chats").select("id, opinion_a_id, opinion_b_id").eq("topic_id", topicId),
+  ]);
+  const userOf = new Map((opinions ?? []).map((o) => [o.id as string, o.user_id as string]));
+  const chatIds = (chats ?? []).map((c) => c.id as string);
+  const [{ data: messages }, { data: ratings }] = chatIds.length ? await Promise.all([
+    supabase.from("chat_messages").select("id, chat_id, sender_id, content, created_at").in("chat_id", chatIds).eq("visible", true).eq("status", "Visible"),
+    supabase.from("chat_ratings").select("chat_id, rater_id").in("chat_id", chatIds),
+  ]) : [{ data: [] }, { data: [] }];
+  const attempt = Date.now();
+  const segments: Record<string, string> = {};
+  let sent = 0, failed = 0;
+  for (const r of recipients) {
+    const userId = userBySignup.get(r.id);
+    if (!userId) continue;
+    const own = (chats ?? []).filter((c) => userOf.get(c.opinion_a_id) === userId || userOf.get(c.opinion_b_id) === userId)
+      .map((c) => ({ id: c.id as string, a: userOf.get(c.opinion_a_id) ?? "", b: userOf.get(c.opinion_b_id) ?? "" }));
+    const ownIds = new Set(own.map((c) => c.id));
+    const res = endspurtSegment({
+      userId,
+      hasOpinion: (opinions ?? []).some((o) => o.user_id === userId),
+      chats: own,
+      messages: (messages ?? []).filter((m) => ownIds.has(m.chat_id as string)) as never,
+      ratedChatIds: new Set((ratings ?? []).filter((x) => x.rater_id === userId).map((x) => x.chat_id as string)),
+    });
+    segments[r.id] = res.segment;
+    if (dryRun) continue;
+    const focus = own.find((c) => c.id === res.chatId);
+    const partnerId = focus ? (focus.a === userId ? focus.b : focus.a) : null;
+    const data = {
+      segment: res.segment,
+      ownOpinion: smartTruncate((opinions ?? []).find((o) => o.user_id === userId)?.text ?? "", 200),
+      partnerOpinion: partnerId ? smartTruncate((opinions ?? []).find((o) => o.user_id === partnerId)?.text ?? "", 140) : "",
+      partnerMessage: res.partnerMessage ? smartTruncate(res.partnerMessage.content, 220) : "",
+      ownMessage: res.ownMessage ? smartTruncate(res.ownMessage.content, 160) : "",
+      unratedCount: String(res.unratedCount), unansweredCount: String(res.unansweredCount),
+      goUrl: r.passphrase ? `${SITE_URL}/wedium/go?p=${encodeURIComponent(r.passphrase)}` : `${SITE_URL}/wedium/go`,
+      trackingUrl: `${SUPABASE_URL}/functions/v1/email-open?c=${key}&s=${r.id}&w=1`,
+    };
+    const tpl = await loadTemplate(supabase, key, data, { subject: "Endspurt: Heute bis 23:59 Uhr", heading: "Endspurt! Ein letzter Schritt zählt", body: "Heute um 23:59 Uhr endet die Diskussion zu „{{eventQuestion}}“. Ein letzter Besuch lohnt sich: Unten siehst du, was bei dir noch offen ist." });
+    const out = await fetch(`${SUPABASE_URL}/functions/v1/send-transactional-email`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_ROLE}` }, body: JSON.stringify({ templateName: key, recipientEmail: r.email, idempotencyKey: resend ? `w-${key}-${r.id}-${attempt}` : `w-${key}-${r.id}`, templateData: { ...tpl, ...data } }) });
+    if (!out.ok) { failed++; console.error("endspurt failed", r.id, out.status, await out.text()); continue; }
+    const { error: logErr } = await supabase.from("wedium_campaign_sends").upsert({ campaign_key: key, signup_id: r.id, recipient_email: r.email }, { onConflict: "campaign_key,signup_id" });
+    if (logErr) console.error("wedium_campaign_sends insert:", logErr.message);
+    sent++;
+  }
+  return { campaign: key, sent, failed, candidates: recipients.length, segments };
 }
 
 /** True while the event discussion phase is running (nudges only go out then). */
@@ -287,6 +349,11 @@ Deno.serve(async (req) => {
     if (campaignKey === "wedium-reply-reminder") {
       if (!signupId || !/^[0-9a-f-]{36}$/i.test(signupId)) return Response.json({ ok: false, error: "single_signup_required" }, { status: 400, headers: corsHeaders });
       return Response.json({ ok: true, results: [await sendReplyReminder(signupId, payload.dryRun === true)] }, { headers: corsHeaders });
+    }
+
+    if (campaignKey === ENDSPURT) {
+      if (signupId && !/^[0-9a-f-]{36}$/i.test(signupId)) return Response.json({ ok: false, error: "invalid_signup" }, { status: 400, headers: corsHeaders });
+      return Response.json({ ok: true, results: [await sendEndspurt(signupId, resend, payload.dryRun === true)] }, { headers: corsHeaders });
     }
 
     const results: unknown[] = [];

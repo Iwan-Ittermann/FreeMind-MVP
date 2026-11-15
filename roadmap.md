@@ -143,3 +143,9 @@
 
 ## Sicherheitsbefund Umfrage-Antworten
 - [ ] Entscheidung zu Einträgen in Umfrage-Antworten (test_diskussion_replies)
+
+## Endspurt-Mail 15. November
+- [x] Standard-Layout für wedium-Mails
+- [x] Individuelle Endspurt-Mail mit Fokus-Hierarchie (Verständnis › Antworten › Chat › Meinung)
+- [x] Im /wedium/admin: Vorlage, Spalte, Fokus-Badge, Einzel- und Sammelversand
+- [ ] Versand durch Iwan aus dem Admin

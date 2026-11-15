@@ -98,6 +98,19 @@ const TEMPLATE_META: Record<string, TemplateMeta> = {
     placeholders: "{{ownOpinion}}, {{partnerOpinion}}, {{messageExcerpt}}, {{unansweredCount}}, {{goUrl}}",
     campaign: true,
   },
+  "campaign-wedium-endspurt": {
+    label: "11. Endspurt (individuell)",
+    trigger: "Manuell. Ein Fokus pro Person: 1 Verständnis bewerten › 2 Antworten › 3 Chat starten › 4 Meinung posten. Text unten = Einleitung; Meinung, Chat-Blasen und Skala fügt die Mail automatisch ein.",
+    placeholders: "{{ownOpinion}}, {{unratedCount}}, {{unansweredCount}}, {{goUrl}}, {{eventQuestion}}",
+    campaign: true,
+  },
+};
+
+const SEGMENT_LABEL: Record<string, { text: string; color: string }> = {
+  understanding: { text: "1 Verständnis", color: "#f05b3d" },
+  reply: { text: "2 Antworten", color: "#b7791f" },
+  "start-chat": { text: "3 Chat starten", color: "#878ef2" },
+  opinion: { text: "4 Meinung", color: "#6b6f91" },
 };
 
 const TEMPLATE_ORDER = Object.keys(TEMPLATE_META);
@@ -115,6 +128,7 @@ const MAIL_COLUMNS: Array<{ key: string; short: string; title: string }> = [
   { key: "wedium-nudge-rate", short: "N-Bew", title: "Nudge: Bewerten" },
   { key: "wedium-nudge-chat", short: "N-Disk", title: "Nudge: Diskutieren" },
   { key: "wedium-reply-reminder", short: "Antwort", title: "Persönliche Antwort-Erinnerung" },
+  { key: "campaign-wedium-endspurt", short: "Endsp", title: "Endspurt (individuell)" },
 ];
 
 const RESENDABLE = [
@@ -130,6 +144,7 @@ const RESENDABLE = [
   { key: "wedium-nudge-rate", label: "Nudge: Bewerten" },
   { key: "wedium-nudge-chat", label: "Nudge: Diskutieren" },
   { key: "wedium-reply-reminder", label: "Persönliche Antwort-Erinnerung" },
+  { key: "campaign-wedium-endspurt", label: "Endspurt (individuell)" },
 ];
 
 function MailMark({ status }: { status?: string }) {
@@ -168,6 +183,7 @@ export default function Admin3() {
   const [mailMatrix, setMailMatrix] = useState<Record<string, Record<string, string>>>({});
   const [openMoreRow, setOpenMoreRow] = useState<string | null>(null);
   const [showPassphrases, setShowPassphrases] = useState(false);
+  const [segments, setSegments] = useState<Record<string, string>>({});
   const [polarization, setPolarization] = useState<Array<{ wave: string; count: number; avgLeast: number; avgMost: number }>>([]);
 
   const sortedTemplates = [...templates].sort(
@@ -204,6 +220,8 @@ export default function Admin3() {
     setCampaignOpens(cs.data?.opens ?? {});
     setMailMatrix(mx.data?.matrix ?? {});
     setPolarization(pol.data?.polarization ?? []);
+    supabase.functions.invoke("admin3-overview", { body: { password: pw, action: "endspurt_segments" } })
+      .then(({ data }) => setSegments(data?.segments ?? {}));
     return true;
   }
 
@@ -448,6 +466,7 @@ export default function Admin3() {
                 <th style={th}>Bestätigt</th>
                 <th style={th}>Passphrase</th>
                 <th style={th}>IP</th>
+                <th style={th} title="Endspurt-Fokus nach Hierarchie">Fokus</th>
                 {MAIL_COLUMNS.map((c) => (
                   <th key={c.key} style={{ ...th, textAlign: "center", padding: "8px 4px" }} title={c.title}>
                     {c.short}
@@ -479,6 +498,13 @@ export default function Admin3() {
                     </td>
                     <td style={{ ...td, fontFamily: "ui-monospace, Menlo, monospace", fontSize: 12 }}>
                       {ipsRevealed ? (ipMap![s.id] ?? "—") : "••••"}
+                    </td>
+                    <td style={{ ...td, whiteSpace: "nowrap" }}>
+                      {segments[s.id] ? (
+                        <span style={{ fontSize: 11, fontWeight: 700, color: "#fff", background: SEGMENT_LABEL[segments[s.id]]?.color, borderRadius: 999, padding: "2px 8px" }}>
+                          {SEGMENT_LABEL[segments[s.id]]?.text}
+                        </span>
+                      ) : "—"}
                     </td>
                     {MAIL_COLUMNS.map((c) => (
                       <td key={c.key} style={{ ...td, textAlign: "center", padding: "8px 4px" }}>
@@ -530,7 +556,7 @@ export default function Admin3() {
                 );
               })}
               {signups.length === 0 && (
-                <tr><td colSpan={6 + MAIL_COLUMNS.length} style={{ ...td, opacity: 0.6 }}>Noch keine Anmeldungen</td></tr>
+                <tr><td colSpan={7 + MAIL_COLUMNS.length} style={{ ...td, opacity: 0.6 }}>Noch keine Anmeldungen</td></tr>
               )}
             </tbody>
           </table>

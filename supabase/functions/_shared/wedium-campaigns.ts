@@ -21,6 +21,7 @@ export const WEDIUM_CAMPAIGNS: WediumCampaignDef[] = [
   // Manual only (no dueAt): sent from /wedium/admin.
   { key: "campaign-wedium-access", label: "wedium: 1-Klick-Zugang (manuell)" },
   { key: "campaign-wedium-final-day", label: "wedium: Letzter Tag (deaktiviert)", disabled: true },
+  { key: "campaign-wedium-endspurt", label: "wedium: Endspurt (individuell, manuell)" },
   { key: "wedium-reply-reminder", label: "wedium: Persönliche Antwort-Erinnerung (einzeln)" },
   { key: "campaign-wedium-result", label: "wedium: Ergebnis & Danke (16.11.2026, 09:00)", dueAt: "2026-11-16T08:00:00Z" },
 

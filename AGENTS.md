@@ -27,3 +27,5 @@
 - Wedium access mails link /wedium/go?p=<passphrase> (consumed and stripped by EventGo) and the passphrase login stays visible to unverified visitors, so confirmed participants can always get in with one click or the emailed passphrase.
 - Wedium reply reminders require one signup per request, recheck the latest visible message and suppression at send time, and use a stable per-signup idempotency key; never broadcast reminders to the signup list.
 - Use managed authenticated HTTP schedules for Wedium callbacks, accepting the generated cron authentication helper alongside exact service-role credentials, so legacy five-second HTTP timeouts do not abort scheduled sends.
+- New wedium mails build on `_shared/transactional-email-templates/wedium-layout.tsx` (shell, opinion card, chat bubbles, scale picture, button) and keep user text as escaped plain text, so all event mails share one look without raw HTML injection.
+- The Endspurt mail picks exactly one CTA per person via `_shared/endspurt-segment.ts` (understanding rating › reply › start chat › post opinion); the admin focus badge uses the same dry run, so preview and send never disagree.

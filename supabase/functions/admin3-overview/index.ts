@@ -45,7 +45,17 @@ const TEMPLATE_KEYS = [
   "wedium-nudge-rate",
   "wedium-nudge-chat",
   "wedium-reply-reminder",
+  "campaign-wedium-endspurt",
 ] as const;
+
+/** Editable defaults shown in the editor until the first save. */
+const TEMPLATE_DEFAULTS: Record<string, { subject: string; heading: string; body_md: string }> = {
+  "campaign-wedium-endspurt": {
+    subject: "Endspurt: Heute bis 23:59 Uhr",
+    heading: "Endspurt! Ein letzter Schritt zählt",
+    body_md: "Heute um 23:59 Uhr endet die Diskussion zu „{{eventQuestion}}“. Ein letzter Besuch lohnt sich: Unten siehst du, was bei dir noch offen ist.",
+  },
+};
 
 const TRACKED_TEMPLATES = [...TEMPLATE_KEYS] as string[];
 
@@ -320,6 +330,10 @@ Deno.serve(async (req) => {
       const out = await callCampaignSender({ campaignKey: key, force: true, resend: body.resend === true });
       return Response.json({ ok: true, ...out }, { headers: corsHeaders });
     }
+    if (action === "endspurt_segments") {
+      const out = await callCampaignSender({ campaignKey: "campaign-wedium-endspurt", dryRun: true });
+      return Response.json({ ok: true, segments: out?.results?.[0]?.segments ?? {} }, { headers: corsHeaders });
+    }
     if (action === "resend_campaign") {
       if (typeof key !== "string" || typeof signupId !== "string") {
         return Response.json({ ok: false, error: "invalid_payload" }, { status: 400, headers: corsHeaders });
@@ -351,7 +365,11 @@ Deno.serve(async (req) => {
         .select("key, subject, heading, body_md, updated_at")
         .in("key", TEMPLATE_KEYS as unknown as string[])
         .order("key");
-      return Response.json({ ok: true, templates: data ?? [] }, { headers: corsHeaders });
+      const templates = [...(data ?? [])];
+      for (const [k, d] of Object.entries(TEMPLATE_DEFAULTS)) {
+        if (!templates.some((t) => t.key === k)) templates.push({ key: k, ...d, updated_at: null });
+      }
+      return Response.json({ ok: true, templates }, { headers: corsHeaders });
     }
     if (action === "save_template") {
       if (!(TEMPLATE_KEYS as unknown as string[]).includes(String(key))) {
