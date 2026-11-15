@@ -435,7 +435,10 @@ export default function TT({ mode = 'real', eventPreview = false, embedded = fal
           )
         )}
         {mode === 'real' && !gateVariant && !discussionEnded && (
-          <TTFinalCountdown endAt={eventConfig?.discussionEndAt} />
+          <TTFinalCountdown
+            endAt={eventConfig?.discussionEndAt}
+            visible={!wediumPresentation || (graphActive && !streamActive)}
+          />
         )}
         {discussionEnded && !gateVariant && !selectedNode && (
           <TTEndPanel

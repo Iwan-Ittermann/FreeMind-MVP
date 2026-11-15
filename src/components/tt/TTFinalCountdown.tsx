@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Hourglass } from 'lucide-react';
+import { Hourglass, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const WINDOW_MS = 24 * 60 * 60 * 1000;
@@ -18,11 +18,12 @@ function format(msLeft: number) {
 /**
  * Slim "final day" countdown pill, shown in the free band between the topic
  * question and the graph during the last 24 hours before the discussion ends.
- * Purely presentational — it never blocks interaction with the graph.
+ * Only the close button intercepts pointer events; the graph stays interactive.
  */
-export function TTFinalCountdown({ endAt }: { endAt?: Date | null }) {
+export function TTFinalCountdown({ endAt, visible = true }: { endAt?: Date | null; visible?: boolean }) {
   const { t } = useTranslation();
   const [now, setNow] = useState(() => Date.now());
+  const [dismissedEnd, setDismissedEnd] = useState<string | null>(null);
 
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 1000);
@@ -30,8 +31,9 @@ export function TTFinalCountdown({ endAt }: { endAt?: Date | null }) {
   }, []);
 
   if (!endAt) return null;
+  const endKey = endAt.toISOString();
   const msLeft = endAt.getTime() - now;
-  const active = msLeft > 0 && msLeft <= WINDOW_MS;
+  const active = visible && dismissedEnd !== endKey && msLeft > 0 && msLeft <= WINDOW_MS;
   const urgent = msLeft <= 2 * 60 * 60 * 1000;
 
   return (
@@ -45,7 +47,7 @@ export function TTFinalCountdown({ endAt }: { endAt?: Date | null }) {
           style={{ top: 114 }}
         >
           <div
-            className={`inline-flex max-w-full items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] leading-none backdrop-blur-md ${
+            className={`inline-flex max-w-full items-center gap-1.5 rounded-full border py-1 pl-3 pr-1 text-[11px] leading-none backdrop-blur-md ${
               urgent
                 ? 'border-destructive/50 bg-destructive/15 text-destructive'
                 : 'border-border/40 bg-background/80 text-foreground/80'
@@ -55,6 +57,14 @@ export function TTFinalCountdown({ endAt }: { endAt?: Date | null }) {
             <span className="truncate">
               {t('tt.finalCountdown', 'Endspurt')}: {format(msLeft)}
             </span>
+            <button
+              type="button"
+              aria-label={t('common.close', 'Schließen')}
+              onClick={() => setDismissedEnd(endKey)}
+              className="pointer-events-auto inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full opacity-70 hover:bg-background/60 hover:opacity-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            >
+              <X className="h-3 w-3" />
+            </button>
           </div>
         </motion.div>
       )}
