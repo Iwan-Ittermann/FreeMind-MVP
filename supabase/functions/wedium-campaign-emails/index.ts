@@ -3,7 +3,7 @@
 // Auth: requires the service role key as bearer token.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { loadTemplate } from "../_shared/email-template-store.ts";
+import { loadEventTokens, loadTemplate } from "../_shared/email-template-store.ts";
 import { getWediumCampaign, WEDIUM_CAMPAIGNS, WEDIUM_NUDGE_KEYS } from "../_shared/wedium-campaigns.ts";
 import { authenticateCronRequest } from "../_shared/cron-auth.ts";
 import { unansweredChats } from "../_shared/unanswered-chat.ts";
@@ -87,6 +87,14 @@ async function sendReplyReminder(signupId: string, dryRun = false) {
 
 const ENDSPURT = "campaign-wedium-endspurt";
 
+/** Segment-specific heading and opening line of the Endspurt mail. */
+const ENDSPURT_INTRO: Record<string, { heading: string; body: string }> = {
+  understanding: { heading: "Wie gut wurdest du verstanden?", body: "Du hattest bereits einen Austausch – jetzt fehlt nur noch deine Bewertung, damit dein Gegenüber Brückenpunkte erhält:" },
+  reply: { heading: "Jemand wartet auf deine Antwort", body: "In deinem Chat wartet eine Nachricht auf dich – ein kurzer Satz reicht schon:" },
+  "start-chat": { heading: "Bring deine Meinung ins Gespräch", body: "Deine Meinung steht bereits im Graph – starte jetzt noch einen Dialog mit einer Gegenposition:" },
+  opinion: { heading: "Deine Perspektive fehlt noch", body: "Bisher hast du noch keine Meinung geteilt – setze jetzt noch deinen Punkt auf die Karte:" },
+};
+
 /** Personalised final-sprint mail: one CTA per person (see endspurt-segment.ts). */
 async function sendEndspurt(onlySignupId: string | undefined, resend: boolean, dryRun: boolean) {
   const key = ENDSPURT;
@@ -106,6 +114,7 @@ async function sendEndspurt(onlySignupId: string | undefined, resend: boolean, d
     supabase.from("chat_messages").select("id, chat_id, sender_id, content, created_at").in("chat_id", chatIds).eq("visible", true).eq("status", "Visible"),
     supabase.from("chat_ratings").select("chat_id, rater_id").in("chat_id", chatIds),
   ]) : [{ data: [] }, { data: [] }];
+  const tokens = await loadEventTokens(supabase, "wedium");
   const attempt = Date.now();
   const segments: Record<string, string> = {};
   let sent = 0, failed = 0;
@@ -134,7 +143,10 @@ async function sendEndspurt(onlySignupId: string | undefined, resend: boolean, d
       trackingUrl: `${SUPABASE_URL}/functions/v1/email-open?c=${key}&s=${r.id}&w=1`,
     };
     const tpl = await loadTemplate(supabase, key, data, { subject: "Endspurt: Heute bis 23:59 Uhr", heading: "Endspurt! Ein letzter Schritt zählt", body: "Heute um 23:59 Uhr endet die Diskussion zu „{{eventQuestion}}“. Ein letzter Besuch lohnt sich: Unten siehst du, was bei dir noch offen ist." });
-    const out = await fetch(`${SUPABASE_URL}/functions/v1/send-transactional-email`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_ROLE}` }, body: JSON.stringify({ templateName: key, recipientEmail: r.email, idempotencyKey: resend ? `w-${key}-${r.id}-${attempt}` : `w-${key}-${r.id}`, templateData: { ...tpl, ...data } }) });
+    const intro = ENDSPURT_INTRO[res.segment];
+    const end = `Heute um 23:59 Uhr endet die Diskussion zu „${tokens.eventQuestion ?? "unserer Frage"}“. `;
+    const personal = { heading: intro.heading, body: end + intro.body };
+    const out = await fetch(`${SUPABASE_URL}/functions/v1/send-transactional-email`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${SERVICE_ROLE}` }, body: JSON.stringify({ templateName: key, recipientEmail: r.email, idempotencyKey: resend ? `w-${key}-${r.id}-${attempt}` : `w-${key}-${r.id}`, templateData: { ...tpl, ...personal, ...data } }) });
     if (!out.ok) { failed++; console.error("endspurt failed", r.id, out.status, await out.text()); continue; }
     const { error: logErr } = await supabase.from("wedium_campaign_sends").upsert({ campaign_key: key, signup_id: r.id, recipient_email: r.email }, { onConflict: "campaign_key,signup_id" });
     if (logErr) console.error("wedium_campaign_sends insert:", logErr.message);

@@ -44,7 +44,7 @@ const Email = ({ subject = 'Endspurt: Heute bis 23:59 Uhr', heading = 'Endspurt!
 
     <PrimaryButton href={goUrl}>{CTA[segment]}</PrimaryButton>
     <Para>Dein persönlicher Link meldet dich direkt an{segment === 'understanding' || segment === 'reply' ? ' und öffnet das Gespräch' : ''}.</Para>
-    {segment !== 'reply' ? <PostScript /> : null}
+    {segment === 'start-chat' || segment === 'opinion' ? <PostScript /> : null}
   </WediumShell>
 )
 

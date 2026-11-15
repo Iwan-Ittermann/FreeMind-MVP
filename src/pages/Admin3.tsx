@@ -100,7 +100,7 @@ const TEMPLATE_META: Record<string, TemplateMeta> = {
   },
   "campaign-wedium-endspurt": {
     label: "11. Endspurt (individuell)",
-    trigger: "Manuell. Ein Fokus pro Person: 1 Verständnis bewerten › 2 Antworten › 3 Chat starten › 4 Meinung posten. Text unten = Einleitung; Meinung, Chat-Blasen und Skala fügt die Mail automatisch ein.",
+    trigger: "Manuell. Ein Fokus pro Person: 1 Verständnis bewerten › 2 Antworten › 3 Chat starten › 4 Meinung posten. Überschrift und Einstieg werden je Fokus automatisch gesetzt (Betreff kommt von hier); Meinung, Chat-Blasen und Skala fügt die Mail automatisch ein.",
     placeholders: "{{ownOpinion}}, {{unratedCount}}, {{unansweredCount}}, {{goUrl}}, {{eventQuestion}}",
     campaign: true,
   },
