@@ -1,61 +1,51 @@
-# Freemind im AT Protocol: Event-Silos und ein Bluesky-Feed
+# Plan: Freemind-Events live als Bluesky-Feed (Event-Silos)
 
-Konzept, noch nichts zum Bauen. Grundlage: AT-Protocol- und Bluesky-Lexicon-Specs.
+## Ziel
+Jedes Freemind-Event wird live ins AT Protocol gespiegelt. Jede Person tritt pro Event mit einem eigenen, anonymen Konto auf. Meinungen, Chats und Ratings sind öffentlich. Ein Bluesky-Feed pro Event zeigt zuerst Gespräche über Meinungsgräben hinweg. Bluesky-Nutzer können lesen und liken. Antworten können nur die beiden Personen eines Chats, mitmachen kann man nur über Freemind.
 
-## Grundsatz
-- **Modell 3:** Jede Person bekommt pro Event eine eigene DID (Silo). Innerhalb des Events ist alles öffentlich und zusammenhängend: Meinung, Chats und Ratings. Über Events hinweg gibt es keine Verbindung.
-- Chats und Ratings sind öffentlich. Sensibel ist nur, wenn Silos miteinander verknüpft werden.
+## Was Nutzer sehen
+- **In Freemind:** Beim Event-Einstieg ein Hinweis: "Diese Diskussion ist öffentlich auf Bluesky lesbar, unter einem anonymen Konto nur für dieses Event." Eine Zustimmung ist Pflicht, bevor man eine Meinung postet.
+- **In Bluesky:** Der Feed "Freemind · <Frage>" mit angepinnter Frage. Darunter stehen geschlossene 1:1-Gespräche ("Nur k7q2 und m3x9 können antworten") und Meinungen. Jede Karte verlinkt zum Mitmachen auf freemind.chat.
 
-## Identität pro Silo
-- Freemind betreibt einen eigenen PDS und erstellt pro Person und Event eine `did:plc`.
-- Die Handles sind Subdomains, die keinen Rückschluss erlauben: `k7q2.wd10.freemind.chat`. Die Zuordnung lösen wir über `/.well-known/atproto-did` auf dem PDS.
-- `app.bsky.actor.profile` bekommt das Personen-Icon aus Freemind als Avatar und den Anzeigenamen "Teilnehmer:in · wd10", keine Bio.
-- Was ein Silo verraten würde: derselbe Avatar über Events hinweg, Schreibstil, enge zeitliche Muster. Abhilfe: Icon pro Event neu würfeln und Zeitstempel runden. Dass die Konten alle bei Freemind liegen, ist bewusst sichtbar, so wird Freemind selbst als Ort erkennbar.
+## Voraussetzung außerhalb der App (wichtig)
+Für die Silo-Konten braucht es einen **eigenen PDS-Server** (offizieller Bluesky-PDS als Docker-Container auf einem kleinen Server mit einer Domain wie `pds.freemind.chat`). Die App selbst kann keinen dauerhaft laufenden Server betreiben. Massenkonten auf bsky.social verbieten die Nutzungsbedingungen. Den Server richtest du oder ein Techniker ein; ich liefere eine genaue Anleitung. Alles andere läuft in der App und ihrem Backend.
 
-## Abbildung auf Bluesky-Records
-Ein Bluesky-Feed darf nur `app.bsky.feed.post`-URIs ausliefern (`getFeedSkeleton`). Darum wird das Sichtbare als normale Posts gespiegelt und die Freemind-Daten laufen daneben mit:
+## Schritte
+1. **PDS bereitstellen (extern):** PDS installieren, Wildcard-DNS `*.pds.freemind.chat` einrichten, Einladungs- und Admin-Passwort als Secret im Backend hinterlegen und den Relay mit `requestCrawl` an `bsky.network` anmelden.
+2. **Event-Konto:** Pro Event ein Konto wie `wd10.pds.freemind.chat` mit Profil. Es postet die Frage und dient als Anker für Threads und Feed.
+3. **Silo-Konten:** Neue Tabelle `atproto_silos` (Signup/User, Topic, DID, Handle, verschlüsselte Zugangsdaten). Das Konto wird beim ersten Posten der Meinung angelegt. Handle zufällig (`k7q2.pds.freemind.chat`), Avatar ist das Personen-Icon, pro Event neu gewürfelt.
+4. **Spiegel-Warteschlange:** Neue Tabelle `atproto_outbox`, befüllt von Datenbank-Triggern auf Meinungen, Chats, Chatnachrichten, Meinungs- und Respekt-Ratings und Soft-Deletes. Eine Backend-Funktion arbeitet sie jede Minute ab und ist idempotent: Jeder Eintrag speichert seine `at-uri`. Ein Fehler blockiert nie die Diskussion selbst.
+5. **Abbildung:**
+   - Meinung → `app.bsky.feed.post` als Antwort auf den Frage-Post, plus `chat.freemind.opinion`
+   - Chatbeginn → Quote-Post auf die Partnermeinung mit Erwähnung, `threadgate` mit `mentionRule` und `postgate` ohne Zitate von außen
+   - Nachricht → Reply im Chat-Thread
+   - Ratings → `chat.freemind.differenceRating` und `chat.freemind.respectRating`, jeweils mit Ziel-URI und Wert
+   - Soft-Delete → `deleteRecord`
+   - `createdAt` wird auf die Minute gerundet
+6. **Lexicons:** Schemas für `chat.freemind.*` als JSON im Projekt ablegen und unter `freemind.chat` veröffentlichen (NSID-Auflösung per DNS `_lexicon`).
+7. **Feed Generator als Backend-Funktion:** `did:web:feed.freemind.chat` mit `/.well-known/did.json`, `describeFeedGenerator` und `getFeedSkeleton`. Die Sortierung kommt aus unserer eigenen Datenbank, ein Jetstream-Leser ist nicht nötig: oben die Frage, dann Chats nach Respekt mal Meinungsunterschied, Meinungen mit Ratings aus mehreren Clustern, wartende Chats. `feedContext` gibt den Grund mit. Den Feed-Record (`app.bsky.feed.generator`) legt das Event-Konto an.
+8. **Bluesky-Likes:** Bleiben in Bluesky. Für den Anfang zählen sie nicht in Brückenpunkte und das Ranking.
+9. **Admin `/wedium/admin` (und pro Kontext):** Schalter "Bluesky-Spiegelung an/aus" pro Event, Status der Warteschlange (offen, gesendet, fehlerhaft), Feed-Link, Knopf zum erneuten Senden.
+10. **Event-Ende:** Silo-Konten werden gesperrt (keine neuen Posts), der Feed bleibt als Archiv.
 
-```text
-Event-Konto (freemind.chat)   Post "Frage: Welches Gesetz …?"  + chat.freemind.topic
-Silo-DID                      Post = Meinung (Reply auf Frage) + chat.freemind.opinion
-Chat A<->B                    Quote-Post von A auf Bs Meinung = Chat-Wurzel
-                              threadgate: allow = [mentionRule] (nur B erwähnt)
-                              → nur A und B können antworten, alle können lesen
-Chatnachrichten               Replies im Thread (reply.root = Chat-Wurzel)
-Ratings                       chat.freemind.differenceRating / respectRating
-                              (Bluesky ignoriert sie, der Feed und Freemind lesen sie)
-```
-- `app.bsky.feed.threadgate` mit `mentionRule` erzeugt genau unser 1:1-Gespräch, das öffentlich lesbar, aber geschlossen ist. Mit `app.bsky.feed.postgate` (`embeddingRules: disableRule`) lassen sich Zitate von außen sperren, damit niemand den Thread kapert.
-- Bluesky-Likes von außen sind erlaubt. Freemind wertet sie nicht für Brückenpunkte.
+## Tests
+- Abbildung Freemind → Record (Felder, gerundete Zeit, kein Feld mit Nutzer-ID)
+- Ein Silo pro Person und Event, verschiedene DIDs über Events hinweg
+- Ein Outbox-Eintrag wird bei Wiederholung nicht doppelt gepostet
+- Feed-Sortierung: Ein respektvoller Chat mit großem Unterschied steht vor einem mit kleinem Unterschied
 
-## Der Feed (pro Event ein `app.bsky.feed.generator`)
-Name zum Beispiel "Freemind · Welches Gesetz für Social Media?". Was er ausliefert:
-1. **Oben angepinnt:** der Frage-Post des Events mit Link zu `freemind.chat/wedium/go`.
-2. **Gespräche über Gräben hinweg:** Chat-Wurzeln, sortiert nach Respekt mal Meinungsunterschied. Ganz oben steht, wo sehr unterschiedliche Meinungen respektvoll gesprochen haben. Das ist unser Kernsignal und unterscheidet den Feed von jeder Engagement-Logik.
-3. **Meinungen, die verbinden:** Meinungen mit vielen Ratings aus verschiedenen Clustern.
-4. **Wartende Gespräche:** Chats mit genau einer Nachricht, zum Mitlesen und als Anreiz für die Beteiligten.
+## Risiken
+- Öffentliches bleibt kopierbar, auch nach dem Löschen. Das muss im Hinweis für Nutzer stehen.
+- Rückschlüsse über Silos hinweg durch Schreibstil oder Zeitmuster lassen sich nur teilweise verhindern.
+- Betrieb und Kosten des PDS (Server ca. 5–10 €/Monat) und die Ratenlimits des Relays.
+- Rechtlich: Freemind ist Hoster der Silo-Konten. NetzDG-Löschungen laufen über den bestehenden Soft-Delete, der auch im Protokoll löscht.
 
-Spec-Details:
-- `getFeedSkeleton` liefert `{feed:[{post:uri, feedContext}], cursor}`. Über `feedContext` können wir den Grund mitgeben ("Brücke", "verbindet", "wartet").
-- Über `app.bsky.feed.sendInteractions` kommen "mehr/weniger davon" zurück. Das kann als Signal dienen, beeinflusst aber nicht die Brückenpunkte.
-- Datenquelle ist Jetstream, gefiltert auf `wantedDids` des Event-PDS und auf die Collections `app.bsky.feed.post` und `chat.freemind.*`.
+## Technische Details
+- Edge-Funktionen: `atproto-mirror` (Outbox-Worker, Cron jede Minute, Cron-Helper-Auth), `atproto-feed` (öffentliche XRPC-Endpunkte, `verify_jwt=false`).
+- Die Zugangsdaten der Silos (App-Passwörter oder Sessions) liegen verschlüsselt und nur für die Funktion lesbar. RLS sperrt alles für Clients.
+- Für XRPC nutzen wir `@atproto/api` in Deno (npm-Import).
+- AGENTS.md-Regel: Spiegelung läuft nur über die Outbox, und keine Funktion schreibt Nutzer-IDs in Records.
 
-## So erlebt man das in Bluesky
-```text
-[Freemind · Social-Media-Gesetz]
-  📌 Frage des Events  → "Mitdiskutieren auf freemind.chat"
-  ↳ k7q2 zitiert m3x9: "Verpixelung ja, aber nicht automatisch…"
-       🔒 Nur k7q2 und m3x9 können antworten · 6 Nachrichten
-  ↳ Meinung von p2d8 · bewertet aus 4 Lagern
-```
-Wer mitmachen will, landet bei Freemind und bekommt dort eine neue Silo-DID. Ein Bluesky-Konto braucht man nicht und es wird auch nie verknüpft.
-
-## Folgen, die du abwägen solltest
-- **Löschen:** Im Protokoll gelöschte Records verschwinden in Bluesky, aber Kopien in fremden AppViews und Archiven bleiben möglich. Damit ist "öffentlich" auch dauerhaft öffentlich.
-- **Moderation:** Bluesky-Labeler können Silo-Konten markieren. Das Hosting und damit NetzDG liegen bei Freemind.
-- **PDS-Betrieb:** Ein eigener PDS mit vielen kurzlebigen Konten muss sich beim Relay anmelden (`requestCrawl`) und bekommt Ratenlimits. Für ein Event mit etwa 50 Personen ist das unkritisch.
-- **Nach dem Event:** Die Silo-Konten frieren ein (Status deaktiviert lassen oder nur keine neuen Posts mehr). Der Feed bleibt als Archiv bestehen.
-
-## Offene Fragen
-- Spiegeln wir live während des Events oder erst danach als Archiv-Feed?
-- Sollen Bluesky-Nutzer die Meinungen auch liken dürfen, oder sperren wir alles außer Lesen?
+## Offene Punkte vor dem Start
+- Wer betreibt den PDS-Server, und welche Domain nehmen wir?
+- Gilt das ab dem nächsten Event, oder soll `wd10` nachträglich als Archiv gespiegelt werden? (Bisherige Teilnehmer haben nicht zugestimmt. Ich empfehle, das nicht zu tun.)
