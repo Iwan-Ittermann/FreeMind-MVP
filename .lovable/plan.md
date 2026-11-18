@@ -1,40 +1,61 @@
-# Richtung B vertieft: Freemind-Lexicons mit anonymen Postings
+# Freemind im AT Protocol: Event-Silos und ein Bluesky-Feed
 
-Konzept, noch nichts zum Bauen. Grundlage: AT-Protocol-Specs (Repository, DID, Lexicon, Sync).
+Konzept, noch nichts zum Bauen. Grundlage: AT-Protocol- und Bluesky-Lexicon-Specs.
 
-## Korrektur
-"Geschützte Bewertungen als Kernidee" war meine Annahme und ist falsch. In Freemind ist die Respekt-Bewertung als Pfeilfarbe sichtbar. Das Problem in B ist also nicht, dass Bewertungen öffentlich wären. Das Problem ist die **Identität**: Wer im Protokoll schreibt, schreibt unter seiner DID.
+## Grundsatz
+- **Modell 3:** Jede Person bekommt pro Event eine eigene DID (Silo). Innerhalb des Events ist alles öffentlich und zusammenhängend: Meinung, Chats und Ratings. Über Events hinweg gibt es keine Verbindung.
+- Chats und Ratings sind öffentlich. Sensibel ist nur, wenn Silos miteinander verknüpft werden.
 
-## Warum anonym im AT Protocol schwierig ist
-- Jeder Record liegt im Repo **einer** DID und ist mit deren Schlüssel signiert. Damit ist er immer an eine dauerhafte Kennung gebunden, also pseudonym.
-- Wenn ein Nutzer mit seinem eigenen Konto schreibt (sein PDS, AT-OAuth), sind alle seine Meinungen und Bewertungen öffentlich miteinander und mit seinem Handle verknüpft. Für anonyme Postings kommt das nicht in Frage.
+## Identität pro Silo
+- Freemind betreibt einen eigenen PDS und erstellt pro Person und Event eine `did:plc`.
+- Die Handles sind Subdomains, die keinen Rückschluss erlauben: `k7q2.wd10.freemind.chat`. Die Zuordnung lösen wir über `/.well-known/atproto-did` auf dem PDS.
+- `app.bsky.actor.profile` bekommt das Personen-Icon aus Freemind als Avatar und den Anzeigenamen "Teilnehmer:in · wd10", keine Bio.
+- Was ein Silo verraten würde: derselbe Avatar über Events hinweg, Schreibstil, enge zeitliche Muster. Abhilfe: Icon pro Event neu würfeln und Zeitstempel runden. Dass die Konten alle bei Freemind liegen, ist bewusst sichtbar, so wird Freemind selbst als Ort erkennbar.
 
-## Drei Modelle für Anonymität
-1. **Ein Freemind-Repo für alle (empfohlen).** Freemind betreibt eine DID (z. B. `did:web:freemind.chat`) mit eigenem PDS. Alle Meinungen werden dort als `chat.freemind.opinion` geschrieben, ohne Feld für den Autor. Öffentlich gibt es keine Autor-Kennung. Freemind kennt die Zuordnung intern (IP-Logging und NetzDG bleiben möglich).
-   - Grenze: Inhalte gehören dann nicht dem Nutzer und ziehen nicht mit ihm um. Das ist der Preis der Anonymität.
-2. **Eine Wegwerf-DID pro Posting.** Jede Meinung bekommt eine eigene `did:plc`. Das ist technisch anonym, aber das PLC-Verzeichnis hat Ratenlimits, es entstehen tausende Mini-Repos, und im Netz sieht es aus wie Spam. Davon rate ich ab.
-3. **Eine DID pro Event und Person.** Innerhalb eines Events pseudonym, über Events hinweg nicht verknüpfbar. Das erfüllt "anonym" nicht vollständig, weil sich die Meinung und die Bewertungen einer Person im Event zusammenführen lassen. Nur als Option.
+## Abbildung auf Bluesky-Records
+Ein Bluesky-Feed darf nur `app.bsky.feed.post`-URIs ausliefern (`getFeedSkeleton`). Darum wird das Sichtbare als normale Posts gespiegelt und die Freemind-Daten laufen daneben mit:
 
-## Ein Fallstrick, der für alle Modelle gilt
-Auch ohne Autorfeld lässt sich ein Autor zurückverfolgen, wenn Records zu viel verraten. Deshalb:
-- Ratings nicht als einzelne Records "A bewertet B" veröffentlichen, sonst rekonstruiert man aus dem Muster die Personen. Besser sind Gesamtwerte pro Meinung, z. B. `chat.freemind.opinionStats`, die regelmäßig neu geschrieben werden.
-- Zeitstempel (`createdAt`) grob runden und nicht in derselben Sekunde posten, in der jemand online kommt.
-- Chats bleiben ganz außerhalb des Protokolls.
-
-## Mögliche Lexicons (Entwurf)
 ```text
-chat.freemind.topic          Frage, Zeitraum, Status
-chat.freemind.opinion        topic (at-uri), text, createdAt (gerundet), kein Autor
-chat.freemind.opinionStats   opinion (at-uri), Position/Cluster, Anzahl Ratings, Ø Unterschied, Brückenpunkte
-chat.freemind.topicResult    Polarisierung vor/nach dem Event (aggregiert)
+Event-Konto (freemind.chat)   Post "Frage: Welches Gesetz …?"  + chat.freemind.topic
+Silo-DID                      Post = Meinung (Reply auf Frage) + chat.freemind.opinion
+Chat A<->B                    Quote-Post von A auf Bs Meinung = Chat-Wurzel
+                              threadgate: allow = [mentionRule] (nur B erwähnt)
+                              → nur A und B können antworten, alle können lesen
+Chatnachrichten               Replies im Thread (reply.root = Chat-Wurzel)
+Ratings                       chat.freemind.differenceRating / respectRating
+                              (Bluesky ignoriert sie, der Feed und Freemind lesen sie)
 ```
-Wer die Firehose liest, kann mit diesen Daten einen eigenen Graphen bauen. Damit wird der Diskursraum offen und nachprüfbar, ohne dass jemand bloßgestellt wird.
+- `app.bsky.feed.threadgate` mit `mentionRule` erzeugt genau unser 1:1-Gespräch, das öffentlich lesbar, aber geschlossen ist. Mit `app.bsky.feed.postgate` (`embeddingRules: disableRule`) lassen sich Zitate von außen sperren, damit niemand den Thread kapert.
+- Bluesky-Likes von außen sind erlaubt. Freemind wertet sie nicht für Brückenpunkte.
 
-## Was B damit bringt
-- Freemind-Debatten werden zu offenen, signierten und nachprüfbaren Daten, z. B. für Forschung und Partner wie Wedium.
-- Andere AppViews oder Bluesky-Feeds können anonyme Meinungen zeigen und zurück zu Freemind verlinken.
-- Die Moderation und die rechtliche Verantwortung bleiben bei Freemind, weil das Repo uns gehört. Gelöschte Inhalte werden als Löschung im Repo ausgespielt.
+## Der Feed (pro Event ein `app.bsky.feed.generator`)
+Name zum Beispiel "Freemind · Welches Gesetz für Social Media?". Was er ausliefert:
+1. **Oben angepinnt:** der Frage-Post des Events mit Link zu `freemind.chat/wedium/go`.
+2. **Gespräche über Gräben hinweg:** Chat-Wurzeln, sortiert nach Respekt mal Meinungsunterschied. Ganz oben steht, wo sehr unterschiedliche Meinungen respektvoll gesprochen haben. Das ist unser Kernsignal und unterscheidet den Feed von jeder Engagement-Logik.
+3. **Meinungen, die verbinden:** Meinungen mit vielen Ratings aus verschiedenen Clustern.
+4. **Wartende Gespräche:** Chats mit genau einer Nachricht, zum Mitlesen und als Anreiz für die Beteiligten.
+
+Spec-Details:
+- `getFeedSkeleton` liefert `{feed:[{post:uri, feedContext}], cursor}`. Über `feedContext` können wir den Grund mitgeben ("Brücke", "verbindet", "wartet").
+- Über `app.bsky.feed.sendInteractions` kommen "mehr/weniger davon" zurück. Das kann als Signal dienen, beeinflusst aber nicht die Brückenpunkte.
+- Datenquelle ist Jetstream, gefiltert auf `wantedDids` des Event-PDS und auf die Collections `app.bsky.feed.post` und `chat.freemind.*`.
+
+## So erlebt man das in Bluesky
+```text
+[Freemind · Social-Media-Gesetz]
+  📌 Frage des Events  → "Mitdiskutieren auf freemind.chat"
+  ↳ k7q2 zitiert m3x9: "Verpixelung ja, aber nicht automatisch…"
+       🔒 Nur k7q2 und m3x9 können antworten · 6 Nachrichten
+  ↳ Meinung von p2d8 · bewertet aus 4 Lagern
+```
+Wer mitmachen will, landet bei Freemind und bekommt dort eine neue Silo-DID. Ein Bluesky-Konto braucht man nicht und es wird auch nie verknüpft.
+
+## Folgen, die du abwägen solltest
+- **Löschen:** Im Protokoll gelöschte Records verschwinden in Bluesky, aber Kopien in fremden AppViews und Archiven bleiben möglich. Damit ist "öffentlich" auch dauerhaft öffentlich.
+- **Moderation:** Bluesky-Labeler können Silo-Konten markieren. Das Hosting und damit NetzDG liegen bei Freemind.
+- **PDS-Betrieb:** Ein eigener PDS mit vielen kurzlebigen Konten muss sich beim Relay anmelden (`requestCrawl`) und bekommt Ratenlimits. Für ein Event mit etwa 50 Personen ist das unkritisch.
+- **Nach dem Event:** Die Silo-Konten frieren ein (Status deaktiviert lassen oder nur keine neuen Posts mehr). Der Feed bleibt als Archiv bestehen.
 
 ## Offene Fragen
-- Reicht Modell 1, also "anonym gegenüber der Öffentlichkeit, Freemind kennt die Zuordnung"? Oder muss es auch gegenüber Freemind anonym sein?
-- Sollen Meinungen sofort ins Protokoll gehen oder erst nach dem Event als Archiv?
+- Spiegeln wir live während des Events oder erst danach als Archiv-Feed?
+- Sollen Bluesky-Nutzer die Meinungen auch liken dürfen, oder sperren wir alles außer Lesen?
