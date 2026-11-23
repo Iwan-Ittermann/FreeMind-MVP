@@ -50,6 +50,8 @@ interface SignalRendererProps {
   ttMode?: boolean;
   /** TT level rings will be drawn when these landmarks are provided. */
   ttLandmarks?: TTLandmarks;
+  /** Show numeric point labels beside nodes. Defaults to true. */
+  showNodePoints?: boolean;
   /** When provided, chats render as short directional arrows instead of edges. */
   chatArrows?: readonly ChatArrow[];
   /** Stream-Spirale: gepunktete Linie, leuchtender aktueller Punkt, Linie zum Node. */
@@ -66,6 +68,7 @@ export function SignalRenderer({
   showZones = true,
   ttMode = false,
   ttLandmarks,
+  showNodePoints = true,
   chatArrows,
   streamSpiral,
 }: SignalRendererProps) {
@@ -275,6 +278,7 @@ export function SignalRenderer({
             freshOpinion={freshOpinionById.get(nt.id)}
             scale={nodeScale}
             ttMode={ttMode}
+            showNodePoints={showNodePoints}
             graphWidth={width}
             graphHeight={height}
             onClick={(event) => handleNodeClick(nt.id, event)}

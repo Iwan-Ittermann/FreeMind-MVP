@@ -111,52 +111,94 @@ function RateFrame() {
   );
 }
 
+type GraphAnchor = { id: string; x: number; y: number; r: number; a: number };
+type LineEndpoints = { x1: number; y1: number; x2: number; y2: number };
+
+function distanceToSegment(p: GraphAnchor, a: GraphAnchor, b: GraphAnchor) {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const lengthSquared = dx * dx + dy * dy;
+  const t = lengthSquared === 0 ? 0 : Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / lengthSquared));
+  return Math.hypot(p.x - (a.x + t * dx), p.y - (a.y + t * dy));
+}
+
+function trimToNodeEdges(a: GraphAnchor, b: GraphAnchor, iconRadius: number, targetIsCenter = false): LineEndpoints {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const length = Math.hypot(dx, dy);
+  const startOffset = Math.min(iconRadius + 3, length * 0.35);
+  const endOffset = targetIsCenter && b.id === 'centre' ? 0 : Math.min(iconRadius + 3, length * 0.35);
+  return {
+    x1: a.x + (dx / length) * startOffset,
+    y1: a.y + (dy / length) * startOffset,
+    x2: b.x - (dx / length) * endOffset,
+    y2: b.y - (dy / length) * endOffset,
+  };
+}
+
 function GraphFrame({ size, annotate }: { size: number; annotate: boolean }) {
   const lm = useMemo(() => { const w = size * 0.75; return { coreR: (140 / 600) * w, blueR: (300 / 600) * w, whiteR: (360 / 600) * w }; }, [size]);
   const c = size / 2;
-  // Same layout call as OpinionGraph, so leader lines hit real node positions.
+  // Same layout call as OpinionGraph, so annotations use the real node positions.
   const anchors = useMemo(() => {
     const outer = size * 0.48;
-    const nodes = calculateTTLayout(DEMO_OPINIONS, DEMO_RATINGS, { centerX: c, centerY: c, outerRadius: outer, extremeRadius: outer * 0.92, moderateRadius: outer * 0.8, respectfulRadius: outer * 0.25, nodeRadius: Math.max(3, size * 0.012) }, lm, DEMO_POINTS).nodes
-      .map(n => ({ x: n.x, y: n.y, r: Math.hypot(n.x - c, n.y - c), a: Math.atan2(n.y - c, n.x - c) }));
-    const far = nodes.filter(n => n.r > lm.blueR * 0.45);
-    // Angle: two neighbouring outer nodes in the upper-right quadrant with a clear gap.
-    const upper = far.filter(n => n.a < 0 && n.a > -Math.PI / 2 - 0.6).sort((p, q) => p.a - q.a);
-    let pair = [upper[0], upper[upper.length - 1]];
-    let best = -1;
-    for (let i = 0; i < upper.length; i++) for (let j = i + 1; j < upper.length; j++) { const gap = upper[j].a - upper[i].a; const score = gap >= 0.6 && gap <= 1.3 ? Math.min(upper[i].r, upper[j].r) : -1; if (score > best) { best = score; pair = [upper[i], upper[j]]; } }
-    // Radius: outermost node in the lower-left half.
-    const radiusNode = far.filter(n => n.x < c).sort((p, q) => q.r - p.r)[0] ?? far[0];
-    return { pair, radiusNode };
+    const nodes: GraphAnchor[] = calculateTTLayout(DEMO_OPINIONS, DEMO_RATINGS, { centerX: c, centerY: c, outerRadius: outer, extremeRadius: outer * 0.92, moderateRadius: outer * 0.8, respectfulRadius: outer * 0.25, nodeRadius: Math.max(3, size * 0.012) }, lm, DEMO_POINTS).nodes
+      .map(n => ({ id: n.id, x: n.x, y: n.y, r: Math.hypot(n.x - c, n.y - c), a: Math.atan2(n.y - c, n.x - c) }));
+    const iconRadius = 18 * Math.min(1, (Math.max(3, size * 0.012) / 6) * 1.6);
+    const centreNode = [...nodes].sort((p, q) => p.r - q.r)[0];
+    const centre: GraphAnchor = centreNode?.r <= iconRadius
+      ? centreNode
+      : { id: 'centre', x: c, y: c, r: 0, a: 0 };
+    const isClear = (a: GraphAnchor, b: GraphAnchor) => nodes
+      .filter(n => n.id !== a.id && n.id !== b.id)
+      .every(n => distanceToSegment(n, a, b) > iconRadius + 1);
+    const visibleLength = (a: GraphAnchor, b: GraphAnchor) => Math.hypot(b.x - a.x, b.y - a.y) - 2 * (iconRadius + 3);
+
+    // Radius: use the longest unobstructed radial segment. The centre person is
+    // the destination, not an obstacle; the line stops at both icon borders.
+    const radiusNode = nodes
+      .filter(n => n.id !== centre.id && visibleLength(n, centre) > 12 && isClear(n, centre))
+      .sort((p, q) => visibleLength(q, centre) - visibleLength(p, centre))[0];
+
+    // Angle: one direct, unobstructed connection between two different people.
+    // Keep the radius person out of this pair so the two ideas stay separate.
+    let pair: GraphAnchor[] = [];
+    let best = -Infinity;
+    for (let i = 0; i < nodes.length; i++) for (let j = i + 1; j < nodes.length; j++) {
+      const a = nodes[i];
+      const b = nodes[j];
+      if (a.id === centre.id || b.id === centre.id || a.id === radiusNode?.id || b.id === radiusNode?.id) continue;
+      const gap = Math.abs(a.a - b.a);
+      const length = visibleLength(a, b);
+      if (gap < 0.45 || gap > 1.5 || length <= 12 || !isClear(a, b)) continue;
+      const clearance = Math.min(...nodes.filter(n => n.id !== a.id && n.id !== b.id).map(n => distanceToSegment(n, a, b) - iconRadius));
+      const score = length + Math.min(clearance, 8) * 4;
+      if (score > best) { best = score; pair = [a, b]; }
+    }
+    return { pair, radiusNode, centre, iconRadius };
   }, [size, c, lm]);
   const [A, B] = anchors.pair;
   const R = anchors.radiusNode;
-  const arcR = A && B ? Math.min(A.r, B.r) * 0.7 : 0;
-  const pt = (ang: number, r: number) => `${c + Math.cos(ang) * r} ${c + Math.sin(ang) * r}`;
+  const angleLine = A && B ? trimToNodeEdges(A, B, anchors.iconRadius) : null;
+  const radiusLine = R ? trimToNodeEdges(R, anchors.centre, anchors.iconRadius, true) : null;
   return (
     <div className="relative h-full w-full" style={{ '--wedium-node': '242 43% 22%' } as CSSProperties}>
       <WediumPresentationContext.Provider value>
-        <OpinionGraph opinions={DEMO_OPINIONS} ratings={DEMO_RATINGS} width={size} height={size} showLabels="none" chrome="naked" ttMode ttLandmarks={lm} nodePoints={DEMO_POINTS} />
+        <OpinionGraph opinions={DEMO_OPINIONS} ratings={DEMO_RATINGS} width={size} height={size} showLabels="none" chrome="naked" ttMode ttLandmarks={lm} nodePoints={DEMO_POINTS} showNodePoints={false} />
       </WediumPresentationContext.Provider>
-      {annotate && A && B && R && (
+      {annotate && (angleLine || radiusLine) && (
         <svg className="pointer-events-none absolute inset-0 text-foreground" width={size} height={size} aria-hidden>
-          <g stroke="currentColor" fill="none" strokeWidth={1.25} strokeLinecap="round">
-            <line x1={c} y1={c} x2={A.x} y2={A.y} strokeDasharray="3 4" opacity={0.8} />
-            <line x1={c} y1={c} x2={B.x} y2={B.y} strokeDasharray="3 4" opacity={0.8} />
-            <path d={`M ${pt(A.a, arcR)} A ${arcR} ${arcR} 0 0 1 ${pt(B.a, arcR)}`} strokeWidth={2} />
-            <line x1={c + Math.cos((A.a + B.a) / 2) * arcR} y1={c + Math.sin((A.a + B.a) / 2) * arcR} x2={size - 70} y2={66} opacity={0.6} />
-            <line x1={R.x} y1={R.y} x2={c} y2={c} strokeWidth={2} />
-            <line x1={(R.x + c) / 2} y1={(R.y + c) / 2} x2={110} y2={100} opacity={0.6} />
-            <line x1={c} y1={c} x2={size - 90} y2={size - 42} opacity={0.6} />
+          <g stroke="currentColor" fill="none" strokeWidth={2} strokeLinecap="round">
+            {angleLine && <line {...angleLine} />}
+            {radiusLine && <line {...radiusLine} />}
           </g>
-          <circle cx={c} cy={c} r={3} fill="currentColor" />
         </svg>
       )}
       {annotate && (
         <div className="pointer-events-none absolute inset-0 text-foreground">
-          <span className="slide-anno absolute right-4 top-3 max-w-[170px] text-right">Angle = disagreement</span>
+          <span className="slide-anno absolute bottom-16 right-4 max-w-[170px] text-right">Angle = disagreement</span>
           <span className="slide-anno absolute left-4 top-3 max-w-[210px]">Radius = feeling understood × disagreement</span>
-          <span className="slide-anno absolute bottom-3 right-4">Centre: the best listeners</span>
+          <span className="slide-anno absolute bottom-3 left-4">Centre: the best listeners</span>
         </div>
       )}
     </div>

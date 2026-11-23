@@ -130,6 +130,8 @@ interface SignalNodeProps {
   scale?: number;
   /** TT mode: gold core stars, emerald middle circles, smaller black extreme nodes. */
   ttMode?: boolean;
+  /** Show numeric point label beside this node. Defaults to true. */
+  showNodePoints?: boolean;
   /** SVG width — needed to compute graph center for fresh-node entrance animation. */
   graphWidth?: number;
   graphHeight?: number;
@@ -141,7 +143,7 @@ interface SignalNodeProps {
 
 export const SignalNode = memo(function SignalNode({
   token, isHighlighted, isDimmed, highlightForTour = false, showSpeechBubble, freshOpinion, scale = 1, ttMode = false,
-  graphWidth, graphHeight,
+  showNodePoints = true, graphWidth, graphHeight,
   onClick, onPointerDown, onMouseEnter, onMouseLeave,
 }: SignalNodeProps) {
   const { t } = useTranslation();
@@ -363,7 +365,7 @@ export const SignalNode = memo(function SignalNode({
       )}
 
       {/* Total-points count — tiny label to the lower-right of each real node. */}
-      {ttMode && !token.isBot && (
+      {ttMode && showNodePoints && !token.isBot && (
         <g transform={`translate(${scaledHalf * 0.72}, ${scaledHalf * 0.62})`} style={{ pointerEvents: 'none' }} data-points-label>
           {/* Small bridge icon marks the number as bridging points, not an ID. */}
           <path d="M0.5 9.5 Q5 1.5 9.5 9.5 M0.5 9.5 H9.5 M3 6.2 V9.5 M7 6.2 V9.5" fill="none" stroke="rgba(10,10,20,0.85)" strokeWidth={3} strokeLinecap="round" />

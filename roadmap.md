@@ -1,5 +1,10 @@
 # Roadmap
 
+## Slide-Assets: Graph-Markierungen
+- [x] Punktzahlen in beiden Graph-Bildern ausblenden
+- [x] Angle nur als direkte Linie zwischen zwei Nodes; Radius ohne Node-Kollisionen
+- [x] Beschriftungen ohne Hilfslinien platzieren und beide PNG-Ansichten im Browser prüfen
+
 ## Wedium-Versand am 14. November
 - [x] Zeitplan auf authentifizierte stündliche Aufrufe ohne 5-Sekunden-Abbruch umgestellt; Zugriff und Ablehnung unberechtigter Aufrufe live geprüft
 - [x] Letzter-Tag-Mail deaktiviert; auch erzwungener Versand bleibt gesperrt

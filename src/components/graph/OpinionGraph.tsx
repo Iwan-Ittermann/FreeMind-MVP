@@ -40,6 +40,8 @@ interface OpinionGraphProps {
   ttLandmarks?: TTLandmarks;
   /** Directed bridging points per opinion (points awarded BY the counterpart). */
   nodePoints?: Map<string, number>;
+  /** Show each node's numeric points label. Defaults to true. */
+  showNodePoints?: boolean;
   /** When provided, chats render as short directional arrows instead of edges. */
   chatArrows?: readonly ChatArrow[];
   /** Stream-Spirale (nur Signal-Renderer/TT). */
@@ -70,6 +72,7 @@ export function OpinionGraph({
   ttMode = false,
   ttLandmarks,
   nodePoints,
+  showNodePoints = true,
   chatArrows,
   streamSpiral,
 }: OpinionGraphProps) {
@@ -190,7 +193,7 @@ export function OpinionGraph({
           onNodeClick={handleNodeClick}
           onNodeHover={handleNodeHover}
           onEdgeClick={onEdgeClick}
-          {...(useSignalLike ? { showLabels, highlightAllNodes, showZones: chrome !== 'naked', ttMode, ttLandmarks, chatArrows, streamSpiral, opinionAnimations } : {})}
+          {...(useSignalLike ? { showLabels, highlightAllNodes, showZones: chrome !== 'naked', ttMode, ttLandmarks, showNodePoints, chatArrows, streamSpiral, opinionAnimations } : {})}
         />
       </div>
     );
