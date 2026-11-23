@@ -27,6 +27,7 @@ import Bericht from "./pages/Bericht";
 import NotificationsPage from "./pages/Notifications";
 import PassphraseRecall from "./pages/PassphraseRecall";
 import SimPage from "./pages/SimPage";
+import SlideAssets from "./pages/SlideAssets";
 
 
 import { VerificationDialog } from "@/components/VerificationDialog";
@@ -74,6 +75,7 @@ function AppRoutes() {
       <Route path="/passphrase-vergessen" element={<PassphraseRecall />} />
       <Route path="/faq" element={<Fragen />} />
       <Route path="/sogehts" element={<Sogehts />} />
+      <Route path="/slide-assets" element={<SlideAssets />} />
       <Route path="/bericht" element={<Bericht />} />
       <Route path="/benachrichtigungen" element={<NotificationsPage />} />
 
