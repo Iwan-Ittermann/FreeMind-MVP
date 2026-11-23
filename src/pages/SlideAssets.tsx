@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode, type CSSProperties } from 'react';
 import { MotionConfig } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
@@ -13,6 +13,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { OPINION_DIFFERENCE_STEPS as STEPS } from '@/lib/opinion-difference';
 import type { ChatRating, Opinion } from '@/types/graph';
 import { cn } from '@/lib/utils';
+import { calculateTTLayout } from '@/lib/tt-layout';
+import { WediumPresentationContext } from '@/contexts/WediumPresentationContext';
 
 /** Hidden, noindex screenshot frames for slides. Demo data only; reuses real components. */
 
@@ -112,18 +114,42 @@ function RateFrame() {
 function GraphFrame({ size, annotate }: { size: number; annotate: boolean }) {
   const lm = useMemo(() => { const w = size * 0.75; return { coreR: (140 / 600) * w, blueR: (300 / 600) * w, whiteR: (360 / 600) * w }; }, [size]);
   const c = size / 2;
+  // Same layout call as OpinionGraph, so leader lines hit real node positions.
+  const anchors = useMemo(() => {
+    const outer = size * 0.48;
+    const nodes = calculateTTLayout(DEMO_OPINIONS, DEMO_RATINGS, { centerX: c, centerY: c, outerRadius: outer, extremeRadius: outer * 0.92, moderateRadius: outer * 0.8, respectfulRadius: outer * 0.25, nodeRadius: Math.max(3, size * 0.012) }, lm, DEMO_POINTS).nodes
+      .map(n => ({ x: n.x, y: n.y, r: Math.hypot(n.x - c, n.y - c), a: Math.atan2(n.y - c, n.x - c) }));
+    const far = nodes.filter(n => n.r > lm.blueR * 0.45);
+    // Angle: two neighbouring outer nodes in the upper-right quadrant with a clear gap.
+    const upper = far.filter(n => n.a < 0 && n.a > -Math.PI / 2 - 0.6).sort((p, q) => p.a - q.a);
+    let pair = [upper[0], upper[upper.length - 1]];
+    let best = -1;
+    for (let i = 0; i < upper.length; i++) for (let j = i + 1; j < upper.length; j++) { const gap = upper[j].a - upper[i].a; const score = gap >= 0.6 && gap <= 1.3 ? Math.min(upper[i].r, upper[j].r) : -1; if (score > best) { best = score; pair = [upper[i], upper[j]]; } }
+    // Radius: outermost node in the lower-left half.
+    const radiusNode = far.filter(n => n.x < c).sort((p, q) => q.r - p.r)[0] ?? far[0];
+    return { pair, radiusNode };
+  }, [size, c, lm]);
+  const [A, B] = anchors.pair;
+  const R = anchors.radiusNode;
+  const arcR = A && B ? Math.min(A.r, B.r) * 0.7 : 0;
+  const pt = (ang: number, r: number) => `${c + Math.cos(ang) * r} ${c + Math.sin(ang) * r}`;
   return (
-    <div className="relative h-full w-full">
-      <OpinionGraph opinions={DEMO_OPINIONS} ratings={DEMO_RATINGS} width={size} height={size} showLabels="none" chrome="naked" ttMode ttLandmarks={lm} nodePoints={DEMO_POINTS} />
-      {annotate && (
-        <svg className="pointer-events-none absolute inset-0" width={size} height={size} aria-hidden>
-          <g className="stroke-foreground/70" fill="none" strokeWidth={1}>
-            <path d={`M ${c + lm.blueR * 0.7} ${c - lm.blueR * 0.7} A ${lm.blueR} ${lm.blueR} 0 0 1 ${c + lm.blueR} ${c}`} />
-            <line x1={c + lm.blueR * 0.85} y1={c - lm.blueR * 0.55} x2={size - 60} y2={70} />
-            <line x1={c - lm.blueR * 0.71} y1={c - lm.blueR * 0.71} x2={90} y2={100} />
-            <line x1={c} y1={c} x2={size - 90} y2={size - 42} />
+    <div className="relative h-full w-full" style={{ '--wedium-node': '242 43% 22%' } as CSSProperties}>
+      <WediumPresentationContext.Provider value>
+        <OpinionGraph opinions={DEMO_OPINIONS} ratings={DEMO_RATINGS} width={size} height={size} showLabels="none" chrome="naked" ttMode ttLandmarks={lm} nodePoints={DEMO_POINTS} />
+      </WediumPresentationContext.Provider>
+      {annotate && A && B && R && (
+        <svg className="pointer-events-none absolute inset-0 text-foreground" width={size} height={size} aria-hidden>
+          <g stroke="currentColor" fill="none" strokeWidth={1.25} strokeLinecap="round">
+            <line x1={c} y1={c} x2={A.x} y2={A.y} strokeDasharray="3 4" opacity={0.8} />
+            <line x1={c} y1={c} x2={B.x} y2={B.y} strokeDasharray="3 4" opacity={0.8} />
+            <path d={`M ${pt(A.a, arcR)} A ${arcR} ${arcR} 0 0 1 ${pt(B.a, arcR)}`} strokeWidth={2} />
+            <line x1={c + Math.cos((A.a + B.a) / 2) * arcR} y1={c + Math.sin((A.a + B.a) / 2) * arcR} x2={size - 70} y2={66} opacity={0.6} />
+            <line x1={R.x} y1={R.y} x2={c} y2={c} strokeWidth={2} />
+            <line x1={(R.x + c) / 2} y1={(R.y + c) / 2} x2={110} y2={100} opacity={0.6} />
+            <line x1={c} y1={c} x2={size - 90} y2={size - 42} opacity={0.6} />
           </g>
-          <circle cx={c} cy={c} r={4} className="fill-foreground" />
+          <circle cx={c} cy={c} r={3} fill="currentColor" />
         </svg>
       )}
       {annotate && (
