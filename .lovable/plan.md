@@ -1,51 +1,36 @@
-# Plan: Freemind-Events live als Bluesky-Feed (Event-Silos)
+# Zustimmung/Ablehnung: in den Chat und direkt unter jede Meinung
 
 ## Ziel
-Jedes Freemind-Event wird live ins AT Protocol gespiegelt. Jede Person tritt pro Event mit einem eigenen, anonymen Konto auf. Meinungen, Chats und Ratings sind öffentlich. Ein Bluesky-Feed pro Event zeigt zuerst Gespräche über Meinungsgräben hinweg. Bluesky-Nutzer können lesen und liken. Antworten können nur die beiden Personen eines Chats, mitmachen kann man nur über Freemind.
+Die Frage „Wie stehst du zu dieser Meinung?“ wird dort gestellt, wo man der Meinung begegnet: direkt unter jeder Meinung in der Liste (wie ein Like-Button) und als erster Schritt im Chat. Kein eigenes Bewertungsfenster mehr.
 
-## Was Nutzer sehen
-- **In Freemind:** Beim Event-Einstieg ein Hinweis: "Diese Diskussion ist öffentlich auf Bluesky lesbar, unter einem anonymen Konto nur für dieses Event." Eine Zustimmung ist Pflicht, bevor man eine Meinung postet.
-- **In Bluesky:** Der Feed "Freemind · <Frage>" mit angepinnter Frage. Darunter stehen geschlossene 1:1-Gespräche ("Nur k7q2 und m3x9 können antworten") und Meinungen. Jede Karte verlinkt zum Mitmachen auf freemind.chat.
+## 1. Meinungen-Tab: Icons direkt unter jeder Meinung
+- Unter jeder Meinung steht eine schlanke Reihe mit den 5 Icons (ohne Text, kompakt, wie Like-Leiste).
+- Antippen speichert sofort, das gewählte Icon bleibt farbig markiert. Nochmal antippen eines anderen Icons ändert die Bewertung.
+- Kurzes Aufploppen der Stufenbezeichnung beim Antippen, damit klar ist, was gewählt wurde.
+- Das bisherige Bewertungsfenster (Popup) im Meinungen-Tab entfällt.
+- Eigene Meinung: keine Leiste. Ohne eigene Meinung: Leiste ausgegraut, Tippen zeigt „Teile zuerst deine Meinung“.
+- Nach Diskussionsende (nur lesen): Leiste zeigt die eigene Bewertung, ist aber nicht mehr änderbar.
 
-## Voraussetzung außerhalb der App (wichtig)
-Für die Silo-Konten braucht es einen **eigenen PDS-Server** (offizieller Bluesky-PDS als Docker-Container auf einem kleinen Server mit einer Domain wie `pds.freemind.chat`). Die App selbst kann keinen dauerhaft laufenden Server betreiben. Massenkonten auf bsky.social verbieten die Nutzungsbedingungen. Den Server richtest du oder ein Techniker ein; ich liefere eine genaue Anleitung. Alles andere läuft in der App und ihrem Backend.
+## 2. Chat: Bewertung als erster Schritt
+- Öffnet man einen Chat zu einer noch nicht bewerteten Meinung, erscheint oben im Chat (unter der Meinung des Gegenübers) die Frage mit den 5 Icons.
+- Nach der Auswahl klappt die Leiste zu einer kleinen Zeile „Deine Haltung: Zustimmung · ändern“ zusammen; der Chat ist voll nutzbar.
+- Schreiben bleibt möglich, auch ohne Bewertung (keine harte Sperre, damit keine Hürde wie beim Wedium-Test entsteht) – die Frage bleibt aber sichtbar oben, bis beantwortet.
+- Im Kreis-Tab (Meinung antippen) bleibt der bisherige Schritt erhalten, nutzt aber das neue Wording.
+- Gilt gleich für Handy und Desktop-Chatfenster, für echte Diskussion und Sim.
 
-## Schritte
-1. **PDS bereitstellen (extern):** PDS installieren, Wildcard-DNS `*.pds.freemind.chat` einrichten, Einladungs- und Admin-Passwort als Secret im Backend hinterlegen und den Relay mit `requestCrawl` an `bsky.network` anmelden.
-2. **Event-Konto:** Pro Event ein Konto wie `wd10.pds.freemind.chat` mit Profil. Es postet die Frage und dient als Anker für Threads und Feed.
-3. **Silo-Konten:** Neue Tabelle `atproto_silos` (Signup/User, Topic, DID, Handle, verschlüsselte Zugangsdaten). Das Konto wird beim ersten Posten der Meinung angelegt. Handle zufällig (`k7q2.pds.freemind.chat`), Avatar ist das Personen-Icon, pro Event neu gewürfelt.
-4. **Spiegel-Warteschlange:** Neue Tabelle `atproto_outbox`, befüllt von Datenbank-Triggern auf Meinungen, Chats, Chatnachrichten, Meinungs- und Respekt-Ratings und Soft-Deletes. Eine Backend-Funktion arbeitet sie jede Minute ab und ist idempotent: Jeder Eintrag speichert seine `at-uri`. Ein Fehler blockiert nie die Diskussion selbst.
-5. **Abbildung:**
-   - Meinung → `app.bsky.feed.post` als Antwort auf den Frage-Post, plus `chat.freemind.opinion`
-   - Chatbeginn → Quote-Post auf die Partnermeinung mit Erwähnung, `threadgate` mit `mentionRule` und `postgate` ohne Zitate von außen
-   - Nachricht → Reply im Chat-Thread
-   - Ratings → `chat.freemind.differenceRating` und `chat.freemind.respectRating`, jeweils mit Ziel-URI und Wert
-   - Soft-Delete → `deleteRecord`
-   - `createdAt` wird auf die Minute gerundet
-6. **Lexicons:** Schemas für `chat.freemind.*` als JSON im Projekt ablegen und unter `freemind.chat` veröffentlichen (NSID-Auflösung per DNS `_lexicon`).
-7. **Feed Generator als Backend-Funktion:** `did:web:feed.freemind.chat` mit `/.well-known/did.json`, `describeFeedGenerator` und `getFeedSkeleton`. Die Sortierung kommt aus unserer eigenen Datenbank, ein Jetstream-Leser ist nicht nötig: oben die Frage, dann Chats nach Respekt mal Meinungsunterschied, Meinungen mit Ratings aus mehreren Clustern, wartende Chats. `feedContext` gibt den Grund mit. Den Feed-Record (`app.bsky.feed.generator`) legt das Event-Konto an.
-8. **Bluesky-Likes:** Bleiben in Bluesky. Für den Anfang zählen sie nicht in Brückenpunkte und das Ranking.
-9. **Admin `/wedium/admin` (und pro Kontext):** Schalter "Bluesky-Spiegelung an/aus" pro Event, Status der Warteschlange (offen, gesendet, fehlerhaft), Feed-Link, Knopf zum erneuten Senden.
-10. **Event-Ende:** Silo-Konten werden gesperrt (keine neuen Posts), der Feed bleibt als Archiv.
+## 3. Wording-Vorschlag (DE / EN)
+- Frage: „Wie stehst du zu dieser Meinung?“ / „Where do you stand on this?“
+- Stufen: „Voll dabei“ · „Eher ja“ · „Unentschieden“ · „Eher nein“ · „Gar nicht“ /
+  „Totally“ · „Mostly“ · „Unsure“ · „Not really“ · „Not at all“
+- Eingeklappt im Chat: „Deine Haltung: …“ / „Your stance: …“
+- Ersetzt „Meinungsunterschied“ als Beschriftung. Die Verständnis-Skala bleibt unverändert und klar getrennt.
 
-## Tests
-- Abbildung Freemind → Record (Felder, gerundete Zeit, kein Feld mit Nutzer-ID)
-- Ein Silo pro Person und Event, verschiedene DIDs über Events hinweg
-- Ein Outbox-Eintrag wird bei Wiederholung nicht doppelt gepostet
-- Feed-Sortierung: Ein respektvoller Chat mit großem Unterschied steht vor einem mit kleinem Unterschied
-
-## Risiken
-- Öffentliches bleibt kopierbar, auch nach dem Löschen. Das muss im Hinweis für Nutzer stehen.
-- Rückschlüsse über Silos hinweg durch Schreibstil oder Zeitmuster lassen sich nur teilweise verhindern.
-- Betrieb und Kosten des PDS (Server ca. 5–10 €/Monat) und die Ratenlimits des Relays.
-- Rechtlich: Freemind ist Hoster der Silo-Konten. NetzDG-Löschungen laufen über den bestehenden Soft-Delete, der auch im Protokoll löscht.
+## Was gleich bleibt
+- Gespeicherte Werte (0/2/5/8/10), Graph-Position, Animationen der Bewertungen und Respekt-Bewertung bleiben unverändert; bestehende Bewertungen erscheinen sofort in der neuen Leiste.
 
 ## Technische Details
-- Edge-Funktionen: `atproto-mirror` (Outbox-Worker, Cron jede Minute, Cron-Helper-Auth), `atproto-feed` (öffentliche XRPC-Endpunkte, `verify_jwt=false`).
-- Die Zugangsdaten der Silos (App-Passwörter oder Sessions) liegen verschlüsselt und nur für die Funktion lesbar. RLS sperrt alles für Clients.
-- Für XRPC nutzen wir `@atproto/api` in Deno (npm-Import).
-- AGENTS.md-Regel: Spiegelung läuft nur über die Outbox, und keine Funktion schreibt Nutzer-IDs in Records.
-
-## Offene Punkte vor dem Start
-- Wer betreibt den PDS-Server, und welche Domain nehmen wir?
-- Gilt das ab dem nächsten Event, oder soll `wd10` nachträglich als Archiv gespiegelt werden? (Bisherige Teilnehmer haben nicht zugestimmt. Ich empfehle, das nicht zu tun.)
+- `TTEmojiRating` erhält eine `compact`-Variante (nur Icons, kleine Höhe, optionales Label-Flash); Labels weiter aus `OPINION_DIFFERENCE_STEPS`/`tt.diffStep.*`.
+- Neue Komponente `OpinionStanceBar` (Speichern über denselben Rating-Pfad wie `TTRatingDialog`, inkl. Broadcast auf den gemeinsamen Animations-Event-Pfad); in den drei Listen-Renderstellen von `TTSideTabs` (Zeilen ~348/381/413) eingebunden, `TTRatingDialog` entfernt.
+- `EmbeddedChatView` und `FloatingChatWindow`: Kopfbereich mit `OpinionStanceBar` (expanded, solange keine Bewertung existiert; sonst eingeklappt). Bewertung wird für das Paar (eigene Meinung → Partnermeinung) gelesen.
+- i18n: `tt.diffStep.*`, `tt.opinionDifferenceLabel` neu formuliert, neue Keys `tt.stanceQuestion`, `tt.yourStance` in de/en.
+- Test: Wert-Zuordnung der 5 Stufen (0/2/5/8/10) und „unbewertet → Frage offen“ im Chat.
