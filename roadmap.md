@@ -6,6 +6,7 @@
 - [x] Neue Formeltexte direkt neben den erklärten Bereichen platzieren
 - [x] Angle als Kreisbogen zwischen den beiden linken Nodes auf derselben Kreislinie darstellen
 - [x] Beschriftete Folie und PNG-Export im Browser geprüft (1440×1440, keine Überschneidungen)
+- [x] Zentrum als goldener Stern statt Personicon; Größe automatisch kollisionsfrei begrenzt, Export geprüft
 
 ## Wedium-Versand am 14. November
 - [x] Zeitplan auf authentifizierte stündliche Aufrufe ohne 5-Sekunden-Abbruch umgestellt; Zugriff und Ablehnung unberechtigter Aufrufe live geprüft
