@@ -2,8 +2,10 @@
 
 ## Slide-Assets: Graph-Markierungen
 - [x] Punktzahlen in beiden Graph-Bildern ausblenden
-- [x] Angle nur als direkte Linie zwischen zwei Nodes; Radius ohne Node-Kollisionen
-- [x] Beschriftungen ohne Hilfslinien platzieren und beide PNG-Ansichten im Browser prüfen
+- [x] Radius ohne Node-Kollisionen
+- [x] Neue Formeltexte direkt neben den erklärten Bereichen platzieren
+- [x] Angle als Kreisbogen zwischen den beiden linken Nodes auf derselben Kreislinie darstellen
+- [x] Beschriftete Folie und PNG-Export im Browser geprüft (1440×1440, keine Überschneidungen)
 
 ## Wedium-Versand am 14. November
 - [x] Zeitplan auf authentifizierte stündliche Aufrufe ohne 5-Sekunden-Abbruch umgestellt; Zugriff und Ablehnung unberechtigter Aufrufe live geprüft

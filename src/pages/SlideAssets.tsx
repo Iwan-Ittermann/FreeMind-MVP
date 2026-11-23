@@ -136,6 +136,26 @@ function trimToNodeEdges(a: GraphAnchor, b: GraphAnchor, iconRadius: number, tar
   };
 }
 
+function arcBetweenNodes(a: GraphAnchor, b: GraphAnchor, centre: GraphAnchor, iconRadius: number) {
+  const radius = (a.r + b.r) / 2;
+  const startAngle = Math.atan2(a.y - centre.y, a.x - centre.x);
+  const endAngle = Math.atan2(b.y - centre.y, b.x - centre.x);
+  let delta = endAngle - startAngle;
+  while (delta > Math.PI) delta -= 2 * Math.PI;
+  while (delta < -Math.PI) delta += 2 * Math.PI;
+  const direction = Math.sign(delta) || 1;
+  const trim = Math.min((iconRadius + 3) / radius, Math.abs(delta) * 0.3);
+  const start = startAngle + direction * trim;
+  const end = startAngle + delta - direction * trim;
+  const point = (angle: number) => ({
+    x: centre.x + Math.cos(angle) * radius,
+    y: centre.y + Math.sin(angle) * radius,
+  });
+  const p1 = point(start);
+  const p2 = point(end);
+  return `M ${p1.x} ${p1.y} A ${radius} ${radius} 0 0 ${direction > 0 ? 1 : 0} ${p2.x} ${p2.y}`;
+}
+
 function GraphFrame({ size, annotate }: { size: number; annotate: boolean }) {
   const lm = useMemo(() => { const w = size * 0.75; return { coreR: (140 / 600) * w, blueR: (300 / 600) * w, whiteR: (360 / 600) * w }; }, [size]);
   const c = size / 2;
@@ -160,45 +180,38 @@ function GraphFrame({ size, annotate }: { size: number; annotate: boolean }) {
       .filter(n => n.id !== centre.id && visibleLength(n, centre) > 12 && isClear(n, centre))
       .sort((p, q) => visibleLength(q, centre) - visibleLength(p, centre))[0];
 
-    // Angle: one direct, unobstructed connection between two different people.
-    // Keep the radius person out of this pair so the two ideas stay separate.
-    let pair: GraphAnchor[] = [];
-    let best = -Infinity;
-    for (let i = 0; i < nodes.length; i++) for (let j = i + 1; j < nodes.length; j++) {
-      const a = nodes[i];
-      const b = nodes[j];
-      if (a.id === centre.id || b.id === centre.id || a.id === radiusNode?.id || b.id === radiusNode?.id) continue;
-      const gap = Math.abs(a.a - b.a);
-      const length = visibleLength(a, b);
-      if (gap < 0.45 || gap > 1.5 || length <= 12 || !isClear(a, b)) continue;
-      const clearance = Math.min(...nodes.filter(n => n.id !== a.id && n.id !== b.id).map(n => distanceToSegment(n, a, b) - iconRadius));
-      const score = length + Math.min(clearance, 8) * 4;
-      if (score > best) { best = score; pair = [a, b]; }
-    }
+    // Angle: the two leftmost people sit on the same visible ring. Their small
+    // radial difference comes only from collision resolution; the arc uses the
+    // mean radius and stops at both icon borders.
+    const pair = [...nodes]
+      .filter(n => n.id !== centre.id && n.id !== radiusNode?.id)
+      .sort((a, b) => a.x - b.x)
+      .slice(0, 2);
     return { pair, radiusNode, centre, iconRadius };
   }, [size, c, lm]);
   const [A, B] = anchors.pair;
   const R = anchors.radiusNode;
-  const angleLine = A && B ? trimToNodeEdges(A, B, anchors.iconRadius) : null;
+  const angleArc = A && B ? arcBetweenNodes(A, B, anchors.centre, anchors.iconRadius) : null;
   const radiusLine = R ? trimToNodeEdges(R, anchors.centre, anchors.iconRadius, true) : null;
   return (
     <div className="relative h-full w-full" style={{ '--wedium-node': '242 43% 22%' } as CSSProperties}>
       <WediumPresentationContext.Provider value>
         <OpinionGraph opinions={DEMO_OPINIONS} ratings={DEMO_RATINGS} width={size} height={size} showLabels="none" chrome="naked" ttMode ttLandmarks={lm} nodePoints={DEMO_POINTS} showNodePoints={false} />
       </WediumPresentationContext.Provider>
-      {annotate && (angleLine || radiusLine) && (
+      {annotate && (angleArc || radiusLine) && (
         <svg className="pointer-events-none absolute inset-0 text-foreground" width={size} height={size} aria-hidden>
           <g stroke="currentColor" fill="none" strokeWidth={2} strokeLinecap="round">
-            {angleLine && <line {...angleLine} />}
-            {radiusLine && <line {...radiusLine} />}
+            {angleArc && <path data-angle-arc d={angleArc} />}
+            {radiusLine && <line data-radius-line {...radiusLine} />}
           </g>
         </svg>
       )}
       {annotate && (
         <div className="pointer-events-none absolute inset-0 text-foreground">
-          <span className="slide-anno absolute bottom-16 right-4 max-w-[170px] text-right">Angle = disagreement</span>
-          <span className="slide-anno absolute left-4 top-3 max-w-[210px]">Radius = feeling understood × disagreement</span>
-          <span className="slide-anno absolute bottom-3 left-4">Centre: the best listeners</span>
+          <span className="slide-anno absolute bottom-16 left-4 text-left">Angle =<br />disagreement</span>
+          <span className="slide-anno slide-anno-formula absolute right-4 top-4 w-[240px] text-right">
+            Understanding Others x<br />Disagreement =<br />Proximity to Center
+          </span>
         </div>
       )}
     </div>
@@ -250,6 +263,7 @@ export default function SlideAssets() {
           .slide-frame textarea { font-size: 20px !important; line-height: 1.4 !important; }
           .slide-frame .slide-key, .slide-frame .slide-anno { font-size: 22px !important; line-height: 1.25; }
           .slide-frame .slide-anno { font-weight: 600; text-shadow: 0 0 6px hsl(var(--background)); }
+          .slide-frame .slide-anno-formula { font-size: 19px !important; line-height: 1.3; }
           .slide-frame [role="slider"] + div { font-size: 18px !important; }
           .slide-frame [role="slider"] + div span { font-size: 18px !important; }
         `}</style>
