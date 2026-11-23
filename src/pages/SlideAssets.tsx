@@ -114,7 +114,7 @@ function RateFrame() {
 type GraphAnchor = { id: string; x: number; y: number; r: number; a: number };
 type LineEndpoints = { x1: number; y1: number; x2: number; y2: number };
 
-function distanceToSegment(p: GraphAnchor, a: GraphAnchor, b: GraphAnchor) {
+function distanceToSegment(p: { x: number; y: number }, a: { x: number; y: number }, b: { x: number; y: number }) {
   const dx = b.x - a.x;
   const dy = b.y - a.y;
   const lengthSquared = dx * dx + dy * dy;
@@ -122,12 +122,12 @@ function distanceToSegment(p: GraphAnchor, a: GraphAnchor, b: GraphAnchor) {
   return Math.hypot(p.x - (a.x + t * dx), p.y - (a.y + t * dy));
 }
 
-function trimToNodeEdges(a: GraphAnchor, b: GraphAnchor, iconRadius: number, targetIsCenter = false): LineEndpoints {
+function trimToNodeEdges(a: GraphAnchor, b: GraphAnchor, iconRadius: number, endTrim = iconRadius + 3): LineEndpoints {
   const dx = b.x - a.x;
   const dy = b.y - a.y;
   const length = Math.hypot(dx, dy);
   const startOffset = Math.min(iconRadius + 3, length * 0.35);
-  const endOffset = targetIsCenter && b.id === 'centre' ? 0 : Math.min(iconRadius + 3, length * 0.35);
+  const endOffset = Math.min(endTrim, length * 0.35);
   return {
     x1: a.x + (dx / length) * startOffset,
     y1: a.y + (dy / length) * startOffset,
@@ -156,6 +156,32 @@ function arcBetweenNodes(a: GraphAnchor, b: GraphAnchor, centre: GraphAnchor, ic
   return `M ${p1.x} ${p1.y} A ${radius} ${radius} 0 0 ${direction > 0 ? 1 : 0} ${p2.x} ${p2.y}`;
 }
 
+/** The old TT node star, reused for the graph centre so the middle reads as a
+ * centre and not as one more person. Gold, but with a much softer glow than the
+ * highscore stars used to have. */
+const STAR_PATH = 'M20 8 L23 17 L32 20 L23 23 L20 32 L17 23 L8 20 L17 17 Z';
+const STAR_UNIT_RADIUS = 12; // the path spans 8..32 around its own 20/20 origin
+const STAR_VERTS: readonly [number, number][] = [[20, 8], [23, 17], [32, 20], [23, 23], [20, 32], [17, 23], [8, 20], [17, 17]];
+
+/**
+ * Largest scale at which the centre star still clears every other icon, so the
+ * star can never overlap a neighbour that happens to sit close to the middle.
+ */
+function safeStarScale(nodes: GraphAnchor[], centre: GraphAnchor, iconRadius: number, maxScale: number) {
+  const outline = (s: number) => STAR_VERTS.map(([x, y]) => ({ x: centre.x + (x - 20) * s, y: centre.y + (y - 20) * s }));
+  const clear = (s: number) => nodes.filter(n => n.id !== centre.id).every(n => {
+    const poly = outline(s);
+    return poly.every((v, i) => distanceToSegment(n, v, poly[(i + 1) % poly.length]) > iconRadius + 2);
+  });
+  if (clear(maxScale)) return maxScale;
+  let lo = 0.2, hi = maxScale;
+  for (let i = 0; i < 18; i++) {
+    const mid = (lo + hi) / 2;
+    if (clear(mid)) lo = mid; else hi = mid;
+  }
+  return lo;
+}
+
 function GraphFrame({ size, annotate }: { size: number; annotate: boolean }) {
   const lm = useMemo(() => { const w = size * 0.75; return { coreR: (140 / 600) * w, blueR: (300 / 600) * w, whiteR: (360 / 600) * w }; }, [size]);
   const c = size / 2;
@@ -166,16 +192,15 @@ function GraphFrame({ size, annotate }: { size: number; annotate: boolean }) {
       .map(n => ({ id: n.id, x: n.x, y: n.y, r: Math.hypot(n.x - c, n.y - c), a: Math.atan2(n.y - c, n.x - c) }));
     const iconRadius = 18 * Math.min(1, (Math.max(3, size * 0.012) / 6) * 1.6);
     const centreNode = [...nodes].sort((p, q) => p.r - q.r)[0];
-    const centre: GraphAnchor = centreNode?.r <= iconRadius
-      ? centreNode
-      : { id: 'centre', x: c, y: c, r: 0, a: 0 };
+    // The centre is drawn as a star, so every line aims at the exact graph centre.
+    const centre: GraphAnchor = { id: centreNode?.id ?? 'centre', x: c, y: c, r: 0, a: 0 };
     const isClear = (a: GraphAnchor, b: GraphAnchor) => nodes
       .filter(n => n.id !== a.id && n.id !== b.id)
       .every(n => distanceToSegment(n, a, b) > iconRadius + 1);
     const visibleLength = (a: GraphAnchor, b: GraphAnchor) => Math.hypot(b.x - a.x, b.y - a.y) - 2 * (iconRadius + 3);
 
-    // Radius: use the longest unobstructed radial segment. The centre person is
-    // the destination, not an obstacle; the line stops at both icon borders.
+    // Radius: use the longest unobstructed radial segment. The centre star is
+    // the destination, not an obstacle; the line stops just outside its tips.
     const radiusNode = nodes
       .filter(n => n.id !== centre.id && visibleLength(n, centre) > 12 && isClear(n, centre))
       .sort((p, q) => visibleLength(q, centre) - visibleLength(p, centre))[0];
@@ -187,25 +212,43 @@ function GraphFrame({ size, annotate }: { size: number; annotate: boolean }) {
       .filter(n => n.id !== centre.id && n.id !== radiusNode?.id)
       .sort((a, b) => a.x - b.x)
       .slice(0, 2);
-    return { pair, radiusNode, centre, iconRadius };
+    const starScale = safeStarScale(nodes, centre, iconRadius, (iconRadius + 2) / STAR_UNIT_RADIUS);
+    return { pair, radiusNode, centre, iconRadius, starScale, hasCentreNode: !!centreNode && centreNode.r <= iconRadius };
   }, [size, c, lm]);
   const [A, B] = anchors.pair;
   const R = anchors.radiusNode;
+  const starScale = anchors.starScale;
+  const starTip = STAR_UNIT_RADIUS * starScale;
   const angleArc = A && B ? arcBetweenNodes(A, B, anchors.centre, anchors.iconRadius) : null;
-  const radiusLine = R ? trimToNodeEdges(R, anchors.centre, anchors.iconRadius, true) : null;
+  const radiusLine = R ? trimToNodeEdges(R, anchors.centre, anchors.iconRadius, starTip + 2) : null;
   return (
     <div className="relative h-full w-full" style={{ '--wedium-node': '242 43% 22%' } as CSSProperties}>
+      {/* The person icon that sits exactly in the middle makes room for the star. */}
+      {anchors.hasCentreNode && (
+        <style>{`.slide-frame [data-tt-node-id="${anchors.centre.id}"] { display: none !important; }`}</style>
+      )}
       <WediumPresentationContext.Provider value>
         <OpinionGraph opinions={DEMO_OPINIONS} ratings={DEMO_RATINGS} width={size} height={size} showLabels="none" chrome="naked" ttMode ttLandmarks={lm} nodePoints={DEMO_POINTS} showNodePoints={false} />
       </WediumPresentationContext.Provider>
-      {annotate && (angleArc || radiusLine) && (
-        <svg className="pointer-events-none absolute inset-0 text-foreground" width={size} height={size} aria-hidden>
+      <svg className="pointer-events-none absolute inset-0 text-foreground" width={size} height={size} aria-hidden>
+        <defs>
+          <filter id="slide-centre-star-glow" x="-70%" y="-70%" width="240%" height="240%">
+            <feGaussianBlur stdDeviation="2.1" result="blur" />
+            <feFlood floodColor="#F5C542" floodOpacity="0.36" result="gold" />
+            <feComposite in="gold" in2="blur" operator="in" result="glow" />
+            <feMerge><feMergeNode in="glow" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+        </defs>
+        <g data-centre-star transform={`translate(${c} ${c}) scale(${starScale.toFixed(3)}) translate(-20 -20)`}>
+          <path d={STAR_PATH} fill="#F5C542" filter="url(#slide-centre-star-glow)" />
+        </g>
+        {annotate && (angleArc || radiusLine) && (
           <g stroke="currentColor" fill="none" strokeWidth={2} strokeLinecap="round">
             {angleArc && <path data-angle-arc d={angleArc} />}
             {radiusLine && <line data-radius-line {...radiusLine} />}
           </g>
-        </svg>
-      )}
+        )}
+      </svg>
       {annotate && (
         <div className="pointer-events-none absolute inset-0 text-foreground">
           <span className="slide-anno absolute bottom-16 left-4 text-left">Angle =<br />disagreement</span>
