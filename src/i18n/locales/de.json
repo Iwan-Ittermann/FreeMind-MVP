@@ -661,7 +661,7 @@
     "registerToParticipateSuffix": "um teilzunehmen",
     "post": "Posten",
     "letsChat": "Diskutieren",
-    "opinionDifferenceLabel": "Meinungsunterschied",
+    "opinionDifferenceLabel": "Wie stehst du zu dieser Meinung?",
     "report": {
       "emailToggle": "Täglicher Bericht per E-Mail",
       "needsLogin": "Bitte melde dich an, um den Tagesbericht zu erhalten.",
@@ -763,11 +763,11 @@
     "understandingLabel": "Verständnis",
     "expandOpinion": "Meinung anzeigen",
     "diffStep": {
-      "strongAgree": "Starke Zustimmung",
-      "agree": "Zustimmung",
-      "neutral": "Neutral",
-      "disagree": "Ablehnung",
-      "strongDisagree": "Starke Ablehnung"
+      "strongAgree": "Voll dabei",
+      "agree": "Eher ja",
+      "neutral": "Unentschieden",
+      "disagree": "Eher nein",
+      "strongDisagree": "Gar nicht"
     },
     "understandingStep": {
       "notAtAll": "Gar nicht",
@@ -847,7 +847,9 @@
     "simRunning": "Simulation läuft",
     "simStop": "Stoppen",
     "simRunsLeft": "{{count}} von 4 Läufen heute übrig",
-    "simDailyLimit": "Tageslimit erreicht — morgen geht es weiter"
+    "simDailyLimit": "Tageslimit erreicht — morgen geht es weiter",
+    "stanceQuestion": "Wie stehst du zu dieser Meinung?",
+    "yourStance": "Deine Haltung: {{stance}}"
   },
   "secret": {
     "title": "Geschützter Bereich",

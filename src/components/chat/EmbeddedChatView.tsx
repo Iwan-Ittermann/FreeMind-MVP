@@ -1,3 +1,4 @@
+import { OpinionStanceBar } from '@/components/tt/OpinionStanceBar';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Send, Quote, Mic, Square, Ban, Unlock, Sparkles, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -223,6 +224,9 @@ export function EmbeddedChatView({ theirOpinionId, readOnly: readOnlyProp = fals
                   {theirOpinion.visible ? theirOpinion.text : (theirOpinion.notice_text || 'Hidden')}
                 </p>
               </div>
+            )}
+            {!isBotChat && theirOpinion && myOpinion && !readOnly && (
+              <OpinionStanceBar topicId={topicId} myOpinionId={myOpinion.id} targetOpinionId={theirOpinion.id} variant="chat" />
             )}
             <div className="border-t border-border/30 my-1" />
             {myOpinion && (

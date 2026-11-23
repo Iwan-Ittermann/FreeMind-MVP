@@ -1,3 +1,4 @@
+import { OpinionStanceBar } from '@/components/tt/OpinionStanceBar';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Minus, X, Check } from 'lucide-react';
@@ -231,6 +232,9 @@ export function FloatingChatWindow({ theirOpinionId, onMinimize, onClose, style,
                 </div>
               ) : (
                 <div className="space-y-2">
+                  {!isBotChat && theirOpinion && myOpinion && !readOnly && (
+                    <OpinionStanceBar topicId={topicId} myOpinionId={myOpinion.id} targetOpinionId={theirOpinion.id} variant="chat" />
+                  )}
                   {displayMessages.map(msg => (
                     <ChatBubble
                       key={msg.id}

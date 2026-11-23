@@ -21,7 +21,7 @@ import { useAllTopicChats, type AllTopicChatItem } from '@/hooks/useAllTopicChat
 import { useStreamFocus } from '@/hooks/useStreamFocus';
 import { EmbeddedChatView } from '@/components/chat/EmbeddedChatView';
 import { StreamCosmicView } from './StreamCosmicView';
-import { TTRatingDialog } from './TTRatingDialog';
+import { OpinionStanceBar } from './OpinionStanceBar';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -93,7 +93,6 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
     const [chatSearch, setChatSearch] = useState('');
     const [opinionSearch, setOpinionSearch] = useState('');
     const [opinionSort, setOpinionSort] = useState<OpinionSort>('difference');
-    const [ratingTarget, setRatingTarget] = useState<{ id: string; text: string } | null>(null);
     const [expandedOpinionId, setExpandedOpinionId] = useState<string | null>(null);
 
     const { data: myRatings } = useMyOpinionRatings(topicId, myOpinionId);
@@ -343,11 +342,9 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                             <li key={op.id} className="px-4 py-3">
                               <div className="flex items-start gap-2">
                                 <button
-                                  onClick={() => {
-                                    if (!rated && hasOwnOpinion) {
-                                      setRatingTarget({ id: op.id, text: op.text });
-                                    }
-                                  }}
+                                  onClick={() =>
+                                    setExpandedOpinionId((cur) => (cur === op.id ? null : op.id))
+                                  }
                                   className="min-w-0 flex-1 text-left"
                                 >
                                   <p
@@ -374,22 +371,17 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                                   />
                                 </button>
                               </div>
-                              <div className="mt-1.5 flex items-center gap-2 flex-wrap">
-                                {rated ? (
-                                  <>
-                                    <button
-                                      onClick={() => setRatingTarget({ id: op.id, text: op.text })}
-                                      className="flex items-center gap-1.5 text-[10px] text-muted-foreground"
-                                    >
-                                      <Pencil className="w-2.5 h-2.5" />
-                                      <span>{t('tt.differenceShort', 'Unterschied')}</span>
-                                      <span className="relative h-[3px] w-16 rounded-full bg-foreground/15">
-                                        <span
-                                          className="absolute inset-y-0 left-0 rounded-full bg-primary"
-                                          style={{ width: `${(Number(rating) / 10) * 100}%` }}
-                                        />
-                                      </span>
-                                    </button>
+                              {op.id !== myOpinionId && (
+                                <div className="mt-1.5 flex items-start gap-2">
+                                  <div className="min-w-0 flex-1 max-w-[240px]">
+                                    <OpinionStanceBar
+                                      topicId={topicId}
+                                      myOpinionId={myOpinionId}
+                                      targetOpinionId={op.id}
+                                      readOnly={readOnly}
+                                    />
+                                  </div>
+                                  {rated && (
                                     <Button
                                       size="sm"
                                       variant={started ? 'default' : 'outline'}
@@ -405,20 +397,9 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
                                         ? t('tt.openChat', 'Chat öffnen')
                                         : t('tt.startChat', 'Chat starten')}
                                     </Button>
-                                  </>
-                                ) : (
-                                  <button
-                                    onClick={() => {
-                                      if (!hasOwnOpinion) return;
-                                      setRatingTarget({ id: op.id, text: op.text });
-                                    }}
-                                    disabled={!hasOwnOpinion}
-                                    className="ml-auto text-[11px] px-3 h-7 rounded-full border border-border/60 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-40"
-                                  >
-                                    {t('tt.rateNow', 'Bewerten')}
-                                  </button>
-                                )}
-                              </div>
+                                  )}
+                                </div>
+                              )}
                             </li>
                           );
                         })}
@@ -673,15 +654,6 @@ export const TTSideTabs = forwardRef<TTSideTabsHandle, TTSideTabsProps>(
           )}
         </AnimatePresence>
 
-        <TTRatingDialog
-          open={!!ratingTarget}
-          onOpenChange={(open) => {
-            if (!open) setRatingTarget(null);
-          }}
-          topicId={topicId}
-          myOpinionId={myOpinionId}
-          target={ratingTarget}
-        />
 
         {/* Three primary tabs; secondary destinations live in the settings menu. */}
         <div
