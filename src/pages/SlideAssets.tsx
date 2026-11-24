@@ -13,6 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { OPINION_DIFFERENCE_STEPS as STEPS } from '@/lib/opinion-difference';
 import type { ChatRating, Opinion } from '@/types/graph';
 import { cn } from '@/lib/utils';
+import { Bell, CircleDot, HelpCircle, List, MessagesSquare, Settings } from 'lucide-react';
 import { calculateTTLayout } from '@/lib/tt-layout';
 import { WediumPresentationContext } from '@/contexts/WediumPresentationContext';
 
@@ -221,10 +222,31 @@ function GraphFrame({ size, annotate, opinions = DEMO_OPINIONS, ratings = DEMO_R
     // Angle: the two leftmost people sit on the same visible ring. Their small
     // radial difference comes only from collision resolution; the arc uses the
     // mean radius and stops at both icon borders.
-    const pair = [...nodes]
-      .filter(n => n.id !== centre.id && n.id !== radiusNode?.id)
-      .sort((a, b) => a.x - b.x)
-      .slice(0, 2);
+    // Angle: two people on the same ring, as far apart as possible (≤ 100°), with an
+    // arc that touches nobody else — so the angle is long enough to read.
+    const others = nodes.filter(n => n.id !== centre.id && n.id !== radiusNode?.id && n.r > iconRadius * 3);
+    const arcClear = (a: GraphAnchor, b: GraphAnchor) => {
+      const rr = (a.r + b.r) / 2;
+      let d = b.a - a.a; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
+      const steps = 40;
+      return nodes.filter(n => n.id !== a.id && n.id !== b.id).every(n => {
+        for (let i = 1; i < steps; i++) {
+          const t = a.a + (d * i) / steps;
+          if (Math.hypot(c + Math.cos(t) * rr - n.x, c + Math.sin(t) * rr - n.y) < iconRadius + 3) return false;
+        }
+        return true;
+      });
+    };
+    let pair: GraphAnchor[] = [];
+    let best = 0;
+    for (let i = 0; i < others.length; i++) for (let j = i + 1; j < others.length; j++) {
+      const a = others[i], b = others[j];
+      if (Math.abs(a.r - b.r) > iconRadius * 0.5) continue;
+      let d = Math.abs(b.a - a.a); if (d > Math.PI) d = 2 * Math.PI - d;
+      if (d > (100 * Math.PI) / 180 || d * a.r <= best) continue;
+      if (arcClear(a, b)) { best = d * a.r; pair = [a, b]; }
+    }
+    if (!pair.length) pair = [...others].sort((a, b) => a.x - b.x).slice(0, 2);
     const starScale = safeStarScale(nodes, centre, iconRadius, (iconRadius + 2) / STAR_UNIT_RADIUS);
     return { nodes, pair, radiusNode, centre, iconRadius, starScale, hasCentreNode: !!centreNode && centreNode.r <= iconRadius };
   }, [size, c, lm, opinions, ratings, points]);
@@ -325,20 +347,29 @@ function PhoneGraphFrame({ w, h, annotate }: { w: number; h: number; annotate: b
     }
     return { bend: pt, outer: { x: toX, y: pt.y }, y: pt.y };
   };
-  const la = leader(angle, leftEnd);
+  // The pointer goes to whichever side of the phone the arc sits on.
+  const angleSide = angle && angle.x > px + PHONE.w / 2 ? 'right' : 'left';
+  const la = leader(angle, angleSide === 'right' ? rightEnd : leftEnd);
   const lr = leader(radius, rightEnd);
   return (
     <div className="relative h-full w-full bg-background">
-      <div className="absolute overflow-hidden border-[10px] border-foreground/15 bg-card" style={{ left: px, top: py, width: PHONE.w, height: PHONE.h, borderRadius: 48 }}>
-        <div className="absolute left-1/2 top-2 h-6 w-24 -translate-x-1/2 rounded-full bg-foreground/15" />
-        <p className="slide-phone-q absolute inset-x-5 top-11 text-center font-semibold text-foreground">{QUESTION}</p>
+      <div className="absolute overflow-hidden border-[10px] border-foreground/15 bg-background" style={{ left: px, top: py, width: PHONE.w, height: PHONE.h, borderRadius: 48 }}>
+        <div className="absolute inset-x-0 top-0 flex items-center justify-between border-b border-border/30 px-4 py-3">
+          <span className="slide-phone-logo font-medium lowercase tracking-tight text-foreground/90">freemind</span>
+          <span className="flex items-center gap-3 text-foreground/70"><HelpCircle className="h-4 w-4" /><Bell className="h-4 w-4" /><Settings className="h-4 w-4" /></span>
+        </div>
+        <p className="slide-phone-q absolute inset-x-5 top-14 text-center font-serif italic text-foreground">{QUESTION}</p>
         <div className="absolute" style={{ top: GRAPH_TOP, left: boxLeft, width: PHONE_GRAPH_RENDER, height: PHONE_GRAPH_RENDER, transform: `scale(${k})`, transformOrigin: '0 0' }}>
           <GraphFrame size={PHONE_GRAPH_RENDER} annotate={annotate} labels={false} opinions={PHONE_OPINIONS} ratings={PHONE_RATINGS} points={PHONE_POINTS} onGeometry={setGeo} />
         </div>
-        <div className="absolute inset-x-4 bottom-4 flex justify-around rounded-full border border-border bg-background/80 py-2 text-muted-foreground">
-          <span className="slide-phone-tab">Opinions</span>
-          <span className="slide-phone-tab font-semibold text-foreground">Circle</span>
-          <span className="slide-phone-tab">Chats</span>
+        <div className="absolute inset-x-0 bottom-0 flex h-14 border-t border-border/40 bg-background/80">
+          {([['Opinions', List, false], ['Circle', CircleDot, true], ['Chats', MessagesSquare, false]] as const).map(([label, Icon, active]) => (
+            <div key={label} className={cn('relative flex flex-1 flex-col items-center justify-center gap-1', active ? 'text-primary' : 'text-foreground/70')}>
+              <Icon className="h-[18px] w-[18px]" />
+              <span className="slide-phone-tab font-semibold uppercase tracking-[0.14em]">{label}</span>
+              {active && <span className="absolute bottom-1 h-0.5 w-8 rounded-full bg-primary" />}
+            </div>
+          ))}
         </div>
       </div>
       {annotate && (
@@ -354,7 +385,10 @@ function PhoneGraphFrame({ w, h, annotate }: { w: number; h: number; annotate: b
             </g>
           </svg>
           {angle && (
-            <span className="slide-anno absolute text-right text-foreground" style={{ right: w - leftEnd + 10, top: (la?.y ?? angle.y) - 28, width: px - 50 }}>
+            <span className={cn('slide-anno absolute text-foreground', angleSide === 'right' ? 'text-left' : 'text-right')}
+              style={angleSide === 'right'
+                ? { left: rightEnd + 10, top: (la?.y ?? angle.y) - 28, width: w - rightEnd - 30 }
+                : { right: w - leftEnd + 10, top: (la?.y ?? angle.y) - 28, width: px - 50 }}>
               Angle =<br />disagreement
             </span>
           )}
@@ -415,8 +449,9 @@ export default function SlideAssets() {
           .slide-frame .slide-key, .slide-frame .slide-anno { font-size: 22px !important; line-height: 1.25; }
           .slide-frame .slide-anno { font-weight: 600; text-shadow: 0 0 6px hsl(var(--background)); }
           .slide-frame .slide-anno-formula { font-size: 19px !important; line-height: 1.3; }
-          .slide-frame .slide-phone-q { font-size: 17px !important; line-height: 1.3; }
-          .slide-frame .slide-phone-tab { font-size: 15px !important; }
+          .slide-frame .slide-phone-q { font-size: 19px !important; line-height: 1.3; }
+          .slide-frame .slide-phone-tab { font-size: 11px !important; line-height: 1; }
+          .slide-frame .slide-phone-logo { font-size: 15px !important; line-height: 1; }
           .slide-frame [role="slider"] + div { font-size: 18px !important; }
           .slide-frame [role="slider"] + div span { font-size: 18px !important; }
         `}</style>
