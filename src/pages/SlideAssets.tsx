@@ -59,7 +59,7 @@ function Frame({ id, w, h, children, registerRef }: { id: string; w: number; h: 
       <div
         ref={(el) => registerRef(id, el)}
         data-slide-frame={id}
-        className="slide-frame relative overflow-hidden border border-border bg-card text-card-foreground"
+        className={cn("slide-frame relative overflow-hidden text-card-foreground", id === "graph-annotated" ? "bg-transparent" : "border border-border bg-card")}
         style={{ width: w, height: h, borderRadius: 24 }}
       >
         {children}
@@ -352,13 +352,14 @@ function PhoneGraphFrame({ w, h, annotate }: { w: number; h: number; annotate: b
   const la = leader(angle, angleSide === 'right' ? rightEnd : leftEnd);
   const lr = leader(radius, rightEnd);
   return (
-    <div className="relative h-full w-full bg-background">
+    <div className="relative h-full w-full">
       <div className="absolute overflow-hidden border-[10px] border-foreground/15 bg-background" style={{ left: px, top: py, width: PHONE.w, height: PHONE.h, borderRadius: 48 }}>
         <div className="absolute inset-x-0 top-0 flex items-center justify-between border-b border-border/30 px-4 py-3">
           <span className="slide-phone-logo font-medium lowercase tracking-tight text-foreground/90">freemind</span>
           <span className="flex items-center gap-3 text-foreground/70"><HelpCircle className="h-4 w-4" /><Bell className="h-4 w-4" /><Settings className="h-4 w-4" /></span>
         </div>
         <p className="slide-phone-q absolute inset-x-5 top-14 text-center font-serif italic text-foreground">{QUESTION}</p>
+        <div className="absolute rounded-full bg-foreground/[0.05] ring-1 ring-foreground/10 shadow-[0_0_40px_hsl(var(--foreground)/0.08)]" style={{ top: GRAPH_TOP + 4, left: boxLeft + 4, width: PHONE_GRAPH_BOX - 8, height: PHONE_GRAPH_BOX - 8 }} />
         <div className="absolute" style={{ top: GRAPH_TOP, left: boxLeft, width: PHONE_GRAPH_RENDER, height: PHONE_GRAPH_RENDER, transform: `scale(${k})`, transformOrigin: '0 0' }}>
           <GraphFrame size={PHONE_GRAPH_RENDER} annotate={annotate} labels={false} opinions={PHONE_OPINIONS} ratings={PHONE_RATINGS} points={PHONE_POINTS} onGeometry={setGeo} />
         </div>
@@ -385,7 +386,7 @@ function PhoneGraphFrame({ w, h, annotate }: { w: number; h: number; annotate: b
             </g>
           </svg>
           {angle && (
-            <span className={cn('slide-anno absolute text-foreground', angleSide === 'right' ? 'text-left' : 'text-right')}
+            <span className={cn('slide-anno absolute text-background [text-shadow:none]', angleSide === 'right' ? 'text-left' : 'text-right')}
               style={angleSide === 'right'
                 ? { left: rightEnd + 10, top: (la?.y ?? angle.y) - 28, width: w - rightEnd - 30 }
                 : { right: w - leftEnd + 10, top: (la?.y ?? angle.y) - 28, width: px - 50 }}>
@@ -393,7 +394,7 @@ function PhoneGraphFrame({ w, h, annotate }: { w: number; h: number; annotate: b
             </span>
           )}
           {radius && (
-            <span className="slide-anno absolute text-left text-foreground" style={{ left: rightEnd + 10, top: (lr?.y ?? radius.y) - 42, width: w - rightEnd - 30 }}>
+            <span className="slide-anno absolute text-left text-background" style={{ left: rightEnd + 10, top: (lr?.y ?? radius.y) - 42, width: w - rightEnd - 30 }}>
               Understanding Others ×<br />Disagreement =<br />Proximity to Center
             </span>
           )}
