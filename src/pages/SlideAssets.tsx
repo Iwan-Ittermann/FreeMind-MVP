@@ -448,7 +448,7 @@ export default function SlideAssets() {
           .slide-frame p, .slide-frame span, .slide-frame textarea, .slide-frame button, .slide-frame div { font-size: max(18px, 1em); }
           .slide-frame textarea { font-size: 20px !important; line-height: 1.4 !important; }
           .slide-frame .slide-key, .slide-frame .slide-anno { font-size: 22px !important; line-height: 1.25; }
-          .slide-frame .slide-anno { font-weight: 600; text-shadow: 0 0 6px hsl(var(--background)); }
+          .slide-frame .slide-anno { font-weight: 600; }
           .slide-frame .slide-anno-formula { font-size: 19px !important; line-height: 1.3; }
           .slide-frame .slide-phone-q { font-size: 19px !important; line-height: 1.3; }
           .slide-frame .slide-phone-tab { font-size: 11px !important; line-height: 1; }
