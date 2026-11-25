@@ -763,11 +763,11 @@
     "understandingLabel": "Verständnis",
     "expandOpinion": "Meinung anzeigen",
     "diffStep": {
-      "strongAgree": "Voll dabei",
-      "agree": "Eher ja",
-      "neutral": "Unentschieden",
-      "disagree": "Eher nein",
-      "strongDisagree": "Gar nicht"
+      "strongAgree": "Stimme voll zu",
+      "agree": "Stimme zu",
+      "neutral": "Neutral",
+      "disagree": "Stimme nicht zu",
+      "strongDisagree": "Stimme gar nicht zu"
     },
     "understandingStep": {
       "notAtAll": "Gar nicht",

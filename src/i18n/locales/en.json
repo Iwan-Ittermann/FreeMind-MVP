@@ -763,11 +763,11 @@
     "understandingLabel": "Understanding",
     "expandOpinion": "Show opinion",
     "diffStep": {
-      "strongAgree": "Totally",
-      "agree": "Mostly",
-      "neutral": "Unsure",
-      "disagree": "Not really",
-      "strongDisagree": "Not at all"
+      "strongAgree": "Strongly agree",
+      "agree": "Agree",
+      "neutral": "Neutral",
+      "disagree": "Disagree",
+      "strongDisagree": "Strongly disagree"
     },
     "understandingStep": {
       "notAtAll": "Not at all",

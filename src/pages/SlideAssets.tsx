@@ -102,7 +102,7 @@ function RateFrame() {
   return (
     <div className="flex h-full flex-col gap-6 p-6">
       <div>
-        <p className="slide-key mb-3 font-semibold text-foreground">How far apart are we?</p>
+        <p className="slide-key mb-3 font-semibold text-foreground">Where do you stand on this?</p>
         <div className="flex items-center gap-1.5">
           {STEPS.map((step, i) => (
             <div key={step.value} className={cn('flex h-12 flex-1 items-center justify-center rounded-full border',
