@@ -1,73 +1,87 @@
-# Welcome to your Lovable project
+# freemind
 
-## Project info
+**From moderating behaviour → incentivizing moderation.**
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+We're not short on disagreement. We're short on places where it doesn't destroy us.
 
-## How can I edit this code?
+freemind is a discussion space built around a single question: can people with
+opposing views still understand each other? Instead of sorting people by how
+loudly they argue, it sorts them by how well they listen.
 
-There are several ways of editing your application.
+---
 
-**Use Lovable**
+## How it works
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+1. **One question at a time.** A discussion is scoped to a single, concrete
+   question. Participants state one position — one opinion per topic, per person.
+2. **The graph shows where you actually stand.** Every opinion becomes a node in
+   a live map:
+   - **Angle** encodes disagreement: the further apart two positions point, the
+     wider the gap between them.
+   - **Radius** encodes *understanding others × disagreement*: people who
+     accurately describe views they disagree with move toward the centre.
+   - **The centre is not the majority** — it is the best listeners.
+3. **Dialogue is protected, not policed.** Exchanges happen one-to-one and are
+   unmoderated; the transcripts are readable by anyone, so the conversation
+   itself is the record. What is measured is not tone but whether you can restate
+   the other side. Respect ratings and understanding ratings are separate
+   signals: disagreeing hard is not treated as being rude.
 
-Changes made via Lovable will be committed automatically to this repo.
+The result of our pilots so far: affective distance between opposing camps stayed
+flat or improved without any moderation layer, while the incentive to reply
+across the gap remained the main thing to build.
 
-**Use your preferred IDE**
+## Tech stack
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+| Layer | Choice |
+| --- | --- |
+| Frontend | React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui |
+| Animation | Framer Motion, custom SVG graph rendering |
+| Backend | Supabase (Postgres, RLS, Edge Functions, Realtime) via Lovable Cloud |
+| Email / scheduling | Transactional mail templates, managed HTTP cron schedules |
+| i18n | EN / DE, strict translation-key usage |
+| Testing | Vitest + Testing Library |
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Getting started
 
-Follow these steps:
+Requires Node.js and npm.
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The dev server runs on `http://localhost:8080`.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```sh
+npm run build     # production build
+npm run lint      # eslint
+```
 
-**Use GitHub Codespaces**
+Environment values for the backend are provided by the hosting platform; a local
+checkout needs the project's Supabase URL and publishable key in the standard
+Vite env variables.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Repository status
 
-## What technologies are used for this project?
+This repository is a **public mirror** of the product code, published for
+transparency and research interest.
 
-This project is built with:
+- **No external contributions.** Pull requests, issues and forks are not
+  reviewed. The code is a working prototype, not a supported library.
+- **No warranty.** Features, data models and routes change without notice.
+- **No license is granted.** Absent an explicit `LICENSE` file, all rights are
+  reserved. Ask before reusing the code, the name or the visual identity.
+- **Demo data.** The app is a prototype with intentionally public demonstration
+  data. It is not a hosted service for third-party communities.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## A note on safety and legal compliance
 
-## How can I deploy this project?
+Access is anonymous (passphrases, no accounts, no email required to read). IP
+addresses are logged for moderation and legal liability under German law
+(NetzDG / StGB); violating content is soft-deleted rather than erased so that
+moderation decisions remain auditable.
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+---
 
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Live: https://freemind.chat
